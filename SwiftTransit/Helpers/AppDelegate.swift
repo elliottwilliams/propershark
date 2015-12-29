@@ -7,15 +7,20 @@
 //
 
 import UIKit
+import MapKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
+    var locationManager: CLLocationManager?
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        // self.locationManager = CLLocationManager()
+        // Desired location accuracy can be set further, and maybe it should be if we are using location data for core application functionality. At this time it's just used to show a blue dot on the map, so as long as it's relatively close, we're cool.
+        // self.locationManager?.delegate = PFLocationManagerDelegate() // TODO: determine if this is needed
+        // self.locationManager?.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
         return true
     }
 
