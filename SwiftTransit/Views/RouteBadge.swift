@@ -10,6 +10,8 @@ import UIKit
 
 class RouteBadge: UIView {
     
+    // MARK: Properties
+    
     var capacity = 0.0 {
         didSet { updateCapacity() }
     }
@@ -19,7 +21,19 @@ class RouteBadge: UIView {
     var outerStrokeGap = 5.0 {
         didSet { updateStroke() }
     }
- 
+    var routeNumber: String? {
+        didSet { updateRouteNumber() }
+    }
+    
+    let _colorSpace = CGColorSpaceCreateDeviceRGB()
+    let _outerBadge = CAShapeLayer()
+    let _innerBadge = CAShapeLayer()
+    let _filledInnerBadge = CAShapeLayer()
+    let _capacityCoverMask = CAShapeLayer()
+    var _label: UILabel?
+
+    // MARK: Private properties
+    
     private var width: CGFloat!
     private var outerRadius: CGFloat!
     private var innerWidth: CGFloat!
@@ -30,11 +44,7 @@ class RouteBadge: UIView {
     private var darkRed: CGColor!
     private var lightRed: CGColor!
     
-    let _colorSpace = CGColorSpaceCreateDeviceRGB()
-    let _outerBadge = CAShapeLayer()
-    let _innerBadge = CAShapeLayer()
-    let _filledInnerBadge = CAShapeLayer()
-    let _capacityCoverMask = CAShapeLayer()
+    // MARK: - Initializers
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -44,6 +54,7 @@ class RouteBadge: UIView {
         calculateDrawingMeasurements()
         drawBadge()
         insertLayers()
+        insertLabel()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -52,31 +63,15 @@ class RouteBadge: UIView {
         calculateDrawingMeasurements()
         drawBadge()
         insertLayers()
+        insertLabel()
     }
-
-    /*override func awakeFromNib() {
-        // red is set in IB so that it's visible, clear it now
-        self.backgroundColor = UIColor.clearColor()
-        
-        // Set colors
-        self.darkRed = CGColorCreate(_colorSpace, [1.0, 0.0, 0.0, 1.0])!
-        self.lightRed = CGColorCreate(_colorSpace, [1.0, 188/255, 188/255, 1.0])!
-        
-        // Calculate drawing measurements and draw the badge layers
-        calculateDrawingMeasurements()
-        drawBadge()
-    }*/
+    
+    // MARK: Property-setting calculations
     
     func determineColors() {
         self.backgroundColor = UIColor.clearColor()
         self.darkRed = CGColorCreate(_colorSpace, [1.0, 0.0, 0.0, 1.0])!
         self.lightRed = CGColorCreate(_colorSpace, [1.0, 188/255, 188/255, 1.0])!
-    }
-    
-    func insertLayers() {
-        self.layer.addSublayer(_outerBadge)
-        self.layer.addSublayer(_filledInnerBadge)
-        self.layer.addSublayer(_innerBadge)
     }
     
     func calculateDrawingMeasurements() {
@@ -90,6 +85,8 @@ class RouteBadge: UIView {
         self.outerRadius = (width / 2) - CGFloat(outerStrokeWidth)
         self.capacityCover = (innerRadius * 2) * CGFloat(1 - capacity)
     }
+    
+    // MARK: Idempotent calculations
     
     func outerPath() -> CGMutablePath {
         let outer = CGPathCreateMutable()
@@ -107,6 +104,31 @@ class RouteBadge: UIView {
         return CGPathCreateWithRect(CGRectMake(0, CGFloat(outerStrokeWidth + outerStrokeGap), width, height), nil)
     }
     
+    func labelMeasurements() -> (margin: CGFloat, size: CGFloat, fontSize: CGFloat) {
+        return (margin: width * 0.1, size: width * 0.8, fontSize: innerWidth * 0.55)
+    }
+    
+    // MARK: Setup draw code
+    
+    func insertLayers() {
+        self.layer.addSublayer(_outerBadge)
+        self.layer.addSublayer(_filledInnerBadge)
+        self.layer.addSublayer(_innerBadge)
+    }
+    
+    func insertLabel() {
+        let (margin, size, fontSize) = labelMeasurements()
+        let label = UILabel(frame: CGRectMake(margin, margin, size, size))
+        label.font = UIFont.systemFontOfSize(fontSize, weight: UIFontWeightSemibold)
+        label.textColor = UIColor.whiteColor()
+        label.textAlignment = NSTextAlignment.Center
+        label.text = self.routeNumber
+        self.addSubview(label)
+        _label = label
+    }
+    
+    // MARK: Reusable draw code
+    
     func drawBadge() {
         calculateDrawingMeasurements()
         
@@ -121,11 +143,9 @@ class RouteBadge: UIView {
         _innerBadge.path = innerPath()
         _innerBadge.fillColor = darkRed
         _innerBadge.mask = _capacityCoverMask
-        _innerBadge.zPosition = 10.0
         
         _filledInnerBadge.path = innerPath()
         _filledInnerBadge.fillColor = lightRed
-        _filledInnerBadge.zPosition = 8.0
     }
     
     func updateCapacity() {
@@ -141,6 +161,13 @@ class RouteBadge: UIView {
     
     func updateStroke() {
         drawBadge()
+        // Label font size is dependent on inner width
+        let fontSize = labelMeasurements().fontSize
+        _label?.font = _label?.font.fontWithSize(fontSize)
+    }
+    
+    func updateRouteNumber() {
+        self._label?.text = self.routeNumber
     }
     
    

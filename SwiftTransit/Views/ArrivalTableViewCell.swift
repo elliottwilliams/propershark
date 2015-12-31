@@ -13,8 +13,6 @@ class ArrivalTableViewCell: UITableViewCell {
     // MARK: Properties
     @IBOutlet weak var routeTimer: UILabel!
     @IBOutlet weak var routeTitle: UILabel!
-    @IBOutlet weak var routeID: UILabel!
-//    @IBOutlet weak var badge: RouteBadge!
     @IBOutlet weak var ornament: UIView!
     
     var badge: RouteBadge!
@@ -26,6 +24,7 @@ class ArrivalTableViewCell: UITableViewCell {
         let badge = RouteBadge(frame: CGRectMake(8, 8, 28, 28))
         badge.outerStrokeWidth = 0
         badge.outerStrokeGap = 0
+        badge.routeNumber = "99"
         
         ornament.addSubview(badge)
         ornament.sendSubviewToBack(badge)

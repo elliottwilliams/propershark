@@ -17,32 +17,14 @@
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZP1-Jh-1Ko" userLabel="Ornament">
                         <rect key="frame" x="16" y="0.0" width="44" height="44"/>
-                        <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="13" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EfQ-hR-wlm" customClass="RouteBadgeLabel" customModule="SwiftTransit" customModuleProvider="target">
-                                <rect key="frame" x="13" y="12" width="18" height="20"/>
-                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
                         <constraints>
                             <constraint firstAttribute="width" secondItem="ZP1-Jh-1Ko" secondAttribute="height" multiplier="1:1" id="J8f-pY-coS"/>
-                            <constraint firstItem="EfQ-hR-wlm" firstAttribute="top" secondItem="ZP1-Jh-1Ko" secondAttribute="top" id="Mmx-VQ-UJ3"/>
-                            <constraint firstItem="EfQ-hR-wlm" firstAttribute="centerX" secondItem="ZP1-Jh-1Ko" secondAttribute="centerX" id="QqA-XY-nXS"/>
-                            <constraint firstItem="EfQ-hR-wlm" firstAttribute="leading" secondItem="ZP1-Jh-1Ko" secondAttribute="leading" id="cFq-V7-VuQ"/>
                             <constraint firstAttribute="width" secondItem="ZP1-Jh-1Ko" secondAttribute="height" multiplier="1:1" id="hCK-af-L51"/>
-                            <constraint firstAttribute="bottom" secondItem="EfQ-hR-wlm" secondAttribute="bottom" constant="15" id="hIv-wz-dFz"/>
                             <constraint firstAttribute="height" constant="44" id="iNj-5K-11x"/>
-                            <constraint firstAttribute="trailing" secondItem="EfQ-hR-wlm" secondAttribute="trailing" constant="15" id="p9k-wo-XiX"/>
-                            <constraint firstItem="EfQ-hR-wlm" firstAttribute="centerY" secondItem="ZP1-Jh-1Ko" secondAttribute="centerY" id="ytC-oN-8ua"/>
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
                                 <exclude reference="hCK-af-L51"/>
-                                <exclude reference="Mmx-VQ-UJ3"/>
-                                <exclude reference="cFq-V7-VuQ"/>
-                                <exclude reference="hIv-wz-dFz"/>
-                                <exclude reference="p9k-wo-XiX"/>
                             </mask>
                         </variation>
                     </view>
@@ -99,7 +81,6 @@
             <connections>
                 <outlet property="badge" destination="ZP1-Jh-1Ko" id="vqD-cW-BvQ"/>
                 <outlet property="ornament" destination="ZP1-Jh-1Ko" id="lcA-Iz-uaq"/>
-                <outlet property="routeID" destination="EfQ-hR-wlm" id="kLK-3B-mul"/>
                 <outlet property="routeTimer" destination="t4C-ob-D8K" id="tV6-LP-3Ln"/>
                 <outlet property="routeTitle" destination="h5M-sx-SHG" id="nk8-ol-Hsb"/>
             </connections>

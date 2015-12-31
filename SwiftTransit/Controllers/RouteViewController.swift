@@ -11,13 +11,12 @@ import UIKit
 class RouteViewController: UIViewController/*, SceneMediatedController*/ {
 
     @IBOutlet weak var badge: RouteBadge!
-    @IBOutlet weak var routeID: UILabel!
     
     override func viewDidLoad() {
         badge.outerStrokeGap = 5.0
         badge.outerStrokeWidth = 5.0
         badge.capacity = 0.9
-        routeID.text = "15"
+        badge.routeNumber = "99"
         self.navigationItem.title = "15 Tower Acres"
     }
 
