@@ -63,7 +63,7 @@ class ArrivalTableViewController: UITableViewController {
         cell.routeID.text = arrival.routeID()
         cell.routeTitle.text = arrival.routeName()
         cell.routeTimer.text = arrival.relativeArrivalTime()
-        cell.capacityIndicator.capacity = arrival.vehicleCapacity()
+        cell.badge.capacity = arrival.vehicleCapacity()
 
         return cell
     }

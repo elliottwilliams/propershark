@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UIViewController"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OZo-Rn-Ziq" userLabel="Route Badge" customClass="RouteBadge" customModule="SwiftTransit" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="13" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Aiv-Q7-ha7" userLabel="Route Number" customClass="RouteBadgeLabel" customModule="SwiftTransit" customModuleProvider="target">
+                    <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="18" id="oHq-Ug-CGu"/>
+                        <constraint firstAttribute="height" constant="20" id="ykf-PB-UN2"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="55"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="oHq-Ug-CGu"/>
+                            <exclude reference="ykf-PB-UN2"/>
+                        </mask>
+                    </variation>
+                </label>
+            </subviews>
+            <color key="backgroundColor" red="1" green="0.40000000600000002" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstItem="Aiv-Q7-ha7" firstAttribute="centerX" secondItem="OZo-Rn-Ziq" secondAttribute="centerX" id="3rm-W0-nzq"/>
+                <constraint firstAttribute="bottom" secondItem="Aiv-Q7-ha7" secondAttribute="bottom" id="5AG-FM-gzh"/>
+                <constraint firstItem="Aiv-Q7-ha7" firstAttribute="top" secondItem="OZo-Rn-Ziq" secondAttribute="top" constant="290" id="FTD-tP-4eJ"/>
+                <constraint firstAttribute="width" secondItem="OZo-Rn-Ziq" secondAttribute="height" multiplier="1:1" id="GR4-OZ-OmL"/>
+                <constraint firstItem="Aiv-Q7-ha7" firstAttribute="centerY" secondItem="OZo-Rn-Ziq" secondAttribute="centerY" id="Gde-qA-pyG"/>
+                <constraint firstItem="Aiv-Q7-ha7" firstAttribute="top" secondItem="OZo-Rn-Ziq" secondAttribute="top" id="Hd9-Xe-efs"/>
+                <constraint firstItem="Aiv-Q7-ha7" firstAttribute="leading" secondItem="OZo-Rn-Ziq" secondAttribute="leading" id="PyK-5B-qo1"/>
+                <constraint firstAttribute="bottom" secondItem="Aiv-Q7-ha7" secondAttribute="bottom" constant="15" id="Sjr-Sr-uN3"/>
+                <constraint firstAttribute="trailing" secondItem="Aiv-Q7-ha7" secondAttribute="trailing" id="Vgg-pD-RMv"/>
+                <constraint firstItem="Aiv-Q7-ha7" firstAttribute="leading" secondItem="OZo-Rn-Ziq" secondAttribute="leading" id="eAt-Go-k66"/>
+                <constraint firstItem="Aiv-Q7-ha7" firstAttribute="leading" secondItem="OZo-Rn-Ziq" secondAttribute="leading" constant="291" id="lff-cC-HLk"/>
+                <constraint firstItem="Aiv-Q7-ha7" firstAttribute="top" secondItem="OZo-Rn-Ziq" secondAttribute="top" id="nTQ-ss-I18"/>
+                <constraint firstAttribute="trailing" secondItem="Aiv-Q7-ha7" secondAttribute="trailing" constant="15" id="otw-XK-Vs9"/>
+                <constraint firstAttribute="height" constant="28" id="ugh-as-mJ1"/>
+                <constraint firstAttribute="width" secondItem="OZo-Rn-Ziq" secondAttribute="height" multiplier="1:1" id="xpH-Kt-REt"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <nil key="simulatedTopBarMetrics"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <variation key="default">
+                <mask key="constraints">
+                    <exclude reference="GR4-OZ-OmL"/>
+                    <exclude reference="ugh-as-mJ1"/>
+                    <exclude reference="FTD-tP-4eJ"/>
+                    <exclude reference="Hd9-Xe-efs"/>
+                    <exclude reference="Sjr-Sr-uN3"/>
+                    <exclude reference="eAt-Go-k66"/>
+                    <exclude reference="lff-cC-HLk"/>
+                    <exclude reference="otw-XK-Vs9"/>
+                </mask>
+            </variation>
+            <connections>
+                <outlet property="routeNumber" destination="Aiv-Q7-ha7" id="jtT-B9-DRN"/>
+            </connections>
+        </view>
+    </objects>
+</document>

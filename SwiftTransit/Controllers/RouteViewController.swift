@@ -13,13 +13,12 @@ class RouteViewController: UIViewController/*, SceneMediatedController*/ {
     @IBOutlet weak var badge: RouteBadge!
     @IBOutlet weak var routeID: UILabel!
     
-    static var sharedBadge: RouteBadge?
-    
     override func viewDidLoad() {
-        badge.outerStrokeGap = 0.0
+        badge.outerStrokeGap = 5.0
+        badge.outerStrokeWidth = 5.0
+        badge.capacity = 0.9
         routeID.text = "15"
         self.navigationItem.title = "15 Tower Acres"
-        
-        RouteViewController.sharedBadge = badge
     }
+
 }

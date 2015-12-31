@@ -21,6 +21,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Desired location accuracy can be set further, and maybe it should be if we are using location data for core application functionality. At this time it's just used to show a blue dot on the map, so as long as it's relatively close, we're cool.
         // self.locationManager?.delegate = PFLocationManagerDelegate() // TODO: determine if this is needed
         // self.locationManager?.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        
+        // Register nibs
+        
+        
         return true
     }
 
