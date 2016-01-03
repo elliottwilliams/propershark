@@ -8,13 +8,23 @@
 
 import UIKit
 
-struct Route {
-    var name: String
-    var id: String
-    var stations: [Station]
+struct Route: Hashable {
+    let name: String
+    let id: String
+    let stations: [Station]
+    
+    var hashValue: Int { return id.hashValue }
+}
+
+func ==(a: Route, b: Route) -> Bool {
+    return a.id == b.id
 }
 
 extension Route {
+    func viewModel() -> RouteViewModel {
+        return RouteViewModel(self)
+    }
+    
     static let DemoRoutes = [
         Route(name: "Silver Loop", id: "13", stations: []),
         Route(name: "Tower Acres", id: "15", stations: []),

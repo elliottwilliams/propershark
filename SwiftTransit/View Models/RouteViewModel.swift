@@ -9,12 +9,63 @@
 import UIKit
 
 class RouteViewModel: NSObject {
-    var route: Route
-    init(route: Route) {
-        self.route = route
+    let _route: Route
+    init(_ route: Route) {
+        _route = route
     }
     
-    func fullName() -> String {
-        return "\(route.id) \(route.name)"
+    func routeNumber() -> String {
+        return _route.id
     }
+    
+    func displayName() -> String {
+        return "\(_route.id) \(_route.name)"
+    }
+    
+    func stationsAlongRoute() -> [StationViewModel] {
+        return _route.stations.map { $0.viewModel() }
+    }
+    
+    func tripsForRoute() -> [TripViewModel] {
+        return Trip.DemoTrips.map { $0.viewModel() }
+    }
+    
+    // This could be better done server-side with a SQL JOIN:
+    /* SELECT (station_idx, vehicle_id, station_id)
+     *      FROM route_stations, trip, station
+     *      WHERE trip.current_station_id = station.station_id
+     *          AND route_station.route_id = trip.route_id
+     *      ORDER BY station_idx;
+    */
+    func stationsAlongRouteWithTrips(trips: [TripViewModel], stations: [StationViewModel]) -> [(station: StationViewModel?, trips: [TripViewModel])] {
+        
+        // Pair the sequenced list of stations with any trips whose vehicle is coming to that station
+        var tripsAtStations: [(station: StationViewModel?, trips: [TripViewModel])] =
+            stations.map { station in
+                (station, trips.filter { $0.currentStation == station })
+            }
+        
+        // Move vehicles who have not arrived at their current station to a nil station entry *before* the next
+        for (var i = 0; i < tripsAtStations.count; i++) {
+            let pair = tripsAtStations[i]
+            var shouldKeep = [TripViewModel]()
+            var shouldMove = [TripViewModel]()
+            for trip in pair.1 {
+                if trip.isVehicleAtCurrentStation() {
+                    shouldKeep.append(trip)
+                } else {
+                    shouldMove.append(trip)
+                }
+            }
+            tripsAtStations[i].trips = shouldKeep
+            
+            if (shouldMove.count > 0) {
+                tripsAtStations.insert((nil, shouldMove), atIndex: i)
+                i++
+            }
+        }
+        
+        return tripsAtStations
+    }
+
 }

@@ -16,7 +16,7 @@ class VehicleViewController: UIViewController, SceneMediatedController {
     @IBOutlet weak var vehicleImageView: UIImageView!
     @IBOutlet weak var navigationBar: UINavigationItem!
     
-    var _vehicle: VehicleViewModel!
+    var vehicle: VehicleViewModel!
     var _sceneMediator = SceneMediator.sharedInstance
 
     override func viewDidLoad() {
@@ -29,7 +29,7 @@ class VehicleViewController: UIViewController, SceneMediatedController {
         vehicleImageView.layer.shadowRadius = 2;
         
         // Set navigation bar name
-        navigationBar.title = _vehicle.name
+        navigationBar.title = vehicle.name
         
         // Center things
 //        let centerVehicleImage = NSLayoutConstraint(item: vehicleImageView, attribute: NSLayoutAttribute.CenterX,
@@ -37,10 +37,6 @@ class VehicleViewController: UIViewController, SceneMediatedController {
 //            toItem: self.view, attribute: NSLayoutAttribute.CenterX,
 //                multiplier: 1.0, constant: 0.0)
 //        self.view.addConstraint(centerVehicleImage)
-    }
-    
-    func setVehicleModel(vehicle: Vehicle) {
-        self._vehicle = VehicleViewModel(vehicle)
     }
 
     override func didReceiveMemoryWarning() {

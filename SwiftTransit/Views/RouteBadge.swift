@@ -1,4 +1,3 @@
-//
 //  RouteBadge.swift
 //  SwiftTransit
 //
@@ -83,7 +82,7 @@ class RouteBadge: UIView {
         self.centerY = centerX
         
         self.outerRadius = (width / 2) - CGFloat(outerStrokeWidth)
-        self.capacityCover = (innerRadius * 2) * CGFloat(1 - capacity)
+        self.capacityCover = innerWidth * CGFloat(1 - capacity)
     }
     
     // MARK: Idempotent calculations

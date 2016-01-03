@@ -26,7 +26,7 @@ class SceneMediator: NSObject, SceneMediatorProtocol {
             let dest = segue.destinationViewController as! VehicleViewController
             let indexPath = src.tableView.indexPathForSelectedRow
             
-            dest.setVehicleModel(src.vehicles[indexPath!.row])
+            dest.vehicle = src.vehicles[indexPath!.row].viewModel()
         },
         
         "ShowStationAfterSelectionFromList": { (segue, sender) in
@@ -34,21 +34,28 @@ class SceneMediator: NSObject, SceneMediatorProtocol {
             let dest = segue.destinationViewController as! StationViewController
             let indexPath = src.tableView.indexPathForSelectedRow
             
-            dest.setStationModel(src.stations[indexPath!.row])
+            dest.station = src.stations[indexPath!.row].viewModel()
         },
         
         "ShowVehicleOnArrivalTableSelection": { (segue, sender) in
             let src = segue.sourceViewController as! ArrivalTableViewController
             let dest = segue.destinationViewController as! VehicleViewController
             let indexPath = src.tableView.indexPathForSelectedRow
-            dest._vehicle = src._arrivals[indexPath!.row].vehicle()
+            dest.vehicle = src._arrivals[indexPath!.row].vehicle()
         },
         
         "ShowVehicleWhenSelectedFromStation": { (segue, sender) in
             let src = segue.sourceViewController as! StationViewController
             let dest = segue.destinationViewController as! VehicleViewController
             let arrival = sender as! ArrivalViewModel
-            dest._vehicle = arrival.vehicle()
+            dest.vehicle = arrival.vehicle()
+        },
+        
+        "ShowRouteAfterSelectionFromList": { (segue, sender) in
+            let src = segue.sourceViewController as! StartListViewController
+            let dest = segue.destinationViewController as! RouteViewController
+            let indexPath = src.tableView.indexPathForSelectedRow
+            dest.route = src.routes[indexPath!.row].viewModel()
         }
     ]
     

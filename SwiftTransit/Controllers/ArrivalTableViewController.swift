@@ -60,7 +60,6 @@ class ArrivalTableViewController: UITableViewController {
         let cell = tableView.dequeueReusableCellWithIdentifier("ArrivalTableViewCell", forIndexPath: indexPath) as! ArrivalTableViewCell
 
         let arrival = _arrivals[indexPath.row]
-        cell.routeID.text = arrival.routeID()
         cell.routeTitle.text = arrival.routeName()
         cell.routeTimer.text = arrival.relativeArrivalTime()
         cell.badge.capacity = arrival.vehicleCapacity()

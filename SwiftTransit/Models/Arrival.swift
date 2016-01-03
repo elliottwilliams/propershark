@@ -9,12 +9,16 @@
 import UIKit
 
 struct Arrival {
-    var trip: Trip
-    var station: Station
-    var time: NSDate
+    let trip: Trip
+    let station: Station
+    let time: NSDate
 }
 
 extension Arrival {
+    func viewModel() -> ArrivalViewModel {
+        return ArrivalViewModel(self)
+    }
+    
     static func demoArrivalForTripAndStation(trip: Trip, station: Station) -> Arrival {
         let soon = NSDate.init(timeIntervalSinceNow: 120) // 2 min from now
         return Arrival(trip: trip, station: station, time: soon)

@@ -14,7 +14,7 @@ class VehicleViewModel: NSObject, MKAnnotation {
     
     var name: String { return _vehicle.name }
     var id: String { return _vehicle.id }
-    var location: (Double, Double) { return _vehicle.location }
+    var location: (latitude: Double, longitude: Double) { return _vehicle.location }
     var capacity: Double { return _vehicle.capacity }
     
     var coordinate: CLLocationCoordinate2D

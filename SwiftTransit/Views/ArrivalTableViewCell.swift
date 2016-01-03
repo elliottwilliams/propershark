@@ -18,7 +18,8 @@ class ArrivalTableViewCell: UITableViewCell {
     var badge: RouteBadge!
 
     override func awakeFromNib() {
-        super.awakeFromNib()
+        // Clear ornament background, which is set in IB to make the ornament visible
+        self.ornament.backgroundColor = UIColor.clearColor()
         
         // Create badge programmatically
         let badge = RouteBadge(frame: CGRectMake(8, 8, 28, 28))
@@ -26,8 +27,7 @@ class ArrivalTableViewCell: UITableViewCell {
         badge.outerStrokeGap = 0
         badge.routeNumber = "99"
         
-        ornament.addSubview(badge)
-        ornament.sendSubviewToBack(badge)
+        self.ornament.addSubview(badge)
         self.badge = badge
     }
 

@@ -42,8 +42,8 @@ class StartListViewController: UITableViewController, SceneMediatedController {
         case 0:
             cell = tableView.dequeueReusableCellWithIdentifier("RoutePrototypeCell", forIndexPath: indexPath)
             let route = routes[indexPath.row]
-            let routeView = RouteViewModel(route: route)
-            cell!.textLabel?.text = routeView.fullName()
+            let routeView = RouteViewModel(route)
+            cell!.textLabel?.text = routeView.displayName()
         case 1:
             cell = tableView.dequeueReusableCellWithIdentifier("VehiclePrototypeCell", forIndexPath: indexPath)
             let vehicle = vehicles[indexPath.row]

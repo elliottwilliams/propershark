@@ -32,7 +32,7 @@
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="k24-c9-Z01" kind="show" id="zSY-3c-fuw"/>
+                                    <segue destination="k24-c9-Z01" kind="show" identifier="ShowRouteAfterSelectionFromList" id="zSY-3c-fuw"/>
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="StationPrototypeCell" textLabel="mhC-8h-m4I" style="IBUITableViewCellStyleDefault" id="2fa-nz-wJq">
@@ -471,7 +471,7 @@
                                             </mask>
                                         </variation>
                                     </view>
-                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="gUB-Ee-uLe" customClass="ArrivalTableView" customModule="SwiftTransit" customModuleProvider="target">
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="gUB-Ee-uLe">
                                         <rect key="frame" x="0.0" y="160" width="600" height="376"/>
                                         <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                     </tableView>
@@ -495,6 +495,7 @@
                     <navigationItem key="navigationItem" title="Route" id="zm8-Ec-pp1" customClass="TransitNavigationItem" customModule="SwiftTransit" customModuleProvider="target"/>
                     <connections>
                         <outlet property="badge" destination="fdR-Mr-Tao" id="H65-0d-eRb"/>
+                        <outlet property="scheduleTable" destination="gUB-Ee-uLe" id="iqR-I0-25Y"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uSK-yd-Xdh" userLabel="First Responder" sceneMemberID="firstResponder"/>

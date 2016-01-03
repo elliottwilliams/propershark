@@ -9,14 +9,24 @@
 import Foundation
 import MapKit
 
-struct Station {
-    var name: String
-    var id: String
-    var neighborhood: [String]?
-    var location: (latitude: Double, longitude: Double)
+struct Station: Hashable {
+    let name: String
+    let id: String
+    let neighborhood: [String]?
+    let location: (latitude: Double, longitude: Double)
+    
+    var hashValue: Int { return id.hashValue }
+}
+
+func ==(a: Station, b: Station) -> Bool {
+    return a.id == b.id
 }
 
 extension Station {
+    func viewModel() -> StationViewModel {
+        return StationViewModel(self)
+    }
+    
     static let DemoStations = [
         Station(name: "Purdue Memorial Union", id: "BUS123", neighborhood: [], location: (40.4246641, -86.9115902)),
         Station(name: "Electrical Engineering", id: "BUS456", neighborhood: [],

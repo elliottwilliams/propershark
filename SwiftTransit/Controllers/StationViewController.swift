@@ -13,7 +13,7 @@ import CoreLocation
 class StationViewController: UIViewController, SceneMediatedController, ArrivalTableViewDelegate {
     
     // MARK: Properties
-    var _station: StationViewModel!
+    var station: StationViewModel!
     var _sceneMediator = SceneMediator.sharedInstance
     @IBOutlet weak var map: MKMapView!
     @IBOutlet weak var nav: TransitNavigationItem!
@@ -25,26 +25,22 @@ class StationViewController: UIViewController, SceneMediatedController, ArrivalT
         super.viewDidLoad()
         
         // Set the navigation bar's title to the name of the stop
-//        nav.title = _station.name
-        self.navigationItem.title = _station.name
+//        nav.title = station.name
+        self.navigationItem.title = station.name
         
         // Configure the map
-        map.region = MKCoordinateRegion(center: _station.coordinate, span: MKCoordinateSpanMake(0.01, 0.01))
+        map.region = MKCoordinateRegion(center: station.coordinate, span: MKCoordinateSpanMake(0.01, 0.01))
         showUserLocationIfEnabled()
         
         // Add the selected stop to the map
-        map.addAnnotation(_station)
+        map.addAnnotation(station)
         
         // Get arrivals and embed an arrivals table
         self.embedArrivalsTable()
     }
     
-    func setStationModel(station: Station) {
-        _station = StationViewModel(station)
-    }
-    
     func embedArrivalsTable() {
-        let arrivals = _station.arrivalsAtStation()
+        let arrivals = station.arrivalsAtStation()
 
         // Create view control bound to the table view unpacked from the nib
         let arrivalTable = ArrivalTableViewController(title: "Arrivals", arrivals: arrivals, delegate: self, view: self.arrivalTableView)
