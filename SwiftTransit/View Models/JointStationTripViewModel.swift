@@ -1,5 +1,5 @@
 //
-//  TripsForStation.swift
+//  JointStationTripViewModel.swift
 //  SwiftTransit
 //
 //  Created by Elliott Williams on 12/31/15.
@@ -8,14 +8,9 @@
 
 import UIKit
 
-class TripsForStation: NSObject {
+struct JointStationTripViewModel {
     var trips: [TripViewModel]
     var station: StationViewModel?
-    
-    init(trips: [TripViewModel], station: StationViewModel?) {
-        self.trips = trips
-        self.station = station
-    }
     
     func hasVehicles() -> Bool {
         return self.trips.count > 0

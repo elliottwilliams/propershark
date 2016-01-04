@@ -8,7 +8,7 @@
 
 import UIKit
 
-class RouteViewController: UIViewController, SceneMediatedController, ArrivalTableViewDelegate {
+class RouteViewController: UIViewController, SceneMediatedController, RouteTableViewDelegate {
 
     @IBOutlet weak var badge: RouteBadge!
     @IBOutlet weak var scheduleTable: UITableView!
@@ -31,9 +31,10 @@ class RouteViewController: UIViewController, SceneMediatedController, ArrivalTab
     }
     
     func embedScheduleTable() {
-        let arrivals = Arrival.demoArrivals().map { $0.viewModel() }
+        let pairs = route.stationsAlongRouteWithTrips(route.tripsForRoute(), stations: route.stationsAlongRoute())
+        let model = pairs.map { JointStationTripViewModel(trips: $0.trips, station: $0.station) }
         
-        let scheduleTable = ArrivalTableViewController(title: "Schedule", arrivals: arrivals, delegate: self, view: self.scheduleTable)
+        let scheduleTable = RouteTableViewController(title: "Live Route", route: model, delegate: self, view: self.scheduleTable)
         self.scheduleTable.dataSource = scheduleTable
         self.scheduleTable.delegate = scheduleTable
         
@@ -43,8 +44,14 @@ class RouteViewController: UIViewController, SceneMediatedController, ArrivalTab
         
     }
     
-    func didSelectArrivalFromArrivalTable(arrival: ArrivalViewModel, indexPath: NSIndexPath) {
-        // Segue to selected station
+    func didSelectStationFromScheduleTable(station: StationViewModel, indexPath: NSIndexPath) {
+        // Segue to station
+        self.performSegueWithIdentifier("ShowStationFromRouteTable", sender: station)
+    }
+    
+    func didSelectVehicleFromScheduleTable(vehicle: VehicleViewModel, indexPath: NSIndexPath) {
+        // Segue to vehicle
+        self.performSegueWithIdentifier("ShowVehicleFromRouteTable", sender: vehicle)
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

@@ -10,24 +10,23 @@ import UIKit
 
 class RouteTableViewController: UITableViewController {
     
-    var _delegate: ScheduleTableViewDelegate
-    var _route: [TripsForStation]
+    var _delegate: RouteTableViewDelegate
+    var _route: [JointStationTripViewModel]
     var _title: String
     
-    init(title: String?, route: [TripsForStation], delegate: ScheduleTableViewDelegate, view: UITableView) {
+    init(title: String?, route: [JointStationTripViewModel], delegate: RouteTableViewDelegate, view: UITableView) {
         _title = title ?? "Schedule"
         _route = route
         _delegate = delegate
         super.init(style: view.style)
         self.view = view
+        
+        // Register the table cell's interface for reuse
+        tableView.registerNib(UINib(nibName: "RouteTableViewCell", bundle: nil), forCellReuseIdentifier: "RouteTableViewCell")
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func viewDidLoad() {
-        tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil), forCellReuseIdentifier: "ScheduleTableViewCell")
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -43,12 +42,17 @@ class RouteTableViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("ScheduleTableViewCell", forIndexPath: indexPath) as! RouteTableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("RouteTableViewCell", forIndexPath: indexPath) as! RouteTableViewCell
         
         // None of this is implemented, but this is how I want to use this interface
         let entry = _route[indexPath.row]
-        cell.rail.hasVehicle = entry.hasVehicles()
-        cell.rail.hasStation = entry.hasStation()
+        if entry.hasVehicles() && !entry.hasStation() {
+            cell.state = .VehiclesInTransit
+        } else if !entry.hasVehicles() && entry.hasStation() {
+            cell.state = .EmptyStation
+        } else if entry.hasVehicles() && entry.hasStation() {
+            cell.state = .VehiclesAtStation
+        }
         cell.title.text = entry.displayText()
         cell.subtitle.text = entry.subtitleText()
         /*if (entry == _route.first) {
@@ -64,7 +68,7 @@ class RouteTableViewController: UITableViewController {
 
 }
 
-protocol ScheduleTableViewDelegate {
+protocol RouteTableViewDelegate {
     func didSelectStationFromScheduleTable(station: StationViewModel, indexPath: NSIndexPath)
     func didSelectVehicleFromScheduleTable(vehicle: VehicleViewModel, indexPath: NSIndexPath)
 }

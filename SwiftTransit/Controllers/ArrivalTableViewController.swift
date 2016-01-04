@@ -22,20 +22,15 @@ class ArrivalTableViewController: UITableViewController {
         _delegate = delegate
         super.init(style: view.style)
         self.view = view // Super establishes view infrastructure, but views are loaded lazily, so setting it after init shouldn't waste resources.
+        
+        // Register the external xib to be used as a reusable table cell
+        tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil), forCellReuseIdentifier: "ArrivalTableViewCell")
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Register the external xib to be used as a reusable table cell
-        tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil), forCellReuseIdentifier: "ArrivalTableViewCell")
-        
-    }
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }

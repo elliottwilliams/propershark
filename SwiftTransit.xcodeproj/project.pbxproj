@@ -26,7 +26,7 @@
 		268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72261BF9938800E981D4 /* TransitLabel.swift */; };
 		268E72291BF9938800E981D4 /* TransitNavigationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72271BF9938800E981D4 /* TransitNavigationItem.swift */; };
 		269BE7FA1C35E01400AE72D2 /* RouteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 269BE7F91C35E01400AE72D2 /* RouteTableViewCell.swift */; };
-		269BE7FE1C35E08100AE72D2 /* StationVehiclesTuple.swift in Sources */ = {isa = PBXBuildFile; fileRef = 269BE7FD1C35E08100AE72D2 /* StationVehiclesTuple.swift */; };
+		269BE7FE1C35E08100AE72D2 /* JointStationTripViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 269BE7FD1C35E08100AE72D2 /* JointStationTripViewModel.swift */; };
 		26A424B41BD2C1320035754F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424B31BD2C1320035754F /* AppDelegate.swift */; };
 		26A424B61BD2C1320035754F /* StationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424B51BD2C1320035754F /* StationViewController.swift */; };
 		26A424B91BD2C1320035754F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 26A424B71BD2C1320035754F /* Main.storyboard */; };
@@ -87,7 +87,7 @@
 		268E72261BF9938800E981D4 /* TransitLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabel.swift; sourceTree = "<group>"; };
 		268E72271BF9938800E981D4 /* TransitNavigationItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitNavigationItem.swift; sourceTree = "<group>"; };
 		269BE7F91C35E01400AE72D2 /* RouteTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableViewCell.swift; sourceTree = "<group>"; };
-		269BE7FD1C35E08100AE72D2 /* StationVehiclesTuple.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StationVehiclesTuple.swift; sourceTree = "<group>"; };
+		269BE7FD1C35E08100AE72D2 /* JointStationTripViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JointStationTripViewModel.swift; sourceTree = "<group>"; };
 		26A424B01BD2C1320035754F /* SwiftTransit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftTransit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		26A424B31BD2C1320035754F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		26A424B51BD2C1320035754F /* StationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; name = StationViewController.swift; path = "/Users/herooftime/Dropbox/Proper Shark/SwiftTransit/SwiftTransit/Controllers/StationViewController.swift"; sourceTree = "<absolute>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -213,7 +213,7 @@
 				264782731C30D033009D9AD0 /* RouteViewModel.swift */,
 				268632821C31A16700839A22 /* VehicleViewModel.swift */,
 				26DFB6771C35B26D006A8AE0 /* TripViewModel.swift */,
-				269BE7FD1C35E08100AE72D2 /* StationVehiclesTuple.swift */,
+				269BE7FD1C35E08100AE72D2 /* JointStationTripViewModel.swift */,
 			);
 			path = "View Models";
 			sourceTree = "<group>";
@@ -446,7 +446,7 @@
 				269BE7FA1C35E01400AE72D2 /* RouteTableViewCell.swift in Sources */,
 				26DFB6761C35A7F7006A8AE0 /* ScheduleRail.swift in Sources */,
 				2647826B1C30BF5E009D9AD0 /* Trip.swift in Sources */,
-				269BE7FE1C35E08100AE72D2 /* StationVehiclesTuple.swift in Sources */,
+				269BE7FE1C35E08100AE72D2 /* JointStationTripViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

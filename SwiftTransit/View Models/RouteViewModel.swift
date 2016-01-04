@@ -37,12 +37,12 @@ class RouteViewModel: NSObject {
      *          AND route_station.route_id = trip.route_id
      *      ORDER BY station_idx;
     */
-    func stationsAlongRouteWithTrips(trips: [TripViewModel], stations: [StationViewModel]) -> [(station: StationViewModel?, trips: [TripViewModel])] {
+    func stationsAlongRouteWithTrips(trips: [TripViewModel], stations: [StationViewModel]) -> [JointStationTripViewModel] {
         
         // Pair the sequenced list of stations with any trips whose vehicle is coming to that station
-        var tripsAtStations: [(station: StationViewModel?, trips: [TripViewModel])] =
+        var tripsAtStations: [JointStationTripViewModel] =
             stations.map { station in
-                (station, trips.filter { $0.currentStation == station })
+                JointStationTripViewModel(trips: trips.filter { $0.currentStation == station }, station: station)
             }
         
         // Move vehicles who have not arrived at their current station to a nil station entry *before* the next
@@ -50,7 +50,7 @@ class RouteViewModel: NSObject {
             let pair = tripsAtStations[i]
             var shouldKeep = [TripViewModel]()
             var shouldMove = [TripViewModel]()
-            for trip in pair.1 {
+            for trip in pair.trips {
                 if trip.isVehicleAtCurrentStation() {
                     shouldKeep.append(trip)
                 } else {
@@ -60,7 +60,8 @@ class RouteViewModel: NSObject {
             tripsAtStations[i].trips = shouldKeep
             
             if (shouldMove.count > 0) {
-                tripsAtStations.insert((nil, shouldMove), atIndex: i)
+                let stationless = JointStationTripViewModel(trips: shouldMove, station: nil)
+                tripsAtStations.insert(stationless, atIndex: i)
                 i++
             }
         }
