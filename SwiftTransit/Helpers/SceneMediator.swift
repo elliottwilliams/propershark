@@ -56,6 +56,18 @@ class SceneMediator: NSObject, SceneMediatorProtocol {
             let dest = segue.destinationViewController as! RouteViewController
             let indexPath = src.tableView.indexPathForSelectedRow
             dest.route = src.routes[indexPath!.row].viewModel()
+        },
+        
+        "ShowStationFromRouteTable": { (segue, sender) in
+            let src = segue.sourceViewController as! RouteViewController
+            let dest = segue.destinationViewController as! StationViewController
+            dest.station = sender as! StationViewModel
+        },
+        
+        "ShowVehicleFromRouteTable": { (segue, sender) in
+            let src = segue.sourceViewController as! RouteViewController
+            let dest = segue.destinationViewController as! VehicleViewController
+            dest.vehicle = sender as! VehicleViewModel
         }
     ]
     

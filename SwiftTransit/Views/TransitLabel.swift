@@ -10,21 +10,19 @@ import UIKit
 
 class TransitLabel: UILabel {
 
-    /*
-    // Only override drawRect: if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func drawRect(rect: CGRect) {
-        // Drawing code
+    var uppercase = false {
+        didSet { updateTextTo(_text) }
     }
-    */
     
-    var uppercase = true
-    
-    override var text : String? {
+    private var _text: String?
+    override var text: String? {
         get { return super.text }
-        set(newText) {
-            return super.text = (self.uppercase) ? newText?.uppercaseString : newText
-        }
+        set(newText) { updateTextTo(newText) }
+    }
+    
+    func updateTextTo(newText: String?) {
+        _text = newText
+        super.text = (self.uppercase) ? newText?.uppercaseString : newText
     }
 
 }

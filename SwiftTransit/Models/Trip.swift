@@ -43,6 +43,8 @@ extension Trip {
     }
     
     static let DemoTrips = [
-        Trip(vehicle: Vehicle.DemoVehicles[0], route: Route.DemoRoutes[2])
+        Trip(vehicle: Vehicle.DemoVehicles[0], route: Route.DemoRoutes[2]),
+        Trip(vehicle: Vehicle.DemoVehicles[1], route: Route.DemoRoutes[2]),
+        Trip(vehicle: Vehicle.DemoVehicles[2], route: Route.DemoRoutes[2], currentStationIdx: 2)
     ]
 }

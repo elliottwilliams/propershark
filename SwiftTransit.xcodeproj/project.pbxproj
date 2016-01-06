@@ -11,6 +11,11 @@
 		261DD1611C323964001336D4 /* RouteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 261DD1601C323964001336D4 /* RouteViewController.swift */; };
 		261DD1631C3424E1001336D4 /* RouteBadgeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 261DD1621C3424E1001336D4 /* RouteBadgeLabel.swift */; };
 		261DD1691C345AAC001336D4 /* RouteBadgeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 261DD1681C345AAC001336D4 /* RouteBadgeController.swift */; };
+		2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */; };
+		2635DB701C3CBEC500EB58F5 /* DemoTableFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2635DB6F1C3CBEC500EB58F5 /* DemoTableFooter.xib */; };
+		2635DB721C3CBF4700EB58F5 /* RouteTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB711C3CBF4700EB58F5 /* RouteTableView.swift */; };
+		2635DB741C3CCC9400EB58F5 /* JointStationTripViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB731C3CCC9400EB58F5 /* JointStationTripViewModelTests.swift */; };
+		2635DB761C3CD07D00EB58F5 /* TestStructures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB751C3CD07D00EB58F5 /* TestStructures.swift */; };
 		264782541C2A64A0009D9AD0 /* Vehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264782531C2A64A0009D9AD0 /* Vehicle.swift */; };
 		264782561C2C6F67009D9AD0 /* StartListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264782551C2C6F67009D9AD0 /* StartListViewController.swift */; };
 		264782581C2F435F009D9AD0 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264782571C2F435F009D9AD0 /* Route.swift */; };
@@ -72,6 +77,11 @@
 		261DD1621C3424E1001336D4 /* RouteBadgeLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteBadgeLabel.swift; sourceTree = "<group>"; };
 		261DD1681C345AAC001336D4 /* RouteBadgeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteBadgeController.swift; sourceTree = "<group>"; };
 		261DD16A1C350675001336D4 /* Reveal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Reveal.framework; path = "../../../../../opt/homebrew-cask/Caskroom/reveal/latest/Reveal.app/Contents/SharedSupport/iOS-Libraries/Reveal.framework"; sourceTree = "<group>"; };
+		2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabelTests.swift; sourceTree = "<group>"; };
+		2635DB6F1C3CBEC500EB58F5 /* DemoTableFooter.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DemoTableFooter.xib; sourceTree = "<group>"; };
+		2635DB711C3CBF4700EB58F5 /* RouteTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableView.swift; sourceTree = "<group>"; };
+		2635DB731C3CCC9400EB58F5 /* JointStationTripViewModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JointStationTripViewModelTests.swift; sourceTree = "<group>"; };
+		2635DB751C3CD07D00EB58F5 /* TestStructures.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestStructures.swift; sourceTree = "<group>"; };
 		264782531C2A64A0009D9AD0 /* Vehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vehicle.swift; sourceTree = "<group>"; };
 		264782551C2C6F67009D9AD0 /* StartListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StartListViewController.swift; path = "/Users/herooftime/Dropbox/Proper Shark/SwiftTransit/SwiftTransit/Controllers/StartListViewController.swift"; sourceTree = "<absolute>"; };
 		264782571C2F435F009D9AD0 /* Route.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
@@ -147,6 +157,8 @@
 		264782611C309F4C009D9AD0 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				2635DB711C3CBF4700EB58F5 /* RouteTableView.swift */,
+				2635DB6F1C3CBEC500EB58F5 /* DemoTableFooter.xib */,
 				26A424E31BD2D3F20035754F /* ArrivalTableViewCell.swift */,
 				269BE7F91C35E01400AE72D2 /* RouteTableViewCell.swift */,
 				26C598BB1C250D1E00BC9FE1 /* RouteBadge.swift */,
@@ -262,6 +274,9 @@
 		26A424C71BD2C1320035754F /* SwiftTransitTests */ = {
 			isa = PBXGroup;
 			children = (
+				2635DB751C3CD07D00EB58F5 /* TestStructures.swift */,
+				2635DB731C3CCC9400EB58F5 /* JointStationTripViewModelTests.swift */,
+				2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */,
 				26A424C81BD2C1320035754F /* SwiftTransitTests.swift */,
 				26A424CA1BD2C1320035754F /* Info.plist */,
 			);
@@ -390,6 +405,7 @@
 			files = (
 				26AC8BB21BD345F100AA0001 /* Media.xcassets in Resources */,
 				26A424BE1BD2C1320035754F /* LaunchScreen.storyboard in Resources */,
+				2635DB701C3CBEC500EB58F5 /* DemoTableFooter.xib in Resources */,
 				26A424BB1BD2C1320035754F /* Assets.xcassets in Resources */,
 				26A424E61BD2D3F20035754F /* ArrivalTableViewCell.xib in Resources */,
 				26A424B91BD2C1320035754F /* Main.storyboard in Resources */,
@@ -431,6 +447,7 @@
 				2647826E1C30BFDF009D9AD0 /* ArrivalViewModel.swift in Sources */,
 				261DD1691C345AAC001336D4 /* RouteBadgeController.swift in Sources */,
 				264782581C2F435F009D9AD0 /* Route.swift in Sources */,
+				2635DB721C3CBF4700EB58F5 /* RouteTableView.swift in Sources */,
 				26DFB6781C35B26D006A8AE0 /* TripViewModel.swift in Sources */,
 				26A424E81BD2DFA00035754F /* ArrivalTableViewController.swift in Sources */,
 				26C598BC1C250D1E00BC9FE1 /* RouteBadge.swift in Sources */,
@@ -454,7 +471,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */,
+				2635DB741C3CCC9400EB58F5 /* JointStationTripViewModelTests.swift in Sources */,
 				26A424C91BD2C1320035754F /* SwiftTransitTests.swift in Sources */,
+				2635DB761C3CD07D00EB58F5 /* TestStructures.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

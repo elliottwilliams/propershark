@@ -49,6 +49,7 @@ class RouteViewController: UIViewController, SceneMediatedController, RouteTable
         self.performSegueWithIdentifier("ShowStationFromRouteTable", sender: station)
     }
     
+    // TODO: need way to select from one of multiple vehicles
     func didSelectVehicleFromScheduleTable(vehicle: VehicleViewModel, indexPath: NSIndexPath) {
         // Segue to vehicle
         self.performSegueWithIdentifier("ShowVehicleFromRouteTable", sender: vehicle)

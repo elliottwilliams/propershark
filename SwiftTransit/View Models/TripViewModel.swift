@@ -12,19 +12,19 @@ import MapKit
 class TripViewModel: NSObject {
     
     let _trip: Trip
-    let _vehicle: VehicleViewModel
-    let _route: RouteViewModel
-    let _stations: [StationViewModel]
+    let vehicle: VehicleViewModel
+    let route: RouteViewModel
+    let stations: [StationViewModel]
     
     var currentStation: StationViewModel {
-        return _stations[_trip.currentStation]
+        return stations[_trip.currentStation]
     }
     
     init(_ trip: Trip) {
         _trip = trip
-        _vehicle = _trip.vehicle.viewModel()
-        _route = _trip.route.viewModel()
-        _stations = _trip.route.stations.map { $0.viewModel() }
+        vehicle = _trip.vehicle.viewModel()
+        route = _trip.route.viewModel()
+        stations = _trip.route.stations.map { $0.viewModel() }
     }
     
     func isVehicleAtCurrentStation() -> Bool {

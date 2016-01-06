@@ -25,7 +25,8 @@ extension Vehicle {
     }
     
     static let DemoVehicles = [
-        Vehicle(name: "Nancy", id: "BUS123", location: (40.430525, -86.913244), capacity: 0.33),
-        Vehicle(name: "Hubert", id: "BUS456", location: (40.431407, -86.919531), capacity: 0.01)
+        Vehicle(name: "Nancy", id: "123", location: (40.430525, -86.913244), capacity: 0.33),
+        Vehicle(name: "Hubert", id: "456", location: (40.431407, -86.919531), capacity: 0.01),
+        Vehicle(name: "Francis", id: "789", location: (40.4249377, -86.9083984), capacity: 0.7)
     ]
 }

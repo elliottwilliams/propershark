@@ -17,6 +17,8 @@ class StationViewModel: NSObject, MKAnnotation {
     
     // MARK: Computed properties
     var name: String { return _station.name }
+    var id: String { return _station.id }
+    var neighborhood: [String]? { return _station.neighborhood }
     var location: (latitude: Double, longitude: Double) { return _station.location }
     override var hashValue: Int { return _station.hashValue }
     

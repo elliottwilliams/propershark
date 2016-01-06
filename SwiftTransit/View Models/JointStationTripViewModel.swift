@@ -20,25 +20,31 @@ struct JointStationTripViewModel {
         return self.station != nil
     }
     
-    func displayText() -> String {
-        if (hasStation()) {
-            return station!.name
-        } else {
-            return "In transit to \(trips.first!.currentStation.name)"
-        }
+    func displayText() -> String? {
+        return station?.name
     }
     
     func subtitleText() -> String? {
+        let vehicles = trips.map { $0.vehicle }
         if hasStation() && hasVehicles() {
-            if trips.count == 1 {
-                return "Bus \(trips.first!._vehicle.id) arrived"
-            } else {
-                var ids = trips.map { $0._vehicle.id }
-                ids[ids.count-1] = "and " + ids[ids.count-1]
-                return "Buses \(ids.joinWithSeparator(",")) arrived"
-            }
+            return "\(pluralizedVehicles(vehicles)) arrived"
+        } else if hasVehicles() {
+            return "\(pluralizedVehicles(vehicles)) in transit to \(trips.first!.currentStation.name)"
         } else {
             return nil
+        }
+    }
+    
+    // Oxford comma implicit
+    func pluralizedVehicles(vehicles: [VehicleViewModel]) -> String {
+        if (vehicles.count == 1) {
+            return "#\(vehicles.first!.id)"
+        } else if (vehicles.count == 2) {
+            return "#\(vehicles[0].id) and #\(vehicles[1].id)"
+        } else {
+            var ids = vehicles.map { "#" + $0.id }
+            ids[ids.count-1] = "and " + ids[ids.count-1]
+            return ids.joinWithSeparator(", ")
         }
     }
 }
