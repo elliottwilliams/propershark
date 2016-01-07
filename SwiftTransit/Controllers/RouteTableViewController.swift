@@ -70,7 +70,7 @@ class RouteTableViewController: UITableViewController {
         let railView = ScheduleRail(frame: CGRectMake(16.5, 0, height, height)) // TODO: find a way to not hard-code this
         railView.showStation = false
         railView.showVehicle = false
-        railView.type = .NorthWest
+        railView.shape = .NorthWest
         footer?.contentView.addSubview(railView)
         
         return footer

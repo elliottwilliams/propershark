@@ -61,15 +61,27 @@ class RouteViewController: UIViewController, SceneMediatedController, RouteTable
         _sceneMediator.sendMessagesForSegueWithIdentifier(segue.identifier, segue: segue, sender: sender)
     }
 
-    @IBAction func animateInAction(sender: UIButton) {
+    @IBAction func animateInAction(sender: AnyObject) {
         for cell in _routeTable.tableView.visibleCells.map({ $0 as! RouteTableViewCell }) {
-            cell.rail.animateVehicleEntrance()
+            if cell.rail.showVehicle {
+                cell.rail.animatePullDown()
+            }
         }
     }
     @IBAction func animateOutAction(sender: AnyObject) {
-        for cell in _routeTable.tableView.visibleCells.map({ $0 as! RouteTableViewCell }) {
-            cell.rail.animateVehicleExit()
+        let cells = _routeTable.tableView.visibleCells
+        for i in 0..<cells.count {
+            let cell = cells[i] as! RouteTableViewCell
+            if i+1 < cells.count && cell.rail.showVehicle {
+                let nextCell = cells[i+1] as! RouteTableViewCell
+                let nextCellHeight = _routeTable.tableView(_routeTable.tableView, heightForRowAtIndexPath: NSIndexPath(forRow: i+1, inSection: 0))
+                cell.rail.animatePushDownToRailOfType(nextCell.rail.shape, height: nextCellHeight)
+            }
         }
+    }
+    @IBAction func bothAction(sender: AnyObject) {
+        animateInAction(sender)
+        animateOutAction(sender)
     }
     @IBAction func toggleVehiclesAction(sender: AnyObject) {
         var previousHadVehicle = false
