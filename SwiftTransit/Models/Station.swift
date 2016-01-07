@@ -28,6 +28,7 @@ extension Station {
     }
     
     static let DemoStations = [
+        Station(name: "Beering Hall", id: "BUS001", neighborhood: [], location: (40.425618, -86.916668)),
         Station(name: "Purdue Memorial Union", id: "BUS123", neighborhood: [], location: (40.4246641, -86.9115902)),
         Station(name: "Electrical Engineering", id: "BUS456", neighborhood: [],
             location: (40.4284618, -86.9116224)),

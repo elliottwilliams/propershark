@@ -38,6 +38,10 @@ class ArrivalViewModel: NSObject {
         return _route.name
     }
     
+    func routeColor() -> UIColor {
+        return _route.color
+    }
+    
     func vehicleCapacity() -> Double {
         return _vehicle.capacity
     }

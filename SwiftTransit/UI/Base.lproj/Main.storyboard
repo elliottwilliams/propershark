@@ -471,13 +471,53 @@
                                             </mask>
                                         </variation>
                                     </view>
-                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="gUB-Ee-uLe">
-                                        <rect key="frame" x="0.0" y="160" width="600" height="376"/>
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="gUB-Ee-uLe">
+                                        <rect key="frame" x="0.0" y="160" width="600" height="326"/>
                                         <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                        <color key="separatorColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
                                     </tableView>
+                                    <view contentMode="scaleToFill" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="7ch-GO-ufe">
+                                        <rect key="frame" x="0.0" y="486" width="600" height="50"/>
+                                        <subviews>
+                                            <stackView opaque="NO" contentMode="scaleToFill" misplaced="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="VWD-LF-llS">
+                                                <rect key="frame" x="8" y="10" width="310" height="30"/>
+                                                <subviews>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f0M-lA-L5W">
+                                                        <rect key="frame" x="0.0" y="0.0" width="71" height="30"/>
+                                                        <state key="normal" title="animate in"/>
+                                                        <connections>
+                                                            <action selector="animateInAction:" destination="k24-c9-Z01" eventType="primaryActionTriggered" id="4BL-Dy-r6X"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gSe-Cq-Kmr">
+                                                        <rect key="frame" x="91" y="0.0" width="81" height="30"/>
+                                                        <state key="normal" title="animate out"/>
+                                                        <connections>
+                                                            <action selector="animateOutAction:" destination="k24-c9-Z01" eventType="primaryActionTriggered" id="HrP-oa-2wz"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yvc-NP-E7h">
+                                                        <rect key="frame" x="192" y="0.0" width="118" height="30"/>
+                                                        <state key="normal" title="advance vehicles"/>
+                                                        <connections>
+                                                            <action selector="toggleVehiclesAction:" destination="k24-c9-Z01" eventType="primaryActionTriggered" id="k5K-QK-tRK"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                            </stackView>
+                                        </subviews>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstItem="VWD-LF-llS" firstAttribute="leading" secondItem="7ch-GO-ufe" secondAttribute="leading" constant="8" id="7rs-pE-MoT"/>
+                                            <constraint firstItem="VWD-LF-llS" firstAttribute="top" secondItem="7ch-GO-ufe" secondAttribute="top" constant="10" id="UD6-vx-CGk"/>
+                                            <constraint firstAttribute="height" constant="50" id="fvP-QL-rLt"/>
+                                        </constraints>
+                                    </view>
                                 </subviews>
                                 <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="7ch-GO-ufe" secondAttribute="trailing" id="1KP-XE-b59"/>
                                     <constraint firstAttribute="trailing" secondItem="QJh-Zd-cWb" secondAttribute="trailing" id="8jo-Cy-R8F"/>
+                                    <constraint firstItem="7ch-GO-ufe" firstAttribute="leading" secondItem="29b-hJ-7Nz" secondAttribute="leading" id="WDf-K9-dV5"/>
                                     <constraint firstAttribute="trailing" secondItem="gUB-Ee-uLe" secondAttribute="trailing" id="dqq-EW-kDf"/>
                                     <constraint firstItem="QJh-Zd-cWb" firstAttribute="leading" secondItem="29b-hJ-7Nz" secondAttribute="leading" id="iib-tB-HpG"/>
                                     <constraint firstItem="gUB-Ee-uLe" firstAttribute="leading" secondItem="29b-hJ-7Nz" secondAttribute="leading" id="pfE-f0-f1V"/>
@@ -495,7 +535,7 @@
                     <navigationItem key="navigationItem" title="Route" id="zm8-Ec-pp1" customClass="TransitNavigationItem" customModule="SwiftTransit" customModuleProvider="target"/>
                     <connections>
                         <outlet property="badge" destination="fdR-Mr-Tao" id="H65-0d-eRb"/>
-                        <outlet property="scheduleTable" destination="gUB-Ee-uLe" id="iqR-I0-25Y"/>
+                        <outlet property="routeTableView" destination="gUB-Ee-uLe" id="aGf-Ta-YcE"/>
                         <segue destination="BYZ-38-t0r" kind="show" identifier="ShowStationFromRouteTable" id="fGj-eR-Wrk"/>
                         <segue destination="CUs-dG-PVJ" kind="show" identifier="ShowVehicleFromRouteTable" id="Wc0-K5-kvk"/>
                     </connections>

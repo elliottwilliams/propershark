@@ -47,8 +47,11 @@ class RouteTableViewController: UITableViewController {
         
         let entry = _route[indexPath.row]
         cell.state = RouteTableViewCell.determineStateForVehicles(entry.hasVehicles(), station: entry.hasStation())!
+        cell.accessoryType = (cell.state == .VehiclesInTransit) ? .None : .DisclosureIndicator
+        cell.selectionStyle = (cell.state == .VehiclesInTransit) ? .None : .Default
         cell.title.text = entry.displayText()
         cell.subtitle.text = entry.subtitleText()
+        cell.rail.vehicleColor = entry.routeColor()
         /*if (entry == _route.first) {
             cell.rail.type = ArrivalTableViewCell.RailTypeWestSouth
         } else if (entry == _route.last) {
@@ -65,6 +68,8 @@ class RouteTableViewController: UITableViewController {
         let footer = self.tableView.dequeueReusableHeaderFooterViewWithIdentifier("RouteTableFooter")
         let height = RouteTableViewCell.rowHeightForState(.EmptyStation) // base height off of the empty station row height
         let railView = ScheduleRail(frame: CGRectMake(16.5, 0, height, height)) // TODO: find a way to not hard-code this
+        railView.showStation = false
+        railView.showVehicle = false
         railView.type = .NorthWest
         footer?.contentView.addSubview(railView)
         
@@ -77,16 +82,21 @@ class RouteTableViewController: UITableViewController {
         return RouteTableViewCell.rowHeightForState(state)
     }
     
+    override func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return RouteTableViewCell.rowHeightForState(.EmptyStation)
+    }
+    
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let entry = _route[indexPath.row]
         let state = RouteTableViewCell.determineStateForVehicles(entry.hasVehicles(), station: entry.hasStation())!
         if state == .VehiclesInTransit {
-            _delegate.didSelectVehicleFromScheduleTable(entry.trips.first!.vehicle, indexPath: indexPath)
+            // For now, we're not sending this message, in order to make the table easier to use and prevent unintended actions
+//            _delegate.didSelectVehicleFromScheduleTable(entry.trips.first!.vehicle, indexPath: indexPath)
         } else {
             _delegate.didSelectStationFromScheduleTable(entry.station!, indexPath: indexPath)
         }
     }
-
+    
 }
 
 protocol RouteTableViewDelegate {

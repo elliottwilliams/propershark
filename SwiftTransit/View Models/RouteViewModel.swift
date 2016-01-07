@@ -14,6 +14,10 @@ class RouteViewModel: NSObject {
         _route = route
     }
     
+    var name: String { return _route.name }
+    var id: String { return _route.id }
+    var color: UIColor { return _route.color }
+    
     func routeNumber() -> String {
         return _route.id
     }

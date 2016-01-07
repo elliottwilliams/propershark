@@ -26,13 +26,6 @@ class RouteTableViewCell: UITableViewCell {
     @IBOutlet weak var title: TransitLabel!
     @IBOutlet weak var subtitle: TransitLabel!
     
-    var hasVehicle: Bool = false {
-        didSet { rail.hasVehicle = self.hasVehicle }
-    }
-    var hasStation: Bool = false {
-        didSet { rail.hasStation = self.hasStation }
-    }
-    
     override func awakeFromNib() {
         super.awakeFromNib()
         
@@ -60,8 +53,8 @@ class RouteTableViewCell: UITableViewCell {
             self.subtitle.textColor = UIColor.lightTextColor()
             self.subtitle.hidden = false
             self.stateConstraints[.VehiclesInTransit]!.forEach { $0.active = true }
-            self.rail.hasStation = false
-            self.rail.hasVehicle = true
+            self.rail.showStation = false
+            self.rail.showVehicle = true
         }
     }
         
@@ -72,8 +65,8 @@ class RouteTableViewCell: UITableViewCell {
             self.title.hidden = false
             self.subtitle.hidden = true
             self.stateConstraints[.EmptyStation]!.forEach { $0.active = true }
-            self.rail.hasStation = true
-            self.rail.hasVehicle = false
+            self.rail.showStation = true
+            self.rail.showVehicle = false
         }
     }
     
@@ -84,8 +77,8 @@ class RouteTableViewCell: UITableViewCell {
             self.title.hidden = false
             self.subtitle.hidden = false
             self.stateConstraints[.VehiclesAtStation]!.forEach { $0.active = true }
-            self.rail.hasStation = true
-            self.rail.hasVehicle = true
+            self.rail.showStation = true
+            self.rail.showVehicle = true
         }
     }
     

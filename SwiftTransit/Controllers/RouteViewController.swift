@@ -11,10 +11,11 @@ import UIKit
 class RouteViewController: UIViewController, SceneMediatedController, RouteTableViewDelegate {
 
     @IBOutlet weak var badge: RouteBadge!
-    @IBOutlet weak var scheduleTable: UITableView!
+    @IBOutlet weak var routeTableView: UITableView!
     
     var _sceneMediator = SceneMediator.sharedInstance
     var route: RouteViewModel!
+    var _routeTable: RouteTableViewController!
     
     override func viewDidLoad() {
         // Configure badge appearence
@@ -22,6 +23,7 @@ class RouteViewController: UIViewController, SceneMediatedController, RouteTable
         badge.outerStrokeWidth = 5.0
         badge.capacity = 0.0
         badge.routeNumber = route.routeNumber()
+        badge.color = route.color
         
         // Set navigation title
         self.navigationItem.title = route.displayName()
@@ -34,13 +36,13 @@ class RouteViewController: UIViewController, SceneMediatedController, RouteTable
         let pairs = route.stationsAlongRouteWithTrips(route.tripsForRoute(), stations: route.stationsAlongRoute())
         let model = pairs.map { JointStationTripViewModel(trips: $0.trips, station: $0.station) }
         
-        let scheduleTable = RouteTableViewController(title: "Live Route", route: model, delegate: self, view: self.scheduleTable)
-        self.scheduleTable.dataSource = scheduleTable
-        self.scheduleTable.delegate = scheduleTable
+        _routeTable = RouteTableViewController(title: "Live Route", route: model, delegate: self, view: self.routeTableView)
+        self.routeTableView.dataSource = _routeTable
+        self.routeTableView.delegate = _routeTable
         
-        scheduleTable.willMoveToParentViewController(self)
-        self.addChildViewController(scheduleTable)
-        scheduleTable.didMoveToParentViewController(self)
+        _routeTable.willMoveToParentViewController(self)
+        self.addChildViewController(_routeTable)
+        _routeTable.didMoveToParentViewController(self)
         
     }
     
@@ -59,4 +61,22 @@ class RouteViewController: UIViewController, SceneMediatedController, RouteTable
         _sceneMediator.sendMessagesForSegueWithIdentifier(segue.identifier, segue: segue, sender: sender)
     }
 
+    @IBAction func animateInAction(sender: UIButton) {
+        for cell in _routeTable.tableView.visibleCells.map({ $0 as! RouteTableViewCell }) {
+            cell.rail.animateVehicleEntrance()
+        }
+    }
+    @IBAction func animateOutAction(sender: AnyObject) {
+        for cell in _routeTable.tableView.visibleCells.map({ $0 as! RouteTableViewCell }) {
+            cell.rail.animateVehicleExit()
+        }
+    }
+    @IBAction func toggleVehiclesAction(sender: AnyObject) {
+        var previousHadVehicle = false
+        for cell in _routeTable.tableView.visibleCells.map({ $0 as! RouteTableViewCell }) {
+            let cellHasVehicle = cell.rail.showVehicle
+            cell.rail.showVehicle = previousHadVehicle
+            previousHadVehicle = cellHasVehicle
+        }
+    }
 }

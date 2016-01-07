@@ -74,4 +74,11 @@ class JointStationTripViewModelTests: XCTestCase {
             "#1111 and #2222")
     }
     
+    func testRouteColor() {
+        testInstance = JointStationTripViewModel(trips: [self.trips[0]], station: self.station)
+        XCTAssertEqual(testInstance.routeColor(), self.trips[0].route.color)
+        testInstance = JointStationTripViewModel(trips: [], station: self.station)
+        XCTAssertNil(testInstance.routeColor())
+    }
+    
 }

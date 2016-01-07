@@ -57,7 +57,9 @@ class ArrivalTableViewController: UITableViewController {
         let arrival = _arrivals[indexPath.row]
         cell.routeTitle.text = arrival.routeName()
         cell.routeTimer.text = arrival.relativeArrivalTime()
+        cell.badge.routeNumber = arrival.routeID()
         cell.badge.capacity = arrival.vehicleCapacity()
+        cell.badge.color = arrival.routeColor()
 
         return cell
     }

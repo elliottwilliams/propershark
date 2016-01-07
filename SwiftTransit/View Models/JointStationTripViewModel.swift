@@ -47,5 +47,9 @@ struct JointStationTripViewModel {
             return ids.joinWithSeparator(", ")
         }
     }
+    
+    func routeColor() -> UIColor? {
+        return trips.first?.route.color
+    }
 }
 

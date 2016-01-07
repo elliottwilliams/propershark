@@ -25,7 +25,6 @@ class ArrivalTableViewCell: UITableViewCell {
         let badge = RouteBadge(frame: CGRectMake(8, 8, 28, 28))
         badge.outerStrokeWidth = 0
         badge.outerStrokeGap = 0
-        badge.routeNumber = "99"
         
         self.ornament.addSubview(badge)
         self.badge = badge
