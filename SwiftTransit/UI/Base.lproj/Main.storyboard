@@ -507,7 +507,7 @@
                                                         <rect key="frame" x="225" y="0.0" width="118" height="30"/>
                                                         <state key="normal" title="advance vehicles"/>
                                                         <connections>
-                                                            <action selector="toggleVehiclesAction:" destination="k24-c9-Z01" eventType="primaryActionTriggered" id="k5K-QK-tRK"/>
+                                                            <action selector="advanceVehiclesAction:" destination="k24-c9-Z01" eventType="primaryActionTriggered" id="pIR-3Y-S50"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>

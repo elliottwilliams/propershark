@@ -75,7 +75,7 @@ class RouteViewController: UIViewController, SceneMediatedController, RouteTable
             if i+1 < cells.count && cell.rail.showVehicle {
                 let nextCell = cells[i+1] as! RouteTableViewCell
                 let nextCellHeight = _routeTable.tableView(_routeTable.tableView, heightForRowAtIndexPath: NSIndexPath(forRow: i+1, inSection: 0))
-                cell.rail.animatePushDownToRailOfType(nextCell.rail.shape, height: nextCellHeight)
+                cell.rail.animatePushDownToRailOfShape(nextCell.rail.shape, height: nextCellHeight)
             }
         }
     }
@@ -83,12 +83,16 @@ class RouteViewController: UIViewController, SceneMediatedController, RouteTable
         animateInAction(sender)
         animateOutAction(sender)
     }
-    @IBAction func toggleVehiclesAction(sender: AnyObject) {
-        var previousHadVehicle = false
+    @IBAction func advanceVehiclesAction(sender: AnyObject) {
+        var prevCell: RouteTableViewCell?
         for cell in _routeTable.tableView.visibleCells.map({ $0 as! RouteTableViewCell }) {
-            let cellHasVehicle = cell.rail.showVehicle
-            cell.rail.showVehicle = previousHadVehicle
-            previousHadVehicle = cellHasVehicle
+            if prevCell != nil && prevCell!.rail.showVehicle {
+                prevCell!.rail.animatePushDownToRailOfShape(cell.rail.shape, height: cell.frame.height) { _ in
+                    cell.rail.showVehicle = true
+                }
+                prevCell!.rail.showVehicle = false
+            }
+            prevCell = cell
         }
     }
 }

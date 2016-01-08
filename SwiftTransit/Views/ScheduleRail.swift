@@ -52,6 +52,7 @@ class ScheduleRail: UIView {
     var _height: CGFloat!
     var _vehicleColor: UIColor = UIColor.blueColor()
     var _hasLayout: Bool = false
+    var _animationCallbacks: [CAAnimation: (anim: CAAnimation, finished: Bool) -> ()] = [:]
     
     // MARK: - Initializers
     
@@ -91,6 +92,9 @@ class ScheduleRail: UIView {
     }
     
     override func displayLayer(layer: CALayer) {
+        if !_hasLayout { // don't display if view hasn't been laid out
+            return
+        }
         // TODO: ensure that sublayers are cleared when the layer cache is refreshed
         drawRailOnLayer(layer as! CAShapeLayer) // layerClass() declares CAShapeLayer as this view's layer class, so this should always unwrap
         drawStationNode()
@@ -102,7 +106,8 @@ class ScheduleRail: UIView {
     // MARK: Reusable drawing code
     
     func drawRailOnLayer(layer: CAShapeLayer) {
-        let path = railPath().full
+        let path = CGPathCreateMutable()
+        drawRailPath(path, shape: self.shape, segment: .Full, width: _width, height: _height)
         
         layer.path = path
         layer.strokeColor = _railColor.CGColor
@@ -179,6 +184,7 @@ class ScheduleRail: UIView {
         }
     }
     
+    @available(*, deprecated=1.0, message="Use drawRailPath: instead")
     func railPath() -> (full: CGMutablePathRef, entrance: CGMutablePathRef, exit: CGMutablePathRef) {
         let paths = (CGPathCreateMutable(), CGPathCreateMutable(), CGPathCreateMutable())
         drawRailPath(paths.0, shape: self.shape, segment: .Full, width: _width, height: _height)
@@ -213,6 +219,7 @@ class ScheduleRail: UIView {
     
     // MARK: Animation
     
+    @available(*, deprecated=1.0)
     func animationForVehiclePosition(path: CGPathRef, withDelay delay: Double = 0.0) -> CAKeyframeAnimation {
         let anim = CAKeyframeAnimation(keyPath: "position")
         anim.path = path
@@ -223,82 +230,58 @@ class ScheduleRail: UIView {
     }
     
     // A keyframe animation that changes visibility at the very end of the animation. This allows a visibility change to be grouped with other animations, and change at the end of the animation.
-    func animationForHiddenness() -> CABasicAnimation {
+    func animationForHiddenness(shouldHide: Bool) -> CABasicAnimation {
         let anim = CABasicAnimation(keyPath: "hidden")
-        anim.fromValue = false
-        anim.toValue = false
+        anim.fromValue = shouldHide
+        anim.toValue = shouldHide
+        anim.fillMode = kCAFillModeBoth
         return anim
     }
     
-    func animateVehicleEntrance() {
-        _vehicleLayer.removeAnimationForKey("position")
-        _vehicleLayer.addAnimation(animationForVehiclePosition(railPath().entrance, withDelay: 0.5), forKey: "position")
-    }
-    func animateVehicleExit() {
-        _vehicleLayer.removeAnimationForKey("position")
-        _vehicleLayer.addAnimation(animationForVehiclePosition(railPath().exit), forKey: "position")
-    }
-    
-    func animatePushDownToRailOfType(shape: RailShape, height: CGFloat) {
-        let anim = CAKeyframeAnimation(keyPath: "position")
-        let path = CGPathCreateMutable()
-        drawRailPath(path, shape: self.shape, segment: .Exit, width: _width, height: _height)
-        drawRailPath(path, shape: shape, segment: .Entrance, width: _width, height: height)
-        anim.path = path
-        anim.duration = 0.25
-        anim.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
-        _vehicleLayer.addAnimation(anim, forKey: "position")
+    func animatePushDownToRailOfShape(shape: RailShape, height: CGFloat, completion: ((Bool) -> Void)? = nil) {
+        let options = UIViewAnimationOptions.CurveEaseInOut
+        UIView.animateWithDuration(0.25, delay: 0.0, options: options, animations: {
+            let group = CAAnimationGroup()
+            let hiddenAnim = self.animationForHiddenness(false)
+            let positionAnim = CAKeyframeAnimation(keyPath: "position")
+            
+            let path = CGPathCreateMutable()
+            self.drawRailPath(path, shape: self.shape, segment: .Exit, width: self._width, height: self._height)
+            self.drawRailPath(path, shape: shape, segment: .Entrance, width: self._width, height: height)
+            positionAnim.path = path
+            
+            group.animations = [positionAnim, hiddenAnim]
+            self._vehicleLayer.addAnimation(group, forKey: "showVehicle")
+        }, completion: completion)
     }
     
-    func animatePullDown() {
-        let group = CAAnimationGroup()
-        
-        let hiddenAnim = CABasicAnimation(keyPath: "hidden")
-        hiddenAnim.fromValue = false
-        hiddenAnim.toValue = false
-        hiddenAnim.fillMode = kCAFillModeBoth
-        
-        let positionAnim = CAKeyframeAnimation(keyPath: "position")
-        let path = CGPathCreateMutable()
-        drawRailPath(path, shape: self.shape, segment: .Entrance, width: _width, height: _height)
-        positionAnim.path = path
-        
-        group.duration = 0.25
-        group.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
-        group.animations = [positionAnim, hiddenAnim]
-        _pullDownVehicleLayer.addAnimation(group, forKey: "showVehicle")
+    func animatePullDown(completion: ((Bool) -> Void)? = nil) {
+        let options = UIViewAnimationOptions.CurveEaseOut
+        UIView.animateWithDuration(0.25, delay: 0.0, options: options, animations: {
+            let group = CAAnimationGroup()
+            let hiddenAnim = self.animationForHiddenness(false)
+            let positionAnim = CAKeyframeAnimation(keyPath: "position")
+            
+            let path = CGPathCreateMutable()
+            self.drawRailPath(path, shape: self.shape, segment: .Entrance, width: self._width, height: self._height)
+            positionAnim.path = path
+            
+            group.animations = [positionAnim, hiddenAnim]
+            self._pullDownVehicleLayer.addAnimation(group, forKey: "showVehicle")
+        }, completion: completion)
     }
     
     // MARK: Setters and updaters
     
     // Set visibility of the vehicle and animate vehicle entrance/exit
-    func setVehicleState(shouldHaveVehicle: Bool) {
-        // Animate based on what kind of state transition this is, but skip the animation if the view hasn't been laid out yet
-//        if _hasLayout {
-//            let didHaveVehicle = self.showVehicle
-//            let group = CAAnimationGroup()
-//            group.duration = 1.0
-//            group.fillMode = kCAFillModeBackwards
-//            
-//            switch (didHaveVehicle, shouldHaveVehicle) {
-//            case (false, true): // vehicle is entering
-//                group.animations = [animationForVehiclePosition(railPath().entrance), animationForHiddenness()]
-//                group.beginTime = 1.0
-//                _vehicleLayer.position = restingPoint()
-//            case (true, false): // vehicle is exiting
-//                group.animations = [animationForVehiclePosition(railPath().exit), animationForHiddenness()]
-//                _vehicleLayer.position = exitPoint()
-//            default: // for (true,true) and (false,false) which requires no change
-//                break
-//            }
-//            _vehicleLayer.addAnimation(group, forKey: "showVehicle")
-//        }
-        
-        _vehicleLayer.hidden = !shouldHaveVehicle
+    func setVehicleState(showVehicle: Bool) {
+        UIView.animateWithDuration(0.0) {
+            self._vehicleLayer.hidden = !showVehicle
+        }
     }
     
-    func setStationState(shouldHaveStation: Bool) {
-        _stationLayer.hidden = !shouldHaveStation
+    func setStationState(showStation: Bool) {
+        _stationLayer.hidden = !showStation
     }
     
     func updateColor(newColor: UIColor) {
