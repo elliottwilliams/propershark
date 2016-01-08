@@ -27,7 +27,7 @@ class RouteTableViewController: UITableViewController {
         
         // Register the table cell's interface for reuse
         self.tableView.registerNib(UINib(nibName: "RouteTableViewCell", bundle: nil), forCellReuseIdentifier: "RouteTableViewCell")
-        self.tableView.registerClass(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: "RouteTableFooter")
+        self.tableView.registerClass(RouteTableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: "RouteTableFooter")
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -82,13 +82,16 @@ class RouteTableViewController: UITableViewController {
     
     // I feel like this should not be in a view controller :\ perhaps subclass UITableViewHeaderFooterView?
     override func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        let footer = self.tableView.dequeueReusableHeaderFooterViewWithIdentifier("RouteTableFooter")
+        let footer = self.tableView.dequeueReusableHeaderFooterViewWithIdentifier("RouteTableFooter") as! RouteTableViewHeaderFooterView
         let height = RouteTableViewCell.rowHeightForState(.EmptyStation) // base height off of the empty station row height
-        let railView = ScheduleRail(frame: CGRectMake(16.5, 0, height, height)) // TODO: find a way to not hard-code this
-        railView.showStation = false
-        railView.showVehicle = false
-        railView.shape = .NorthWest
-        footer?.contentView.addSubview(railView)
+        if footer.rail == nil {
+            let railView = ScheduleRail(frame: CGRectMake(16.5, 0, height, height)) // TODO: find a way to not hard-code this
+            railView.showStation = false
+            railView.showVehicle = false
+            railView.shape = .NorthWest
+            footer.contentView.addSubview(railView)
+            footer.rail = railView
+        }
         
         return footer
     }

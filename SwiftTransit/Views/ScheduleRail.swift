@@ -76,6 +76,7 @@ class ScheduleRail: UIView {
         _width = self.frame.width
         _height = self.frame.height
         _hasLayout = true
+        self.layer.setNeedsDisplay() // resizes mean we need to re-draw the rail
         super.layoutSubviews()
     }
     
@@ -95,7 +96,6 @@ class ScheduleRail: UIView {
         if !_hasLayout { // don't display if view hasn't been laid out
             return
         }
-        // TODO: ensure that sublayers are cleared when the layer cache is refreshed
         drawRailOnLayer(layer as! CAShapeLayer) // layerClass() declares CAShapeLayer as this view's layer class, so this should always unwrap
         drawStationNode()
 //        drawVehicle(_vehicleLayer)
@@ -178,11 +178,10 @@ class ScheduleRail: UIView {
                 CGPathMoveToPoint(path, nil, width/2, c.y+height/2)
                 CGPathAddLineToPoint(path, nil, width, c.y+height/2)
             case .NorthWest:
-                CGPathMoveToPoint(path, nil, width/(2*sqrt(3)), c.y+width/(2*sqrt(3)))
+                // AddArc moves to the proper starting point automatically, so we don't need to mess with MoveToPoint or do any trigonometry
                 CGPathAddArc(path, nil, 0, c.y, width/2, CGFloat(M_PI/4), CGFloat(M_PI/2), false)
                 CGPathAddLineToPoint(path, nil, -1*_leftMargin, c.y+height/2)
             case .WestSouth:
-                CGPathMoveToPoint(path, nil, height/(2*sqrt(3)), c.y + height - height/(2*sqrt(3)))
                 CGPathAddArc(path, nil, 0, c.y+height, height/2, CGFloat(M_PI/4), CGFloat(M_PI/2), false)
             }
         }

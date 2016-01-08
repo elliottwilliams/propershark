@@ -15,7 +15,7 @@ class RouteTableViewCell: UITableViewCell {
         case EmptyStation
         case VehiclesAtStation
     }
-    
+
     var state: RouteTableViewCell.State = .EmptyStation {
         didSet { updateStateFromState(oldValue, toState: self.state) }
     }
