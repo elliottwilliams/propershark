@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-class TripViewModel: NSObject {
+struct TripViewModel {
     
     let _trip: Trip
     let vehicle: VehicleViewModel
@@ -29,6 +29,10 @@ class TripViewModel: NSObject {
     
     func isVehicleAtCurrentStation() -> Bool {
         return _trip.isVehicleAtCurrentStation()
+    }
+    
+    func withNextStationSelected() -> TripViewModel {
+        return TripViewModel(_trip.withNextStationSelected())
     }
 }
 

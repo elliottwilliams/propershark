@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-class StationViewModel: NSObject, MKAnnotation {
+struct StationViewModel: Hashable {
     
     // MARK: Properties
     var coordinate: CLLocationCoordinate2D
@@ -20,7 +20,7 @@ class StationViewModel: NSObject, MKAnnotation {
     var id: String { return _station.id }
     var neighborhood: [String]? { return _station.neighborhood }
     var location: (latitude: Double, longitude: Double) { return _station.location }
-    override var hashValue: Int { return _station.hashValue }
+    var hashValue: Int { return _station.hashValue }
     
     init(_ station: Station) {
         _station = station
@@ -36,9 +36,19 @@ class StationViewModel: NSObject, MKAnnotation {
         let trips = Trip.DemoTrips.filter { $0.viewModel().currentStation == self }
         return trips.map { $0.viewModel() }
     }
+    
+    func mapAnnotation() -> StationMapAnnotation {
+        return StationMapAnnotation(loc: self.location)
+    }
 }
 
 func ==(a: StationViewModel, b: StationViewModel) -> Bool {
     return a._station == b._station
 }
 
+class StationMapAnnotation: NSObject, MKAnnotation {
+    var coordinate: CLLocationCoordinate2D
+    init(loc: (Double, Double)) {
+        self.coordinate = CLLocationCoordinate2DMake(loc.0, loc.1)
+    }
+}

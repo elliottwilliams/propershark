@@ -8,7 +8,7 @@
 
 import UIKit
 
-class RouteViewModel: NSObject {
+struct RouteViewModel: Hashable {
     let _route: Route
     init(_ route: Route) {
         _route = route
@@ -17,6 +17,8 @@ class RouteViewModel: NSObject {
     var name: String { return _route.name }
     var id: String { return _route.id }
     var color: UIColor { return _route.color }
+    
+    var hashValue: Int { return _route.hashValue }
     
     func routeNumber() -> String {
         return _route.id
@@ -72,5 +74,13 @@ class RouteViewModel: NSObject {
         
         return tripsAtStations
     }
+    
+    func stationsAlongRouteWithTrips() -> [JointStationTripViewModel] {
+        return stationsAlongRouteWithTrips(self.tripsForRoute(), stations: self.stationsAlongRoute())
+    }
 
+}
+
+func ==(a: RouteViewModel, b: RouteViewModel) -> Bool {
+    return a._route == b._route
 }

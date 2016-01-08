@@ -9,10 +9,12 @@
 import Foundation
 import MapKit
 
-struct Trip {
+struct Trip: Hashable {
     let vehicle: Vehicle
     let route: Route
     let currentStation: Int
+    
+    var hashValue: Int { return vehicle.hashValue + currentStation.hashValue }
     
     init(vehicle: Vehicle, route: Route, currentStationIdx: Int = 0) {
         self.vehicle = vehicle
@@ -35,6 +37,10 @@ struct Trip {
         // A vehicle within 30m of a station is considered at that station
         return dist <= 30.0
     }
+}
+
+func ==(a: Trip, b: Trip) -> Bool {
+    return a.vehicle == b.vehicle && a.route == b.route && a.currentStation == b.currentStation
 }
 
 extension Trip {

@@ -8,10 +8,12 @@
 
 import UIKit
 
-class ArrivalViewModel: NSObject {
+struct ArrivalViewModel: Hashable {
     private var arrival: Arrival
     private var _route: Route
     private var _vehicle: Vehicle
+    
+    var hashValue: Int { return arrival.hashValue }
     
     init(_ arrival: Arrival) {
         self.arrival = arrival
@@ -49,4 +51,8 @@ class ArrivalViewModel: NSObject {
     func vehicle() -> VehicleViewModel {
         return VehicleViewModel(_vehicle)
     }
+}
+
+func ==(a: ArrivalViewModel, b: ArrivalViewModel) -> Bool {
+    return a.arrival == b.arrival
 }

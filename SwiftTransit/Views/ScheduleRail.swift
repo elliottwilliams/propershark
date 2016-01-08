@@ -98,8 +98,8 @@ class ScheduleRail: UIView {
         // TODO: ensure that sublayers are cleared when the layer cache is refreshed
         drawRailOnLayer(layer as! CAShapeLayer) // layerClass() declares CAShapeLayer as this view's layer class, so this should always unwrap
         drawStationNode()
-        drawVehicle(_vehicleLayer)
-        drawVehicle(_pullDownVehicleLayer)
+//        drawVehicle(_vehicleLayer)
+//        drawVehicle(_pullDownVehicleLayer)
         _pullDownVehicleLayer.hidden = true
     }
     
@@ -113,6 +113,10 @@ class ScheduleRail: UIView {
         layer.strokeColor = _railColor.CGColor
         layer.lineWidth = 2.0
         layer.fillColor = UIColor.clearColor().CGColor
+    }
+    
+    func stationNodeIntersectionPoint() -> CGPoint {
+        return CGPoint(x: self.frame.minX + _width/2, y: self.frame.minY + _height/2)
     }
     
     func drawStationNode() {

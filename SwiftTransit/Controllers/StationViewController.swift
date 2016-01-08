@@ -33,7 +33,7 @@ class StationViewController: UIViewController, SceneMediatedController, ArrivalT
         showUserLocationIfEnabled()
         
         // Add the selected stop to the map
-        map.addAnnotation(station)
+        map.addAnnotation(station.mapAnnotation())
         
         // Get arrivals and embed an arrivals table
         self.embedArrivalsTable()
@@ -62,8 +62,12 @@ class StationViewController: UIViewController, SceneMediatedController, ArrivalT
     }
     
     // When a row is selected in the Arrivals table, show the Vehicle view. Conformance to ArrivalTableViewDelegate
-    func didSelectArrivalFromArrivalTable(arrival: ArrivalViewModel, indexPath: NSIndexPath) {
-        self.performSegueWithIdentifier("ShowVehicleWhenSelectedFromStation", sender: arrival)
+    func didSelectArrivalFromArrivalTable(var arrival: ArrivalViewModel, indexPath: NSIndexPath) {
+        // Store arrival in an NSData object to pass to the segue, since objc is allergic to swift structs
+        withUnsafePointer(&arrival) { p in
+            let data = NSData(bytes: p, length: sizeofValue(arrival))
+            self.performSegueWithIdentifier("ShowVehicleWhenSelectedFromStation", sender: data)
+        }
     }
 
     override func didReceiveMemoryWarning() {

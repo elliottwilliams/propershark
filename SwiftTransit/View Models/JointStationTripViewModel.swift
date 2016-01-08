@@ -12,6 +12,8 @@ struct JointStationTripViewModel {
     var trips: [TripViewModel]
     var station: StationViewModel?
     
+    var vehicles: [VehicleViewModel] { return trips.map { $0.vehicle } }
+    
     func hasVehicles() -> Bool {
         return self.trips.count > 0
     }

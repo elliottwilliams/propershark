@@ -11,11 +11,15 @@ import UIKit
 class RouteTableViewController: UITableViewController {
     
     var _delegate: RouteTableViewDelegate
-    var _route: [JointStationTripViewModel]
+    var _pairs: [JointStationTripViewModel]
+    var _route: RouteViewModel
     var _title: String
     
-    init(title: String?, route: [JointStationTripViewModel], delegate: RouteTableViewDelegate, view: UITableView) {
+    var _vehicles: [VehicleViewModel: RailVehicle] = [:]
+    
+    init(title: String?, route: RouteViewModel, pairs: [JointStationTripViewModel], delegate: RouteTableViewDelegate, view: UITableView) {
         _title = title ?? "Schedule"
+        _pairs = pairs
         _route = route
         _delegate = delegate
         super.init(style: view.style)
@@ -35,7 +39,7 @@ class RouteTableViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return _route.count
+        return _pairs.count
     }
     
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -45,7 +49,7 @@ class RouteTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCellWithIdentifier("RouteTableViewCell", forIndexPath: indexPath) as! RouteTableViewCell
         
-        let entry = _route[indexPath.row]
+        let entry = _pairs[indexPath.row]
         cell.state = RouteTableViewCell.determineStateForVehicles(entry.hasVehicles(), station: entry.hasStation())!
         cell.accessoryType = (cell.state == .VehiclesInTransit) ? .None : .DisclosureIndicator
         cell.selectionStyle = (cell.state == .VehiclesInTransit) ? .None : .Default
@@ -59,6 +63,19 @@ class RouteTableViewController: UITableViewController {
         } else {
             cell.rail.type = ArrivalTableViewCell.RailTypeNorthSouth
         }*/
+        
+        // Create vehicle
+        for vehicle in entry.vehicles {
+            let storedVehicleView = _vehicles[vehicle]
+            if storedVehicleView != nil {
+                storedVehicleView!.moveTo(cell.railtieCoordinates())
+            } else {
+                let coords = cell.railtieCoordinates()
+                let view = RailVehicle(point: coords, color: entry.routeColor())
+                self.view.addSubview(view)
+                _vehicles[vehicle] = view
+            }
+        }
         
         return cell
     }
@@ -77,7 +94,7 @@ class RouteTableViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        let entry = _route[indexPath.row]
+        let entry = _pairs[indexPath.row]
         let state = RouteTableViewCell.determineStateForVehicles(entry.hasVehicles(), station: entry.hasStation())!
         return RouteTableViewCell.rowHeightForState(state)
     }
@@ -87,7 +104,7 @@ class RouteTableViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let entry = _route[indexPath.row]
+        let entry = _pairs[indexPath.row]
         let state = RouteTableViewCell.determineStateForVehicles(entry.hasVehicles(), station: entry.hasStation())!
         if state == .VehiclesInTransit {
             // For now, we're not sending this message, in order to make the table easier to use and prevent unintended actions

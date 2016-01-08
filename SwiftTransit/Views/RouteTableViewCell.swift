@@ -44,6 +44,12 @@ class RouteTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
+    // Return coordinates in the superview system for where a vehicle should be placed
+    func railtieCoordinates() -> CGPoint {
+        let railPoint = self.rail.stationNodeIntersectionPoint()
+        return CGPoint(x: self.frame.minX + railPoint.x, y: self.frame.minY + railPoint.y)
+    }
+    
     // MARK: State transitions
     
     func transitionForVehiclesInTransit() -> () -> Void {

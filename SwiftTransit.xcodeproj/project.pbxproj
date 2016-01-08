@@ -27,6 +27,7 @@
 		2647826E1C30BFDF009D9AD0 /* ArrivalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647826D1C30BFDF009D9AD0 /* ArrivalViewModel.swift */; };
 		264782701C30C187009D9AD0 /* StationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647826F1C30C187009D9AD0 /* StationViewModel.swift */; };
 		264782741C30D033009D9AD0 /* RouteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264782731C30D033009D9AD0 /* RouteViewModel.swift */; };
+		267019581C3F5BB50057FD11 /* RailVehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267019571C3F5BB50057FD11 /* RailVehicle.swift */; };
 		268632811C319B0D00839A22 /* SceneMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268632801C319B0D00839A22 /* SceneMediator.swift */; };
 		268632831C31A16700839A22 /* VehicleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268632821C31A16700839A22 /* VehicleViewModel.swift */; };
 		268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72261BF9938800E981D4 /* TransitLabel.swift */; };
@@ -97,6 +98,7 @@
 		2647826D1C30BFDF009D9AD0 /* ArrivalViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrivalViewModel.swift; sourceTree = "<group>"; };
 		2647826F1C30C187009D9AD0 /* StationViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StationViewModel.swift; sourceTree = "<group>"; };
 		264782731C30D033009D9AD0 /* RouteViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteViewModel.swift; sourceTree = "<group>"; };
+		267019571C3F5BB50057FD11 /* RailVehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RailVehicle.swift; sourceTree = "<group>"; };
 		268632801C319B0D00839A22 /* SceneMediator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SceneMediator.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		268632821C31A16700839A22 /* VehicleViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VehicleViewModel.swift; sourceTree = "<group>"; };
 		268E72261BF9938800E981D4 /* TransitLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabel.swift; sourceTree = "<group>"; };
@@ -173,6 +175,7 @@
 		264782611C309F4C009D9AD0 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				267019571C3F5BB50057FD11 /* RailVehicle.swift */,
 				2635DB771C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift */,
 				2635DB711C3CBF4700EB58F5 /* RouteTableView.swift */,
 				2635DB6F1C3CBEC500EB58F5 /* DemoTableFooter.xib */,
@@ -532,6 +535,7 @@
 				26C598BC1C250D1E00BC9FE1 /* RouteBadge.swift in Sources */,
 				261DD1611C323964001336D4 /* RouteViewController.swift in Sources */,
 				26A424EE1BD2E0C90035754F /* Arrival.swift in Sources */,
+				267019581C3F5BB50057FD11 /* RailVehicle.swift in Sources */,
 				264782691C30BC14009D9AD0 /* Station.swift in Sources */,
 				268632811C319B0D00839A22 /* SceneMediator.swift in Sources */,
 				261DD15D1C320A08001336D4 /* ArrivalTableView.swift in Sources */,

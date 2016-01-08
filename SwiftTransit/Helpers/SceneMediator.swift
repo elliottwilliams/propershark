@@ -47,7 +47,7 @@ class SceneMediator: NSObject, SceneMediatorProtocol {
         "ShowVehicleWhenSelectedFromStation": { (segue, sender) in
             let src = segue.sourceViewController as! StationViewController
             let dest = segue.destinationViewController as! VehicleViewController
-            let arrival = sender as! ArrivalViewModel
+            let arrival: ArrivalViewModel = decode(sender as! NSData)
             dest.vehicle = arrival.vehicle()
         },
         
@@ -61,13 +61,16 @@ class SceneMediator: NSObject, SceneMediatorProtocol {
         "ShowStationFromRouteTable": { (segue, sender) in
             let src = segue.sourceViewController as! RouteViewController
             let dest = segue.destinationViewController as! StationViewController
-            dest.station = sender as! StationViewModel
+            
+            // Sender is a station view model struct wrapped in an NSData object to keep objc happy.
+            dest.station = decode(sender as! NSData)
         },
         
         "ShowVehicleFromRouteTable": { (segue, sender) in
             let src = segue.sourceViewController as! RouteViewController
             let dest = segue.destinationViewController as! VehicleViewController
-            dest.vehicle = sender as! VehicleViewModel
+            
+            dest.vehicle = decode(sender as! NSData)
         }
     ]
     
@@ -81,6 +84,14 @@ class SceneMediator: NSObject, SceneMediatorProtocol {
             NSLog("transition mediated for \(id)")
         }
     }
+    
+}
+
+// We pass swift structs into the mediator as NSData, since the segue infrastructure needs objc objects. This function allocates a pointer to memory of size for a given struct, then moves bytes from the NSData instance to that pointer. The last line deallocates the pointer and returns its typed contents.
+private func decode<T>(data: NSData) -> T {
+    let pointer = UnsafeMutablePointer<T>.alloc(sizeof(T))
+    data.getBytes(pointer, length: sizeof(T))
+    return pointer.move()
 }
 
 // The scene mediator behaves according to this protocol

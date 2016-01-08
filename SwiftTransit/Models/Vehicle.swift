@@ -8,11 +8,13 @@
 
 import Foundation
 
-struct Vehicle: Equatable {
+struct Vehicle: Hashable {
     let name: String
     let id: String
     var location: (latitude: Double, longitude: Double)
     var capacity: Double
+    
+    var hashValue: Int { return self.id.hashValue }
 }
 
 func ==(a: Vehicle, b: Vehicle) -> Bool {

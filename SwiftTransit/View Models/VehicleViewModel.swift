@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-class VehicleViewModel: NSObject, MKAnnotation {
+struct VehicleViewModel: Hashable {
     private var _vehicle: Vehicle
     
     var name: String { return _vehicle.name }
@@ -17,10 +17,24 @@ class VehicleViewModel: NSObject, MKAnnotation {
     var location: (latitude: Double, longitude: Double) { return _vehicle.location }
     var capacity: Double { return _vehicle.capacity }
     
-    var coordinate: CLLocationCoordinate2D
+    var hashValue: Int { return _vehicle.hashValue }
     
     init(_ vehicle: Vehicle) {
         _vehicle = vehicle
-        self.coordinate = CLLocationCoordinate2DMake(_vehicle.location.latitude, _vehicle.location.longitude)
+    }
+    
+    func mapAnnotation() -> VehicleMapAnnotation {
+        return VehicleMapAnnotation(coords: self.location)
+    }
+}
+
+func ==(a: VehicleViewModel, b: VehicleViewModel) -> Bool {
+    return a.id == b.id
+}
+
+class VehicleMapAnnotation: NSObject, MKAnnotation {
+    var coordinate: CLLocationCoordinate2D
+    init(coords: (_: Double, _: Double)) {
+        self.coordinate = CLLocationCoordinate2DMake(coords.0, coords.1)
     }
 }

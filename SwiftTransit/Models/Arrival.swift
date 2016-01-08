@@ -8,10 +8,16 @@
 
 import UIKit
 
-struct Arrival {
+struct Arrival: Hashable {
     let trip: Trip
     let station: Station
     let time: NSDate
+    
+    var hashValue: Int { return time.hashValue }
+}
+
+func ==(a: Arrival, b: Arrival) -> Bool {
+    return a.trip == b.trip && a.station == b.station && a.time == b.time
 }
 
 extension Arrival {

@@ -33,10 +33,9 @@ class RouteViewController: UIViewController, SceneMediatedController, RouteTable
     }
     
     func embedScheduleTable() {
-        let pairs = route.stationsAlongRouteWithTrips(route.tripsForRoute(), stations: route.stationsAlongRoute())
-        let model = pairs.map { JointStationTripViewModel(trips: $0.trips, station: $0.station) }
+        let pairs = route.stationsAlongRouteWithTrips()
         
-        _routeTable = RouteTableViewController(title: "Live Route", route: model, delegate: self, view: self.routeTableView)
+        _routeTable = RouteTableViewController(title: "Live Route", route: self.route, pairs: pairs, delegate: self, view: self.routeTableView)
         self.routeTableView.dataSource = _routeTable
         self.routeTableView.delegate = _routeTable
         
@@ -46,15 +45,21 @@ class RouteViewController: UIViewController, SceneMediatedController, RouteTable
         
     }
     
-    func didSelectStationFromScheduleTable(station: StationViewModel, indexPath: NSIndexPath) {
-        // Segue to station
-        self.performSegueWithIdentifier("ShowStationFromRouteTable", sender: station)
+    func didSelectStationFromScheduleTable(var station: StationViewModel, indexPath: NSIndexPath) {
+        // Segue to station. Since StationViewModel is a swift struct, and structs cannot be passed as first-class objects in objc code, encode the struct in an NSData object and pass it along.
+        withUnsafePointer(&station) { p in
+            let data = NSData(bytes: p, length: sizeofValue(station))
+            self.performSegueWithIdentifier("ShowStationFromRouteTable", sender: data)
+        }
     }
     
     // TODO: need way to select from one of multiple vehicles
-    func didSelectVehicleFromScheduleTable(vehicle: VehicleViewModel, indexPath: NSIndexPath) {
-        // Segue to vehicle
-        self.performSegueWithIdentifier("ShowVehicleFromRouteTable", sender: vehicle)
+    func didSelectVehicleFromScheduleTable(var vehicle: VehicleViewModel, indexPath: NSIndexPath) {
+        // Segue to vehicle. Since VehicleViewModel is a swift struct, and structs cannot be passed as first-class objects in objc code, encode the struct in an NSData object and pass it along.
+        withUnsafePointer(&vehicle) { p in
+            let data = NSData(bytes: p, length: sizeofValue(vehicle))
+            self.performSegueWithIdentifier("ShowVehicleFromRouteTable", sender: data)
+        }
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -84,15 +89,18 @@ class RouteViewController: UIViewController, SceneMediatedController, RouteTable
         animateOutAction(sender)
     }
     @IBAction func advanceVehiclesAction(sender: AnyObject) {
-        var prevCell: RouteTableViewCell?
-        for cell in _routeTable.tableView.visibleCells.map({ $0 as! RouteTableViewCell }) {
-            if prevCell != nil && prevCell!.rail.showVehicle {
-                prevCell!.rail.animatePushDownToRailOfShape(cell.rail.shape, height: cell.frame.height) { _ in
-                    cell.rail.showVehicle = true
-                }
-                prevCell!.rail.showVehicle = false
-            }
-            prevCell = cell
-        }
+        let trips = route.tripsForRoute().map { $0.withNextStationSelected() }
+        let stations = route.stationsAlongRoute()
+        let pairs = route.stationsAlongRouteWithTrips(trips, stations: stations)
+        _routeTable._pairs = pairs
+//        var lastPair: JointStationTripViewModel?
+//        for var pair in _routeTable._pairs {
+//            let lastTrip = lastPair?.trips.popLast()
+//            if lastTrip != nil {
+//                pair.trips.append(lastTrip!)
+//            }
+//            lastPair = pair
+//        }
+        _routeTable.tableView.reloadData()
     }
 }
