@@ -9,13 +9,14 @@
 import Foundation
 import MapKit
 
-struct Station: Hashable {
+struct Station: Hashable, CustomStringConvertible {
     let name: String
     let id: String
     let neighborhood: [String]?
     let location: (latitude: Double, longitude: Double)
     
     var hashValue: Int { return id.hashValue }
+    var description: String { return "Station(id: \(self.id), name: \(self.name))" }
 }
 
 func ==(a: Station, b: Station) -> Bool {

@@ -92,15 +92,24 @@ class RouteViewController: UIViewController, SceneMediatedController, RouteTable
         let trips = route.tripsForRoute().map { $0.withNextStationSelected() }
         let stations = route.stationsAlongRoute()
         let pairs = route.stationsAlongRouteWithTrips(trips, stations: stations)
+        let oldPairs = _routeTable._pairs
         _routeTable._pairs = pairs
-//        var lastPair: JointStationTripViewModel?
-//        for var pair in _routeTable._pairs {
-//            let lastTrip = lastPair?.trips.popLast()
-//            if lastTrip != nil {
-//                pair.trips.append(lastTrip!)
-//            }
-//            lastPair = pair
-//        }
-        _routeTable.tableView.reloadData()
+        
+        _routeTable.tableView.beginUpdates()
+        let reloadRange = 0..<min(pairs.count, oldPairs.count)
+        let reloadPaths = reloadRange.map { NSIndexPath(forRow: $0, inSection: 0) }
+        _routeTable.tableView.reloadRowsAtIndexPaths(reloadPaths, withRowAnimation: .Middle)
+        
+        if oldPairs.count > pairs.count {
+            let deleteRange = pairs.count ..< oldPairs.count
+            let deletePaths = deleteRange.map { NSIndexPath(forRow: $0, inSection: 0) }
+            _routeTable.tableView.deleteRowsAtIndexPaths(deletePaths, withRowAnimation: .Bottom)
+        } else if oldPairs.count < pairs.count {
+            let insertRange = oldPairs.count ..< pairs.count
+            let insertPaths = insertRange.map { NSIndexPath(forRow: $0, inSection: 0) }
+            _routeTable.tableView.insertRowsAtIndexPaths(insertPaths, withRowAnimation: .Bottom)
+        }
+        
+        _routeTable.tableView.endUpdates()
     }
 }

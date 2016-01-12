@@ -8,13 +8,14 @@
 
 import UIKit
 
-struct Route: Hashable {
+struct Route: Hashable, CustomStringConvertible {
     let name: String
     let id: String
     let stations: [Station]
     let color: UIColor
     
     var hashValue: Int { return id.hashValue }
+    var description: String { return "Route(id: \(self.id), name: \(self.name))" }
     
     init(name: String, id: String, stations: [Station], color: UIColor) {
         self.name = name

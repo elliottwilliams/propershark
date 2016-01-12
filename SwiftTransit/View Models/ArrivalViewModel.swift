@@ -8,12 +8,15 @@
 
 import UIKit
 
-struct ArrivalViewModel: Hashable {
+struct ArrivalViewModel: Hashable, CustomStringConvertible {
     private var arrival: Arrival
     private var _route: Route
     private var _vehicle: Vehicle
     
     var hashValue: Int { return arrival.hashValue }
+    var description: String {
+        return "ArrivalViewModel(route: \(self._route), vehicle: \(self._vehicle))"
+    }
     
     init(_ arrival: Arrival) {
         self.arrival = arrival

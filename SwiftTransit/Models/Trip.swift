@@ -9,12 +9,13 @@
 import Foundation
 import MapKit
 
-struct Trip: Hashable {
+struct Trip: Hashable, CustomStringConvertible {
     let vehicle: Vehicle
     let route: Route
     let currentStation: Int
     
     var hashValue: Int { return vehicle.hashValue + currentStation.hashValue }
+    var description: String { return "Trip(vehicle: \(self.vehicle))" }
     
     init(vehicle: Vehicle, route: Route, currentStationIdx: Int = 0) {
         self.vehicle = vehicle

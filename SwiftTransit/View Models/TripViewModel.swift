@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-struct TripViewModel {
+struct TripViewModel: Hashable, CustomStringConvertible {
     
     let _trip: Trip
     let vehicle: VehicleViewModel
@@ -18,6 +18,10 @@ struct TripViewModel {
     
     var currentStation: StationViewModel {
         return stations[_trip.currentStation]
+    }
+    var hashValue: Int { return _trip.hashValue }
+    var description: String {
+        return "TripViewModel(\(self._trip))"
     }
     
     init(_ trip: Trip) {

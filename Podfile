@@ -5,6 +5,7 @@ use_frameworks!
 
 target 'SwiftTransit' do
     pod 'Colours/Swift'
+    pod 'Reveal-iOS-SDK', :configurations => ['Debug']
 end
 
 target 'SwiftTransitTests' do

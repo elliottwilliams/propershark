@@ -20,7 +20,7 @@ struct TestData {
         Station(name: "Hogsmeade", id: "BUS002", neighborhood: [], location: (10.0012, 10))
     ]
     static var route: Route {
-        return Route(name: "Hogwarts Express", id: "99", stations: self.stations)
+        return Route(name: "Hogwarts Express", id: "99", stations: self.stations, color: UIColor.maroonColor())
     }
     static var trips: [Trip] {
         return [

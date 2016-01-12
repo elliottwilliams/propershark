@@ -8,11 +8,16 @@
 
 import UIKit
 
-struct JointStationTripViewModel {
-    var trips: [TripViewModel]
-    var station: StationViewModel?
+struct JointStationTripViewModel: Hashable, CustomStringConvertible {
+    let trips: [TripViewModel]
+    let station: StationViewModel?
+    let nextStation: StationViewModel
     
     var vehicles: [VehicleViewModel] { return trips.map { $0.vehicle } }
+    var hashValue: Int { return (station?.hashValue ?? 0) ^ nextStation.hashValue }
+    var description: String {
+        return "JointStationTripViewModel(trips: \(self.trips), station: \(self.station), nextStation: \(self.nextStation))"
+    }
     
     func hasVehicles() -> Bool {
         return self.trips.count > 0
@@ -37,6 +42,14 @@ struct JointStationTripViewModel {
         }
     }
     
+    func withTrips(trips: [TripViewModel]) -> JointStationTripViewModel {
+        return JointStationTripViewModel(trips: trips, station: self.station, nextStation: self.nextStation)
+    }
+    
+    func withStation(station: StationViewModel) -> JointStationTripViewModel {
+        return JointStationTripViewModel(trips: self.trips, station: station, nextStation: self.nextStation)
+    }
+    
     // Oxford comma implicit
     func pluralizedVehicles(vehicles: [VehicleViewModel]) -> String {
         if (vehicles.count == 1) {
@@ -53,5 +66,40 @@ struct JointStationTripViewModel {
     func routeColor() -> UIColor? {
         return trips.first?.route.color
     }
+    
+    struct DeltaOfPairLists {
+        let needsInsertion: Set<JointStationTripViewModel>
+        let needsDeletion: Set<JointStationTripViewModel>
+        let needsReloading: Set<JointStationTripViewModel>
+    }
+    
+    // Deduce the changes made to a list of JointStationTripViewModel instances
+    static func deltaFromPairList(a: [JointStationTripViewModel], toList b: [JointStationTripViewModel]) -> DeltaOfPairLists? {
+        // Get an ordering of stations
+        let stations = a.filter { $0.station != nil }
+        
+        // Return nil if a and b don't contain the same stations in the same sequence. This function is intended to be used on routes.
+        let bStations = b.filter({ $0.station != nil })
+        if stations.count != bStations.count {
+            return nil
+        }
+        for i in bStations.indices {
+            if stations[i] != bStations[i] {
+                return nil
+            }
+        }
+        
+        let aSet = Set(a)
+        let bSet = Set(b)
+        let added = bSet.subtract(aSet)
+        let removed = aSet.subtract(bSet)
+        let same = aSet.intersect(bSet)
+        
+        return DeltaOfPairLists(needsInsertion: added, needsDeletion: removed, needsReloading: same)
+    }
+    
 }
 
+func ==(a: JointStationTripViewModel, b: JointStationTripViewModel) -> Bool {
+    return a.station == b.station && a.nextStation == b.nextStation
+}

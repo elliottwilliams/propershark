@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-struct VehicleViewModel: Hashable {
+struct VehicleViewModel: Hashable, CustomStringConvertible {
     private var _vehicle: Vehicle
     
     var name: String { return _vehicle.name }
@@ -18,6 +18,9 @@ struct VehicleViewModel: Hashable {
     var capacity: Double { return _vehicle.capacity }
     
     var hashValue: Int { return _vehicle.hashValue }
+    var description: String {
+        return "VehicleViewModel(\(self._vehicle))"
+    }
     
     init(_ vehicle: Vehicle) {
         _vehicle = vehicle

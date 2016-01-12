@@ -1,10 +1,13 @@
 PODS:
   - Colours/Swift (5.12.0)
+  - Reveal-iOS-SDK (1.6.2)
 
 DEPENDENCIES:
   - Colours/Swift
+  - Reveal-iOS-SDK
 
 SPEC CHECKSUMS:
   Colours: 4019e8eeb69d8840832eba1b3254abdbab4eec49
+  Reveal-iOS-SDK: e2250b3c155bcfac53ae223ddc1f76d08f206c33
 
 COCOAPODS: 0.39.0

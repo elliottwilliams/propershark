@@ -8,12 +8,13 @@
 
 import UIKit
 
-struct Arrival: Hashable {
+struct Arrival: Hashable, CustomStringConvertible {
     let trip: Trip
     let station: Station
     let time: NSDate
     
     var hashValue: Int { return time.hashValue }
+    var description: String { return "Arrival(trip: \(trip), station: \(station))" }
 }
 
 func ==(a: Arrival, b: Arrival) -> Bool {

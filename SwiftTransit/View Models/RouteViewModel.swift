@@ -8,7 +8,7 @@
 
 import UIKit
 
-struct RouteViewModel: Hashable {
+struct RouteViewModel: Hashable, CustomStringConvertible {
     let _route: Route
     init(_ route: Route) {
         _route = route
@@ -19,6 +19,9 @@ struct RouteViewModel: Hashable {
     var color: UIColor { return _route.color }
     
     var hashValue: Int { return _route.hashValue }
+    var description: String {
+        return "RouteViewModel(\(self._route))"
+    }
     
     func routeNumber() -> String {
         return _route.id
@@ -46,14 +49,15 @@ struct RouteViewModel: Hashable {
     func stationsAlongRouteWithTrips(trips: [TripViewModel], stations: [StationViewModel]) -> [JointStationTripViewModel] {
         
         // Pair the sequenced list of stations with any trips whose vehicle is coming to that station
-        var tripsAtStations: [JointStationTripViewModel] =
-            stations.map { station in
-                JointStationTripViewModel(trips: trips.filter { $0.currentStation == station }, station: station)
+        var pairs: [JointStationTripViewModel] =
+            stations.enumerate().map { (i, station) in
+                let nextStation = stations[safe: i+1] ?? stations[0]
+                return JointStationTripViewModel(trips: trips.filter { $0.currentStation == station }, station: station, nextStation: nextStation)
             }
         
         // Move vehicles who have not arrived at their current station to a nil station entry *before* the next
-        for (var i = 0; i < tripsAtStations.count; i++) {
-            let pair = tripsAtStations[i]
+        for (var i = 0; i < pairs.count; i++) {
+            let pair = pairs[i]
             var shouldKeep = [TripViewModel]()
             var shouldMove = [TripViewModel]()
             for trip in pair.trips {
@@ -63,16 +67,16 @@ struct RouteViewModel: Hashable {
                     shouldMove.append(trip)
                 }
             }
-            tripsAtStations[i].trips = shouldKeep
+            pairs[i] = pairs[i].withTrips(shouldKeep)
             
             if (shouldMove.count > 0) {
-                let stationless = JointStationTripViewModel(trips: shouldMove, station: nil)
-                tripsAtStations.insert(stationless, atIndex: i)
+                let stationless = JointStationTripViewModel(trips: shouldMove, station: nil, nextStation: pair.station!)
+                pairs.insert(stationless, atIndex: i)
                 i++
             }
         }
         
-        return tripsAtStations
+        return pairs
     }
     
     func stationsAlongRouteWithTrips() -> [JointStationTripViewModel] {

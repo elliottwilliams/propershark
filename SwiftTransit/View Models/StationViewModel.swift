@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-struct StationViewModel: Hashable {
+struct StationViewModel: Hashable, CustomStringConvertible {
     
     // MARK: Properties
     var coordinate: CLLocationCoordinate2D
@@ -21,6 +21,9 @@ struct StationViewModel: Hashable {
     var neighborhood: [String]? { return _station.neighborhood }
     var location: (latitude: Double, longitude: Double) { return _station.location }
     var hashValue: Int { return _station.hashValue }
+    var description: String {
+        return "StationViewModel(\(self._station))"
+    }
     
     init(_ station: Station) {
         _station = station

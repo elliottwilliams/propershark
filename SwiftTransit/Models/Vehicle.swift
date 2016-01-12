@@ -8,13 +8,14 @@
 
 import Foundation
 
-struct Vehicle: Hashable {
+struct Vehicle: Hashable, CustomStringConvertible {
     let name: String
     let id: String
     var location: (latitude: Double, longitude: Double)
     var capacity: Double
     
     var hashValue: Int { return self.id.hashValue }
+    var description: String { return "Vehicle(id: \(self.id), name: \(self.name))" }
 }
 
 func ==(a: Vehicle, b: Vehicle) -> Bool {
