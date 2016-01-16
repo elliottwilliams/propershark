@@ -17,10 +17,14 @@ class RouteTableViewCell: UITableViewCell {
     }
 
     var state: RouteTableViewCell.State = .EmptyStation {
-        didSet { updateStateFromState(oldValue, toState: self.state) }
+        didSet {
+            return updateStateFromState(oldValue, toState: self.state)
+        }
     }
     
+    var isAnimated: Bool = false
     var stateConstraints = [State: [NSLayoutConstraint]]()
+    var viewModel: JointStationTripViewModel!
 
     @IBOutlet weak var rail: ScheduleRail!
     @IBOutlet weak var title: TransitLabel!
@@ -48,6 +52,16 @@ class RouteTableViewCell: UITableViewCell {
     func railtieCoordinates() -> CGPoint {
         let railPoint = self.rail.stationNodeIntersectionPoint()
         return CGPoint(x: self.frame.minX + railPoint.x, y: self.frame.minY + railPoint.y)
+    }
+    
+    func useViewModel(model: JointStationTripViewModel) {
+        self.viewModel = model
+        self.state = RouteTableViewCell.determineStateForVehicles(model.hasVehicles(), station: model.hasStation())!
+        self.accessoryType = (self.state == .VehiclesInTransit) ? .None : .DisclosureIndicator
+        self.selectionStyle = (self.state == .VehiclesInTransit) ? .None : .Default
+        self.title.text = model.displayText()
+        self.subtitle.text = model.subtitleText()
+        self.rail.vehicleColor = model.routeColor()
     }
     
     // MARK: State transitions
@@ -120,13 +134,14 @@ class RouteTableViewCell: UITableViewCell {
     }
     
     func updateStateFromState(fromState: State, toState: State) {
+        let duration = self.isAnimated ? 0.25 : 0.0
         switch (toState) {
         case .VehiclesInTransit:
-            UIView.animateWithDuration(0.25, animations: layout(transitionForVehiclesInTransit()))
+            UIView.animateWithDuration(duration, animations: layout(transitionForVehiclesInTransit()))
         case .EmptyStation:
-            UIView.animateWithDuration(0.25, animations: layout(transitionForEmptyStation()))
+            UIView.animateWithDuration(duration, animations: layout(transitionForEmptyStation()))
         case .VehiclesAtStation:
-            UIView.animateWithDuration(0.25, animations: layout(transitionForVehiclesAtStation()))
+            UIView.animateWithDuration(duration, animations: layout(transitionForVehiclesAtStation()))
         }
     }
     
@@ -145,7 +160,7 @@ class RouteTableViewCell: UITableViewCell {
         }
     }
     
-    class func rowHeightForState(state: State) -> CGFloat {
+    class func rowHeightForState(state: State?) -> CGFloat {
         if state == .VehiclesInTransit {
             return 30.0
         } else {

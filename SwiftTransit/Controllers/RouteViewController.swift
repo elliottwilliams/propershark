@@ -91,25 +91,36 @@ class RouteViewController: UIViewController, SceneMediatedController, RouteTable
     @IBAction func advanceVehiclesAction(sender: AnyObject) {
         let trips = route.tripsForRoute().map { $0.withNextStationSelected() }
         let stations = route.stationsAlongRoute()
-        let pairs = route.stationsAlongRouteWithTrips(trips, stations: stations)
-        let oldPairs = _routeTable._pairs
-        _routeTable._pairs = pairs
         
-        _routeTable.tableView.beginUpdates()
-        let reloadRange = 0..<min(pairs.count, oldPairs.count)
-        let reloadPaths = reloadRange.map { NSIndexPath(forRow: $0, inSection: 0) }
-        _routeTable.tableView.reloadRowsAtIndexPaths(reloadPaths, withRowAnimation: .Middle)
+        let old = _routeTable._pairs
+        let new = route.stationsAlongRouteWithTrips(trips, stations: stations)
+        let changeset = JointStationTripViewModel.deltaFromPairList(old, toList: new)
+        _routeTable._pairs = new
         
-        if oldPairs.count > pairs.count {
-            let deleteRange = pairs.count ..< oldPairs.count
-            let deletePaths = deleteRange.map { NSIndexPath(forRow: $0, inSection: 0) }
-            _routeTable.tableView.deleteRowsAtIndexPaths(deletePaths, withRowAnimation: .Bottom)
-        } else if oldPairs.count < pairs.count {
-            let insertRange = oldPairs.count ..< pairs.count
-            let insertPaths = insertRange.map { NSIndexPath(forRow: $0, inSection: 0) }
-            _routeTable.tableView.insertRowsAtIndexPaths(insertPaths, withRowAnimation: .Bottom)
+        if let ch = changeset {
+            _routeTable.tableView.beginUpdates()
+            let deletable = ch.needsDeletion.map { NSIndexPath(forRow: old.indexOf($0)!, inSection: 0) }
+            let insertable = ch.needsInsertion.map { NSIndexPath(forRow: new.indexOf($0)!, inSection: 0) }
+            _routeTable.tableView.deleteRowsAtIndexPaths(deletable, withRowAnimation: .Top)
+            _routeTable.tableView.insertRowsAtIndexPaths(insertable, withRowAnimation: .Top)
+            _routeTable.tableView.endUpdates()
+            
+            _routeTable.tableView.visibleCells.forEach { cell in
+                if let cell = cell as? RouteTableViewCell {
+                    if ch.needsReloading.contains(cell.viewModel) {
+//                        let newModel = 
+//                        cell.useViewModel(<#T##model: JointStationTripViewModel##JointStationTripViewModel#>)
+                    }
+                }
+            }
+            ch.needsReloading.forEach { entry in
+                let path = old.indexOf(entry)
+                let cell = _routeTable.tableView.visibleCells[path!] as! RouteTableViewCell
+                cell.useViewModel(entry)
+            }
+        } else {
+            // If we have new data but there was no changeset generated, just reload everything. This is a bit of a desparate case that should only happen if the table has been switched to show another entity
+            _routeTable.tableView.reloadData()
         }
-        
-        _routeTable.tableView.endUpdates()
     }
 }

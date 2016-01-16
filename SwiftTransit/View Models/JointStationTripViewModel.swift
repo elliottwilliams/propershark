@@ -67,6 +67,16 @@ struct JointStationTripViewModel: Hashable, CustomStringConvertible {
         return trips.first?.route.color
     }
     
+    func hasDifferentVehiclesFrom(instance: JointStationTripViewModel) -> Bool {
+        let ours = Set(self.vehicles)
+        let theirs = Set(instance.vehicles)
+        if ours.exclusiveOr(theirs).isEmpty {
+            return false
+        } else {
+            return true
+        }
+    }
+    
     struct DeltaOfPairLists {
         let needsInsertion: Set<JointStationTripViewModel>
         let needsDeletion: Set<JointStationTripViewModel>
@@ -93,7 +103,7 @@ struct JointStationTripViewModel: Hashable, CustomStringConvertible {
         let bSet = Set(b)
         let added = bSet.subtract(aSet)
         let removed = aSet.subtract(bSet)
-        let same = aSet.intersect(bSet)
+        let same = bSet.intersect(aSet) // intersection from bSet ensures the instances will have the new vehicles
         
         return DeltaOfPairLists(needsInsertion: added, needsDeletion: removed, needsReloading: same)
     }

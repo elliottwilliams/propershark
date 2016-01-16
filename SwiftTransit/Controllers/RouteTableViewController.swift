@@ -50,21 +50,10 @@ class RouteTableViewController: UITableViewController {
         let cell = self.tableView.dequeueReusableCellWithIdentifier("RouteTableViewCell", forIndexPath: indexPath) as! RouteTableViewCell
         
         let entry = _pairs[indexPath.row]
-        cell.state = RouteTableViewCell.determineStateForVehicles(entry.hasVehicles(), station: entry.hasStation())!
-        cell.accessoryType = (cell.state == .VehiclesInTransit) ? .None : .DisclosureIndicator
-        cell.selectionStyle = (cell.state == .VehiclesInTransit) ? .None : .Default
-        cell.title.text = entry.displayText()
-        cell.subtitle.text = entry.subtitleText()
-        cell.rail.vehicleColor = entry.routeColor()
-        /*if (entry == _route.first) {
-            cell.rail.type = ArrivalTableViewCell.RailTypeWestSouth
-        } else if (entry == _route.last) {
-            cell.rail.type = ArrivalTableViewCell.RailTypeNorthWest
-        } else {
-            cell.rail.type = ArrivalTableViewCell.RailTypeNorthSouth
-        }*/
+        cell.useViewModel(entry)
+        cell.isAnimated = true
         
-        // Create vehicle
+        // Create vehicles, which are associated with this entry (this station), but not properties of this cell.
         for vehicle in entry.vehicles {
             let storedVehicleView = _vehicles[vehicle]
             if storedVehicleView != nil {
