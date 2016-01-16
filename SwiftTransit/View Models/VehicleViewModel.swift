@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 
 struct VehicleViewModel: Hashable, CustomStringConvertible {
-    private var _vehicle: Vehicle
+    let _vehicle: Vehicle
     
     var name: String { return _vehicle.name }
     var id: String { return _vehicle.id }

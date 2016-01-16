@@ -12,22 +12,26 @@ import MapKit
 struct StationViewModel: Hashable, CustomStringConvertible {
     
     // MARK: Properties
-    var coordinate: CLLocationCoordinate2D
-    var _station: Station
+    let isInTransit: Bool
+    let _station: Station
     
     // MARK: Computed properties
     var name: String { return _station.name }
     var id: String { return _station.id }
     var neighborhood: [String]? { return _station.neighborhood }
     var location: (latitude: Double, longitude: Double) { return _station.location }
-    var hashValue: Int { return _station.hashValue }
+    var hashValue: Int { return _station.hashValue ^ Int(isInTransit) }
     var description: String {
-        return "StationViewModel(\(self._station))"
+        if isInTransit {
+            return "StationViewModel(in transit: \(self._station))"
+        } else {
+            return "StationViewModel(\(self._station))"
+        }
     }
     
-    init(_ station: Station) {
+    init(_ station: Station, isInTransit: Bool = false) {
         _station = station
-        self.coordinate = CLLocationCoordinate2DMake(_station.location.latitude, _station.location.longitude)
+        self.isInTransit = isInTransit
     }
     
     func arrivalsAtStation() -> [ArrivalViewModel] {
@@ -36,17 +40,21 @@ struct StationViewModel: Hashable, CustomStringConvertible {
     }
     
     func tripsCurrentlyAtStation() -> [TripViewModel] {
-        let trips = Trip.DemoTrips.filter { $0.viewModel().currentStation == self }
+        let trips = Trip.DemoTrips.filter { $0.viewModel().currentStation() == self }
         return trips.map { $0.viewModel() }
     }
     
     func mapAnnotation() -> StationMapAnnotation {
         return StationMapAnnotation(loc: self.location)
     }
+    
+    func withIsInTransit(val: Bool) -> StationViewModel {
+        return StationViewModel(_station, isInTransit: val)
+    }
 }
 
 func ==(a: StationViewModel, b: StationViewModel) -> Bool {
-    return a._station == b._station
+    return a._station == b._station && a.isInTransit == b.isInTransit
 }
 
 class StationMapAnnotation: NSObject, MKAnnotation {

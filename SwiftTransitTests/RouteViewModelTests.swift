@@ -45,6 +45,13 @@ class RouteViewModelTests: XCTestCase {
         }
     }
     
+    func testLiveStationListOrdersCorrectly() {
+        let list = testInstance.liveStationListFromTrips(tripModels).filter { $0.isInTransit == false }
+        list.indices.forEach { i in
+            XCTAssertEqual(stations[i], list[i])
+        }
+    }
+    
     func testStationsAlongRouteWithTripsPairsArrivedVehicles() {
         let joint = testInstance.stationsAlongRouteWithTrips(tripModels, stations: stations)
         let atHogwarts = joint.filter { $0.station == stations[0] }
@@ -74,6 +81,16 @@ class RouteViewModelTests: XCTestCase {
             XCTAssertTrue(first.vehicles.contains(tripModels[0].vehicle))
             XCTAssertNil(first.station)
             XCTAssertEqual(first.nextStation, stations[0])
+        }
+    }
+    
+    func testLiveStationListSeparatesDistantVehicles() {
+        let list = testInstance.liveStationListFromTrips(tripModels) 
+        // harry isn't at hogwarts yet, and hogwarts is the first station, so we should see two hogwarts entries: the first in transit and the second arrives
+        XCTAssertGreaterThanOrEqual(list.count, TestData.stations.count)
+        if list.count > 1 {
+            XCTAssertEqual(list[0], StationViewModel(TestData.stations[0], isInTransit: true))
+            XCTAssertEqual(list[1], StationViewModel(TestData.stations[0], isInTransit: false))
         }
     }
     

@@ -9,9 +9,9 @@
 import UIKit
 
 struct ArrivalViewModel: Hashable, CustomStringConvertible {
-    private var arrival: Arrival
-    private var _route: Route
-    private var _vehicle: Vehicle
+    let arrival: Arrival
+    let _route: Route
+    let _vehicle: Vehicle
     
     var hashValue: Int { return arrival.hashValue }
     var description: String {

@@ -89,7 +89,7 @@ class RouteViewController: UIViewController, SceneMediatedController, RouteTable
         animateOutAction(sender)
     }
     @IBAction func advanceVehiclesAction(sender: AnyObject) {
-        let trips = route.tripsForRoute().map { $0.withNextStationSelected() }
+        let trips = Trip.DemoTrips.filter { $0.route.viewModel() == route }.map { $0.viewModel().withNextStationSelected() }
         let stations = route.stationsAlongRoute()
         
         let old = _routeTable._pairs
@@ -105,16 +105,16 @@ class RouteViewController: UIViewController, SceneMediatedController, RouteTable
             _routeTable.tableView.insertRowsAtIndexPaths(insertable, withRowAnimation: .Top)
             _routeTable.tableView.endUpdates()
             
-            _routeTable.tableView.visibleCells.forEach { cell in
-                if let cell = cell as? RouteTableViewCell {
-                    if ch.needsReloading.contains(cell.viewModel) {
-//                        let newModel = 
+//            _routeTable.tableView.visibleCells.forEach { cell in
+//                if let cell = cell as? RouteTableViewCell {
+//                    if ch.needsReloading.contains(cell.viewModel) {
+//                        let newModel =
 //                        cell.useViewModel(<#T##model: JointStationTripViewModel##JointStationTripViewModel#>)
-                    }
-                }
-            }
+//                    }
+//                }
+//            }
             ch.needsReloading.forEach { entry in
-                let path = old.indexOf(entry)
+                let path = new.indexOf(entry)
                 let cell = _routeTable.tableView.visibleCells[path!] as! RouteTableViewCell
                 cell.useViewModel(entry)
             }

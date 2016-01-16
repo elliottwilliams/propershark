@@ -35,8 +35,14 @@ struct RouteViewModel: Hashable, CustomStringConvertible {
         return _route.stations.map { $0.viewModel() }
     }
     
-    func tripsForRoute() -> [TripViewModel] {
-        return Trip.DemoTrips.map { $0.viewModel() }
+    func liveStationListFromTrips(trips: [TripViewModel]) -> [StationViewModel] {
+        var stations = self.stationsAlongRoute()
+        let currentStations = trips.map { $0.currentStation() }
+        currentStations.filter { $0.isInTransit }.forEach { stationInTransit in
+            let i = stations.indexOf(stationInTransit.withIsInTransit(false))
+            stations.insert(stationInTransit, atIndex: i!)
+        }
+        return stations
     }
     
     // This could be better done server-side with a SQL JOIN:
@@ -46,13 +52,14 @@ struct RouteViewModel: Hashable, CustomStringConvertible {
      *          AND route_station.route_id = trip.route_id
      *      ORDER BY station_idx;
     */
+    @available(*, deprecated=1.0, message="Use a route's live station list, instead")
     func stationsAlongRouteWithTrips(trips: [TripViewModel], stations: [StationViewModel]) -> [JointStationTripViewModel] {
         
         // Pair the sequenced list of stations with any trips whose vehicle is coming to that station
         var pairs: [JointStationTripViewModel] =
             stations.enumerate().map { (i, station) in
                 let nextStation = stations[safe: i+1] ?? stations[0]
-                return JointStationTripViewModel(trips: trips.filter { $0.currentStation == station }, station: station, nextStation: nextStation)
+                return JointStationTripViewModel(trips: trips.filter { $0.currentStation() == station }, station: station, nextStation: nextStation)
             }
         
         // Move vehicles who have not arrived at their current station to a nil station entry *before* the next
@@ -80,7 +87,8 @@ struct RouteViewModel: Hashable, CustomStringConvertible {
     }
     
     func stationsAlongRouteWithTrips() -> [JointStationTripViewModel] {
-        return stationsAlongRouteWithTrips(self.tripsForRoute(), stations: self.stationsAlongRoute())
+        let trips = Trip.DemoTrips.filter { $0.route == self._route }.map { $0.viewModel() }
+        return stationsAlongRouteWithTrips(trips, stations: self.stationsAlongRoute())
     }
 
 }

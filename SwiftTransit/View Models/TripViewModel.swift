@@ -16,9 +16,6 @@ struct TripViewModel: Hashable, CustomStringConvertible {
     let route: RouteViewModel
     let stations: [StationViewModel]
     
-    var currentStation: StationViewModel {
-        return stations[_trip.currentStation]
-    }
     var hashValue: Int { return _trip.hashValue }
     var description: String {
         return "TripViewModel(\(self._trip))"
@@ -37,6 +34,11 @@ struct TripViewModel: Hashable, CustomStringConvertible {
     
     func withNextStationSelected() -> TripViewModel {
         return TripViewModel(_trip.withNextStationSelected())
+    }
+    
+    func currentStation() -> StationViewModel {
+        let inTransit = !isVehicleAtCurrentStation()
+        return stations[_trip.currentStation].withIsInTransit(inTransit)
     }
 }
 

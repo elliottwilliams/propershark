@@ -19,6 +19,12 @@ struct JointStationTripViewModel: Hashable, CustomStringConvertible {
         return "JointStationTripViewModel(trips: \(self.trips), station: \(self.station), nextStation: \(self.nextStation))"
     }
     
+    init(trips: [TripViewModel], station: StationViewModel?, nextStation: StationViewModel) {
+        self.trips = trips
+        self.station = station
+        self.nextStation = nextStation
+    }
+    
     func hasVehicles() -> Bool {
         return self.trips.count > 0
     }
@@ -36,7 +42,7 @@ struct JointStationTripViewModel: Hashable, CustomStringConvertible {
         if hasStation() && hasVehicles() {
             return "\(pluralizedVehicles(vehicles)) arrived"
         } else if hasVehicles() {
-            return "\(pluralizedVehicles(vehicles)) in transit to \(trips.first!.currentStation.name)"
+            return "\(pluralizedVehicles(vehicles)) in transit to \(trips.first!.currentStation().name)"
         } else {
             return nil
         }

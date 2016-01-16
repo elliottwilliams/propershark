@@ -29,7 +29,7 @@ class StationViewController: UIViewController, SceneMediatedController, ArrivalT
         self.navigationItem.title = station.name
         
         // Configure the map
-        map.region = MKCoordinateRegion(center: station.coordinate, span: MKCoordinateSpanMake(0.01, 0.01))
+        map.region = MKCoordinateRegion(center: station.mapAnnotation().coordinate, span: MKCoordinateSpanMake(0.01, 0.01))
         showUserLocationIfEnabled()
         
         // Add the selected stop to the map
