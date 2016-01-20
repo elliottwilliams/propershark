@@ -69,10 +69,6 @@ struct JointStationTripViewModel: Hashable, CustomStringConvertible {
         }
     }
     
-    func routeColor() -> UIColor? {
-        return trips.first?.route.color
-    }
-    
     func hasDifferentVehiclesFrom(instance: JointStationTripViewModel) -> Bool {
         let ours = Set(self.vehicles)
         let theirs = Set(instance.vehicles)

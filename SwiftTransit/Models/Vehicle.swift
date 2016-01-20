@@ -16,6 +16,19 @@ struct Vehicle: Hashable, CustomStringConvertible {
     
     var hashValue: Int { return self.id.hashValue }
     var description: String { return "Vehicle(id: \(self.id), name: \(self.name))" }
+    
+    // Generate a pluralized list of vehicles (in English). Oxford comma implicit.
+    static func pluralize(vehicles: [VehicleViewModel]) -> String {
+        if (vehicles.count == 1) {
+            return "#\(vehicles.first!.id)"
+        } else if (vehicles.count == 2) {
+            return "#\(vehicles[0].id) and #\(vehicles[1].id)"
+        } else {
+            var ids = vehicles.map { "#" + $0.id }
+            ids[ids.count-1] = "and " + ids[ids.count-1]
+            return ids.joinWithSeparator(", ")
+        }
+    }
 }
 
 func ==(a: Vehicle, b: Vehicle) -> Bool {

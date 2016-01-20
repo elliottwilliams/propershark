@@ -12,6 +12,7 @@ import MapKit
 struct Trip: Hashable, CustomStringConvertible {
     let vehicle: Vehicle
     let route: Route
+    @available(*, deprecated=1.0)
     let currentStation: Int
     
     var hashValue: Int { return vehicle.hashValue + currentStation.hashValue }
@@ -28,6 +29,7 @@ struct Trip: Hashable, CustomStringConvertible {
             (currentStation == route.stations.count-1) ? 0 : currentStation+1)
     }
     
+    @available(*, deprecated=1.0)
     func isVehicleAtCurrentStation() -> Bool {
         let vehicleLoc = vehicle .location
         let stationLoc = route.stations[currentStation].location

@@ -21,10 +21,11 @@ class RouteTableViewCell: UITableViewCell {
             return updateStateFromState(oldValue, toState: self.state)
         }
     }
+    var station: StationViewModel { return _station }
     
     var isAnimated: Bool = false
     var stateConstraints = [State: [NSLayoutConstraint]]()
-    var viewModel: JointStationTripViewModel!
+    var _station: StationViewModel!
 
     @IBOutlet weak var rail: ScheduleRail!
     @IBOutlet weak var title: TransitLabel!
@@ -54,14 +55,13 @@ class RouteTableViewCell: UITableViewCell {
         return CGPoint(x: self.frame.minX + railPoint.x, y: self.frame.minY + railPoint.y)
     }
     
-    func useViewModel(model: JointStationTripViewModel) {
-        self.viewModel = model
-        self.state = RouteTableViewCell.determineStateForVehicles(model.hasVehicles(), station: model.hasStation())!
+    func apply(station: StationViewModel) {
+        _station = station
+        self.state = RouteTableViewCell.determineStateFromStation(station) ?? .EmptyStation
         self.accessoryType = (self.state == .VehiclesInTransit) ? .None : .DisclosureIndicator
         self.selectionStyle = (self.state == .VehiclesInTransit) ? .None : .Default
-        self.title.text = model.displayText()
-        self.subtitle.text = model.subtitleText()
-        self.rail.vehicleColor = model.routeColor()
+        self.title.text = station.displayText()
+        self.subtitle.text = station.subtitleText()
     }
     
     // MARK: State transitions
@@ -74,7 +74,6 @@ class RouteTableViewCell: UITableViewCell {
             self.subtitle.hidden = false
             self.stateConstraints[.VehiclesInTransit]!.forEach { $0.active = true }
             self.rail.showStation = false
-            self.rail.showVehicle = true
         }
     }
         
@@ -86,7 +85,6 @@ class RouteTableViewCell: UITableViewCell {
             self.subtitle.hidden = true
             self.stateConstraints[.EmptyStation]!.forEach { $0.active = true }
             self.rail.showStation = true
-            self.rail.showVehicle = false
         }
     }
     
@@ -98,7 +96,6 @@ class RouteTableViewCell: UITableViewCell {
             self.subtitle.hidden = false
             self.stateConstraints[.VehiclesAtStation]!.forEach { $0.active = true }
             self.rail.showStation = true
-            self.rail.showVehicle = true
         }
     }
     
@@ -147,15 +144,15 @@ class RouteTableViewCell: UITableViewCell {
     
     // MARK: Class functions
 
-    class func determineStateForVehicles(vehicles: Bool, station: Bool) -> State? {
-        switch (vehicles, station) {
-        case (true, true):
-            return State.VehiclesAtStation
+    class func determineStateFromStation(station: StationViewModel) -> State? {
+        switch (station.hasVehicles, station.isInTransit) {
         case (true, false):
+            return State.VehiclesAtStation
+        case (true, true):
             return State.VehiclesInTransit
-        case (false, true):
-            return State.EmptyStation
         case (false, false):
+            return State.EmptyStation
+        case (false, true):
             return nil
         }
     }

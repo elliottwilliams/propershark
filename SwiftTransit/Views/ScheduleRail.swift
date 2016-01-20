@@ -25,32 +25,18 @@ class ScheduleRail: UIView {
     
     // MARK: Properties
     
-    var showVehicle: Bool {
-        get { return !_vehicleLayer.hidden }
-        set(newState) { setVehicleState(newState) }
-    }
     var showStation: Bool {
         get { return !_stationLayer.hidden }
         set(newState) { setStationState(newState) }
     }
     var shape: RailShape = .NorthSouth
-    var vehicleColor: UIColor? {
-        get { return _vehicleColor }
-        set { updateColor(newValue ?? _defaultVehicleColor) }
-    }
     
     let _railColor = UIColor.lightGrayColor()
     let _stationLayer = CAShapeLayer()
-    let _vehicleLayer = CAShapeLayer()
-    let _pullDownVehicleLayer = CAShapeLayer()
     let _leftMargin = CGFloat(16.0) // Used to know how far offscreen to draw rails that end to the west
-    let _vehicleDotRadius = CGFloat(8.0)
-    let _vehicleStrokeWidth = CGFloat(3.0)
-    let _defaultVehicleColor = UIColor.blueColor()
     
     var _width: CGFloat!
     var _height: CGFloat!
-    var _vehicleColor: UIColor = UIColor.blueColor()
     var _hasLayout: Bool = false
     var _animationCallbacks: [CAAnimation: (anim: CAAnimation, finished: Bool) -> ()] = [:]
     
@@ -83,9 +69,6 @@ class ScheduleRail: UIView {
     // Add and configure layers
     func bootstrap() {
         self.layer.addSublayer(_stationLayer)
-        self.layer.addSublayer(_vehicleLayer)
-        self.layer.addSublayer(_pullDownVehicleLayer)
-        
         self.layer.needsDisplayOnBoundsChange = true
         self.layer.sublayers!.forEach { $0.needsDisplayOnBoundsChange = true }
         
@@ -98,9 +81,6 @@ class ScheduleRail: UIView {
         }
         drawRailOnLayer(layer as! CAShapeLayer) // layerClass() declares CAShapeLayer as this view's layer class, so this should always unwrap
         drawStationNode()
-//        drawVehicle(_vehicleLayer)
-//        drawVehicle(_pullDownVehicleLayer)
-        _pullDownVehicleLayer.hidden = true
     }
     
     // MARK: Reusable drawing code
@@ -131,21 +111,6 @@ class ScheduleRail: UIView {
         _stationLayer.path = path
         _stationLayer.strokeColor = _railColor.CGColor
         _stationLayer.lineWidth = 2.0
-    }
-    
-    func drawVehicle(layer: CAShapeLayer) {
-        let path = CGPathCreateMutable()
-        let edge = _vehicleDotRadius*2
-        CGPathAddEllipseInRect(path, nil, CGRectMake(0, 0, edge, edge))
-//        CGPathAddArc(path, nil, _width/2, _height/2, _vehicleDotRadius, 0, CGFloat(2.0*M_PI), true)
-        
-        layer.path = path
-        layer.frame = CGRectMake(_width/2 - _vehicleDotRadius, _height/2 - _vehicleDotRadius, edge, edge)
-        layer.strokeColor = UIColor.snowColor().CGColor
-        layer.lineWidth = _vehicleStrokeWidth
-        layer.fillColor = _vehicleColor.CGColor
-        layer.shadowOpacity = 0.3
-        layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
     }
     
     // Construct a path to draw the rail along and to send vehicles on based on shape, segment, and dimensions given. If a path is passed to this method, it will be modified with the requested rail path.
@@ -220,77 +185,11 @@ class ScheduleRail: UIView {
         return CGPoint(x: _width/2, y: _height/2)
     }
     
-    // MARK: Animation
-    
-    @available(*, deprecated=1.0)
-    func animationForVehiclePosition(path: CGPathRef, withDelay delay: Double = 0.0) -> CAKeyframeAnimation {
-        let anim = CAKeyframeAnimation(keyPath: "position")
-        anim.path = path
-        anim.fillMode = kCAFillModeBackwards
-        anim.beginTime = delay
-//        anim.duration = 0.25
-        return anim
-    }
-    
-    // A keyframe animation that changes visibility at the very end of the animation. This allows a visibility change to be grouped with other animations, and change at the end of the animation.
-    func animationForHiddenness(shouldHide: Bool) -> CABasicAnimation {
-        let anim = CABasicAnimation(keyPath: "hidden")
-        anim.fromValue = shouldHide
-        anim.toValue = shouldHide
-        anim.fillMode = kCAFillModeBoth
-        return anim
-    }
-    
-    func animatePushDownToRailOfShape(shape: RailShape, height: CGFloat, completion: ((Bool) -> Void)? = nil) {
-        let options = UIViewAnimationOptions.CurveEaseInOut
-        UIView.animateWithDuration(0.25, delay: 0.0, options: options, animations: {
-            let group = CAAnimationGroup()
-            let hiddenAnim = self.animationForHiddenness(false)
-            let positionAnim = CAKeyframeAnimation(keyPath: "position")
-            
-            let path = CGPathCreateMutable()
-            self.drawRailPath(path, shape: self.shape, segment: .Exit, width: self._width, height: self._height)
-            self.drawRailPath(path, shape: shape, segment: .Entrance, width: self._width, height: height)
-            positionAnim.path = path
-            
-            group.animations = [positionAnim, hiddenAnim]
-            self._vehicleLayer.addAnimation(group, forKey: "showVehicle")
-        }, completion: completion)
-    }
-    
-    func animatePullDown(completion: ((Bool) -> Void)? = nil) {
-        let options = UIViewAnimationOptions.CurveEaseOut
-        UIView.animateWithDuration(0.25, delay: 0.0, options: options, animations: {
-            let group = CAAnimationGroup()
-            let hiddenAnim = self.animationForHiddenness(false)
-            let positionAnim = CAKeyframeAnimation(keyPath: "position")
-            
-            let path = CGPathCreateMutable()
-            self.drawRailPath(path, shape: self.shape, segment: .Entrance, width: self._width, height: self._height)
-            positionAnim.path = path
-            
-            group.animations = [positionAnim, hiddenAnim]
-            self._pullDownVehicleLayer.addAnimation(group, forKey: "showVehicle")
-        }, completion: completion)
-    }
-    
     // MARK: Setters and updaters
-    
-    // Set visibility of the vehicle and animate vehicle entrance/exit
-    func setVehicleState(showVehicle: Bool) {
-        UIView.animateWithDuration(0.0) {
-            self._vehicleLayer.hidden = !showVehicle
-        }
-    }
     
     func setStationState(showStation: Bool) {
         _stationLayer.hidden = !showStation
     }
     
-    func updateColor(newColor: UIColor) {
-        _vehicleColor = newColor
-        _vehicleLayer.fillColor = newColor.CGColor
-        _pullDownVehicleLayer.fillColor = newColor.CGColor
-    }
 
 }

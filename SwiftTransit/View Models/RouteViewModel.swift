@@ -10,17 +10,27 @@ import UIKit
 
 struct RouteViewModel: Hashable, CustomStringConvertible {
     let _route: Route
-    init(_ route: Route) {
-        _route = route
-    }
+    let _arrivals: [ArrivalViewModel]
+    
+    // MARK: Computed properties
     
     var name: String { return _route.name }
     var id: String { return _route.id }
     var color: UIColor { return _route.color }
+    var stations: [StationViewModel] { return _route.stations.map { $0.viewModel() } }
+    var arrivals: [ArrivalViewModel] { return _arrivals }
     
     var hashValue: Int { return _route.hashValue }
     var description: String {
         return "RouteViewModel(\(self._route))"
+    }
+    
+    init(_ route: Route, arrivals: [ArrivalViewModel]) {
+        _route = route
+        _arrivals = arrivals
+    }
+    init(_ route: Route) {
+        self.init(route, arrivals: [])
     }
     
     func routeNumber() -> String {
@@ -31,16 +41,24 @@ struct RouteViewModel: Hashable, CustomStringConvertible {
         return "\(_route.id) \(_route.name)"
     }
     
+    @available(*, deprecated=1.0, message="use stations property")
     func stationsAlongRoute() -> [StationViewModel] {
         return _route.stations.map { $0.viewModel() }
     }
     
-    func liveStationListFromTrips(trips: [TripViewModel]) -> [StationViewModel] {
-        var stations = self.stationsAlongRoute()
-        let currentStations = trips.map { $0.currentStation() }
-        currentStations.filter { $0.isInTransit }.forEach { stationInTransit in
-            let i = stations.indexOf(stationInTransit.withIsInTransit(false))
-            stations.insert(stationInTransit, atIndex: i!)
+    func tripsForRoute() -> [TripViewModel] {
+        return _arrivals.map { $0.trip }
+    }
+    
+    func liveStationList() -> [StationViewModel] {
+        var stations = self.stations
+        let inTransit = _arrivals.filter { !$0.hasArrived }
+        inTransit.forEach { arrival in
+            if !stations.contains(arrival.station) {
+                let i = stations.indexOf(arrival.station.withIsInTransit(false))
+                stations[i!] = stations[i!].withoutArrival(arrival)
+                stations.insert(arrival.station, atIndex: i!)
+            }
         }
         return stations
     }
@@ -86,11 +104,15 @@ struct RouteViewModel: Hashable, CustomStringConvertible {
         return pairs
     }
     
+    @available(*, deprecated=1.0, message="Use a route's live station list, instead")
     func stationsAlongRouteWithTrips() -> [JointStationTripViewModel] {
         let trips = Trip.DemoTrips.filter { $0.route == self._route }.map { $0.viewModel() }
         return stationsAlongRouteWithTrips(trips, stations: self.stationsAlongRoute())
     }
 
+    func withArrivals(arrivals: [ArrivalViewModel]) -> RouteViewModel {
+        return RouteViewModel(self._route, arrivals: arrivals)
+    }
 }
 
 func ==(a: RouteViewModel, b: RouteViewModel) -> Bool {

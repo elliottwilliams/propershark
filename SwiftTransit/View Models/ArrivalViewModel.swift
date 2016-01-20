@@ -7,25 +7,39 @@
 //
 
 import UIKit
+import MapKit
 
 struct ArrivalViewModel: Hashable, CustomStringConvertible {
-    let arrival: Arrival
+    
+    // MARK: Immutable properties
+    
+    let _arrival: Arrival
     let _route: Route
     let _vehicle: Vehicle
+    let isInTransit: Bool
+    let hasArrived: Bool
     
-    var hashValue: Int { return arrival.hashValue }
+    // MARK: Computed properties
+    
+    var trip: TripViewModel { return _arrival.trip.viewModel() }
+    var station: StationViewModel { return _arrival.station.viewModel().withIsInTransit(self.isInTransit) }
+    var hashValue: Int { return _arrival.hashValue }
     var description: String {
         return "ArrivalViewModel(route: \(self._route), vehicle: \(self._vehicle))"
     }
     
     init(_ arrival: Arrival) {
-        self.arrival = arrival
+        _arrival = arrival
         _route = arrival.trip.route
         _vehicle = arrival.trip.vehicle
+        
+        let arrived = arrival.isVehicleAtStation()
+        self.isInTransit = !arrived
+        self.hasArrived = arrived
     }
     
     func relativeArrivalTime() -> String {
-        let relativeArrival = self.arrival.time.timeIntervalSinceNow
+        let relativeArrival = _arrival.time.timeIntervalSinceNow
         let minutes = relativeArrival / 60
         let hours = relativeArrival / (60*60)
         if (minutes > 59) {
@@ -54,8 +68,11 @@ struct ArrivalViewModel: Hashable, CustomStringConvertible {
     func vehicle() -> VehicleViewModel {
         return VehicleViewModel(_vehicle)
     }
+    
+    // MARK: Static functions
+    
 }
 
 func ==(a: ArrivalViewModel, b: ArrivalViewModel) -> Bool {
-    return a.arrival == b.arrival
+    return a._arrival == b._arrival
 }

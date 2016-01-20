@@ -28,14 +28,17 @@ struct TripViewModel: Hashable, CustomStringConvertible {
         stations = _trip.route.stations.map { $0.viewModel() }
     }
     
+    @available(*, deprecated=1.0)
     func isVehicleAtCurrentStation() -> Bool {
         return _trip.isVehicleAtCurrentStation()
     }
     
+    @available(*, deprecated=1.0)
     func withNextStationSelected() -> TripViewModel {
         return TripViewModel(_trip.withNextStationSelected())
     }
     
+    @available(*, deprecated=1.0)
     func currentStation() -> StationViewModel {
         let inTransit = !isVehicleAtCurrentStation()
         return stations[_trip.currentStation].withIsInTransit(inTransit)
