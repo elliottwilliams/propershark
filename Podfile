@@ -3,16 +3,17 @@ platform :ios, '9.0'
 # Uncomment this line if you're using Swift
 use_frameworks!
 
-target 'SwiftTransit' do
+target 'Proper' do
     pod 'Colours/Swift'
+    pod 'MDWamp'
     pod 'Reveal-iOS-SDK', :configurations => ['Debug']
 end
 
-target 'SwiftTransitTests' do
+target 'ProperTests' do
 
 end
 
-target 'SwiftTransitUITests' do
+target 'ProperUITests' do
 
 end
 
