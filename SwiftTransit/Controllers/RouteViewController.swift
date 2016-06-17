@@ -80,16 +80,17 @@ class RouteViewController: UIViewController, SceneMediatedController, RouteTable
 
     @IBAction func advanceVehiclesAction(sender: AnyObject) {
         
-        // Advance all arrivals
-        let old = route.liveStationList()
-        let arrivals = route.arrivals.map { $0._arrival.withAdvancedStation().viewModel() }
-        route = route.withArrivals(arrivals)
-        let new = route.liveStationList()
+        // Advance all arrivals to the next station, and update the route this view is representing.
+        let old = self.route.liveStationList()
+        let arrivals = self.route.arrivals.map { $0.withAdvancedStation() }
+        self.route = self.route.withArrivals(arrivals)
+        let new = self.route.liveStationList()
         
+        // Calculate changes made to the live list, which will be reflected in the table
         let changeset = StationViewModel.changesFrom(old, to: new)
         
-        _routeTable.apply(self.route)
-        
+        // Commit these changes to the table
+        _routeTable.apply(self.route) // TODO: perhaps a lot of this method's functionality can be moved into apply()
         _routeTable.tableView.beginUpdates()
         let deletable = changeset.deleted.map { NSIndexPath(forRow: old.indexOf($0)!, inSection: 0) }
         let insertable = changeset.inserted.map { NSIndexPath(forRow: new.indexOf($0)!, inSection: 0) }
@@ -97,17 +98,15 @@ class RouteViewController: UIViewController, SceneMediatedController, RouteTable
         _routeTable.tableView.insertRowsAtIndexPaths(insertable, withRowAnimation: .Top)
         _routeTable.tableView.endUpdates()
         
-        // update view models and vehicle positions for cells that are persisting
+        // Update view models and vehicle positions for cells that are persisting
         changeset.persisted.forEach { station in
             let path = new.indexOf(station)
             let cell = _routeTable.tableView.visibleCells[path!] as! RouteTableViewCell
             cell.apply(station)
-            station.arrivalsAtStation().forEach { _routeTable.positionVehicleForArrival($0, atStation: station) }
+            _routeTable.positionVehiclesAtCell(cell)
         }
         
-        // delete any left behind vehicle dots
-        changeset.deleted.forEach { station in
-            station.vehiclesAtStation().forEach { _routeTable.removeVehicle($0) }
-        }
+        // Delete any left behind vehicle dots
+        _routeTable.cleanRailVehicles()
     }
 }

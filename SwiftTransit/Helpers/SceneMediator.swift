@@ -41,14 +41,14 @@ class SceneMediator: NSObject, SceneMediatorProtocol {
             let src = segue.sourceViewController as! ArrivalTableViewController
             let dest = segue.destinationViewController as! VehicleViewController
             let indexPath = src.tableView.indexPathForSelectedRow
-            dest.vehicle = src._arrivals[indexPath!.row].vehicle()
+            dest.vehicle = src._arrivals[indexPath!.row].vehicle
         },
         
         "ShowVehicleWhenSelectedFromStation": { (segue, sender) in
             let src = segue.sourceViewController as! StationViewController
             let dest = segue.destinationViewController as! VehicleViewController
             let arrival: ArrivalViewModel = decode(sender as! NSData)
-            dest.vehicle = arrival.vehicle()
+            dest.vehicle = arrival.vehicle
         },
         
         "ShowRouteAfterSelectionFromList": { (segue, sender) in

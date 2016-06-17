@@ -35,7 +35,7 @@ struct StationViewModel: Hashable, CustomStringConvertible {
         if let arrivals = arrivals {
             _arrivals = arrivals
         } else {
-            _arrivals = Arrival.demoArrivals().filter { $0.station == station }.map { $0.viewModel() }
+            _arrivals = Arrival.demoArrivals().filter { $0.station == station && $0.isVehicleAtStation() == !isInTransit }.map { $0.viewModel() }
         }
         _station = station
         self.isInTransit = isInTransit
@@ -47,7 +47,7 @@ struct StationViewModel: Hashable, CustomStringConvertible {
     }
     
     func vehiclesAtStation() -> [VehicleViewModel] {
-        return _arrivals.map { $0.vehicle() }
+        return _arrivals.map { $0.vehicle }
     }
     
     @available(*, deprecated=1.0, message="use arrivalsAtStation()")
@@ -65,7 +65,7 @@ struct StationViewModel: Hashable, CustomStringConvertible {
     }
     
     func subtitleText() -> String? {
-        let vehicles = self.arrivalsAtStation().map { $0.vehicle() }
+        let vehicles = self.arrivalsAtStation().map { $0.vehicle }
         if !vehicles.isEmpty {
             if isInTransit {
                 return "\(Vehicle.pluralize(vehicles)) in transit to \(name)"

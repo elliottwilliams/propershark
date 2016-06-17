@@ -40,14 +40,40 @@ class RouteTableViewController: UITableViewController {
         _arrivals = route.arrivals
     }
     
+    func positionVehiclesAtCell(cell: RouteTableViewCell) {
+        cell.station.arrivalsAtStation().forEach { arrival in
+            positionVehicleForArrival(arrival, atCell: cell)
+        }
+    }
+    
+    // Deletes any rail vehicles that no longer correspond to a row in the table.
+    func cleanRailVehicles() {
+        var del = _vehicles
+        var keep = [VehicleViewModel: RailVehicle]()
+        for arrival in _arrivals {
+            let vehicle = arrival.vehicle
+            if let railVehicle = del[vehicle] {
+                keep[vehicle] = railVehicle
+                del[vehicle] = nil
+            }
+        }
+        // Delete RailVehicles in the del list.
+        del.forEach { (vehicle, _) in removeVehicle(vehicle) }
+        // RailVehicles in the keep list are the ones that correspond to arrivals the table is showing, they are the new canonical vehicles on the rail.
+        _vehicles = keep
+    }
+    
     // Create or reposition a vehicle dot over the table
     func positionVehicleForArrival(arrival: ArrivalViewModel, atCell cell: RouteTableViewCell) {
-        let vehicle = arrival.vehicle()
+        let vehicle = arrival.vehicle
+        let (coord, zPos) = calculateRailVehicleForArrival(arrival, atCell: cell)
         // move a vehicle view that's pre-existing, otherwise create one here
         if let stored = _vehicles[vehicle] {
-            stored.moveTo(cell.railtieCoordinates())
+            stored.moveTo(coord)
+            stored.layer.zPosition = zPos
         } else {
-            let view = RailVehicle(point: cell.railtieCoordinates(), color: arrival.routeColor())
+            let view = RailVehicle(point: coord, arrival: arrival)
+            view.layer.zPosition = zPos
             self.view.addSubview(view)
             _vehicles[vehicle] = view
         }
@@ -59,10 +85,35 @@ class RouteTableViewController: UITableViewController {
         }
     }
     
+    // Calculate the RailVehicle dot's poistion based on other arrivals at the cell's station
+    func calculateRailVehicleForArrival(arrival: ArrivalViewModel, atCell cell: RouteTableViewCell) ->
+        (xy: CGPoint, z: CGFloat)
+    {
+        var point = cell.railtieCoordinates()
+        var z = RailVehicle.baseZPosition
+        let station = cell.station
+        let arrivals = station.arrivalsAtStation().sort(ArrivalViewModel.compareTimes)
+        
+        // Shift vehicles up and behind vehicles that are arriving sooner
+        if let idx = arrivals.map({ $0.vehicle }).indexOf(arrival.vehicle) {
+            point.y -= RailVehicle.offset * CGFloat(idx)
+            z += CGFloat(arrivals.count - 1 - idx) // sooner vehicles have higher z positions
+        }
+        return (point, z)
+    }
+    
+    // Fade out a RailVehicle and delete it from the table view and our internal data structures.
     func removeVehicle(vehicle: VehicleViewModel) {
-        if let view = _vehicles[vehicle] {
-            view.removeFromSuperview()
-            _vehicles[vehicle] = nil
+        if let railVehicle = _vehicles[vehicle] {
+            UIView.animateWithDuration(0.25,
+                animations: {
+                    railVehicle.alpha = 0.0
+                },
+                completion: { _ in
+                    railVehicle.removeFromSuperview()
+                    self._vehicles[vehicle] = nil
+                }
+            )
         }
     }
     
@@ -86,7 +137,7 @@ class RouteTableViewController: UITableViewController {
         cell.isAnimated = true
         
         // Create vehicles, which are associated with this entry (this station), but not properties of this cell.
-        station.arrivalsAtStation().forEach { positionVehicleForArrival($0, atCell: cell) }
+        positionVehiclesAtCell(cell)
         
         return cell
     }

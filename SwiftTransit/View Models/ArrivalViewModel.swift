@@ -23,10 +23,12 @@ struct ArrivalViewModel: Hashable, CustomStringConvertible {
     
     var trip: TripViewModel { return _arrival.trip.viewModel() }
     var station: StationViewModel { return _arrival.station.viewModel().withIsInTransit(self.isInTransit) }
+    var vehicle: VehicleViewModel { return _vehicle.viewModel() }
     var hashValue: Int { return _arrival.hashValue }
     var description: String {
-        return "ArrivalViewModel(route: \(self._route), vehicle: \(self._vehicle))"
+        return "ArrivalViewModel(route: \(self._route), vehicle: \(self._vehicle), station: \(self._arrival.station))"
     }
+    var time: NSDate { return _arrival.time }
     
     init(_ arrival: Arrival) {
         _arrival = arrival
@@ -65,12 +67,18 @@ struct ArrivalViewModel: Hashable, CustomStringConvertible {
         return _vehicle.capacity
     }
     
-    func vehicle() -> VehicleViewModel {
-        return VehicleViewModel(_vehicle)
+    // MARK: State transitions
+    
+    func withAdvancedStation() -> ArrivalViewModel {
+        return ArrivalViewModel(_arrival.withAdvancedStation())
     }
     
     // MARK: Static functions
     
+    // Sort by arrival time
+    static func compareTimes(a: ArrivalViewModel, isOrderedBefore b: ArrivalViewModel) -> Bool {
+        return a.time.compare(b.time) != .OrderedDescending
+    }
 }
 
 func ==(a: ArrivalViewModel, b: ArrivalViewModel) -> Bool {

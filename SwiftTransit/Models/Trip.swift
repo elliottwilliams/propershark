@@ -15,7 +15,7 @@ struct Trip: Hashable, CustomStringConvertible {
     @available(*, deprecated=1.0)
     let currentStation: Int
     
-    var hashValue: Int { return vehicle.hashValue + currentStation.hashValue }
+    var hashValue: Int { return vehicle.hashValue ^ route.hashValue  }
     var description: String { return "Trip(vehicle: \(self.vehicle))" }
     
     init(vehicle: Vehicle, route: Route, currentStationIdx: Int = 0) {
@@ -24,12 +24,13 @@ struct Trip: Hashable, CustomStringConvertible {
         self.currentStation = currentStationIdx
     }
     
+    @available(*, deprecated=1.0, message="use Arrival#withAdvancedStation()")
     func withNextStationSelected() -> Trip {
         return Trip(vehicle: vehicle, route: route, currentStationIdx:
             (currentStation == route.stations.count-1) ? 0 : currentStation+1)
     }
     
-    @available(*, deprecated=1.0)
+    @available(*, deprecated=1.0, message="use Arrival#isVehicleAtStation()")
     func isVehicleAtCurrentStation() -> Bool {
         let vehicleLoc = vehicle .location
         let stationLoc = route.stations[currentStation].location
@@ -43,7 +44,7 @@ struct Trip: Hashable, CustomStringConvertible {
 }
 
 func ==(a: Trip, b: Trip) -> Bool {
-    return a.vehicle == b.vehicle && a.route == b.route && a.currentStation == b.currentStation
+    return a.vehicle == b.vehicle && a.route == b.route
 }
 
 extension Trip {

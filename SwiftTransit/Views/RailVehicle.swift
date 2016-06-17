@@ -11,16 +11,20 @@ import UIKit
 class RailVehicle: UIView {
     
     var color: UIColor = UIColor.blueColor()
+    var arrival: ArrivalViewModel?
 
     let _vehicleDotRadius = CGFloat(8.0)
     let _vehicleStrokeWidth = CGFloat(3.0)
     
     static let width = CGFloat(22)
     static let height = CGFloat(22)
+    static let offset = CGFloat(5.5) // distance between overlapping vehicles
+    static let baseZPosition = CGFloat(20)
     
     override init(frame: CGRect) {
         let centered = RailVehicle.frameForPoint(CGPoint(x: frame.minX, y: frame.minY))
         super.init(frame: centered)
+        self.layer.zPosition = RailVehicle.baseZPosition
         self.layer.setNeedsDisplay()
     }
     
@@ -28,22 +32,21 @@ class RailVehicle: UIView {
         self.init(frame: CGRectMake(point.x, point.y, 0, 0))
     }
     
-    convenience init(frame: CGRect, color: UIColor?) {
+    convenience init(frame: CGRect, arrival: ArrivalViewModel?) {
         self.init(frame: frame)
-        if color != nil {
-            self.color = color!
-        }
+        self.arrival = arrival
+        self.color = arrival?.routeColor() ?? UIColor.blueColor()
     }
     
-    convenience init(point: CGPoint, color: UIColor?) {
+    convenience init(point: CGPoint, arrival: ArrivalViewModel?) {
         self.init(point: point)
-        if color != nil {
-            self.color = color!
-        }
+        self.arrival = arrival
+        self.color = arrival?.routeColor() ?? UIColor.blueColor()
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+        self.layer.zPosition = RailVehicle.baseZPosition
         self.layer.setNeedsDisplay()
     }
     
@@ -72,6 +75,10 @@ class RailVehicle: UIView {
         UIView.animateWithDuration(0.25, animations: {
             self.frame = RailVehicle.frameForPoint(coords)
         }, completion: completion)
+    }
+    
+    func isAtStation(station: StationViewModel) -> Bool {
+        return arrival?.station == station
     }
     
 }
