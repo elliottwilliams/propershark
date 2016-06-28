@@ -19,8 +19,6 @@ protocol Configuration {
 }
 
 // Methods to look up a config from its environment name.
-extension Configuration {
-    func forEnvironment(env: String) -> Configuration.Type? {
-        return configEnvironments[env] // defined in ConfigEnvironments.swift
-    }
+func configurationForEnvironment(env: String) -> Configuration.Type? {
+    return configEnvironments[env] // defined in ConfigEnvironments.swift
 }

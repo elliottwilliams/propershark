@@ -14,7 +14,6 @@
 		2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */; };
 		2635DB701C3CBEC500EB58F5 /* DemoTableFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2635DB6F1C3CBEC500EB58F5 /* DemoTableFooter.xib */; };
 		2635DB721C3CBF4700EB58F5 /* RouteTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB711C3CBF4700EB58F5 /* RouteTableView.swift */; };
-		2635DB741C3CCC9400EB58F5 /* JointStationTripViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB731C3CCC9400EB58F5 /* JointStationTripViewModelTests.swift */; };
 		2635DB761C3CD07D00EB58F5 /* TestStructures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB751C3CD07D00EB58F5 /* TestStructures.swift */; };
 		2635DB781C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB771C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift */; };
 		264782541C2A64A0009D9AD0 /* Vehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264782531C2A64A0009D9AD0 /* Vehicle.swift */; };
@@ -27,8 +26,10 @@
 		2647826E1C30BFDF009D9AD0 /* ArrivalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647826D1C30BFDF009D9AD0 /* ArrivalViewModel.swift */; };
 		264782701C30C187009D9AD0 /* StationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647826F1C30C187009D9AD0 /* StationViewModel.swift */; };
 		264782741C30D033009D9AD0 /* RouteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264782731C30D033009D9AD0 /* RouteViewModel.swift */; };
+		2650D28E1D176B65003758BF /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2650D28D1D176B65003758BF /* Configuration.swift */; };
+		2650D2901D176FD9003758BF /* TransportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2650D28F1D176FD9003758BF /* TransportTests.swift */; };
+		2650D2931D1A4CAD003758BF /* ConfigEnvironments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2650D2921D1A4CAD003758BF /* ConfigEnvironments.swift */; };
 		2650EDA01C41CFCC006CCD42 /* SafeArrayIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2650ED9F1C41CFCC006CCD42 /* SafeArrayIndex.swift */; };
-		2650EDA21C41D9D0006CCD42 /* RouteViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2650EDA11C41D9D0006CCD42 /* RouteViewModelTests.swift */; };
 		2650EDA41C41D9FD006CCD42 /* TripTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2650EDA31C41D9FD006CCD42 /* TripTests.swift */; };
 		267019581C3F5BB50057FD11 /* RailVehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267019571C3F5BB50057FD11 /* RailVehicle.swift */; };
 		268632811C319B0D00839A22 /* SceneMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268632801C319B0D00839A22 /* SceneMediator.swift */; };
@@ -42,7 +43,7 @@
 		26A424B91BD2C1320035754F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 26A424B71BD2C1320035754F /* Main.storyboard */; };
 		26A424BB1BD2C1320035754F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26A424BA1BD2C1320035754F /* Assets.xcassets */; };
 		26A424BE1BD2C1320035754F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 26A424BC1BD2C1320035754F /* LaunchScreen.storyboard */; };
-		26A424D41BD2C1320035754F /* SwiftTransitUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424D31BD2C1320035754F /* SwiftTransitUITests.swift */; };
+		26A424D41BD2C1320035754F /* ProperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424D31BD2C1320035754F /* ProperUITests.swift */; };
 		26A424E21BD2C7EE0035754F /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26A424E11BD2C7EE0035754F /* MapKit.framework */; };
 		26A424E51BD2D3F20035754F /* ArrivalTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424E31BD2D3F20035754F /* ArrivalTableViewCell.swift */; };
 		26A424E61BD2D3F20035754F /* ArrivalTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26A424E41BD2D3F20035754F /* ArrivalTableViewCell.xib */; };
@@ -51,6 +52,10 @@
 		26AC8BB21BD345F100AA0001 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26AC8BB11BD345F100AA0001 /* Media.xcassets */; };
 		26AC8BB41BD34BA700AA0001 /* VehicleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AC8BB31BD34BA700AA0001 /* VehicleViewController.swift */; };
 		26AC8BB61BD3503300AA0001 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26AC8BB51BD3503300AA0001 /* QuartzCore.framework */; };
+		26B3DC141D164F06001E29AA /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B3DC131D164F06001E29AA /* DataStore.swift */; };
+		26B3DC161D164F8F001E29AA /* Base.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B3DC151D164F8F001E29AA /* Base.swift */; };
+		26B3DC181D165403001E29AA /* DataStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B3DC171D165403001E29AA /* DataStoreTests.swift */; };
+		26B3DC561D170BAE001E29AA /* Transport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B3DC551D170BAE001E29AA /* Transport.swift */; };
 		26C598BC1C250D1E00BC9FE1 /* RouteBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C598BB1C250D1E00BC9FE1 /* RouteBadge.swift */; };
 		26DFB6761C35A7F7006A8AE0 /* ScheduleRail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DFB6751C35A7F7006A8AE0 /* ScheduleRail.swift */; };
 		26DFB6781C35B26D006A8AE0 /* TripViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DFB6771C35B26D006A8AE0 /* TripViewModel.swift */; };
@@ -65,14 +70,14 @@
 			containerPortal = 26A424A81BD2C1320035754F /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 26A424AF1BD2C1320035754F;
-			remoteInfo = SwiftTransit;
+			remoteInfo = Proper;
 		};
 		26A424D01BD2C1320035754F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 26A424A81BD2C1320035754F /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 26A424AF1BD2C1320035754F;
-			remoteInfo = SwiftTransit;
+			remoteInfo = Proper;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -85,7 +90,6 @@
 		2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabelTests.swift; sourceTree = "<group>"; };
 		2635DB6F1C3CBEC500EB58F5 /* DemoTableFooter.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DemoTableFooter.xib; sourceTree = "<group>"; };
 		2635DB711C3CBF4700EB58F5 /* RouteTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableView.swift; sourceTree = "<group>"; };
-		2635DB731C3CCC9400EB58F5 /* JointStationTripViewModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JointStationTripViewModelTests.swift; sourceTree = "<group>"; };
 		2635DB751C3CD07D00EB58F5 /* TestStructures.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestStructures.swift; sourceTree = "<group>"; };
 		2635DB771C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableViewHeaderFooterView.swift; sourceTree = "<group>"; };
 		264782531C2A64A0009D9AD0 /* Vehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vehicle.swift; sourceTree = "<group>"; };
@@ -98,8 +102,10 @@
 		2647826D1C30BFDF009D9AD0 /* ArrivalViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrivalViewModel.swift; sourceTree = "<group>"; };
 		2647826F1C30C187009D9AD0 /* StationViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = StationViewModel.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		264782731C30D033009D9AD0 /* RouteViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RouteViewModel.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		2650D28D1D176B65003758BF /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
+		2650D28F1D176FD9003758BF /* TransportTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransportTests.swift; sourceTree = "<group>"; };
+		2650D2921D1A4CAD003758BF /* ConfigEnvironments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigEnvironments.swift; sourceTree = "<group>"; };
 		2650ED9F1C41CFCC006CCD42 /* SafeArrayIndex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SafeArrayIndex.swift; sourceTree = "<group>"; };
-		2650EDA11C41D9D0006CCD42 /* RouteViewModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteViewModelTests.swift; sourceTree = "<group>"; };
 		2650EDA31C41D9FD006CCD42 /* TripTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = TripTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		267019571C3F5BB50057FD11 /* RailVehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RailVehicle.swift; sourceTree = "<group>"; };
 		268632801C319B0D00839A22 /* SceneMediator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SceneMediator.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -115,10 +121,10 @@
 		26A424BA1BD2C1320035754F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		26A424BD1BD2C1320035754F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		26A424BF1BD2C1320035754F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		26A424C41BD2C1320035754F /* Proper.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Proper.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		26A424C41BD2C1320035754F /* ProperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ProperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		26A424CA1BD2C1320035754F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		26A424CF1BD2C1320035754F /* Proper.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Proper.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		26A424D31BD2C1320035754F /* SwiftTransitUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTransitUITests.swift; sourceTree = "<group>"; };
+		26A424CF1BD2C1320035754F /* ProperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ProperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		26A424D31BD2C1320035754F /* ProperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ProperUITests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26A424D51BD2C1320035754F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		26A424E11BD2C7EE0035754F /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		26A424E31BD2D3F20035754F /* ArrivalTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ArrivalTableViewCell.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -128,6 +134,10 @@
 		26AC8BB11BD345F100AA0001 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		26AC8BB31BD34BA700AA0001 /* VehicleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VehicleViewController.swift; sourceTree = "<group>"; };
 		26AC8BB51BD3503300AA0001 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		26B3DC131D164F06001E29AA /* DataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
+		26B3DC151D164F8F001E29AA /* Base.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Base.swift; sourceTree = "<group>"; };
+		26B3DC171D165403001E29AA /* DataStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreTests.swift; sourceTree = "<group>"; };
+		26B3DC551D170BAE001E29AA /* Transport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transport.swift; sourceTree = "<group>"; };
 		26C598BB1C250D1E00BC9FE1 /* RouteBadge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RouteBadge.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26DFB6751C35A7F7006A8AE0 /* ScheduleRail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleRail.swift; sourceTree = "<group>"; };
 		26DFB6771C35B26D006A8AE0 /* TripViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TripViewModel.swift; sourceTree = "<group>"; };
@@ -215,6 +225,7 @@
 				264782571C2F435F009D9AD0 /* Route.swift */,
 				264782531C2A64A0009D9AD0 /* Vehicle.swift */,
 				264782681C30BC14009D9AD0 /* Station.swift */,
+				26B3DC151D164F8F001E29AA /* Base.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -254,6 +265,15 @@
 			path = "View Models";
 			sourceTree = "<group>";
 		};
+		2650D2911D1A4C45003758BF /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				2650D28D1D176B65003758BF /* Configuration.swift */,
+				2650D2921D1A4CAD003758BF /* ConfigEnvironments.swift */,
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
 		26A424A71BD2C1320035754F = {
 			isa = PBXGroup;
 			children = (
@@ -275,8 +295,8 @@
 			isa = PBXGroup;
 			children = (
 				26A424B01BD2C1320035754F /* Proper.app */,
-				26A424C41BD2C1320035754F /* Proper.xctest */,
-				26A424CF1BD2C1320035754F /* Proper.xctest */,
+				26A424C41BD2C1320035754F /* ProperTests.xctest */,
+				26A424CF1BD2C1320035754F /* ProperUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -286,8 +306,10 @@
 			children = (
 				26A424BF1BD2C1320035754F /* Info.plist */,
 				26A424BA1BD2C1320035754F /* Assets.xcassets */,
+				2650D2911D1A4C45003758BF /* Configuration */,
 				264782621C309F7A009D9AD0 /* Controllers */,
 				264782651C309FB9009D9AD0 /* Helpers */,
+				26B3DC121D164E98001E29AA /* Connection */,
 				264782631C309F85009D9AD0 /* Models */,
 				2647826C1C30BF93009D9AD0 /* View Models */,
 				264782611C309F4C009D9AD0 /* Views */,
@@ -299,12 +321,12 @@
 		26A424C71BD2C1320035754F /* ProperTests */ = {
 			isa = PBXGroup;
 			children = (
-				2650EDA11C41D9D0006CCD42 /* RouteViewModelTests.swift */,
 				2650EDA31C41D9FD006CCD42 /* TripTests.swift */,
 				2635DB751C3CD07D00EB58F5 /* TestStructures.swift */,
-				2635DB731C3CCC9400EB58F5 /* JointStationTripViewModelTests.swift */,
 				2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */,
 				26A424CA1BD2C1320035754F /* Info.plist */,
+				26B3DC171D165403001E29AA /* DataStoreTests.swift */,
+				2650D28F1D176FD9003758BF /* TransportTests.swift */,
 			);
 			path = ProperTests;
 			sourceTree = "<group>";
@@ -312,10 +334,19 @@
 		26A424D21BD2C1320035754F /* ProperUITests */ = {
 			isa = PBXGroup;
 			children = (
-				26A424D31BD2C1320035754F /* SwiftTransitUITests.swift */,
+				26A424D31BD2C1320035754F /* ProperUITests.swift */,
 				26A424D51BD2C1320035754F /* Info.plist */,
 			);
 			path = ProperUITests;
+			sourceTree = "<group>";
+		};
+		26B3DC121D164E98001E29AA /* Connection */ = {
+			isa = PBXGroup;
+			children = (
+				26B3DC131D164F06001E29AA /* DataStore.swift */,
+				26B3DC551D170BAE001E29AA /* Transport.swift */,
+			);
+			path = Connection;
 			sourceTree = "<group>";
 		};
 		5E7111C48ACF8C85B6469FD1 /* Frameworks */ = {
@@ -345,7 +376,7 @@
 			dependencies = (
 			);
 			name = Proper;
-			productName = SwiftTransit;
+			productName = Proper;
 			productReference = 26A424B01BD2C1320035754F /* Proper.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -363,8 +394,8 @@
 				26A424C61BD2C1320035754F /* PBXTargetDependency */,
 			);
 			name = ProperTests;
-			productName = SwiftTransitTests;
-			productReference = 26A424C41BD2C1320035754F /* Proper.xctest */;
+			productName = ProperTests;
+			productReference = 26A424C41BD2C1320035754F /* ProperTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		26A424CE1BD2C1320035754F /* ProperUITests */ = {
@@ -381,8 +412,8 @@
 				26A424D11BD2C1320035754F /* PBXTargetDependency */,
 			);
 			name = ProperUITests;
-			productName = SwiftTransitUITests;
-			productReference = 26A424CF1BD2C1320035754F /* Proper.xctest */;
+			productName = ProperUITests;
+			productReference = 26A424CF1BD2C1320035754F /* ProperUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -531,13 +562,17 @@
 				268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */,
 				26DFB67A1C35B730006A8AE0 /* RouteTableViewController.swift in Sources */,
 				2647826E1C30BFDF009D9AD0 /* ArrivalViewModel.swift in Sources */,
+				26B3DC161D164F8F001E29AA /* Base.swift in Sources */,
 				261DD1691C345AAC001336D4 /* RouteBadgeController.swift in Sources */,
 				264782581C2F435F009D9AD0 /* Route.swift in Sources */,
+				2650D2931D1A4CAD003758BF /* ConfigEnvironments.swift in Sources */,
 				2635DB721C3CBF4700EB58F5 /* RouteTableView.swift in Sources */,
 				26DFB6781C35B26D006A8AE0 /* TripViewModel.swift in Sources */,
 				26A424E81BD2DFA00035754F /* ArrivalTableViewController.swift in Sources */,
 				26C598BC1C250D1E00BC9FE1 /* RouteBadge.swift in Sources */,
+				26B3DC561D170BAE001E29AA /* Transport.swift in Sources */,
 				261DD1611C323964001336D4 /* RouteViewController.swift in Sources */,
+				26B3DC141D164F06001E29AA /* DataStore.swift in Sources */,
 				2650EDA01C41CFCC006CCD42 /* SafeArrayIndex.swift in Sources */,
 				26A424EE1BD2E0C90035754F /* Arrival.swift in Sources */,
 				267019581C3F5BB50057FD11 /* RailVehicle.swift in Sources */,
@@ -548,6 +583,7 @@
 				268E72291BF9938800E981D4 /* TransitNavigationItem.swift in Sources */,
 				26A424B41BD2C1320035754F /* AppDelegate.swift in Sources */,
 				26AC8BB41BD34BA700AA0001 /* VehicleViewController.swift in Sources */,
+				2650D28E1D176B65003758BF /* Configuration.swift in Sources */,
 				269BE7FA1C35E01400AE72D2 /* RouteTableViewCell.swift in Sources */,
 				26DFB6761C35A7F7006A8AE0 /* ScheduleRail.swift in Sources */,
 				2647826B1C30BF5E009D9AD0 /* Trip.swift in Sources */,
@@ -559,11 +595,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2650EDA21C41D9D0006CCD42 /* RouteViewModelTests.swift in Sources */,
+				2650D2901D176FD9003758BF /* TransportTests.swift in Sources */,
 				2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */,
-				2635DB741C3CCC9400EB58F5 /* JointStationTripViewModelTests.swift in Sources */,
 				2650EDA41C41D9FD006CCD42 /* TripTests.swift in Sources */,
 				2635DB761C3CD07D00EB58F5 /* TestStructures.swift in Sources */,
+				26B3DC181D165403001E29AA /* DataStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -571,7 +607,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				26A424D41BD2C1320035754F /* SwiftTransitUITests.swift in Sources */,
+				26A424D41BD2C1320035754F /* ProperUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -630,6 +666,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -638,6 +675,10 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
+					"$(inherited)",
+				);
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
+					DEBUG,
 					"$(inherited)",
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -649,6 +690,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = Proper;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -674,6 +716,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -686,6 +729,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = Proper;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -697,6 +741,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				INFOPLIST_FILE = "$(SRCROOT)/Proper/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "$(inherited)";
@@ -722,10 +767,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				INFOPLIST_FILE = SwiftTransitTests/Info.plist;
+				INFOPLIST_FILE = ProperTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = ms.elliottwillia.SwiftTransitTests;
-				PRODUCT_NAME = Proper;
+				PRODUCT_BUNDLE_IDENTIFIER = ms.elliottwillia.ProperTests;
+				PRODUCT_NAME = ProperTests;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Proper.app/Proper";
 			};
 			name = Debug;
@@ -734,10 +779,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				INFOPLIST_FILE = SwiftTransitTests/Info.plist;
+				INFOPLIST_FILE = ProperTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = ms.elliottwillia.SwiftTransitTests;
-				PRODUCT_NAME = Proper;
+				PRODUCT_BUNDLE_IDENTIFIER = ms.elliottwillia.ProperTests;
+				PRODUCT_NAME = ProperTests;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Proper.app/Proper";
 			};
 			name = Release;
@@ -745,11 +790,11 @@
 		26A424DF1BD2C1320035754F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				INFOPLIST_FILE = SwiftTransitUITests/Info.plist;
+				INFOPLIST_FILE = ProperUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = ms.elliottwillia.SwiftTransitUITests;
-				PRODUCT_NAME = Proper;
-				TEST_TARGET_NAME = SwiftTransit;
+				PRODUCT_BUNDLE_IDENTIFIER = ms.elliottwillia.ProperUITests;
+				PRODUCT_NAME = ProperUITests;
+				TEST_TARGET_NAME = Proper;
 				USES_XCTRUNNER = YES;
 			};
 			name = Debug;
@@ -757,11 +802,11 @@
 		26A424E01BD2C1320035754F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				INFOPLIST_FILE = SwiftTransitUITests/Info.plist;
+				INFOPLIST_FILE = ProperUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = ms.elliottwillia.SwiftTransitUITests;
-				PRODUCT_NAME = Proper;
-				TEST_TARGET_NAME = SwiftTransit;
+				PRODUCT_BUNDLE_IDENTIFIER = ms.elliottwillia.ProperUITests;
+				PRODUCT_NAME = ProperUITests;
+				TEST_TARGET_NAME = Proper;
 				USES_XCTRUNNER = YES;
 			};
 			name = Release;

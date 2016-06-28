@@ -1,4 +1,5 @@
 PODS:
+  - Argo (3.0.1)
   - CocoaAsyncSocket (7.4.3):
     - CocoaAsyncSocket/All (= 7.4.3)
   - CocoaAsyncSocket/All (7.4.3):
@@ -7,6 +8,7 @@ PODS:
   - CocoaAsyncSocket/GCD (7.4.3)
   - CocoaAsyncSocket/RunLoop (7.4.3)
   - Colours/Swift (5.13.0)
+  - Curry (2.3.1)
   - GHODictionary (1.0.9)
   - MDWamp (2.2.4):
     - CocoaAsyncSocket
@@ -14,21 +16,43 @@ PODS:
     - SocketRocket
   - MPMessagePack (1.3.5):
     - GHODictionary
+  - ReactiveCocoa (4.1.0):
+    - ReactiveCocoa/UI (= 4.1.0)
+    - Result (~> 2.0)
+  - ReactiveCocoa/Core (4.1.0):
+    - ReactiveCocoa/no-arc
+    - Result (~> 2.0)
+  - ReactiveCocoa/no-arc (4.1.0):
+    - Result (~> 2.0)
+  - ReactiveCocoa/UI (4.1.0):
+    - ReactiveCocoa/Core
+    - Result (~> 2.0)
+  - Result (2.0.0)
   - Reveal-iOS-SDK (1.6.2)
+  - Runes (3.2.0)
   - SocketRocket (0.5.1)
 
 DEPENDENCIES:
+  - Argo
   - Colours/Swift
+  - Curry
   - MDWamp
+  - ReactiveCocoa
   - Reveal-iOS-SDK
+  - Runes
 
 SPEC CHECKSUMS:
+  Argo: 22c5d62b7967020a641468c91dc9488bea9523b8
   CocoaAsyncSocket: a18c75dca4b08723628a0bacca6e94803d90be91
   Colours: f24220c38f13deac88612667e9b4a7fb96b871d4
+  Curry: c8f65c8ade091aad5cb86f7b51dd408d698810ca
   GHODictionary: 1f7873492445e0f33ac19575a358c3c91926b564
   MDWamp: c41dd5e15ffb61f4f23d027c925173e8c2313c3b
   MPMessagePack: 7c9c9cdee049b62e3578ee423ba451fa406bbd08
+  ReactiveCocoa: d70004d7a366a7b8e87e60ce2347182c77701949
+  Result: 9e75e1111c774c6ac594e14907b15057053a7959
   Reveal-iOS-SDK: e2250b3c155bcfac53ae223ddc1f76d08f206c33
+  Runes: ab2f892272d5165f64620f8086578b28cde98a02
   SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
 
 COCOAPODS: 0.39.0

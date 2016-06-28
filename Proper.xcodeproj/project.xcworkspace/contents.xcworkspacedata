@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:SwiftTransit.xcodeproj">
+      location = "self:Proper.xcodeproj">
    </FileRef>
 </Workspace>

@@ -24,6 +24,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Register nibs
         
+        // Playground tiem
+        let conf = configurationForEnvironment("dev")!
+        Transport.sharedInstance.connection().observeNext() { wamp in
+            wamp.call("com.example.ping", payload: [:]) { result, error in
+                NSLog("got result: \(result.result as? String)")
+            }
+        }
+        
+        Transport.sharedInstance.connection().observeNext() { wamp in
+            wamp.call("com.example.ping", payload: [:]) { result, error in
+                NSLog("got result: \(result.result as? String)")
+            }
+        }
+        
+        Transport.sharedInstance.connection().observeNext() { wamp in
+            wamp.call("com.example.ping", payload: [:]) { result, error in
+                NSLog("got result: \(result.result as? String)")
+            }
+        }
         
         return true
     }

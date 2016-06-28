@@ -7,6 +7,10 @@ target 'Proper' do
     pod 'Colours/Swift'
     pod 'MDWamp'
     pod 'Reveal-iOS-SDK', :configurations => ['Debug']
+    pod 'ReactiveCocoa'
+    pod 'Curry'
+    pod 'Argo'
+    pod 'Runes'
 end
 
 target 'ProperTests' do
