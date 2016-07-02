@@ -8,17 +8,17 @@
 
 import Foundation
 
-// All configuration contexts conform to this protocol. Any new config values must be added here first.
-protocol Configuration {
-    static var environment: String { get }
-    static var agency: String { get }
-    static var connection: (
-        server: NSURL,
-        realm: String
-    ) { get }
+protocol ConfigAware {
+    var config: Config { get }
 }
 
-// Methods to look up a config from its environment name.
-func configurationForEnvironment(env: String) -> Configuration.Type? {
-    return configEnvironments[env] // defined in ConfigEnvironments.swift
+struct Config {
+    static let sharedInstance = Config.init()
+    
+    let environment = "dev"
+    let agency = "citybus"
+    let connection = (
+        server: NSURL(string: "ws://io:8080/ws")!,
+        realm: "realm1"
+    )
 }

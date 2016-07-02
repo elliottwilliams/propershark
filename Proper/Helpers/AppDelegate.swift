@@ -8,6 +8,8 @@
 
 import UIKit
 import MapKit
+import ReactiveCocoa
+import MDWamp
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -25,24 +27,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Register nibs
         
         // Playground tiem
-        let conf = configurationForEnvironment("dev")!
-        Transport.sharedInstance.connection().observeNext() { wamp in
-            wamp.call("com.example.ping", payload: [:]) { result, error in
-                NSLog("got result: \(result.result as? String)")
-            }
+        
+        Connection.sharedInstance.call("meta.last_event", args: ["vehicles.4004", "vehicles.4004"]).startWithNext() { result in
+            NSLog("result: \(result.description)")
         }
         
-        Transport.sharedInstance.connection().observeNext() { wamp in
-            wamp.call("com.example.ping", payload: [:]) { result, error in
-                NSLog("got result: \(result.result as? String)")
-            }
-        }
+        Connection.sharedInstance.subscribe(ModelRoute.topicFor("1A")).on(event: { event in
+            NSLog("event: \(event)")
+        }).start()
         
-        Transport.sharedInstance.connection().observeNext() { wamp in
-            wamp.call("com.example.ping", payload: [:]) { result, error in
-                NSLog("got result: \(result.result as? String)")
-            }
-        }
         
         return true
     }
