@@ -42,60 +42,59 @@ enum TopicEvent {
         case vehicleUpdate(vehicle: AnyObject, EventDefaults)
     }
     
-    static func parse(event: MDWampEvent) -> TopicEvent? {
-        return parse(topic: event.topic, args: event.arguments, kwargs: event.argumentsKw)
+    static func parseFromTopic(topic: String, event: MDWampEvent) -> TopicEvent? {
+        return parseFromTopic(topic, args: event.arguments, kwargs: event.argumentsKw)
     }
     
-    static func parse(topic topicPrefix: PrefixMatcher, args: [AnyObject], kwargs: [NSObject:AnyObject]) -> TopicEvent? {
+    static func parseFromTopic(topic: String, args: [AnyObject], kwargs: [NSObject:AnyObject]) -> TopicEvent? {
         guard let eventName = kwargs["event"] as? String,
             let originator = kwargs["originator"] as? String,
-            let object = args[0] as? NSData,
-            let json: AnyObject = try? NSJSONSerialization.JSONObjectWithData(object, options: [])
+            let object = args[safe: 0]
             else { return nil }
         
         let baseValues: EventDefaults = (originator: originator, event: eventName)
         
-        switch (topicPrefix, eventName) {
+        switch (topic.hasPrefix, eventName) {
             
         // The base events that all topics emit are handled as one case each, for brevity.
         case (_, "update"):
-            switch topicPrefix {
-            case "vehicles.":   return .Vehicle(.update(object: json, baseValues))
-            case "stations.":   return .Station(.update(object: json, baseValues))
-            case "routes.":     return .Route(.update(object: json, baseValues))
+            switch topic.hasPrefix {
+            case "vehicles.":   return .Vehicle(.update(object: object, baseValues))
+            case "stations.":   return .Station(.update(object: object, baseValues))
+            case "routes.":     return .Route(.update(object: object, baseValues))
             default:            return nil
             }
         case (_, "activate"):
-            switch topicPrefix {
-            case "vehicles.":   return .Vehicle(.activate(object: json, baseValues))
-            case "stations.":   return .Station(.activate(object: json, baseValues))
-            case "routes.":     return .Route(.activate(object: json, baseValues))
+            switch topic.hasPrefix {
+            case "vehicles.":   return .Vehicle(.activate(object: object, baseValues))
+            case "stations.":   return .Station(.activate(object: object, baseValues))
+            case "routes.":     return .Route(.activate(object: object, baseValues))
             default:            return nil
             }
         case (_, "deactivate"):
-            switch topicPrefix {
-            case "vehicles.":   return .Vehicle(.deactivate(object: json, baseValues))
-            case "stations.":   return .Station(.deactivate(object: json, baseValues))
-            case "routes.":     return .Route(.deactivate(object: json, baseValues))
+            switch topic.hasPrefix {
+            case "vehicles.":   return .Vehicle(.deactivate(object: object, baseValues))
+            case "stations.":   return .Station(.deactivate(object: object, baseValues))
+            case "routes.":     return .Route(.deactivate(object: object, baseValues))
             default:            return nil
             }
             
         case ("stations.", "depart"):
-            return .Station(.depart(vehicle: json, baseValues))
+            return .Station(.depart(vehicle: object, baseValues))
         case ("stations.", "arrive"):
-            return .Station(.arrive(vehicle: json, baseValues))
+            return .Station(.arrive(vehicle: object, baseValues))
         case ("stations.", "approach"):
             guard let distance = args[1] as? Int else { return nil }
-            return .Station(.approach(vehicle: json, distanceInStops: distance, baseValues))
+            return .Station(.approach(vehicle: object, distanceInStops: distance, baseValues))
         
         case ("routes.", "vehicle_update"):
-            return .Route(.vehicleUpdate(vehicle: json, baseValues))
+            return .Route(.vehicleUpdate(vehicle: object, baseValues))
        
         default:
             return nil
         }
-        
     }
+
 }
 
 enum RPCResult {

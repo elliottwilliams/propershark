@@ -32,12 +32,14 @@ class PSError: NSError {
 enum PSErrorCode: Int {
     case entityLoadFailure
     case mdwampError
+    case connectionLost
+    case maxConnectionFailures
     
     func description() -> String {
         switch(self) {
         case .entityLoadFailure:
             return "Unable to load information about the system from our servers."
-        case .mdwampError:
+        case .mdwampError, .connectionLost, .maxConnectionFailures:
             return "We lost the connection to our servers."
         }
     }

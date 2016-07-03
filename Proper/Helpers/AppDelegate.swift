@@ -28,13 +28,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Playground tiem
         
-        Connection.sharedInstance.call("meta.last_event", args: ["vehicles.4004", "vehicles.4004"]).startWithNext() { result in
-            NSLog("result: \(result.description)")
-        }
+        /*Connection.sharedInstance.call("meta.last_event", args: ["vehicles.4004", "vehicles.4004"]).startWithNext() { result in
+            guard let args = result.arguments[safe: 0] as? [AnyObject],
+                let evtArgs = args[safe: 0] as? [AnyObject],
+                let evtKwargs = args[safe: 1] as? [NSObject: AnyObject]
+                else { fatalError("bad last_event!") }
+            
+            let maybeEvent = TopicEvent.parseFromTopic("vehicles.4004", args: evtArgs, kwargs: evtKwargs)
+            NSLog("event: \(maybeEvent ?? nil)")
+            
+            guard let event = maybeEvent,
+                  case let .Vehicle(.update(object, (originator, eventName))) = event
+                  else { return }
+         
+            NSLog("vehicles.4004's last event was an \(eventName) event originating from \(originator) that sent this object:")
+            NSLog(object.description ?? "")
+        }*/
         
-        Connection.sharedInstance.subscribe(ModelRoute.topicFor("1A")).on(event: { event in
+        let topic = ModelRoute.topicFor("1A")
+        Connection.sharedInstance.subscribe(topic)
+        .map { wampEvent in TopicEvent.parseFromTopic(topic, event: wampEvent) }
+        .ignoreNil()
+        .startWithNext { event in
             NSLog("event: \(event)")
-        }).start()
+        }
         
         
         return true
