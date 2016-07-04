@@ -7,32 +7,75 @@
 //
 
 import UIKit
+import ReactiveCocoa
+import Result
+import Argo
 
 class StartListViewController: UITableViewController, SceneMediatedController {
     
     // MARK: - Properties
+    var routes: [Route] = []
+    var sceneMediator: SceneMediator!
+    var connection: Connection!
+    private var routeDisposable: Disposable?
     
-    let routes = Route.DemoRoutes
-    let vehicles = Vehicle.DemoVehicles
-    let stations = Station.DemoStations
+    func initialize(mediator: SceneMediator = .sharedInstance, connection: Connection = .sharedInstance) {
+        self.sceneMediator = mediator
+        self.connection = connection
+    }
     
-    var _sceneMediator = SceneMediator.sharedInstance
-        
+    // MARK: - View events
     override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.routeDisposable = self.connection.call("agency.routes", args: [], kwargs: [:])
+        .map() { wampResult in RPCResult.parseFromTopic("agency.routes", event: wampResult) }
+        .attemptMap() { (maybeResult) -> Result<[Route], PSError> in
+            guard let result = maybeResult,
+                case .Agency(.routes(let objects)) = result
+                else { return .Failure(PSError(code: .parseFailure)) }
+            
+            let routes = objects.map { decode($0) as Route? }.flatMap() { $0 }
+            if routes.count == 0 {
+                return .Failure(PSError(code: .parseFailure))
+            }
+            
+            return .Success(routes)
+        }
+        .startWithNext() { routes in
+            self.routes = routes
+        }
+
+    }
+    
+    override func viewDidDisappear(animated: Bool) {
+        self.routeDisposable?.dispose()
+        
+        super.viewDidDisappear(animated)
     }
     
     // MARK: - Table view data source
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return [routes.count, vehicles.count, stations.count][section]
+//        return [routes.count, vehicles.count, stations.count][section]
+        return [routes.count][section]
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 3
+        return 1
     }
     
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return ["Routes", "Vehicles", "Stations"][section]
+        return ["Routes"][section]
+//        return ["Routes", "Vehicles", "Stations"][section]
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -42,16 +85,15 @@ class StartListViewController: UITableViewController, SceneMediatedController {
         case 0:
             cell = tableView.dequeueReusableCellWithIdentifier("RoutePrototypeCell", forIndexPath: indexPath)
             let route = routes[indexPath.row]
-            let routeView = RouteViewModel(route)
-            cell!.textLabel?.text = routeView.displayName()
-        case 1:
-            cell = tableView.dequeueReusableCellWithIdentifier("VehiclePrototypeCell", forIndexPath: indexPath)
-            let vehicle = vehicles[indexPath.row]
-            cell!.textLabel?.text = vehicle.name
-        case 2:
-            cell = tableView.dequeueReusableCellWithIdentifier("StationPrototypeCell", forIndexPath: indexPath)
-            let station = stations[indexPath.row]
-            cell!.textLabel?.text = station.name
+            cell!.textLabel?.text = route.name
+//        case 1:
+//            cell = tableView.dequeueReusableCellWithIdentifier("VehiclePrototypeCell", forIndexPath: indexPath)
+//            let vehicle = vehicles[indexPath.row]
+//            cell!.textLabel?.text = vehicle.name
+//        case 2:
+//            cell = tableView.dequeueReusableCellWithIdentifier("StationPrototypeCell", forIndexPath: indexPath)
+//            let station = stations[indexPath.row]
+//            cell!.textLabel?.text = station.name
         default:
             cell = nil
         }
@@ -70,7 +112,7 @@ class StartListViewController: UITableViewController, SceneMediatedController {
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        _sceneMediator.sendMessagesForSegueWithIdentifier(segue.identifier, segue: segue, sender: sender)
+        sceneMediator.sendMessagesForSegueWithIdentifier(segue.identifier, segue: segue, sender: sender)
     }
 
 }

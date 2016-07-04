@@ -49,6 +49,8 @@ class Connection: NSObject, MDWampClientDelegate, ConfigAware {
         }
     }
     
+    // MARK: Communication Methods
+    
     func subscribe(topic: String) -> SignalProducer<MDWampEvent, PSError> {
         return SignalProducer<MDWampEvent, PSError>.init { observer, disposable in
             self.producer.map { wamp in
@@ -63,10 +65,10 @@ class Connection: NSObject, MDWampClientDelegate, ConfigAware {
         }
     }
     
-    func call(procedure: String, args: [AnyObject]? = nil, kwargs: [NSObject: AnyObject]? = nil) -> SignalProducer<MDWampResult, PSError> {
+    func call(procedure: String, args: [AnyObject] = [], kwargs: [NSObject: AnyObject] = [:]) -> SignalProducer<MDWampResult, PSError> {
         return SignalProducer<MDWampResult, PSError>.init { observer, _ in
             self.producer.map { wamp in
-                wamp.call(procedure, args: args ?? [], kwArgs: kwargs ?? [:], options: [:]) { result, error in
+                wamp.call(procedure, args: args, kwArgs: kwargs, options: [:]) { result, error in
                     if error != nil {
                         return observer.sendFailed(PSError(error: error, code: .mdwampError))
                     }

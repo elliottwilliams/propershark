@@ -34,6 +34,7 @@ enum PSErrorCode: Int {
     case mdwampError
     case connectionLost
     case maxConnectionFailures
+    case parseFailure
     
     func description() -> String {
         switch(self) {
@@ -41,6 +42,8 @@ enum PSErrorCode: Int {
             return "Unable to load information about the system from our servers."
         case .mdwampError, .connectionLost, .maxConnectionFailures:
             return "We lost the connection to our servers."
+        case .parseFailure:
+            return "Our server sent us a response object that could not be understood"
         }
     }
 }

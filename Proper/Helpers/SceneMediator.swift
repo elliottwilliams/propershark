@@ -101,7 +101,7 @@ protocol SceneMediatorProtocol {
 
 // View controllers that use the scene mediator must conform to this protocol
 protocol SceneMediatedController {
-    var _sceneMediator: SceneMediator { get set }
+    var sceneMediator: SceneMediator! { get set }
     func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?)
 }
 
