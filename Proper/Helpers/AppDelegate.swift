@@ -10,6 +10,7 @@ import UIKit
 import MapKit
 import ReactiveCocoa
 import MDWamp
+import Result
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -28,7 +29,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Playground tiem
         
-        /*Connection.sharedInstance.call("meta.last_event", args: ["vehicles.4004", "vehicles.4004"]).startWithNext() { result in
+        Connection.sharedInstance.call("meta.last_event", args: ["vehicles.4004", "vehicles.4004"])
+            .map() { wampResult in RPCResult.parseFromTopic("meta.last_event", event: wampResult) }
+            .ignoreNil()
+            .attemptMap() { result in
+                if case .Meta(.lastEvent(let object)) = result {
+                    return .Success(object)
+                } else {
+                    return .Failure(PSError(code: .entityLoadFailure))
+                }
+            }
+            
+            
+            .startWithNext() { result in
             guard let args = result.arguments[safe: 0] as? [AnyObject],
                 let evtArgs = args[safe: 0] as? [AnyObject],
                 let evtKwargs = args[safe: 1] as? [NSObject: AnyObject]
@@ -43,15 +56,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
          
             NSLog("vehicles.4004's last event was an \(eventName) event originating from \(originator) that sent this object:")
             NSLog(object.description ?? "")
-        }*/
+        }
         
-        let topic = ModelRoute.topicFor("1A")
+        let topic = Route.topicFor("1A")
         Connection.sharedInstance.subscribe(topic)
         .map { wampEvent in TopicEvent.parseFromTopic(topic, event: wampEvent) }
         .ignoreNil()
         .startWithNext { event in
             NSLog("event: \(event)")
         }
+        
         
         
         return true

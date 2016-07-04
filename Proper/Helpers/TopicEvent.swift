@@ -96,36 +96,3 @@ enum TopicEvent {
     }
 
 }
-
-enum RPCResult {
-    case Agency(AgencyEvent)
-    enum AgencyEvent {
-        case vehicles([AnyObject])
-        case stations([AnyObject])
-        case routes([AnyObject])
-    }
-    
-    case Meta(MetaEvent)
-    enum MetaEvent {
-        case lastEvent([AnyObject])
-    }
-
-    static func parse(topic: String, event: MDWampResult) -> RPCResult? {
-        return parse(topic, args: event.arguments, kwargs: event.argumentsKw)
-    }
-    
-    static func parse(topic: String, args: [AnyObject], kwargs: [NSObject:AnyObject]) -> RPCResult? {
-        switch topic {
-        case "agency.vehicles":
-            return .Agency(.vehicles(args))
-        case "agency.stations":
-            return .Agency(.stations(args))
-        case "agency.routes":
-            return .Agency(.routes(args))
-        case "meta.last_event":
-            return .Meta(.lastEvent(args))
-        default:
-            return nil
-        }
-    }
-}

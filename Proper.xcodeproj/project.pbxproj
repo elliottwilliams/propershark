@@ -52,6 +52,8 @@
 		26D3E2261D28E0B000F85712 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E2251D28E0B000F85712 /* Point.swift */; };
 		26D3E2291D28E24B00F85712 /* Station.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E2281D28E24B00F85712 /* Station.swift */; };
 		26D3E22B1D28E25200F85712 /* Vehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E22A1D28E25200F85712 /* Vehicle.swift */; };
+		26D3E22D1D29BB6D00F85712 /* RPCResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E22C1D29BB6D00F85712 /* RPCResult.swift */; };
+		26D3E22F1D29BBA700F85712 /* Mutable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E22E1D29BBA700F85712 /* Mutable.swift */; };
 		26DFB6761C35A7F7006A8AE0 /* ScheduleRail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DFB6751C35A7F7006A8AE0 /* ScheduleRail.swift */; };
 		26DFB67A1C35B730006A8AE0 /* RouteTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DFB6791C35B730006A8AE0 /* RouteTableViewController.swift */; };
 		26DFB67C1C35DFA5006A8AE0 /* RouteTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26DFB67B1C35DFA5006A8AE0 /* RouteTableViewCell.xib */; };
@@ -128,6 +130,8 @@
 		26D3E2251D28E0B000F85712 /* Point.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Point.swift; sourceTree = "<group>"; };
 		26D3E2281D28E24B00F85712 /* Station.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Station.swift; sourceTree = "<group>"; };
 		26D3E22A1D28E25200F85712 /* Vehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vehicle.swift; sourceTree = "<group>"; };
+		26D3E22C1D29BB6D00F85712 /* RPCResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RPCResult.swift; sourceTree = "<group>"; };
+		26D3E22E1D29BBA700F85712 /* Mutable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mutable.swift; sourceTree = "<group>"; };
 		26DFB6751C35A7F7006A8AE0 /* ScheduleRail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleRail.swift; sourceTree = "<group>"; };
 		26DFB6791C35B730006A8AE0 /* RouteTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableViewController.swift; sourceTree = "<group>"; };
 		26DFB67B1C35DFA5006A8AE0 /* RouteTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RouteTableViewCell.xib; sourceTree = "<group>"; };
@@ -307,6 +311,7 @@
 			children = (
 				26B3DC551D170BAE001E29AA /* Connection.swift */,
 				264A13C81D2625CE00B44D47 /* TopicEvent.swift */,
+				26D3E22C1D29BB6D00F85712 /* RPCResult.swift */,
 			);
 			path = Connection;
 			sourceTree = "<group>";
@@ -327,6 +332,7 @@
 			isa = PBXGroup;
 			children = (
 				26D3E2251D28E0B000F85712 /* Point.swift */,
+				26D3E22E1D29BBA700F85712 /* Mutable.swift */,
 			);
 			name = Support;
 			sourceTree = "<group>";
@@ -538,6 +544,7 @@
 				2635DB781C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift in Sources */,
 				261DD1631C3424E1001336D4 /* RouteBadgeLabel.swift in Sources */,
 				26D3E2221D28DFE800F85712 /* Route.swift in Sources */,
+				26D3E22D1D29BB6D00F85712 /* RPCResult.swift in Sources */,
 				26A424E51BD2D3F20035754F /* ArrivalTableViewCell.swift in Sources */,
 				264782561C2C6F67009D9AD0 /* StartListViewController.swift in Sources */,
 				26D3E22B1D28E25200F85712 /* Vehicle.swift in Sources */,
@@ -553,6 +560,7 @@
 				26B3DC561D170BAE001E29AA /* Connection.swift in Sources */,
 				261DD1611C323964001336D4 /* RouteViewController.swift in Sources */,
 				2650EDA01C41CFCC006CCD42 /* SafeArrayIndex.swift in Sources */,
+				26D3E22F1D29BBA700F85712 /* Mutable.swift in Sources */,
 				267019581C3F5BB50057FD11 /* RailVehicle.swift in Sources */,
 				268632811C319B0D00839A22 /* SceneMediator.swift in Sources */,
 				261DD15D1C320A08001336D4 /* ArrivalTableView.swift in Sources */,
