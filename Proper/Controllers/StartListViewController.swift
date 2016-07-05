@@ -11,19 +11,25 @@ import ReactiveCocoa
 import Result
 import Argo
 
-class StartListViewController: UITableViewController, SceneMediatedController {
+class StartListViewController: UITableViewController/*, SceneMediatedController*/ {
     
     // MARK: - Properties
     var routes: [Route] = []
-    var sceneMediator: SceneMediator!
-    var connection: Connection!
+    lazy var sceneMediator = SceneMediator.sharedInstance
+    lazy var connection = Connection.sharedInstance
+    lazy var config = Config.sharedInstance
     private var routeDisposable: Disposable?
     
-    func initialize(mediator: SceneMediator = .sharedInstance, connection: Connection = .sharedInstance) {
+    init(mediator: SceneMediator = .sharedInstance, connection: Connection = .sharedInstance, style: UITableViewStyle) {
+        super.init(style: style)
         self.sceneMediator = mediator
         self.connection = connection
     }
     
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+
     // MARK: - View events
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,8 +42,9 @@ class StartListViewController: UITableViewController, SceneMediatedController {
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
-        self.routeDisposable = self.connection.call("agency.routes", args: [], kwargs: [:])
-        .map() { wampResult in RPCResult.parseFromTopic("agency.routes", event: wampResult) }
+        let topic = "\(config.agency).routes"
+        self.routeDisposable = self.connection.call(topic, args: [], kwargs: [:])
+        .map() { wampResult in RPCResult.parseFromTopic(topic, event: wampResult) }
         .attemptMap() { (maybeResult) -> Result<[Route], PSError> in
             guard let result = maybeResult,
                 case .Agency(.routes(let objects)) = result

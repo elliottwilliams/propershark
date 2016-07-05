@@ -19,8 +19,9 @@ class SceneMediator: NSObject, SceneMediatorProtocol {
      * - Mediators should try to avoid depending on class properties. Use set*Model methods.
      * - If a segue is triggered programmatically, its sender contains data to pass to the destination.
      */
-    let _mediators: [String: (UIStoryboardSegue, AnyObject?) -> Void] = [
+    let _mediators: [String: (UIStoryboardSegue, AnyObject?) -> Void] = [:]/*[
         
+     
         "ShowVehicleAfterSelectionFromList": { (segue, sender) in
             let src = segue.sourceViewController as! StartListViewController
             let dest = segue.destinationViewController as! VehicleViewController
@@ -72,7 +73,7 @@ class SceneMediator: NSObject, SceneMediatorProtocol {
             
             dest.vehicle = decode(sender as! NSData)
         }
-    ]
+    ]*/
     
     func sendMessagesForSegueWithIdentifier(identifier: String?, segue: UIStoryboardSegue, sender: AnyObject?) {
         if let id = identifier {

@@ -15,7 +15,7 @@ struct Route: Base {
     let name: String
     let short_name: String
     let description: String
-    let color: String
+    let color: UIColor
     let path: [Point]
     let stations: [Station]
     

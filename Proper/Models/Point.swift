@@ -9,6 +9,7 @@
 import Foundation
 import Argo
 import Curry
+import CoreLocation
 
 struct Point {
     let lat: Double
@@ -42,6 +43,8 @@ extension Point: Decodable {
     }
 }
 
-func foo() {
-    let curried = curry(Point.init(list:))
+extension CLLocation {
+    convenience init(point: Point) {
+        self.init(latitude: point.lat, longitude: point.long)
+    }
 }

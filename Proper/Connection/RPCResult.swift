@@ -23,7 +23,9 @@ enum RPCResult {
     }
     
     static func parseFromTopic(topic: String, event: MDWampResult) -> RPCResult? {
-        return parseFromTopic(topic, args: event.arguments, kwargs: event.argumentsKw)
+        return parseFromTopic(topic,
+                              args: event.arguments != nil ? event.arguments : [],
+                              kwargs: event.argumentsKw != nil ? event.argumentsKw : [:])
     }
     
     static func parseFromTopic(topic: String, args: [AnyObject], kwargs: [NSObject:AnyObject]) -> RPCResult? {

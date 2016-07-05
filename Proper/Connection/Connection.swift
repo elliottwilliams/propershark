@@ -24,6 +24,7 @@ class Connection: NSObject, MDWampClientDelegate, ConfigAware {
     required init(config: Config = Config.sharedInstance) {
         self.config = config
         super.init()
+        
     }
     
     // Lazy evaluator for self.producer
@@ -42,11 +43,13 @@ class Connection: NSObject, MDWampClientDelegate, ConfigAware {
         return producer.on(
             disposed: { wamp.disconnect() }
         )
-        // ...and retries for awhile on in the event of a connection failure
+        // ...retries for awhile on in the event of a connection failure...
         .retry(Connection.maxConnectionFailures).flatMapError() { _ in
             NSLog("connection failure after \(Connection.maxConnectionFailures) retries")
             return SignalProducer<MDWamp, PSError>.init(error: PSError(code: .maxConnectionFailures))
         }
+        // ...and logs all events for debugging
+        .logEvents(identifier: "Connection#producer")
     }
     
     // MARK: Communication Methods
@@ -62,7 +65,7 @@ class Connection: NSObject, MDWampClientDelegate, ConfigAware {
                 wamp.subscribe(topic, onEvent: { observer.sendNext($0) }, result: handleResult)
                 disposable.addDisposable() { wamp.unsubscribe(topic, result: handleResult) }
             }.start()
-        }
+            }.logEvents(identifier: "Connection#subscribe(topic:\(topic)")
     }
     
     func call(procedure: String, args: [AnyObject] = [], kwargs: [NSObject: AnyObject] = [:]) -> SignalProducer<MDWampResult, PSError> {
@@ -73,9 +76,10 @@ class Connection: NSObject, MDWampClientDelegate, ConfigAware {
                         return observer.sendFailed(PSError(error: error, code: .mdwampError))
                     }
                     observer.sendNext(result)
+                    observer.sendCompleted()
                 }
             }.start()
-        }
+            }.logEvents(identifier: "Connection#call(procedure:\(procedure)")
     }
     
     // MARK: MDWamp Delegate

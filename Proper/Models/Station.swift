@@ -17,7 +17,7 @@ struct Station: Base {
     let description: String
     let position: Point
     
-    static var namespace: String {  "stations" }
+    static var namespace: String { return "stations" }
     var identifier: String { return self.stop_code }
 }
 

@@ -28,21 +28,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Register nibs
         
         // Playground tiem
-        
+        /*
         Connection.sharedInstance.call("meta.last_event", args: ["vehicles.4004", "vehicles.4004"])
-            .map() { wampResult in RPCResult.parseFromTopic("meta.last_event", event: wampResult) }
-            .ignoreNil()
-            .attemptMap() { result in
-                if case .Meta(.lastEvent(let object)) = result {
-                    return .Success(object)
-                } else {
-                    return .Failure(PSError(code: .entityLoadFailure))
-                }
-            }
-            
-            
-            .startWithNext() { result in
-            guard let args = result.arguments[safe: 0] as? [AnyObject],
+        .map() { wampResult in RPCResult.parseFromTopic("meta.last_event", event: wampResult) }
+        .attemptMap() { (maybeResult) -> Result<[AnyObject], PSError> in
+            guard let result = maybeResult,
+                case .Meta(.lastEvent(let object)) = result
+                else { return .Failure(PSError(code: .entityLoadFailure)) }
+            return .Success(object)
+        }
+        .startWithNext() { result in
+            guard let args = result[safe: 0] as? [AnyObject],
                 let evtArgs = args[safe: 0] as? [AnyObject],
                 let evtKwargs = args[safe: 1] as? [NSObject: AnyObject]
                 else { fatalError("bad last_event!") }
@@ -65,7 +61,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         .startWithNext { event in
             NSLog("event: \(event)")
         }
-        
+        */
         
         
         return true
