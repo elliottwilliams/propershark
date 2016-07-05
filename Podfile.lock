@@ -16,18 +16,9 @@ PODS:
     - SocketRocket
   - MPMessagePack (1.3.5):
     - GHODictionary
-  - ReactiveCocoa (4.1.0):
-    - ReactiveCocoa/UI (= 4.1.0)
+  - ReactiveCocoa (4.2.1):
     - Result (~> 2.0)
-  - ReactiveCocoa/Core (4.1.0):
-    - ReactiveCocoa/no-arc
-    - Result (~> 2.0)
-  - ReactiveCocoa/no-arc (4.1.0):
-    - Result (~> 2.0)
-  - ReactiveCocoa/UI (4.1.0):
-    - ReactiveCocoa/Core
-    - Result (~> 2.0)
-  - Result (2.0.0)
+  - Result (2.1.2)
   - Reveal-iOS-SDK (1.6.2)
   - Runes (3.2.0)
   - SocketRocket (0.5.1)
@@ -37,7 +28,7 @@ DEPENDENCIES:
   - Colours/Swift
   - Curry
   - MDWamp
-  - ReactiveCocoa
+  - ReactiveCocoa (~> 4.2.1)
   - Reveal-iOS-SDK
   - Runes
 
@@ -49,10 +40,12 @@ SPEC CHECKSUMS:
   GHODictionary: 1f7873492445e0f33ac19575a358c3c91926b564
   MDWamp: c41dd5e15ffb61f4f23d027c925173e8c2313c3b
   MPMessagePack: 7c9c9cdee049b62e3578ee423ba451fa406bbd08
-  ReactiveCocoa: d70004d7a366a7b8e87e60ce2347182c77701949
-  Result: 9e75e1111c774c6ac594e14907b15057053a7959
+  ReactiveCocoa: 5a42745f11ea236f405bb9ce5e97c5e3b23562dd
+  Result: 6e722d4a66b1408680dbfcdf51c0b1c4b706316a
   Reveal-iOS-SDK: e2250b3c155bcfac53ae223ddc1f76d08f206c33
   Runes: ab2f892272d5165f64620f8086578b28cde98a02
   SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
 
-COCOAPODS: 0.39.0
+PODFILE CHECKSUM: a98ccd548269759a7f593886c78281cf95de6ef6
+
+COCOAPODS: 1.0.1

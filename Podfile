@@ -7,7 +7,7 @@ target 'Proper' do
     pod 'Colours/Swift'
     pod 'MDWamp'
     pod 'Reveal-iOS-SDK', :configurations => ['Debug']
-    pod 'ReactiveCocoa'
+    pod 'ReactiveCocoa', '~> 4.2.1'
     pod 'Curry'
     pod 'Argo'
     pod 'Runes'
