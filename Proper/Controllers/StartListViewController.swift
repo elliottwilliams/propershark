@@ -42,7 +42,7 @@ class StartListViewController: UITableViewController/*, SceneMediatedController*
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
-        let topic = "\(config.agency).routes"
+        let topic = "agency.routes"
         self.routeDisposable = self.connection.call(topic, args: [], kwargs: [:])
         .map() { wampResult in RPCResult.parseFromTopic(topic, event: wampResult) }
         .attemptMap() { (maybeResult) -> Result<[Route], PSError> in
@@ -57,9 +57,12 @@ class StartListViewController: UITableViewController/*, SceneMediatedController*
             
             return .Success(routes)
         }
-        .startWithNext() { routes in
-            self.routes = routes
-        }
+        .on(
+            next: { routes in self.routes = routes },
+            failed: { error in self.presentViewController(error.alert, animated: true, completion: nil)
+            }
+        )
+        .start()
 
     }
     

@@ -8,15 +8,24 @@
 
 import Foundation
 
-protocol ConfigAware {
-    var config: Config { get }
-}
-
 struct Config {
-    static let sharedInstance = Config.init()
+    static let sharedInstance = Config()
     
-    let environment = "dev"
-    let agency = "citybus"
+    let environment = Environments.dev
+    enum Environments {
+        case dev
+        case test
+        case prod
+    }
+    
+    let agency = (
+        key: "citybus",
+        name: "CityBus"
+    )
+    let app = (
+        key: "proper",
+        name: "Proper Shark"
+    )
     let connection = (
         server: NSURL(string: "ws://io:8080/ws")!,
         realm: "realm1"

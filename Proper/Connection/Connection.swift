@@ -10,22 +10,22 @@ import UIKit
 import MDWamp
 import ReactiveCocoa
 
-class Connection: NSObject, MDWampClientDelegate, ConfigAware {
+
+
+class Connection: NSObject, MDWampClientDelegate {
     
     static var sharedInstance = Connection.init()
     
     // Produces signals that passes the MDWamp object when it is available, and that handles reconnections transparently.
     lazy var producer: SignalProducer<MDWamp, PSError> = self.connectionProducer()
     
-    internal let config: Config
+    private lazy var config: Config = Config.sharedInstance
     private static let maxConnectionFailures = 5
     private var observer: Observer<MDWamp, PSError>?
     
-    required init(config: Config = Config.sharedInstance) {
-        self.config = config
-        super.init()
-        
-    }
+    var wamp = MutableProperty<MDWamp?>(nil)
+    
+    // MARK: Startup
     
     // Lazy evaluator for self.producer
     func connectionProducer() -> SignalProducer<MDWamp, PSError> {
@@ -39,11 +39,8 @@ class Connection: NSObject, MDWampClientDelegate, ConfigAware {
         let wamp = MDWamp(transport: ws, realm: self.config.connection.realm, delegate: self)
         wamp.connect()
         
-        // Return a producer that disconnects when disposed...
-        return producer.on(
-            disposed: { wamp.disconnect() }
-        )
-        // ...retries for awhile on in the event of a connection failure...
+        // Return a producer that retries for awhile on in the event of a connection failure...
+        return producer
         .retry(Connection.maxConnectionFailures).flatMapError() { _ in
             NSLog("connection failure after \(Connection.maxConnectionFailures) retries")
             return SignalProducer<MDWamp, PSError>.init(error: PSError(code: .maxConnectionFailures))
@@ -54,32 +51,22 @@ class Connection: NSObject, MDWampClientDelegate, ConfigAware {
     
     // MARK: Communication Methods
     
+    /// Returns a SignalProducer that will get a wamp connection, subscribe to `topic` on it, and forward events.
+    /// Disposing signals created from `subscribe` will unsubscribe from `topic`.
     func subscribe(topic: String) -> SignalProducer<MDWampEvent, PSError> {
-        return SignalProducer<MDWampEvent, PSError>.init { observer, disposable in
-            self.producer.map { wamp in
-                
-                // A error handler used by the subscription and the disposable
-                let handleResult: (NSError!) -> Void = { error in
-                    (error != nil) ? observer.sendFailed(PSError(error: error, code: .mdwampError)) : ()
-                }
-                wamp.subscribe(topic, onEvent: { observer.sendNext($0) }, result: handleResult)
-                disposable.addDisposable() { wamp.unsubscribe(topic, result: handleResult) }
-            }.start()
-            }.logEvents(identifier: "Connection#subscribe(topic:\(topic)")
+        return self.producer
+        .map { wamp in wamp.subscribeWithSignal(topic) }
+        .flatten(.Merge)
+        .logEvents(identifier: "Connection#subscribe(_:\(topic)")
     }
     
-    func call(procedure: String, args: [AnyObject] = [], kwargs: [NSObject: AnyObject] = [:]) -> SignalProducer<MDWampResult, PSError> {
-        return SignalProducer<MDWampResult, PSError>.init { observer, _ in
-            self.producer.map { wamp in
-                wamp.call(procedure, args: args, kwArgs: kwargs, options: [:]) { result, error in
-                    if error != nil {
-                        return observer.sendFailed(PSError(error: error, code: .mdwampError))
-                    }
-                    observer.sendNext(result)
-                    observer.sendCompleted()
-                }
-            }.start()
-            }.logEvents(identifier: "Connection#call(procedure:\(procedure)")
+    /// Returns a SignalProducer that will get a wamp connection, call `procedure` on it, and forward results.
+    func call(procedure: String,
+              args: [AnyObject] = [],
+              kwargs: [NSObject: AnyObject] = [:]) -> SignalProducer<MDWampResult, PSError> {
+        return self.producer.map { wamp in wamp.callWithSignal(procedure, args, kwargs, [:]) }
+        .flatten(.Merge)
+        .logEvents(identifier: "Connection#call(_:\(procedure)")
     }
     
     // MARK: MDWamp Delegate
@@ -90,6 +77,53 @@ class Connection: NSObject, MDWampClientDelegate, ConfigAware {
     
     func mdwamp(wamp: MDWamp!, closedSession code: Int, reason: String!, details: [NSObject : AnyObject]!) {
         NSLog("session closed, reason: \(reason)")
-        self.observer?.sendFailed(PSError(code: .connectionLost))
+        
+        // MDWamp uses the `explicit_closed` key to indicate a deliberate failure.
+        if reason == "MDWamp.session.explicit_closed" {
+            self.observer?.sendCompleted()
+            return
+        }
+        
+        // Otherwise, it is assumed that the session closed due to an error.
+        let errorDict = [NSUnderlyingErrorKey: reason]
+        self.observer?.sendFailed(PSError(code: .connectionLost, userInfo: errorDict))
+    }
+}
+
+// MARK: MDWamp Extensions
+
+extension MDWamp {
+    /// Follows semantics of `call` but returns a signal producer, rather than taking a result callback.
+    func callWithSignal(procUri: String,
+                        _ args: [AnyObject],
+                        _ argsKw: [NSObject : AnyObject],
+                        _ options: [NSObject : AnyObject]) -> SignalProducer<MDWampResult, PSError> {
+        return SignalProducer<MDWampResult, PSError> { observer, _ in
+            self.call(procUri, args: args, kwArgs: argsKw, options: options) { result, error in
+                if error != nil {
+                    observer.sendFailed(PSError(error: error, code: .mdwampError))
+                    return
+                }
+                observer.sendNext(result)
+                observer.sendCompleted()
+            }
+        }
+    }
+    
+    func subscribeWithSignal(topic: String) -> SignalProducer<MDWampEvent, PSError> {
+        return SignalProducer<MDWampEvent, PSError> { observer, disposable in
+            self.subscribe(
+                topic,
+                onEvent: { event in observer.sendNext(event) },
+                result: { error in
+                    if error != nil { observer.sendFailed(PSError(error: error, code: .mdwampError)) }
+                }
+            )
+            disposable.addDisposable {
+                self.unsubscribe(topic) { error in
+                    if error != nil { observer.sendFailed(PSError(error: error, code: .mdwampError)) }
+                }
+            }
+        }
     }
 }

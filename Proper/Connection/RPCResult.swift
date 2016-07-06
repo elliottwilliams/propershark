@@ -23,6 +23,8 @@ enum RPCResult {
     }
     
     static func parseFromTopic(topic: String, event: MDWampResult) -> RPCResult? {
+        // Arguments and argumentsKw come implicitly unwrapped (from their dirty dirty objc library), so we need to
+        // check them manually.
         return parseFromTopic(topic,
                               args: event.arguments != nil ? event.arguments : [],
                               kwargs: event.argumentsKw != nil ? event.argumentsKw : [:])
