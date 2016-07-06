@@ -10,9 +10,12 @@ import UIKit
 import MDWamp
 import ReactiveCocoa
 
+protocol ConnectionType {
+    func call(procedure: String, args: [AnyObject], kwargs: [NSObject: AnyObject]) -> SignalProducer<MDWampResult, PSError>
+    func subscribe(topic: String) -> SignalProducer<MDWampEvent, PSError>
+}
 
-
-class Connection: NSObject, MDWampClientDelegate {
+class Connection: NSObject, MDWampClientDelegate, ConnectionType {
     
     static var sharedInstance = Connection.init()
     
