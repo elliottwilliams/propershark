@@ -11,7 +11,9 @@ import Argo
 import Curry
 
 struct Route: Base {
-    let code: String
+    typealias Identifier = Int
+    
+    let code: Identifier
     let name: String
     let short_name: String
     let description: String
@@ -20,7 +22,7 @@ struct Route: Base {
     let stations: [Station]
     
     static var namespace: String { return "routes" }
-    var identifier: String { return self.code }
+    var identifier: String { return "\(self.code)" }
 }
 
 extension Route: Decodable {
@@ -31,7 +33,7 @@ extension Route: Decodable {
             <*> json <| "short_name"
             <*> json <| "description"
             <*> json <| "color"
-            <*> json <|| "point"
+            <*> json <|| "path"
             <*> json <|| "stations"
     }
 }

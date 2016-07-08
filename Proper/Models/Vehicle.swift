@@ -11,10 +11,12 @@ import Argo
 import Curry
 
 struct Vehicle: Base {
+    typealias Identifier = String
+    
     /// The identifying code for this vehicle
     let code: Int
     /// The (often) humanized name for this vehicle
-    let name: String
+    let name: Identifier
     /// The geographic coordinates of this vehicle's current location
     let position: Point
     
