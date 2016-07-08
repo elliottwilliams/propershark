@@ -7,11 +7,12 @@
 //
 
 import UIKit
+import CoreLocation
 
 class RailVehicle: UIView {
     
     var color: UIColor = UIColor.blueColor()
-    var arrival: ArrivalViewModel?
+    var vehicle: Vehicle?
 
     let _vehicleDotRadius = CGFloat(8.0)
     let _vehicleStrokeWidth = CGFloat(3.0)
@@ -32,16 +33,16 @@ class RailVehicle: UIView {
         self.init(frame: CGRectMake(point.x, point.y, 0, 0))
     }
     
-    convenience init(frame: CGRect, arrival: ArrivalViewModel?) {
+    convenience init(frame: CGRect, vehicle: Vehicle) {
         self.init(frame: frame)
-        self.arrival = arrival
-        self.color = arrival?.routeColor() ?? UIColor.blueColor()
+        self.vehicle = vehicle
+        self.color = vehicle.route.color ?? UIColor.blueColor()
     }
     
-    convenience init(point: CGPoint, arrival: ArrivalViewModel?) {
+    convenience init(point: CGPoint, vehicle: Vehicle) {
         self.init(point: point)
-        self.arrival = arrival
-        self.color = arrival?.routeColor() ?? UIColor.blueColor()
+        self.vehicle = vehicle
+        self.color = vehicle.route.color ?? UIColor.blueColor()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -77,8 +78,16 @@ class RailVehicle: UIView {
         }, completion: completion)
     }
     
-    func isAtStation(station: StationViewModel) -> Bool {
-        return arrival?.station == station
+    // TODO: this might belong on the vehicle model, since it's quite general purpose
+    func isAtStation(station: Station) -> Bool {
+        // A station may have been loaded from a stub, so we need to make sure it has a position.
+        guard let vehicle = self.vehicle,
+            let stationPosition = station.position
+            else { return false }
+        let vehiclePosition = vehicle.position
+        let a = CLLocation(point: vehiclePosition)
+        let b = CLLocation(point: stationPosition)
+        return a.distanceFromLocation(b) < 10.0
     }
     
 }
