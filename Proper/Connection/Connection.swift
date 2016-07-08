@@ -11,9 +11,12 @@ import MDWamp
 import ReactiveCocoa
 
 protocol ConnectionType {
-    func call(procedure: String, args: [AnyObject], kwargs: [NSObject: AnyObject]) -> SignalProducer<MDWampResult, PSError>
+    func call(procedure: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<MDWampResult, PSError>
     func subscribe(topic: String) -> SignalProducer<MDWampEvent, PSError>
 }
+
+typealias WampArgs = [AnyObject]
+typealias WampKwargs = [NSObject: AnyObject]
 
 class Connection: NSObject, MDWampClientDelegate, ConnectionType {
     
@@ -65,20 +68,20 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
     
     /// Returns a SignalProducer that will get a wamp connection, call `procedure` on it, and forward results.
     func call(procedure: String,
-              args: [AnyObject] = [],
-              kwargs: [NSObject: AnyObject] = [:]) -> SignalProducer<MDWampResult, PSError> {
+              args: WampArgs = [],
+              kwargs: WampKwargs = [:]) -> SignalProducer<MDWampResult, PSError> {
         return self.producer.map { wamp in wamp.callWithSignal(procedure, args, kwargs, [:]) }
         .flatten(.Merge)
         .logEvents(identifier: "Connection#call(_:\(procedure)")
     }
     
     // MARK: MDWamp Delegate
-    func mdwamp(wamp: MDWamp!, sessionEstablished info: [NSObject : AnyObject]!) {
+    func mdwamp(wamp: MDWamp!, sessionEstablished info: [NSObject: AnyObject]!) {
         NSLog("session established")
         self.observer?.sendNext(wamp)
     }
     
-    func mdwamp(wamp: MDWamp!, closedSession code: Int, reason: String!, details: [NSObject : AnyObject]!) {
+    func mdwamp(wamp: MDWamp!, closedSession code: Int, reason: String!, details: WampKwargs!) {
         NSLog("session closed, reason: \(reason)")
         
         // MDWamp uses the `explicit_closed` key to indicate a deliberate failure.
@@ -98,9 +101,9 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
 extension MDWamp {
     /// Follows semantics of `call` but returns a signal producer, rather than taking a result callback.
     func callWithSignal(procUri: String,
-                        _ args: [AnyObject],
-                        _ argsKw: [NSObject : AnyObject],
-                        _ options: [NSObject : AnyObject]) -> SignalProducer<MDWampResult, PSError> {
+                        _ args: WampArgs,
+                        _ argsKw: WampKwargs,
+                        _ options: [NSObject: AnyObject]) -> SignalProducer<MDWampResult, PSError> {
         return SignalProducer<MDWampResult, PSError> { observer, _ in
             self.call(procUri, args: args, kwArgs: argsKw, options: options) { result, error in
                 if error != nil {
@@ -110,7 +113,7 @@ extension MDWamp {
                 observer.sendNext(result)
                 observer.sendCompleted()
             }
-        }
+        }.logEvents(identifier: "MDWamp#callWithSignal")
     }
     
     func subscribeWithSignal(topic: String) -> SignalProducer<MDWampEvent, PSError> {
@@ -127,6 +130,6 @@ extension MDWamp {
                     if error != nil { observer.sendFailed(PSError(error: error, code: .mdwampError)) }
                 }
             }
-        }
+        }.logEvents(identifier: "MDWamp#subscribeWithSignal")
     }
 }

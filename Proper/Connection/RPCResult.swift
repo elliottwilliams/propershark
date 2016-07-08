@@ -12,14 +12,14 @@ import MDWamp
 enum RPCResult {
     case Agency(AgencyEvent)
     enum AgencyEvent {
-        case vehicles([AnyObject])
-        case stations([AnyObject])
-        case routes([AnyObject])
+        case vehicles(AnyObject)
+        case stations(AnyObject)
+        case routes(AnyObject)
     }
     
     case Meta(MetaEvent)
     enum MetaEvent {
-        case lastEvent([AnyObject])
+        case lastEvent(WampArgs)
     }
     
     static func parseFromTopic(topic: String, event: MDWampResult) -> RPCResult? {
@@ -30,7 +30,7 @@ enum RPCResult {
                               kwargs: event.argumentsKw != nil ? event.argumentsKw : [:])
     }
     
-    static func parseFromTopic(topic: String, args: [AnyObject], kwargs: [NSObject:AnyObject]) -> RPCResult? {
+    static func parseFromTopic(topic: String, args: WampArgs, kwargs: WampKwargs) -> RPCResult? {
         switch topic {
         case "agency.vehicles":
             return .Agency(.vehicles(args))

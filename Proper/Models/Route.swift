@@ -19,7 +19,9 @@ struct Route: Base {
     let description: String
     let color: UIColor
     let path: [Point]
-    let stations: [Station]
+    
+    // Expected to change to [Station] in the future (shark#5)
+    let stations: [String]
     
     static var namespace: String { return "routes" }
     var identifier: String { return "\(self.code)" }

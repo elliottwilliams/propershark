@@ -15,16 +15,10 @@ class StartListViewController: UITableViewController/*, SceneMediatedController*
     
     // MARK: - Properties
     var routes: [Route] = []
-    lazy var sceneMediator = SceneMediator.sharedInstance
-    lazy var connection = Connection.sharedInstance
-    lazy var config = Config.sharedInstance
+    private lazy var sceneMediator = SceneMediator.sharedInstance
+    private lazy var connection: ConnectionType = Connection.sharedInstance
+    private lazy var config = Config.sharedInstance
     private var routeDisposable: Disposable?
-    
-    init(mediator: SceneMediator = .sharedInstance, connection: Connection = .sharedInstance, style: UITableViewStyle) {
-        super.init(style: style)
-        self.sceneMediator = mediator
-        self.connection = connection
-    }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -43,27 +37,40 @@ class StartListViewController: UITableViewController/*, SceneMediatedController*
         super.viewDidAppear(animated)
         
         let topic = "agency.routes"
-        self.routeDisposable = self.connection.call(topic, args: [], kwargs: [:])
-        .map() { wampResult in RPCResult.parseFromTopic(topic, event: wampResult) }
-        .attemptMap() { (maybeResult) -> Result<[Route], PSError> in
-            guard let result = maybeResult,
-                case .Agency(.routes(let objects)) = result
-                else { return .Failure(PSError(code: .parseFailure)) }
-            
-            let routes = objects.map { decode($0) as Route? }.flatMap() { $0 }
-            if routes.count == 0 {
-                return .Failure(PSError(code: .parseFailure))
+        let signalProducer =
+            self.connection.call(topic, args: [], kwargs: [:])
+            .map() { wampResult in RPCResult.parseFromTopic(topic, event: wampResult) }
+            // TODO I'd like to make part of this a signal operator. Signal consumer needs to do event parsing, but there can be an operator that takes AnyObject and a Decodable type and returns a Result like it's done here. This would reduce this operator from 18 lines to 5.
+            .attemptMap() { maybeResult -> Result<[Route], PSError> in
+                guard let result = maybeResult,
+                    case .Agency(.routes(let body)) = result,
+                    // The body of this request is a list of list of routes.
+                    let objects = (body as? [AnyObject])?.first,
+                    let list = objects as? [AnyObject]
+                    else { return .Failure(PSError(code: .parseFailure)) }
+                
+                // Decode the list of routes. If any in the list were decoded, success with those.
+                // Otherwise, fail with a list of decoder errors.
+                let decoded = list.map { decode($0) as Decoded<Route> }
+                let errors = decoded.map { $0.error }
+                let routes = decoded.flatMap { $0.value }
+                if !routes.isEmpty {
+                    return .Success(routes)
+                } else {
+                    return .Failure(PSError(code: .parseFailure, associated: errors))
+                }
             }
-            
-            return .Success(routes)
-        }
-        .on(
-            next: { routes in self.routes = routes },
-            failed: { error in self.presentViewController(error.alert, animated: true, completion: nil)
-            }
-        )
-        .start()
-
+            .on(
+                next: { routes in
+                    self.routes = routes
+                    // Quick and dirty table reload. To do anything more sophisticated is going to take a ViewModel/MutableModel
+                    self.tableView.reloadData()
+                },
+                failed: { error in
+                    self.presentViewController(error.alert as UIViewController, animated: true, completion: nil)
+                }
+            )
+        self.routeDisposable = signalProducer.start()
     }
     
     override func viewDidDisappear(animated: Bool) {

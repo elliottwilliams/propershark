@@ -10,24 +10,27 @@ import UIKit
 
 class PSError: NSError {
     let errorCode: PSErrorCode
+    let associated: Any?
     
     static let domain = "ProperShark"
     lazy var alert: UIAlertController = self.makeAlert()
     lazy var config: Config = Config.sharedInstance
     
-    init(code: PSErrorCode, userInfo: [NSObject: AnyObject]? = nil) {
+    init(code: PSErrorCode, associated: Any? = nil, userInfo: [NSObject: AnyObject]? = nil) {
         var info = userInfo ?? [:]
         info[NSLocalizedDescriptionKey] = code.message
         self.errorCode = code
+        self.associated = associated
         super.init(domain: PSError.domain, code: code.rawValue, userInfo: info)
     }
     
     /// Create a PSError out of an underlying NSError by giving the error a PSErrorCode
-    init(error: NSError, code: PSErrorCode) {
+    init(error: NSError, code: PSErrorCode, associated: Any? = nil) {
         var info = error.userInfo
         info[NSLocalizedDescriptionKey] = code.message
         info[NSUnderlyingErrorKey] = error
         self.errorCode = code
+        self.associated = associated
         super.init(domain: error.domain, code: error.code, userInfo: info)
     }
     
@@ -43,6 +46,11 @@ class PSError: NSError {
             let reason = (self.userInfo[NSUnderlyingErrorKey] as? NSError)?.localizedDescription {
             alert.message = [self.errorCode.message, reason].joinWithSeparator("\n")
         }
+        
+        if let associated = self.associated {
+            alert.message = [alert.message!, String(associated)].joinWithSeparator("\n")
+        }
+        
         let action = UIAlertAction(title: "OK", style: .Default, handler: nil)
         alert.addAction(action)
         return alert

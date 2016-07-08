@@ -50,7 +50,7 @@ enum TopicEvent {
                               kwargs: event.argumentsKw != nil ? event.argumentsKw : [:])
     }
     
-    static func parseFromTopic(topic: String, args: [AnyObject], kwargs: [NSObject:AnyObject]) -> TopicEvent? {
+    static func parseFromTopic(topic: String, args: WampArgs, kwargs: WampKwargs) -> TopicEvent? {
         guard let eventName = kwargs["event"] as? String,
             let originator = kwargs["originator"] as? String,
             let object = args[safe: 0]
