@@ -1,5 +1,5 @@
 //
-//  Base.swift
+//  Model.swift
 //  Proper
 //
 //  Created by Elliott Williams on 7/3/16.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol Base {
+protocol Model {
     associatedtype Identifier
     static var namespace: String { get }
     var identifier: Identifier { get }
@@ -17,7 +17,7 @@ protocol Base {
     static func topicFor(identifier: String) -> String
 }
 
-extension Base {
+extension Model {
     /// Return the name of the property of the identifying element by reflecting on the model.
     func identifierName() -> String {
         let mirror = Mirror(reflecting: self)

@@ -10,10 +10,10 @@ import Foundation
 import ReactiveCocoa
 
 struct MutableStation: MutableModel {
-    typealias Model = Station
+    typealias FromModel = Station
     
-    let stop_code: Model.Identifier
-    var identifier: Model.Identifier { return self.stop_code }
+    let stop_code: FromModel.Identifier
+    var identifier: FromModel.Identifier { return self.stop_code }
     
     let code: MutableProperty<String?>
     let name: MutableProperty<String>

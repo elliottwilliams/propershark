@@ -10,7 +10,7 @@ import Foundation
 import Argo
 import Curry
 
-struct Station: Base {
+struct Station: Model {
     typealias Identifier = String
     
     let code: String?

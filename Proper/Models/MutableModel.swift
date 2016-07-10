@@ -11,13 +11,13 @@ import ReactiveCocoa
 import Curry
 
 protocol MutableModel {
-    associatedtype Model
+    associatedtype FromModel
     
     /// Initialize all `MutableProperty`s of this `MutableModel` from a corresponding model.
-    init(from _: Model)
+    init(from _: FromModel)
     
     /// Update state to match the given model.
-    func apply(_: Model) throws
+    func apply(_: FromModel) throws
 }
 
 /// Makes updates from a immutable value to a mutable property containing that value.

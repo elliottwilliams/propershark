@@ -10,7 +10,7 @@ import Foundation
 import Argo
 import Curry
 
-struct Route: Base {
+struct Route: Model {
     typealias Identifier = Int
     
     let code: Identifier

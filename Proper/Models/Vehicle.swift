@@ -10,7 +10,7 @@ import Foundation
 import Argo
 import Curry
 
-struct Vehicle: Base {
+struct Vehicle: Model {
     typealias Identifier = String
     
     /// The identifying code for this vehicle
