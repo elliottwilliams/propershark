@@ -24,7 +24,7 @@ struct Route: Base {
     let stations: [String]
     
     static var namespace: String { return "routes" }
-    var identifier: String { return "\(self.code)" }
+    var identifier: Identifier { return self.code }
 }
 
 extension Route: Decodable {

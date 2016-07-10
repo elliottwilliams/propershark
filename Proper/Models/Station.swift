@@ -20,7 +20,7 @@ struct Station: Base {
     let position: Point?
     
     static var namespace: String { return "stations" }
-    var identifier: String { return self.stop_code }
+    var identifier: Identifier { return self.stop_code }
 }
 
 extension Station: Decodable {
@@ -33,3 +33,4 @@ extension Station: Decodable {
             <*> .optional(Point.decode(json))
     }
 }
+

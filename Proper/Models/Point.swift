@@ -11,7 +11,7 @@ import Argo
 import Curry
 import CoreLocation
 
-struct Point {
+struct Point: Equatable {
     let lat: Double
     let long: Double
     
@@ -24,6 +24,10 @@ struct Point {
         self.lat = lat
         self.long = long
     }
+}
+
+func ==(a: Point, b: Point) -> Bool {
+    return a.lat == b.lat && a.long == b.long
 }
 
 extension Point: Decodable {

@@ -11,7 +11,7 @@ import Foundation
 protocol Base {
     associatedtype Identifier
     static var namespace: String { get }
-    var identifier: String { get }
+    var identifier: Identifier { get }
     
     func topicFor() -> String
     static func topicFor(identifier: String) -> String
@@ -40,7 +40,7 @@ extension Base {
     }
     
     func topicFor() -> String {
-        return Self.topicFor(self.identifier)
+        return Self.topicFor("\(self.identifier)")
     }
     
     static func topicFor(identifier: String) -> String {
