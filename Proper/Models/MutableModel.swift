@@ -11,12 +11,15 @@ import ReactiveCocoa
 import Curry
 
 protocol MutableModel {
-    associatedtype FromModel
+    associatedtype FromModel: Model
+    
+    /// The mutable model should know its model's identifier, and the identifier should be immutable. (a model with a different identifier cannot be applied; it is a different model altogether.)
+    var identifier: FromModel.Identifier { get }
     
     /// Initialize all `MutableProperty`s of this `MutableModel` from a corresponding model.
     init(from _: FromModel)
     
-    /// Update state to match the given model.
+    /// Update state to match the model given. Implementations may throw an error if a given model cannot be applied.
     func apply(_: FromModel) throws
 }
 
