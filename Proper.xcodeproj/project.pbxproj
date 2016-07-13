@@ -36,9 +36,12 @@
 		26A424E51BD2D3F20035754F /* ArrivalTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424E31BD2D3F20035754F /* ArrivalTableViewCell.swift */; };
 		26A424E61BD2D3F20035754F /* ArrivalTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26A424E41BD2D3F20035754F /* ArrivalTableViewCell.xib */; };
 		26A4B7AF1D32251100264F0D /* MutableStation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A4B7AE1D32251100264F0D /* MutableStation.swift */; };
+		26A4B7B11D32CEC800264F0D /* MutableRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A4B7B01D32CEC800264F0D /* MutableRoute.swift */; };
+		26A4B7B31D33503600264F0D /* MutableVehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A4B7B21D33503600264F0D /* MutableVehicle.swift */; };
 		26AC8BB21BD345F100AA0001 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26AC8BB11BD345F100AA0001 /* Media.xcassets */; };
 		26AC8BB61BD3503300AA0001 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26AC8BB51BD3503300AA0001 /* QuartzCore.framework */; };
 		26B3DC561D170BAE001E29AA /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B3DC551D170BAE001E29AA /* Connection.swift */; };
+		26B9E1D31D35E0C500794EB6 /* ReactiveCocoaOperators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B9E1D21D35E0C500794EB6 /* ReactiveCocoaOperators.swift */; };
 		26C598BC1C250D1E00BC9FE1 /* RouteBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C598BB1C250D1E00BC9FE1 /* RouteBadge.swift */; };
 		26D3E21F1D2776AB00F85712 /* Matchers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E21E1D2776AB00F85712 /* Matchers.swift */; };
 		26D3E2221D28DFE800F85712 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E2211D28DFE800F85712 /* Route.swift */; };
@@ -110,10 +113,13 @@
 		26A424E41BD2D3F20035754F /* ArrivalTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ArrivalTableViewCell.xib; sourceTree = "<group>"; };
 		26A424E71BD2DFA00035754F /* ArrivalTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ArrivalTableViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26A4B7AE1D32251100264F0D /* MutableStation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableStation.swift; sourceTree = "<group>"; };
+		26A4B7B01D32CEC800264F0D /* MutableRoute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableRoute.swift; sourceTree = "<group>"; };
+		26A4B7B21D33503600264F0D /* MutableVehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableVehicle.swift; sourceTree = "<group>"; };
 		26AC8BB11BD345F100AA0001 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		26AC8BB31BD34BA700AA0001 /* VehicleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VehicleViewController.swift; sourceTree = "<group>"; };
 		26AC8BB51BD3503300AA0001 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		26B3DC551D170BAE001E29AA /* Connection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Connection.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		26B9E1D21D35E0C500794EB6 /* ReactiveCocoaOperators.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactiveCocoaOperators.swift; sourceTree = "<group>"; };
 		26C598BB1C250D1E00BC9FE1 /* RouteBadge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RouteBadge.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26D3E21E1D2776AB00F85712 /* Matchers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Matchers.swift; sourceTree = "<group>"; };
 		26D3E2211D28DFE800F85712 /* Route.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
@@ -221,6 +227,7 @@
 				2647825F1C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift */,
 				2650ED9F1C41CFCC006CCD42 /* SafeArrayIndex.swift */,
 				268632801C319B0D00839A22 /* SceneMediator.swift */,
+				26B9E1D21D35E0C500794EB6 /* ReactiveCocoaOperators.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -315,9 +322,10 @@
 		26D3E2201D28DF9900F85712 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				26D3E2231D28E07100F85712 /* Model.swift */,
 				26D3E2211D28DFE800F85712 /* Route.swift */,
 				26D3E2281D28E24B00F85712 /* Station.swift */,
+				26A4B7B01D32CEC800264F0D /* MutableRoute.swift */,
+				26A4B7B21D33503600264F0D /* MutableVehicle.swift */,
 				26A4B7AE1D32251100264F0D /* MutableStation.swift */,
 				26D3E22A1D28E25200F85712 /* Vehicle.swift */,
 				26D3E2271D28E0D900F85712 /* Support */,
@@ -328,8 +336,9 @@
 		26D3E2271D28E0D900F85712 /* Support */ = {
 			isa = PBXGroup;
 			children = (
-				26D3E2251D28E0B000F85712 /* Point.swift */,
+				26D3E2231D28E07100F85712 /* Model.swift */,
 				26D3E22E1D29BBA700F85712 /* MutableModel.swift */,
+				26D3E2251D28E0B000F85712 /* Point.swift */,
 			);
 			name = Support;
 			sourceTree = "<group>";
@@ -635,13 +644,16 @@
 				26D3E21F1D2776AB00F85712 /* Matchers.swift in Sources */,
 				2635DB781C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift in Sources */,
 				261DD1631C3424E1001336D4 /* RouteBadgeLabel.swift in Sources */,
+				26A4B7B31D33503600264F0D /* MutableVehicle.swift in Sources */,
 				266BAE661D2B7159001C9EC8 /* StartListViewController.swift in Sources */,
 				26D3E2221D28DFE800F85712 /* Route.swift in Sources */,
 				26A4B7AF1D32251100264F0D /* MutableStation.swift in Sources */,
+				26A4B7B11D32CEC800264F0D /* MutableRoute.swift in Sources */,
 				26D3E22D1D29BB6D00F85712 /* RPCResult.swift in Sources */,
 				26A424E51BD2D3F20035754F /* ArrivalTableViewCell.swift in Sources */,
 				26D3E22B1D28E25200F85712 /* Vehicle.swift in Sources */,
 				268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */,
+				26B9E1D31D35E0C500794EB6 /* ReactiveCocoaOperators.swift in Sources */,
 				264A13C91D2625CE00B44D47 /* TopicEvent.swift in Sources */,
 				2612F9FF1D2CCAE5005103E3 /* ConnectionStub.swift in Sources */,
 				264A13C71D26157400B44D47 /* PSError.swift in Sources */,

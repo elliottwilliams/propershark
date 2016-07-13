@@ -13,7 +13,10 @@ import Curry
 protocol MutableModel {
     associatedtype FromModel: Model
     
-    /// The mutable model should know its model's identifier, and the identifier should be immutable. (a model with a different identifier cannot be applied; it is a different model altogether.)
+    /**
+     The mutable model should know its model's identifier, and the identifier should be immutable. (a model with a
+     different identifier cannot be applied; it is a different model altogether.)
+     */
     var identifier: FromModel.Identifier { get }
     
     /// Initialize all `MutableProperty`s of this `MutableModel` from a corresponding model.
@@ -32,7 +35,7 @@ infix operator <- {}
  */
 internal func <- <T: Equatable>(mutable: MutableProperty<T>, source: T) -> ModifyPropertyResult<T> {
     if source != mutable.value {
-        return .modifiedFrom(mutable.swap(source))
+        return .modifiedValue(mutable.swap(source))
     }
     return .unmodified
 }
@@ -49,8 +52,16 @@ internal func <- <T: Equatable>(mutable: MutableProperty<T?>, source: T?) -> Mod
     return .unmodified
 }
 
+/// Modify `mutable` if any elements in `source` are different.
+internal func <- <T: Equatable>(mutable: MutableProperty<[T]>, source: [T]) -> ModifyPropertyResult<[T]> {
+    if source.elementsEqual(mutable.value) {
+        return .modifiedValue(mutable.swap(source))
+    }
+    return .unmodified
+}
+
 /// Return status from the modify mutable property operator (`<-`).
 enum ModifyPropertyResult<T> {
-    case modifiedFrom(T)
+    case modifiedValue(T)
     case unmodified
 }

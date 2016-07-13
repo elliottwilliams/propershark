@@ -8,13 +8,17 @@
 
 import Foundation
 
-protocol Model {
-    associatedtype Identifier
+protocol Model: Equatable {
+    associatedtype Identifier: Equatable
     static var namespace: String { get }
     var identifier: Identifier { get }
     
     func topicFor() -> String
     static func topicFor(identifier: String) -> String
+}
+
+func ==<M: Model>(a: M, b: M) -> Bool {
+    return a.identifier == b.identifier
 }
 
 extension Model {

@@ -14,7 +14,7 @@ enum RPCResult {
     enum AgencyEvent {
         case vehicles(AnyObject)
         case stations(AnyObject)
-        case routes(AnyObject)
+        case routes([[AnyObject]])
     }
     
     case Meta(MetaEvent)
@@ -37,7 +37,8 @@ enum RPCResult {
         case "agency.stations":
             return .Agency(.stations(args))
         case "agency.routes":
-            return .Agency(.routes(args))
+            guard let list = args as? [[AnyObject]] else { return nil }
+            return .Agency(.routes(list))
         case "meta.last_event":
             return .Meta(.lastEvent(args))
         default:
