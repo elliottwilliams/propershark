@@ -6,7 +6,7 @@
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
-        <!--Dumb Route List-->
+        <!--Reasonably Competant List-->
         <scene sceneID="1Ok-a6-49B">
             <objects>
                 <tableViewController storyboardIdentifier="Route List" id="Ay3-Al-a58" customClass="StartListViewController" customModule="Proper" customModuleProvider="target" sceneMemberID="viewController">
@@ -82,7 +82,7 @@
                             <outlet property="delegate" destination="Ay3-Al-a58" id="kcW-sC-va6"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Dumb Route List" id="kel-oI-RY1">
+                    <navigationItem key="navigationItem" title="Reasonably Competant List" id="kel-oI-RY1">
                         <barButtonItem key="backBarButtonItem" title="Routes" id="zvl-d7-Nqh"/>
                     </navigationItem>
                 </tableViewController>
@@ -628,7 +628,7 @@
         <image name="cb-default" width="64" height="64"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Wc0-K5-kvk"/>
-        <segue reference="fGj-eR-Wrk"/>
+        <segue reference="XSj-wo-Jw9"/>
+        <segue reference="FDI-ip-xHU"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -15,6 +15,15 @@ protocol ConnectionType {
     func subscribe(topic: String) -> SignalProducer<MDWampEvent, PSError>
 }
 
+extension ConnectionType {
+    // Currently, Swift doesn't support default arguments in protocol methods ಠ_ಠ
+    // This is a convenience method to acheive the same thing.
+    // TODO: revisit in Swift 3
+    func call(procedure: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> SignalProducer<MDWampResult, PSError> {
+        return self.call(procedure, args: args, kwargs: kwargs)
+    }
+}
+
 typealias WampArgs = [AnyObject]
 typealias WampKwargs = [NSObject: AnyObject]
 

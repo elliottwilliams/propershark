@@ -12,9 +12,9 @@ import MDWamp
 enum RPCResult {
     case Agency(AgencyEvent)
     enum AgencyEvent {
-        case vehicles(AnyObject)
-        case stations(AnyObject)
-        case routes([[AnyObject]])
+        case vehicles([AnyObject])
+        case stations([AnyObject])
+        case routes([AnyObject])
     }
     
     case Meta(MetaEvent)
@@ -33,12 +33,20 @@ enum RPCResult {
     static func parseFromTopic(topic: String, args: WampArgs, kwargs: WampKwargs) -> RPCResult? {
         switch topic {
         case "agency.vehicles":
-            return .Agency(.vehicles(args))
+            guard let list = args as? [[AnyObject]],
+                let vehicles = list.first
+                else { return nil }
+            return .Agency(.vehicles(vehicles))
         case "agency.stations":
-            return .Agency(.stations(args))
+            guard let list = args as? [[AnyObject]],
+                let stations = list.first
+                else { return nil }
+            return .Agency(.stations(stations))
         case "agency.routes":
-            guard let list = args as? [[AnyObject]] else { return nil }
-            return .Agency(.routes(list))
+            guard let list = args as? [[AnyObject]],
+                let routes = list.first
+                else { return nil }
+            return .Agency(.routes(routes))
         case "meta.last_event":
             return .Meta(.lastEvent(args))
         default:

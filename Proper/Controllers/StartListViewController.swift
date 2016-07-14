@@ -11,10 +11,22 @@ import ReactiveCocoa
 import Result
 import Argo
 
-class StartListViewController: UITableViewController/*, SceneMediatedController*/ {
+protocol DefaultSignalHandlers {
+
+}
+extension DefaultSignalHandlers where Self: UIViewController {
+    func displayError(error: PSError) {
+        self.presentViewController(error.alert as UIViewController, animated: true, completion: nil)
+    }
+}
+
+class StartListViewController: UITableViewController, DefaultSignalHandlers/*, SceneMediatedController*/ {
     
     // MARK: - Properties
     var routes: [Route] = []
+    var stations: [Station] = []
+    var vehicles: [Vehicle] = []
+
     private lazy var sceneMediator = SceneMediator.sharedInstance
     private lazy var connection: ConnectionType = Connection.sharedInstance
     private lazy var config = Config.sharedInstance
@@ -24,75 +36,83 @@ class StartListViewController: UITableViewController/*, SceneMediatedController*
         super.init(coder: aDecoder)
     }
 
+    // MARK: - Signals
+
+    private lazy var disappear: SignalProducer<(), NoError> = {
+        return self.rac_signalForSelector(#selector(UIViewController.viewDidDisappear(_:)))
+        .toSignalProducer()
+        .map { _ in () }
+        .assumeNoError()
+    }()
+
+    private lazy var routeSignal: SignalProducer<[Route], PSError> = {
+        return self.connection.call("agency.routes")
+            .map { RPCResult.parseFromTopic("agency.routes", event: $0) }
+            .attemptMap { maybeResult -> Result<[AnyObject], PSError> in
+                guard let result = maybeResult,
+                    case .Agency(.routes(let routes)) = result
+                    else { return .Failure(PSError(code: .parseFailure)) }
+                return .Success(routes)
+            }
+            .decodeAnyAs(Route.self)
+            .on(next: { self.routes = $0; self.tableView.reloadData() },
+                failed: self.displayError)
+            .takeUntil(self.disappear)
+    }()
+
+    private lazy var stationSignal: SignalProducer<[Station], PSError> = {
+        return self.connection.call("agency.stations")
+            .map { RPCResult.parseFromTopic("agency.stations", event: $0) }
+            .attemptMap { maybeResult -> Result<[AnyObject], PSError> in
+                guard let result = maybeResult,
+                    case .Agency(.stations(let stations)) = result
+                    else { return .Failure(PSError(code: .parseFailure)) }
+                return .Success(stations)
+            }
+            .decodeAnyAs(Station.self)
+            .on(next: { self.stations = $0; self.tableView.reloadData() },
+                failed: self.displayError)
+            .takeUntil(self.disappear)
+    }()
+
+    private lazy var vehicleSignal: SignalProducer<[Vehicle], PSError> = {
+        return self.connection.call("agency.vehicles")
+            .map { RPCResult.parseFromTopic("agency.vehicles", event: $0) }
+            .attemptMap { maybeResult -> Result<[AnyObject], PSError> in
+                guard let result = maybeResult,
+                    case .Agency(.vehicles(let vehicles)) = result
+                    else { return .Failure(PSError(code: .parseFailure)) }
+                return .Success(vehicles)
+            }
+            .decodeAnyAs(Vehicle.self)
+            .on(next: { self.vehicles = $0; self.tableView.reloadData() },
+                failed: self.displayError)
+            .takeUntil(self.disappear)
+    }()
+
     // MARK: - View events
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-    }
-    
-    override func viewDidAppear(animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        let topic = "agency.routes"
-        let signalProducer =
-            self.connection.call(topic, args: [], kwargs: [:])
-            .map() { wampResult in RPCResult.parseFromTopic(topic, event: wampResult) }
-            // TODO I'd like to make part of this a signal operator. Signal consumer needs to do event parsing, but there can be an operator that takes AnyObject and a Decodable type and returns a Result like it's done here. This would reduce this operator from 18 lines to 5.
-            .attemptMap() { maybeResult -> Result<[Route], PSError> in
-                guard let result = maybeResult,
-                    case .Agency(.routes(let body)) = result,
-                    // The body of this request is a list of list of routes.
-                    let objects = (body as? [AnyObject])?.first,
-                    let list = objects as? [AnyObject]
-                    else { return .Failure(PSError(code: .parseFailure)) }
-                
-                // Decode the list of routes. If any in the list were decoded, success with those.
-                // Otherwise, fail with a list of decoder errors.
-                let decoded = list.map { decode($0) as Decoded<Route> }
-                let errors = decoded.map { $0.error }
-                let routes = decoded.flatMap { $0.value }
-                if !routes.isEmpty {
-                    return .Success(routes)
-                } else {
-                    return .Failure(PSError(code: .parseFailure, associated: errors))
-                }
-            }
-            .on(
-                next: { routes in
-                    self.routes = routes
-                    // Quick and dirty table reload. To do anything more sophisticated is going to take a ViewModel/MutableModel
-                    self.tableView.reloadData()
-                },
-                failed: { error in
-                    self.presentViewController(error.alert as UIViewController, animated: true, completion: nil)
-                }
-            )
-        self.routeDisposable = signalProducer.start()
-    }
-    
-    override func viewDidDisappear(animated: Bool) {
-        self.routeDisposable?.dispose()
-        
-        super.viewDidDisappear(animated)
+
+        // Start signals to populate the list
+        self.routeSignal.start()
+        self.stationSignal.start()
+        self.vehicleSignal.start()
     }
     
     // MARK: - Table view data source
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return [routes.count, vehicles.count, stations.count][section]
-        return [routes.count][section]
+        return [routes.count, vehicles.count, stations.count][section]
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
+        return 3
     }
     
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return ["Routes"][section]
-//        return ["Routes", "Vehicles", "Stations"][section]
+        return ["Routes", "Vehicles", "Stations"][section]
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -103,14 +123,14 @@ class StartListViewController: UITableViewController/*, SceneMediatedController*
             cell = tableView.dequeueReusableCellWithIdentifier("RoutePrototypeCell", forIndexPath: indexPath)
             let route = routes[indexPath.row]
             cell!.textLabel?.text = route.name
-//        case 1:
-//            cell = tableView.dequeueReusableCellWithIdentifier("VehiclePrototypeCell", forIndexPath: indexPath)
-//            let vehicle = vehicles[indexPath.row]
-//            cell!.textLabel?.text = vehicle.name
-//        case 2:
-//            cell = tableView.dequeueReusableCellWithIdentifier("StationPrototypeCell", forIndexPath: indexPath)
-//            let station = stations[indexPath.row]
-//            cell!.textLabel?.text = station.name
+        case 1:
+            cell = tableView.dequeueReusableCellWithIdentifier("VehiclePrototypeCell", forIndexPath: indexPath)
+            let vehicle = vehicles[indexPath.row]
+            cell!.textLabel?.text = vehicle.name
+        case 2:
+            cell = tableView.dequeueReusableCellWithIdentifier("StationPrototypeCell", forIndexPath: indexPath)
+            let station = stations[indexPath.row]
+            cell!.textLabel?.text = station.name
         default:
             cell = nil
         }

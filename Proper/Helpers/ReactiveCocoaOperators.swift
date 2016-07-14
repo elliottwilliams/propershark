@@ -42,7 +42,10 @@ extension SignalType where Value: CollectionType, Error == PSError {
             let decoded = list.flatMap { M.decode(JSON($0 as! AnyObject)) }
             let errors = decoded.map { $0.error }
             let models = decoded.flatMap { $0.value }
-            if !models.isEmpty {
+
+            // If some models were decoded, or if no models were passed in the list to begin with, the prodecure
+            // succeeded.
+            if !models.isEmpty || list.isEmpty {
                 return .Success(models)
             } else {
                 return .Failure(PSError(code: .parseFailure, associated: errors))
