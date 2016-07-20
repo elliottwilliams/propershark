@@ -45,6 +45,7 @@ struct Vehicle: Model {
     
     static var namespace: String { return "vehicles" }
     var identifier: String { return self.name }
+    var topic: String { return Vehicle.topicFor(self.identifier) }
 }
 
 extension Vehicle: Decodable {

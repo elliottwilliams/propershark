@@ -13,24 +13,23 @@ import Curry
 struct Station: Model {
     typealias Identifier = String
     
-    let code: String?
     let name: String
     let stop_code: Identifier
     let description: String?
-    let position: Point?
+    let position: Point
     
     static var namespace: String { return "stations" }
     var identifier: Identifier { return self.stop_code }
+    var topic: String { return Station.topicFor(self.identifier) }
 }
 
 extension Station: Decodable {
     static func decode(json: JSON) -> Decoded<Station> {
         return curry(Station.init)
-            <^> json <|? "code"
-            <*> json <| "name"
+            <^> json <| "name"
             <*> json <| "stop_code"
             <*> json <|? "description"
-            <*> .optional(Point.decode(json))
+            <*> Point.decode(json)
     }
 }
 

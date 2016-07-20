@@ -9,12 +9,13 @@
 import Foundation
 import ReactiveCocoa
 import Curry
-import Runes
+import Result
 
 struct MutableVehicle: MutableModel {
     typealias FromModel = Vehicle
     let name: FromModel.Identifier
     var identifier: FromModel.Identifier { return self.name }
+    var topic: String { return Vehicle.topicFor(self.identifier) }
 
     let code: MutableProperty<Int>
     let position: MutableProperty<Point>
@@ -44,9 +45,9 @@ struct MutableVehicle: MutableModel {
         self.speed = .init(vehicle.speed)
     }
 
-    func apply(vehicle: Vehicle) throws {
+    func apply(vehicle: Vehicle) -> Result<(), PSError> {
         if vehicle.identifier != self.identifier {
-            throw PSError(code: .mutableModelFailedApply)
+            return .Failure(PSError(code: .mutableModelFailedApply))
         }
 
         self.code <- vehicle.code
@@ -60,5 +61,7 @@ struct MutableVehicle: MutableModel {
         self.scheduleDelta <- vehicle.scheduleDelta
         self.heading <- vehicle.heading
         self.speed <- vehicle.speed
+
+        return .Success()
     }
 }

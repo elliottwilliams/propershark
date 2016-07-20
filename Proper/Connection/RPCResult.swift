@@ -9,6 +9,7 @@
 import Foundation
 import MDWamp
 
+@available(*, deprecated, message="Use TopicEvent with *RPCEvent enums")
 enum RPCResult {
     case Agency(AgencyEvent)
     enum AgencyEvent {

@@ -9,6 +9,7 @@
 import Foundation
 import ReactiveCocoa
 import Curry
+import Result
 
 protocol MutableModel {
     associatedtype FromModel: Model
@@ -18,12 +19,13 @@ protocol MutableModel {
      different identifier cannot be applied; it is a different model altogether.)
      */
     var identifier: FromModel.Identifier { get }
+    var topic: String { get }
     
     /// Initialize all `MutableProperty`s of this `MutableModel` from a corresponding model.
     init(from _: FromModel)
     
     /// Update state to match the model given. Implementations may throw an error if a given model cannot be applied.
-    func apply(_: FromModel) throws
+    func apply(_: FromModel) -> Result<(), PSError>
 }
 
 /// Makes updates from a immutable value to a mutable property containing that value.

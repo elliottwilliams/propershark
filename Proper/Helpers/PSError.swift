@@ -65,6 +65,7 @@ enum PSErrorCode: Int {
     case maxConnectionFailures
     case parseFailure
     case mutableModelFailedApply
+    case unhandledTopic
     
     var title: String { return self.description().title }
     var message: String { return self.description().message }
@@ -75,7 +76,7 @@ enum PSErrorCode: Int {
             return ("Poor connection", "We lost the connection to our server.")
         case .maxConnectionFailures:
             return ("Server connection failed", "We were unable to establish a connection with \(config.app.name) servers. Check that your Internet connection is functioning and try again.")
-        case .parseFailure, .mutableModelFailedApply:
+        case .parseFailure, .mutableModelFailedApply, .unhandledTopic:
             return ("Something went wrong", "Our server sent us some information that could not be understood.")
         }
     }

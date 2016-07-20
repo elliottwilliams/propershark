@@ -9,7 +9,7 @@
 import UIKit
 
 // The scene mediator is used to pass data between view controllers before a segue is performed. By using the mediator instead of hard-coding the handoff in each controller's prepareForSegue method, view controllers don't have to be aware of each other, which would break the Open/Closed Principle.
-class SceneMediator: NSObject, SceneMediatorProtocol {
+class SceneMediator: NSObject {
     
     static let sharedInstance = SceneMediator()
     
@@ -19,9 +19,16 @@ class SceneMediator: NSObject, SceneMediatorProtocol {
      * - Mediators should try to avoid depending on class properties. Use set*Model methods.
      * - If a segue is triggered programmatically, its sender contains data to pass to the destination.
      */
-    let _mediators: [String: (UIStoryboardSegue, AnyObject?) -> Void] = [:]/*[
-        
-     
+    private let mediators: [String: (UIStoryboardSegue, AnyObject?) -> Void] = [
+
+        "ShowStationFromRouteTable": { segue, sender in
+            let src = segue.sourceViewController as! StartListViewController
+            let dest = segue.destinationViewController as! StationViewController
+//            dest.segue(with: )
+        }
+    ]
+
+        /*
         "ShowVehicleAfterSelectionFromList": { (segue, sender) in
             let src = segue.sourceViewController as! StartListViewController
             let dest = segue.destinationViewController as! VehicleViewController
@@ -73,13 +80,14 @@ class SceneMediator: NSObject, SceneMediatorProtocol {
             
             dest.vehicle = decode(sender as! NSData)
         }
-    ]*/
+    ]
+     */
     
     func sendMessagesForSegueWithIdentifier(identifier: String?, segue: UIStoryboardSegue, sender: AnyObject?) {
         if let id = identifier {
 
             // Look up the segue and perform its transition step
-            let transition = _mediators[id]
+            let transition = mediators[id]
             transition?(segue, sender)
 
             NSLog("transition mediated for \(id)")
@@ -88,7 +96,9 @@ class SceneMediator: NSObject, SceneMediatorProtocol {
     
 }
 
-// We pass swift structs into the mediator as NSData, since the segue infrastructure needs objc objects. This function allocates a pointer to memory of size for a given struct, then moves bytes from the NSData instance to that pointer. The last line deallocates the pointer and returns its typed contents.
+/* We pass swift structs into the mediator as NSData, since the segue infrastructure needs objc objects. This function
+ allocates a pointer to memory of size for a given struct, then moves bytes from the NSData instance to that pointer.
+ The last line deallocates the pointer and returns its typed contents. */
 private func decode<T>(data: NSData) -> T {
     let pointer = UnsafeMutablePointer<T>.alloc(sizeof(T))
     data.getBytes(pointer, length: sizeof(T))
@@ -96,6 +106,7 @@ private func decode<T>(data: NSData) -> T {
 }
 
 // The scene mediator behaves according to this protocol
+@available(*, deprecated, message="Conform to ProperViewController")
 protocol SceneMediatorProtocol {
     func sendMessagesForSegueWithIdentifier(identifier: String?, segue: UIStoryboardSegue, sender: AnyObject?)
 }

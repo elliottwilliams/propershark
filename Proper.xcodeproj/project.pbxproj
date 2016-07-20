@@ -50,8 +50,11 @@
 		26D3E22B1D28E25200F85712 /* Vehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E22A1D28E25200F85712 /* Vehicle.swift */; };
 		26D3E22D1D29BB6D00F85712 /* RPCResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E22C1D29BB6D00F85712 /* RPCResult.swift */; };
 		26D3E22F1D29BBA700F85712 /* MutableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E22E1D29BBA700F85712 /* MutableModel.swift */; };
+		26DBCF491D3FF59A00B22562 /* EventLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DBCF481D3FF59A00B22562 /* EventLog.swift */; };
 		26DFB6761C35A7F7006A8AE0 /* ScheduleRail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DFB6751C35A7F7006A8AE0 /* ScheduleRail.swift */; };
 		26DFB67C1C35DFA5006A8AE0 /* RouteTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26DFB67B1C35DFA5006A8AE0 /* RouteTableViewCell.xib */; };
+		26E3E2CF1D3C7DF90018EF3F /* ProperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E3E2CE1D3C7DF90018EF3F /* ProperViewController.swift */; };
+		26E3E2D01D3C810B0018EF3F /* StationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424B51BD2C1320035754F /* StationViewController.swift */; };
 		3214B8DE3FF5F9DAC64C4F1E /* Pods_ProperTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F18E4F39BC780A247F3BA1E /* Pods_ProperTests.framework */; };
 		CFC1B8CBCF535D1C2D440D5F /* Pods_Proper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E5D7134B5937B58022529F /* Pods_Proper.framework */; };
 /* End PBXBuildFile section */
@@ -128,9 +131,11 @@
 		26D3E22A1D28E25200F85712 /* Vehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vehicle.swift; sourceTree = "<group>"; };
 		26D3E22C1D29BB6D00F85712 /* RPCResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RPCResult.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26D3E22E1D29BBA700F85712 /* MutableModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableModel.swift; sourceTree = "<group>"; };
+		26DBCF481D3FF59A00B22562 /* EventLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventLog.swift; sourceTree = "<group>"; };
 		26DFB6751C35A7F7006A8AE0 /* ScheduleRail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleRail.swift; sourceTree = "<group>"; };
 		26DFB6791C35B730006A8AE0 /* RouteTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableViewController.swift; sourceTree = "<group>"; };
 		26DFB67B1C35DFA5006A8AE0 /* RouteTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RouteTableViewCell.xib; sourceTree = "<group>"; };
+		26E3E2CE1D3C7DF90018EF3F /* ProperViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProperViewController.swift; sourceTree = "<group>"; };
 		2CE8BA5C320FDC4A6AA55F58 /* Pods_ProperUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ProperUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		39B9CC6A8948B1CA574DBA9F /* Pods-ProperUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ProperUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ProperUITests/Pods-ProperUITests.release.xcconfig"; sourceTree = "<group>"; };
 		63811A4C3CF2A1AAC4E1C93E /* Pods-ProperTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ProperTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ProperTests/Pods-ProperTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -227,6 +232,8 @@
 				2650ED9F1C41CFCC006CCD42 /* SafeArrayIndex.swift */,
 				268632801C319B0D00839A22 /* SceneMediator.swift */,
 				26B9E1D21D35E0C500794EB6 /* ReactiveCocoaOperators.swift */,
+				26E3E2CE1D3C7DF90018EF3F /* ProperViewController.swift */,
+				26DBCF481D3FF59A00B22562 /* EventLog.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -639,6 +646,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				26D3E2261D28E0B000F85712 /* Point.swift in Sources */,
+				26E3E2D01D3C810B0018EF3F /* StationViewController.swift in Sources */,
 				264782601C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift in Sources */,
 				26D3E21F1D2776AB00F85712 /* Matchers.swift in Sources */,
 				2635DB781C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift in Sources */,
@@ -668,7 +676,9 @@
 				26D3E2291D28E24B00F85712 /* Station.swift in Sources */,
 				268E72291BF9938800E981D4 /* TransitNavigationItem.swift in Sources */,
 				26A424B41BD2C1320035754F /* AppDelegate.swift in Sources */,
+				26DBCF491D3FF59A00B22562 /* EventLog.swift in Sources */,
 				2650D28E1D176B65003758BF /* Configuration.swift in Sources */,
+				26E3E2CF1D3C7DF90018EF3F /* ProperViewController.swift in Sources */,
 				26DFB6761C35A7F7006A8AE0 /* ScheduleRail.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

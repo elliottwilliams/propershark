@@ -40,7 +40,7 @@ extension Point: Decodable {
         case .Object(_):
             return curry(Point.init(lat:long:))
                 <^> json <| "latitude"
-                <*> json <| "longtiude"
+                <*> json <| "longitude"
         default:
             return .Failure(.TypeMismatch(expected: "array of coordinates or dictionary", actual: "something else"))
         }
@@ -49,6 +49,12 @@ extension Point: Decodable {
 
 extension CLLocation {
     convenience init(point: Point) {
+        self.init(latitude: point.lat, longitude: point.long)
+    }
+}
+
+extension CLLocationCoordinate2D {
+    init(point: Point) {
         self.init(latitude: point.lat, longitude: point.long)
     }
 }

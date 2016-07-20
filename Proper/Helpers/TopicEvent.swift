@@ -41,6 +41,18 @@ enum TopicEvent {
         
         case vehicleUpdate(vehicle: AnyObject, EventDefaults)
     }
+
+    case Agency(AgencyEvent)
+    enum AgencyEvent {
+        case vehicles([AnyObject])
+        case stations([AnyObject])
+        case routes([AnyObject])
+    }
+
+    case Meta(MetaEvent)
+    enum MetaEvent {
+        case lastEvent(WampArgs, WampKwargs)
+    }
     
     static func parseFromTopic(topic: String, event: MDWampEvent) -> TopicEvent? {
         // Arguments and argumentsKw come implicitly unwrapped (from their dirty dirty objc library), so we need to
@@ -94,6 +106,38 @@ enum TopicEvent {
         case ("routes.", "vehicle_update"):
             return .Route(.vehicleUpdate(vehicle: object, baseValues))
        
+        default:
+            return nil
+        }
+    }
+
+    static func parseFromRPC(topic: String, event: MDWampResult) -> TopicEvent? {
+        // Arguments and argumentsKw come implicitly unwrapped (from their dirty dirty objc library), so we need to
+        // check them manually.
+        return parseFromRPC(topic,
+                            args: event.arguments != nil ? event.arguments : [],
+                            kwargs: event.argumentsKw != nil ? event.argumentsKw : [:])
+    }
+
+    static func parseFromRPC(topic: String, args: WampArgs, kwargs: WampKwargs) -> TopicEvent? {
+        switch topic {
+        case "agency.vehicles":
+            guard let list = args as? [[String: AnyObject]],
+                let vehicles = list.first?.values
+                else { return nil }
+            return .Agency(.vehicles(Array(vehicles)))
+        case "agency.stations":
+            guard let list = args as? [[String: AnyObject]],
+                let stations = list.first?.values
+                else { return nil }
+            return .Agency(.stations(Array(stations)))
+        case "agency.routes":
+            guard let list = args as? [[String: AnyObject]],
+                let routes = list.first?.values
+                else { return nil }
+            return .Agency(.routes(Array(routes)))
+        case "meta.last_event":
+            return .Meta(.lastEvent(args, kwargs))
         default:
             return nil
         }

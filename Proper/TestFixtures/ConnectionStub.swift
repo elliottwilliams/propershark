@@ -80,7 +80,7 @@ class ConnectionStub: ConnectionType {
             } else {
                 observer.sendFailed(PSError(code: .mdwampError))
             }
-        }.logEvents(identifier: "ConnectionStub#call")
+        }.logEvents(identifier: "ConnectionStub.call", logger: logSignalEvent)
     }
     
     func subscribe(topic: String) -> SignalProducer<MDWampEvent, PSError> {

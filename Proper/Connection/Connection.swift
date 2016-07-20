@@ -61,7 +61,7 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
             return SignalProducer<MDWamp, PSError>.init(error: PSError(code: .maxConnectionFailures))
         }
         // ...and logs all events for debugging
-        .logEvents(identifier: "Connection#producer")
+        .logEvents(identifier: "Connection.connectionProducer", logger: logSignalEvent)
     }
     
     // MARK: Communication Methods
@@ -72,7 +72,7 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
         return self.producer
         .map { wamp in wamp.subscribeWithSignal(topic) }
         .flatten(.Merge)
-        .logEvents(identifier: "Connection#subscribe(_:\(topic)")
+        .logEvents(identifier: "Connection.subscribe(topic:\"\(topic)\")", logger: logSignalEvent)
     }
     
     /// Returns a SignalProducer that will get a wamp connection, call `procedure` on it, and forward results.
@@ -81,7 +81,7 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
               kwargs: WampKwargs = [:]) -> SignalProducer<MDWampResult, PSError> {
         return self.producer.map { wamp in wamp.callWithSignal(procedure, args, kwargs, [:]) }
         .flatten(.Merge)
-        .logEvents(identifier: "Connection#call(_:\(procedure)")
+        .logEvents(identifier: "Connection.call(procedure:\"\(procedure)\")", logger: logSignalEvent)
     }
     
     // MARK: MDWamp Delegate
@@ -122,7 +122,7 @@ extension MDWamp {
                 observer.sendNext(result)
                 observer.sendCompleted()
             }
-        }.logEvents(identifier: "MDWamp#callWithSignal")
+        }.logEvents(identifier: "MDWamp.callWithSignal", logger: logSignalEvent)
     }
     
     func subscribeWithSignal(topic: String) -> SignalProducer<MDWampEvent, PSError> {
@@ -139,6 +139,6 @@ extension MDWamp {
                     if error != nil { observer.sendFailed(PSError(error: error, code: .mdwampError)) }
                 }
             }
-        }.logEvents(identifier: "MDWamp#subscribeWithSignal")
+        }.logEvents(identifier: "MDWamp.subscribeWithSignal", logger: logSignalEvent)
     }
 }

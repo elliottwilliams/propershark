@@ -8,12 +8,14 @@
 
 import Foundation
 import ReactiveCocoa
+import Result
 
 struct MutableRoute: MutableModel {
     typealias FromModel = Route
 
     let code: FromModel.Identifier
     var identifier: FromModel.Identifier { return self.code }
+    var topic: String { return FromModel.topicFor(self.identifier) }
 
     let name: MutableProperty<String>
     let shortName: MutableProperty<String>
@@ -32,9 +34,9 @@ struct MutableRoute: MutableModel {
         self.stations = .init(route.stations)
     }
 
-    func apply(route: Route) throws {
+    func apply(route: Route) -> Result<(), PSError> {
         if route.identifier != self.identifier {
-            throw PSError(code: .mutableModelFailedApply)
+            return .Failure(PSError(code: .mutableModelFailedApply))
         }
 
         self.name <- route.name
@@ -42,6 +44,8 @@ struct MutableRoute: MutableModel {
         self.description <- route.description
         self.color <- route.color
         self.path <- route.path
+
+        return .Success()
     }
 }
 

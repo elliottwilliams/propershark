@@ -25,6 +25,7 @@ struct Route: Model {
     
     static var namespace: String { return "routes" }
     var identifier: Identifier { return self.code }
+    var topic: String { return Route.topicFor(self.identifier) }
 }
 
 extension Route: Decodable {

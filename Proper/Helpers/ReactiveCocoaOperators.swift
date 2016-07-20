@@ -11,6 +11,7 @@ import ReactiveCocoa
 import Argo
 import Result
 
+// MARK: Value is AnyObject
 extension SignalType where Value: AnyObject, Error == PSError {
     /// Attempt to decode an `AnyObject` to the model given.
     internal func decodeAs<M: Decodable>(_: M.Type) -> Signal<M.DecodedType, PSError> {
@@ -33,6 +34,8 @@ extension SignalProducerType where Value: AnyObject, Error == PSError {
     }
 }
 
+
+// MARK: Value is Collection
 extension SignalType where Value: CollectionType, Error == PSError {
     /// Attempt to decode each member of a list to the `to` type. If *any* decode successfully, an array of successfully
     /// decoded models will be forwarded.
@@ -62,6 +65,29 @@ extension SignalProducerType where Value: CollectionType, Error == PSError {
     }
 }
 
+
+// MARK: Value is Optional
+extension SignalType where Value: OptionalType {
+    /// Unwrap the optional value in the signal, or produce an error by calling the closure given.
+    internal func unwrapOrFail(error: () -> Error) -> Signal<Value.Wrapped, Error> {
+        return attemptMap { value in
+            if let value = value.optional {
+                return .Success(value)
+            } else {
+                return .Failure(error())
+            }
+        }
+    }
+}
+
+extension SignalProducerType where Value: OptionalType {
+    internal func unwrapOrFail(error: () -> Error) -> SignalProducer<Value.Wrapped, Error> {
+        return lift { $0.unwrapOrFail(error) }
+    }
+}
+
+
+// MARK: Any signal
 extension SignalType {
     internal func assumeNoError() -> Signal<Self.Value, NoError> {
         return mapError { error in

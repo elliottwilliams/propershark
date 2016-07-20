@@ -13,8 +13,8 @@ protocol Model: Equatable {
     static var namespace: String { get }
     var identifier: Identifier { get }
     
-    func topicFor() -> String
-    static func topicFor(identifier: String) -> String
+    var topic: String { get }
+    static func topicFor(identifier: Identifier) -> String
 }
 
 func ==<M: Model>(a: M, b: M) -> Bool {
@@ -43,11 +43,7 @@ extension Model {
             .filter { $0.value == nil }.isEmpty
     }
     
-    func topicFor() -> String {
-        return Self.topicFor("\(self.identifier)")
-    }
-    
-    static func topicFor(identifier: String) -> String {
+    static func topicFor(identifier: Identifier) -> String {
         return "\(Self.namespace).\(identifier)"
     }
 }

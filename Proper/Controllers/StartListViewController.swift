@@ -11,34 +11,26 @@ import ReactiveCocoa
 import Result
 import Argo
 
-protocol DefaultSignalHandlers {
-
-}
-extension DefaultSignalHandlers where Self: UIViewController {
-    func displayError(error: PSError) {
-        self.presentViewController(error.alert as UIViewController, animated: true, completion: nil)
-    }
-}
-
-class StartListViewController: UITableViewController, DefaultSignalHandlers/*, SceneMediatedController*/ {
+class StartListViewController: UITableViewController, ProperViewController {
     
-    // MARK: - Properties
+    // MARK: Properties
     var routes: [Route] = []
     var stations: [Station] = []
     var vehicles: [Vehicle] = []
 
-    private lazy var sceneMediator = SceneMediator.sharedInstance
-    private lazy var connection: ConnectionType = Connection.sharedInstance
-    private lazy var config = Config.sharedInstance
+    internal lazy var sceneMediator = SceneMediator.sharedInstance
+    internal lazy var connection: ConnectionType = Connection.sharedInstance
+    internal lazy var config = Config.sharedInstance
     private var routeDisposable: Disposable?
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
 
-    // MARK: - Signals
+    // MARK: Signals
 
-    private lazy var disappear: SignalProducer<(), NoError> = {
+    @available(*, deprecated, message="Use #onDisappear")
+    internal lazy var disappear: SignalProducer<(), NoError> = {
         return self.rac_signalForSelector(#selector(UIViewController.viewDidDisappear(_:)))
         .toSignalProducer()
         .map { _ in () }
@@ -47,7 +39,7 @@ class StartListViewController: UITableViewController, DefaultSignalHandlers/*, S
 
     private lazy var routeSignal: SignalProducer<[Route], PSError> = {
         return self.connection.call("agency.routes")
-            .map { RPCResult.parseFromTopic("agency.routes", event: $0) }
+            .map { TopicEvent.parseFromRPC("agency.routes", event: $0) }
             .attemptMap { maybeResult -> Result<[AnyObject], PSError> in
                 guard let result = maybeResult,
                     case .Agency(.routes(let routes)) = result
@@ -57,12 +49,13 @@ class StartListViewController: UITableViewController, DefaultSignalHandlers/*, S
             .decodeAnyAs(Route.self)
             .on(next: { self.routes = $0; self.tableView.reloadData() },
                 failed: self.displayError)
-            .takeUntil(self.disappear)
+            .takeUntil(self.onDisappear())
+            .logEvents(identifier: "routeSignal", logger: logSignalEvent)
     }()
 
     private lazy var stationSignal: SignalProducer<[Station], PSError> = {
         return self.connection.call("agency.stations")
-            .map { RPCResult.parseFromTopic("agency.stations", event: $0) }
+            .map { TopicEvent.parseFromRPC("agency.stations", event: $0) }
             .attemptMap { maybeResult -> Result<[AnyObject], PSError> in
                 guard let result = maybeResult,
                     case .Agency(.stations(let stations)) = result
@@ -72,12 +65,13 @@ class StartListViewController: UITableViewController, DefaultSignalHandlers/*, S
             .decodeAnyAs(Station.self)
             .on(next: { self.stations = $0; self.tableView.reloadData() },
                 failed: self.displayError)
-            .takeUntil(self.disappear)
+            .takeUntil(self.onDisappear())
+            .logEvents(identifier: "stationSignal", logger: logSignalEvent)
     }()
 
     private lazy var vehicleSignal: SignalProducer<[Vehicle], PSError> = {
         return self.connection.call("agency.vehicles")
-            .map { RPCResult.parseFromTopic("agency.vehicles", event: $0) }
+            .map { TopicEvent.parseFromRPC("agency.vehicles", event: $0) }
             .attemptMap { maybeResult -> Result<[AnyObject], PSError> in
                 guard let result = maybeResult,
                     case .Agency(.vehicles(let vehicles)) = result
@@ -87,10 +81,11 @@ class StartListViewController: UITableViewController, DefaultSignalHandlers/*, S
             .decodeAnyAs(Vehicle.self)
             .on(next: { self.vehicles = $0; self.tableView.reloadData() },
                 failed: self.displayError)
-            .takeUntil(self.disappear)
+            .takeUntil(self.onDisappear())
+            .logEvents(identifier: "vehicleSignal", logger: logSignalEvent)
     }()
 
-    // MARK: - View events
+    // MARK: View events
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -98,7 +93,7 @@ class StartListViewController: UITableViewController, DefaultSignalHandlers/*, S
         // Start signals to populate the list
         self.routeSignal.start()
         self.stationSignal.start()
-        self.vehicleSignal.start()
+//        self.vehicleSignal.start()
     }
     
     // MARK: - Table view data source
@@ -149,7 +144,17 @@ class StartListViewController: UITableViewController, DefaultSignalHandlers/*, S
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        sceneMediator.sendMessagesForSegueWithIdentifier(segue.identifier, segue: segue, sender: sender)
+        guard let id = segue.identifier else { return }
+        switch id {
+        case "ShowStationAfterSelectionFromList":
+            guard let dest = segue.destinationViewController as? StationViewController,
+                let index = self.tableView.indexPathForSelectedRow
+                else { break }
+            let station = self.stations[index.row]
+            dest.station = MutableStation(from: station)
+        default:
+            break
+        }
     }
 
 }
