@@ -11,19 +11,20 @@ import Argo
 import Curry
 
 struct Route: Model {
-    typealias Identifier = Int
+    typealias Identifier = String
     
     let code: Identifier
-    let name: String
-    let shortName: String
-    let description: String
-    let color: UIColor
-    let path: [Point]
+    let name: String?
+    let shortName: String?
+    let description: String?
+    let color: UIColor?
+    let path: [Point]?
     
-    // Expected to change to [Station] in the future (shark#5)
-    let stations: [String]
+    // Associated objects
+    let stations: [Station]?
     
     static var namespace: String { return "routes" }
+    static var fullyQualified: String { return "Shark::Route" }
     var identifier: Identifier { return self.code }
     var topic: String { return Route.topicFor(self.identifier) }
 }
@@ -32,11 +33,11 @@ extension Route: Decodable {
     static func decode(json: JSON) -> Decoded<Route> {
         return curry(Route.init)
             <^> json <| "code"
-            <*> json <| "name"
-            <*> json <| "short_name"
-            <*> json <| "description"
-            <*> json <| "color"
-            <*> json <|| "path"
-            <*> json <|| "stations"
+            <*> json <|? "name"
+            <*> json <|? "short_name"
+            <*> json <|? "description"
+            <*> json <|? "color"
+            <*> json <||? "path"
+            <*> json <||? "stations"
     }
 }

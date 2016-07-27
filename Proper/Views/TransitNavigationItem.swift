@@ -10,7 +10,7 @@ import UIKit
 
 class TransitNavigationItem: UINavigationItem {
 
-    var uppercase:Bool = true
+    var uppercase: Bool = true
     
     override var title: String? {
         get { return super.title }

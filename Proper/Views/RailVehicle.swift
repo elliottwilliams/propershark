@@ -81,12 +81,9 @@ class RailVehicle: UIView {
     // TODO: this might belong on the vehicle model, since it's quite general purpose
     func isAtStation(station: Station) -> Bool {
         // A station may have been loaded from a stub, so we need to make sure it has a position.
-        guard let vehicle = self.vehicle,
-            let stationPosition = station.position
-            else { return false }
-        let vehiclePosition = vehicle.position
-        let a = CLLocation(point: vehiclePosition)
-        let b = CLLocation(point: stationPosition)
+        guard let vehicle = self.vehicle else { return false }
+        let a = CLLocation(point: vehicle.position)
+        let b = CLLocation(point: station.position)
         return a.distanceFromLocation(b) < 10.0
     }
     

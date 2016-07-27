@@ -64,19 +64,25 @@ enum PSErrorCode: Int {
     case connectionLost
     case maxConnectionFailures
     case parseFailure
+    case decodeFailure
     case mutableModelFailedApply
     case unhandledTopic
+    case timeout
     
     var title: String { return self.description().title }
     var message: String { return self.description().message }
     
     private func description(usingConfig config: Config = Config.sharedInstance) -> (title: String, message: String) {
         switch(self) {
-        case .mdwampError, .connectionLost:
+        case .mdwampError:
+            return ("Server connection failed", "Our server sent us an error message. Check that your Internet connection is functioning and try again.")
+        case .connectionLost:
             return ("Poor connection", "We lost the connection to our server.")
+        case .timeout:
+            return ("Poor connection", "We were unable to reach \(config.app.name) servers. Check that your Internet connection is functioning and try again.")
         case .maxConnectionFailures:
             return ("Server connection failed", "We were unable to establish a connection with \(config.app.name) servers. Check that your Internet connection is functioning and try again.")
-        case .parseFailure, .mutableModelFailedApply, .unhandledTopic:
+        case .parseFailure, .decodeFailure, .mutableModelFailedApply, .unhandledTopic:
             return ("Something went wrong", "Our server sent us some information that could not be understood.")
         }
     }

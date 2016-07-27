@@ -37,6 +37,7 @@
 		26A4B7AF1D32251100264F0D /* MutableStation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A4B7AE1D32251100264F0D /* MutableStation.swift */; };
 		26A4B7B11D32CEC800264F0D /* MutableRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A4B7B01D32CEC800264F0D /* MutableRoute.swift */; };
 		26A4B7B31D33503600264F0D /* MutableVehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A4B7B21D33503600264F0D /* MutableVehicle.swift */; };
+		26A8D6021D484944000434F9 /* StationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A8D6011D484944000434F9 /* StationTableViewController.swift */; };
 		26AC8BB21BD345F100AA0001 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26AC8BB11BD345F100AA0001 /* Media.xcassets */; };
 		26AC8BB61BD3503300AA0001 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26AC8BB51BD3503300AA0001 /* QuartzCore.framework */; };
 		26B3DC561D170BAE001E29AA /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B3DC551D170BAE001E29AA /* Connection.swift */; };
@@ -117,6 +118,7 @@
 		26A4B7AE1D32251100264F0D /* MutableStation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableStation.swift; sourceTree = "<group>"; };
 		26A4B7B01D32CEC800264F0D /* MutableRoute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableRoute.swift; sourceTree = "<group>"; };
 		26A4B7B21D33503600264F0D /* MutableVehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableVehicle.swift; sourceTree = "<group>"; };
+		26A8D6011D484944000434F9 /* StationTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StationTableViewController.swift; sourceTree = "<group>"; };
 		26AC8BB11BD345F100AA0001 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		26AC8BB31BD34BA700AA0001 /* VehicleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VehicleViewController.swift; sourceTree = "<group>"; };
 		26AC8BB51BD3503300AA0001 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -206,6 +208,7 @@
 				26A424E71BD2DFA00035754F /* ArrivalTableViewController.swift */,
 				264782551C2C6F67009D9AD0 /* StartListViewController.swift */,
 				26AC8BB31BD34BA700AA0001 /* VehicleViewController.swift */,
+				26A8D6011D484944000434F9 /* StationTableViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -661,6 +664,7 @@
 				26D3E22B1D28E25200F85712 /* Vehicle.swift in Sources */,
 				268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */,
 				26B9E1D31D35E0C500794EB6 /* ReactiveCocoaOperators.swift in Sources */,
+				26A8D6021D484944000434F9 /* StationTableViewController.swift in Sources */,
 				264A13C91D2625CE00B44D47 /* TopicEvent.swift in Sources */,
 				2612F9FF1D2CCAE5005103E3 /* ConnectionStub.swift in Sources */,
 				264A13C71D26157400B44D47 /* PSError.swift in Sources */,

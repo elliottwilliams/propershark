@@ -11,13 +11,11 @@ import UIKit
 class ArrivalTableViewController: UITableViewController {
     
     // MARK: Properties
-    var _arrivals: [ArrivalViewModel]
-    var _delegate: ArrivalTableViewDelegate
-    var _title: String
-    
+    var arrivals: [ArrivalViewModel]
+    var delegate: ArrivalTableViewDelegate
+
     // TODO: Determine if title should just be hardcoded to "Arrivals"
-    init(title: String?, arrivals: [ArrivalViewModel], delegate: ArrivalTableViewDelegate, view: UITableView) {
-        _title = title ?? "Arrivals"
+    init(arrivals: [ArrivalViewModel], delegate: ArrivalTableViewDelegate, view: UITableView) {
         _arrivals = arrivals
         _delegate = delegate
         super.init(style: view.style)
@@ -46,7 +44,7 @@ class ArrivalTableViewController: UITableViewController {
     
     // There is always one section, titled "Arrivals"
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return _title
+        return "Arrivals"
     }
 
     // Populate a cell in the arrivals table

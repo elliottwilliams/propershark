@@ -13,7 +13,7 @@ import ReactiveCocoa
 import Result
 import Argo
 
-@objc class StationViewController: UIViewController, ProperViewController/*, ArrivalTableViewDelegate*/ {
+class StationViewController: UIViewController, ProperViewController/*, ArrivalTableViewDelegate*/, MutableModelDelegate {
     
     // MARK: Force-unwrapped properties
     var station: MutableStation!
@@ -26,56 +26,70 @@ import Argo
     internal lazy var config = Config.sharedInstance
 
     // MARK: Signals
-    lazy var producer: SignalProducer<TopicEvent, PSError> = {
-        let meta = self.connection.call("meta.last_event", args: [self.station.topic])
-            .map { TopicEvent.parseFromRPC("meta.last_event", event: $0) }
+//    lazy var producer: SignalProducer<TopicEvent, PSError> = {
+//
+//        // Get the station immediately...
+//        let meta = self.connection.call("meta.last_event", args: [self.station.topic, self.station.topic])
+//            .map { TopicEvent.parseFromRPC("meta.last_event", event: $0) }
+//
+//        // ...and subscribe to updates on its topic
+//        let future = self.connection.subscribe(self.station.topic)
+//            .map { TopicEvent.parseFromTopic(self.station.topic, event: $0) }
+//
+//        // Combine these two signals into one, which will produce TopicEvents coming from either the RPC or the
+//        // subscription.
+//        return SignalProducer<SignalProducer<TopicEvent?, PSError>, PSError>(values: [meta, future])
+//            .flatten(.Merge)
+//            .unwrapOrFail { PSError(code: .parseFailure) }
+//            .on(next: { event in self.handle(event)},
+//                failed: self.displayError)
+//            .logEvents(identifier: "StationViewController.producer", logger: logSignalEvent)
+//    }()
+//
+//    private func handle(event: TopicEvent) -> Result<(), PSError> {
+//        switch event {
+//        case .Meta(.lastEvent(let args, _)):
+//            guard let object = args.first, let station = decode(object) as Station?
+//                else { return .Failure(PSError(code: .parseFailure)) }
+//            return self.station.apply(station)
+//
+//        case .Station(.update(let object, _)):
+//            guard let station = decode(object) as Station?
+//                else { return .Failure(PSError(code: .parseFailure)) }
+//            return self.station.apply(station)
+//
+//        default:
+//            NSLog("unhandled topic event: \(event)")
+//            // TODO: maybe this shouldn't be an error in production
+//            return .Failure(PSError(code: .unhandledTopic))
+//        }
+//    }
 
-        let future = self.connection.subscribe(self.station.topic)
-            .map { TopicEvent.parseFromTopic(self.station.topic, event: $0) }
-
-        return SignalProducer<SignalProducer<TopicEvent?, PSError>, PSError>(values: [meta, future])
-            .flatten(.Merge)
-            .unwrapOrFail { PSError(code: .parseFailure) }
-            .on(next: { event in self.handleTopicEvent(event)})
-            .logEvents(identifier: "StationViewController.producer", logger: logSignalEvent)
-    }()
-
-    private func handleTopicEvent(event: TopicEvent) -> Result<(), PSError> {
-        switch event {
-        case .Meta(.lastEvent(let args, _)):
-            guard let object = args.first, let station = decode(object) as Station?
-                else { return .Failure(PSError(code: .parseFailure)) }
-            return self.station.apply(station)
-
-        case .Station(.update(let object, _)):
-            guard let station = decode(object) as Station?
-                else { return .Failure(PSError(code: .parseFailure)) }
-            return self.station.apply(station)
-
-        default:
-            NSLog("unhandled topic event: \(event)")
-            return .Failure(PSError(code: .unhandledTopic))
-        }
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        producer.start()
         
         // Set the navigation bar's title to the name of the stop
         station.name.map { self.nav.title = $0 }
 
-        // Configure the map
+        // Configure the map once a point is available
         station.position.map { point in
+            guard let point = point else { return }
             self.map.region = MKCoordinateRegion.init(center: CLLocationCoordinate2D(point: point),
                 span: MKCoordinateSpanMake(0.01, 0.01))
         }
+
+        // As soon as we have a set of coordinates for the station's position, add it to the map
+        station.position.producer.ignoreNil().take(1).startWithNext { point in
+            self.map.addAnnotation(MutableStation.Annotation(from: self.station, at: point))
+        }
         
-        // Add the selected stop to the map
-        map.addAnnotation(MutableStation.Annotation(from: station))
         // Get arrivals and embed an arrivals table
 //        self.embedArrivalsTable()
+    }
+
+    // MARK: Delegate methods
+    func mutableModel<M: MutableModel>(model: M, receivedError error: PSError) {
+        self.displayError(error)
     }
 
 #if false

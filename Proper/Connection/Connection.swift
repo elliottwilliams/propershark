@@ -71,7 +71,7 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
     func subscribe(topic: String) -> SignalProducer<MDWampEvent, PSError> {
         return self.producer
         .map { wamp in wamp.subscribeWithSignal(topic) }
-        .flatten(.Merge)
+        .flatten(.Latest)
         .logEvents(identifier: "Connection.subscribe(topic:\"\(topic)\")", logger: logSignalEvent)
     }
     
@@ -79,8 +79,11 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
     func call(procedure: String,
               args: WampArgs = [],
               kwargs: WampKwargs = [:]) -> SignalProducer<MDWampResult, PSError> {
-        return self.producer.map { wamp in wamp.callWithSignal(procedure, args, kwargs, [:]) }
-        .flatten(.Merge)
+        return self.producer.map { wamp in
+            wamp.callWithSignal(procedure, args, kwargs, [:])
+            .timeoutWithError(PSError(code: .timeout), afterInterval: 10.0, onScheduler: QueueScheduler.mainQueueScheduler)
+        }
+        .flatten(.Latest)
         .logEvents(identifier: "Connection.call(procedure:\"\(procedure)\")", logger: logSignalEvent)
     }
     
@@ -106,7 +109,6 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
 }
 
 // MARK: MDWamp Extensions
-
 extension MDWamp {
     /// Follows semantics of `call` but returns a signal producer, rather than taking a result callback.
     func callWithSignal(procUri: String,
@@ -116,7 +118,7 @@ extension MDWamp {
         return SignalProducer<MDWampResult, PSError> { observer, _ in
             self.call(procUri, args: args, kwArgs: argsKw, options: options) { result, error in
                 if error != nil {
-                    observer.sendFailed(PSError(error: error, code: .mdwampError))
+                    observer.sendFailed(PSError(error: error, code: .mdwampError, associated: procUri))
                     return
                 }
                 observer.sendNext(result)
@@ -131,12 +133,12 @@ extension MDWamp {
                 topic,
                 onEvent: { event in observer.sendNext(event) },
                 result: { error in
-                    if error != nil { observer.sendFailed(PSError(error: error, code: .mdwampError)) }
+                    if error != nil { observer.sendFailed(PSError(error: error, code: .mdwampError, associated: topic)) }
                 }
             )
             disposable.addDisposable {
                 self.unsubscribe(topic) { error in
-                    if error != nil { observer.sendFailed(PSError(error: error, code: .mdwampError)) }
+                    if error != nil { observer.sendFailed(PSError(error: error, code: .mdwampError, associated: topic)) }
                 }
             }
         }.logEvents(identifier: "MDWamp.subscribeWithSignal", logger: logSignalEvent)

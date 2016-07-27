@@ -11,7 +11,10 @@ import ReactiveCocoa
 import Curry
 import Result
 
-protocol MutableModel {
+/// Encapsulations of Models that know how to more information about the entity they contain, and how to respond
+/// to changes in that entity's non-identifying properties. MutableModels are used in controllers, where their properties
+/// can be bound to, with loading and availability abstracted away.
+protocol MutableModel: class {
     associatedtype FromModel: Model
     
     /**
@@ -20,12 +23,32 @@ protocol MutableModel {
      */
     var identifier: FromModel.Identifier { get }
     var topic: String { get }
+
+    /// Connects to Shark and sends updates for this entity to the model's properties. Properties of MutableModels are
+    /// bound at initialization to their producer, so it should only be accessed directly to listen for all changes to a
+    /// model that come in.
+    var producer: SignalProducer<FromModel, NoError> { get }
     
     /// Initialize all `MutableProperty`s of this `MutableModel` from a corresponding model.
-    init(from _: FromModel)
+    init(from _: FromModel, delegate: MutableModelDelegate)
+    var delegate: MutableModelDelegate { get }
     
     /// Update state to match the model given. Implementations may throw an error if a given model cannot be applied.
     func apply(_: FromModel) -> Result<(), PSError>
+}
+
+protocol MutableModelDelegate {
+    /// Called whenever a model's producer encounters an unrecoverable error.
+    func mutableModel<M: MutableModel>(model: M, receivedError error: PSError)
+    /// Called when a model's producer receives a topic event it does not handle.
+    func mutableModel<M: MutableModel>(model: M, receivedTopicEvent event: TopicEvent)
+}
+
+extension MutableModelDelegate {
+    // Default implementation for `receivedTopicEvent` delegate method
+    func mutableModel<M: MutableModel>(model: M, receivedTopicEvent event: TopicEvent) {
+        // do nothing
+    }
 }
 
 /// Makes updates from a immutable value to a mutable property containing that value.
@@ -58,6 +81,13 @@ internal func <- <T: Equatable>(mutable: MutableProperty<T?>, source: T?) -> Mod
 internal func <- <T: Equatable>(mutable: MutableProperty<[T]>, source: [T]) -> ModifyPropertyResult<[T]> {
     if source.elementsEqual(mutable.value) {
         return .modifiedValue(mutable.swap(source))
+    }
+    return .unmodified
+}
+
+internal func <- <T: Equatable>(mutable: MutableProperty<[T]?>, source: [T]?) -> ModifyPropertyResult<[T]?> {
+    if let unwrapped = source {
+        return mutable <- unwrapped
     }
     return .unmodified
 }

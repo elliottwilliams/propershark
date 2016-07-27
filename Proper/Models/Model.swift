@@ -15,6 +15,9 @@ protocol Model: Equatable {
     
     var topic: String { get }
     static func topicFor(identifier: Identifier) -> String
+
+    // The fully-qualified name of this object type as it exists on Shark.
+    static var fullyQualified: String { get }
 }
 
 func ==<M: Model>(a: M, b: M) -> Bool {
