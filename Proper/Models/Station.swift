@@ -13,14 +13,15 @@ import Curry
 struct Station: Model {
     typealias Identifier = String
 
-    // MARK: Properties
+    // Attributes
     let name: String?
     let stop_code: Identifier
     let description: String?
     let position: Point?
 
-    // MARK: Associated objects
+    // Associated objects
     let routes: [Route]?
+    let vehicles: [Vehicle]?
     
     static var namespace: String { return "stations" }
     static var fullyQualified: String { return "Shark::Station" }
@@ -36,6 +37,7 @@ extension Station: Decodable {
             <*> json <|? "description"
             <*> Point.decode(json)
             <*> json <||? ["associated_objects", Route.fullyQualified]
+            <*> json <||? ["associated_objects", Vehicle.fullyQualified]
     }
 }
 

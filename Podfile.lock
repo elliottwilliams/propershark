@@ -9,6 +9,7 @@ PODS:
   - CocoaAsyncSocket/RunLoop (7.4.3)
   - Colours/Swift (5.13.0)
   - Curry (2.3.1)
+  - Dwifft (0.3.1)
   - GHODictionary (1.0.9)
   - MDWamp (2.2.4):
     - CocoaAsyncSocket
@@ -27,6 +28,7 @@ DEPENDENCIES:
   - Argo
   - Colours/Swift
   - Curry
+  - Dwifft (~> 0.3.1)
   - MDWamp
   - ReactiveCocoa (~> 4.2.1)
   - Reveal-iOS-SDK
@@ -37,6 +39,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: a18c75dca4b08723628a0bacca6e94803d90be91
   Colours: f24220c38f13deac88612667e9b4a7fb96b871d4
   Curry: c8f65c8ade091aad5cb86f7b51dd408d698810ca
+  Dwifft: b7eaeaaf4ac14a2e77b0c661cd1b5524c58fa891
   GHODictionary: 1f7873492445e0f33ac19575a358c3c91926b564
   MDWamp: c41dd5e15ffb61f4f23d027c925173e8c2313c3b
   MPMessagePack: 7c9c9cdee049b62e3578ee423ba451fa406bbd08
@@ -46,6 +49,6 @@ SPEC CHECKSUMS:
   Runes: ab2f892272d5165f64620f8086578b28cde98a02
   SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
 
-PODFILE CHECKSUM: a98ccd548269759a7f593886c78281cf95de6ef6
+PODFILE CHECKSUM: d6d313c9bfe5c004376a17d40fc1b28d900a1a33
 
 COCOAPODS: 1.0.1

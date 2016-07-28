@@ -12,7 +12,8 @@ import Curry
 
 struct Route: Model {
     typealias Identifier = String
-    
+
+    // Attributes
     let code: Identifier
     let name: String?
     let shortName: String?
@@ -22,6 +23,7 @@ struct Route: Model {
     
     // Associated objects
     let stations: [Station]?
+    let vehicles: [Vehicle]?
     
     static var namespace: String { return "routes" }
     static var fullyQualified: String { return "Shark::Route" }
@@ -38,6 +40,7 @@ extension Route: Decodable {
             <*> json <|? "description"
             <*> json <|? "color"
             <*> json <||? "path"
-            <*> json <||? "stations"
+            <*> json <||? ["associated_objects", Station.fullyQualified]
+            <*> json <||? ["associated_objects", Vehicle.fullyQualified]
     }
 }

@@ -13,6 +13,8 @@ import Curry
 struct Vehicle: Model {
     typealias Identifier = String
 
+    // MARK: Attributes
+
     /// The (often) humanized name for this vehicle
     let name: Identifier
     
@@ -43,7 +45,8 @@ struct Vehicle: Model {
     let heading: Double?
     /// The speed that the vehicle is currently travelling at
     let speed: Double?
-    
+
+    // MARK: Support Properties
     static var namespace: String { return "vehicles" }
     var identifier: String { return self.name }
     var topic: String { return Vehicle.topicFor(self.identifier) }

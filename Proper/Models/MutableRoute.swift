@@ -14,21 +14,32 @@ import Argo
 class MutableRoute: MutableModel {
     typealias FromModel = Route
 
-    // MARK: Properties
-    let code: FromModel.Identifier
+    // MARK: Internal Properties
+    internal let connection: ConnectionType = Connection.sharedInstance
+    internal var delegate: MutableModelDelegate
+    private static let retryAttempts = 3
+
+    // MARK: Route Support
+    internal var source: FromModel
     var identifier: FromModel.Identifier { return self.code }
     var topic: String { return FromModel.topicFor(self.identifier) }
-    var delegate: MutableModelDelegate
 
-    let name: MutableProperty<String?>
-    let shortName: MutableProperty<String?>
-    let description: MutableProperty<String?>
-    let color: MutableProperty<UIColor?>
-    let path:  MutableProperty<[Point]?>
-    let stations: MutableProperty<[Station]?>
+    // MARK: Route Attributes
+    let code: FromModel.Identifier
+    lazy var name: MutableProperty<String?> = self.lazyProperty { $0.name }
+    lazy var shortName: MutableProperty<String?> = self.lazyProperty { $0.shortName }
+    lazy var description: MutableProperty<String?> = self.lazyProperty { $0.description }
+    lazy var color: MutableProperty<UIColor?> = self.lazyProperty { $0.color }
+    lazy var path:  MutableProperty<[Point]?> = self.lazyProperty { $0.path }
+    lazy var stations: MutableProperty<[MutableStation]> = self.lazyProperty { route in
+        // Map each static station to a MutableStation, or return an empty array
+        route.stations?.map { MutableStation(from: $0, delegate: self.delegate) } ?? []
+    }
+    lazy var vehicles: MutableProperty<[MutableVehicle]> = self.lazyProperty { route in
+        route.vehicles?.map { MutableVehicle(from: $0, delegate: self.delegate) } ?? []
+    }
 
-    internal let connection: ConnectionType = Connection.sharedInstance
-    private static let retryAttempts = 3
+    // MARK: Signal Producer
     lazy var producer: SignalProducer<Route, NoError> = {
         let now = self.connection.call("meta.last_event", args: [self.topic, self.topic]).map {
             TopicEvent.parseFromRPC("meta.last_event", event: $0)
@@ -45,51 +56,51 @@ class MutableRoute: MutableModel {
                     return decode(object)
                 case .Route(.update(let object, _)):
                     return decode(object)
+                case .Route(.vehicleUpdate(let vehicle, _)):
+                    self.vehicleUpdate(vehicle)
+                    return nil
                 default:
+                    self.delegate.mutableModel(self, receivedTopicEvent: event)
                     return nil
                 }
             }
-            .unwrapOrFail { PSError(code: .decodeFailure) }
+            .ignoreNil()
             .retry(MutableRoute.retryAttempts)
             .flatMapError { (error: PSError) -> SignalProducer<Route, NoError> in
                 self.delegate.mutableModel(self, receivedError: error)
                 return SignalProducer<Route, NoError>.empty
-        }
+            }
+            .on(next: { route in
+                self.apply(route)
+            })
     }()
 
+    /// If any vehicles on this route match `vehicle`, apply `vehicle` to them, updating their information.
+    func vehicleUpdate(vehicle: Vehicle) {
+        self.vehicles.value.filter { $0.identifier == vehicle.identifier }
+            .forEach { $0.apply(vehicle) }
+    }
 
+    // MARK: Functions
     required init(from route: Route, delegate: MutableModelDelegate) {
         self.code = route.code
         self.delegate = delegate
-
-        // Initialize mutable properties with current values of the passed
-        // route.
-        self.name = .init(route.name)
-        self.shortName = .init(route.shortName)
-        self.description = .init(route.description)
-        self.color = .init(route.color)
-        self.path = .init(route.path)
-        self.stations = .init(route.stations)
-
-        // Bind future values
-        self.name <~ self.producer.map { $0.name }
-        self.shortName <~ self.producer.map { $0.shortName }
-        self.description <~ self.producer.map { $0.description }
-        self.color <~ self.producer.map { $0.color }
-        self.path <~ self.producer.map { $0.path }
-        self.stations <~ self.producer.map { $0.stations }
+        self.source = route
     }
 
     func apply(route: Route) -> Result<(), PSError> {
         if route.identifier != self.identifier {
             return .Failure(PSError(code: .mutableModelFailedApply))
         }
+        self.source = route
 
         self.name <- route.name
         self.shortName <- route.shortName
         self.description <- route.description
         self.color <- route.color
         self.path <- route.path
+        self.stations <- route.stations?.map { MutableStation(from: $0, delegate: self.delegate) } ?? []
+        self.vehicles <- route.vehicles?.map { MutableVehicle(from: $0, delegate: self.delegate) } ?? []
 
         return .Success()
     }

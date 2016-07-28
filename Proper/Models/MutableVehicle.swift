@@ -15,26 +15,35 @@ import Argo
 class MutableVehicle: MutableModel {
     typealias FromModel = Vehicle
 
-    // MARK: Properties
-    let name: FromModel.Identifier
+    // MARK: Internal Properties
+    internal let connection: ConnectionType = Connection.sharedInstance
+    internal var delegate: MutableModelDelegate
+    private static let retryAttempts = 3
+
+    // MARK: Vehicle Support
+    internal var source: FromModel
     var identifier: FromModel.Identifier { return self.name }
     var topic: String { return Vehicle.topicFor(self.identifier) }
-    var delegate: MutableModelDelegate
 
-    let code: MutableProperty<Int?>
-    let position: MutableProperty<Point?>
-    let capacity: MutableProperty<Int?>
-    let onboard: MutableProperty<Int?>
-    let saturation: MutableProperty<Double?>
-    let lastStation: MutableProperty<Station?>
-    let nextStation: MutableProperty<Station?>
-    let route: MutableProperty<Route?>
-    let scheduleDelta: MutableProperty<Double?>
-    let heading: MutableProperty<Double?>
-    let speed: MutableProperty<Double?>
+    // MARK: Vehicle Attributes
+    let name: FromModel.Identifier
+    lazy var code: MutableProperty<Int?> = self.lazyProperty { $0.code }
+    lazy var position: MutableProperty<Point?> = self.lazyProperty { $0.position }
+    lazy var capacity: MutableProperty<Int?> = self.lazyProperty { $0.capacity }
+    lazy var onboard: MutableProperty<Int?> = self.lazyProperty { $0.onboard }
+    lazy var saturation: MutableProperty<Double?> = self.lazyProperty { $0.saturation }
+    lazy var lastStation: MutableProperty<MutableStation?> = self.lazyProperty { vehicle in 
+        vehicle.lastStation.flatMap { MutableStation(from: $0, delegate: self.delegate) }
+    }
+    lazy var nextStation: MutableProperty<MutableStation?> = self.lazyProperty { vehicle in
+        vehicle.nextStation.flatMap { MutableStation(from: $0, delegate: self.delegate) }
+    }
+    lazy var route: MutableProperty<Route?> = self.lazyProperty { $0.route }
+    lazy var scheduleDelta: MutableProperty<Double?> = self.lazyProperty { $0.scheduleDelta }
+    lazy var heading: MutableProperty<Double?> = self.lazyProperty { $0.heading }
+    lazy var speed: MutableProperty<Double?> = self.lazyProperty { $0.speed }
 
-    internal let connection: ConnectionType = Connection.sharedInstance
-    private static let retryAttempts = 3
+    // MARK: Signal Producer
     lazy var producer: SignalProducer<Vehicle, NoError> = {
         let now = self.connection.call("meta.last_event", args: [self.topic, self.topic]).map {
             TopicEvent.parseFromRPC("meta.last_event", event: $0)
@@ -63,49 +72,26 @@ class MutableVehicle: MutableModel {
         }
     }()
 
+    // MARK: Functions
     required init(from vehicle: Vehicle, delegate: MutableModelDelegate) {
         self.name = vehicle.name
         self.delegate = delegate
-
-        // Initialize with current value
-        self.code = .init(vehicle.code)
-        self.position = .init(vehicle.position)
-        self.capacity = .init(vehicle.capacity)
-        self.onboard = .init(vehicle.onboard)
-        self.saturation = .init(vehicle.saturation)
-        self.lastStation = .init(vehicle.lastStation)
-        self.nextStation = .init(vehicle.nextStation)
-        self.route = .init(vehicle.route)
-        self.scheduleDelta = .init(vehicle.scheduleDelta)
-        self.heading = .init(vehicle.heading)
-        self.speed = .init(vehicle.speed)
-
-        // Bind to future values
-        self.code <~ self.producer.map { $0.code }
-        self.position <~ self.producer.map { $0.position }
-        self.capacity <~ self.producer.map { $0.capacity }
-        self.onboard <~ self.producer.map { $0.onboard }
-        self.saturation <~ self.producer.map { $0.saturation }
-        self.lastStation <~ self.producer.map { $0.lastStation }
-        self.nextStation <~ self.producer.map { $0.nextStation }
-        self.route <~ self.producer.map { $0.route }
-        self.scheduleDelta <~ self.producer.map { $0.scheduleDelta }
-        self.heading <~ self.producer.map { $0.heading }
-        self.speed <~ self.producer.map { $0.speed }
+        self.source = vehicle
     }
 
     func apply(vehicle: Vehicle) -> Result<(), PSError> {
         if vehicle.identifier != self.identifier {
             return .Failure(PSError(code: .mutableModelFailedApply))
         }
+        self.source = vehicle
 
         self.code <- vehicle.code
         self.position <- vehicle.position
         self.capacity <- vehicle.capacity
         self.onboard <- vehicle.onboard
         self.saturation <- vehicle.saturation
-        self.lastStation <- vehicle.lastStation
-        self.nextStation <- vehicle.nextStation
+        self.lastStation <- vehicle.lastStation.flatMap { MutableStation(from: $0, delegate: self.delegate) }
+        self.nextStation <- vehicle.nextStation.flatMap { MutableStation(from: $0, delegate: self.delegate) }
         self.route <- vehicle.route
         self.scheduleDelta <- vehicle.scheduleDelta
         self.heading <- vehicle.heading

@@ -8,6 +8,7 @@
 
 import UIKit
 import MDWamp
+import Argo
 
 
 // Meta keys sent on every Shark event
@@ -39,7 +40,7 @@ enum TopicEvent {
         case activate(object: AnyObject, EventDefaults)
         case deactivate(object: AnyObject, EventDefaults)
         
-        case vehicleUpdate(vehicle: AnyObject, EventDefaults)
+        case vehicleUpdate(vehicle: Proper.Vehicle, EventDefaults)
     }
 
     case Agency(AgencyEvent)
@@ -104,7 +105,8 @@ enum TopicEvent {
             return .Station(.approach(vehicle: object, distanceInStops: distance, baseValues))
         
         case ("routes.", "vehicle_update"):
-            return .Route(.vehicleUpdate(vehicle: object, baseValues))
+            guard let vehicle = decode(object) as Proper.Vehicle? else { return nil }
+            return .Route(.vehicleUpdate(vehicle: vehicle, baseValues))
        
         default:
             return nil

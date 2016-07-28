@@ -33,16 +33,16 @@ class RailVehicle: UIView {
         self.init(frame: CGRectMake(point.x, point.y, 0, 0))
     }
     
-    convenience init(frame: CGRect, vehicle: Vehicle) {
+    convenience init(frame: CGRect, vehicle: Vehicle, on route: Route) {
         self.init(frame: frame)
         self.vehicle = vehicle
-        self.color = vehicle.route.color ?? UIColor.blueColor()
+        self.color = route.color ?? UIColor.blueColor()
     }
     
-    convenience init(point: CGPoint, vehicle: Vehicle) {
+    convenience init(point: CGPoint, vehicle: Vehicle, on route: Route) {
         self.init(point: point)
         self.vehicle = vehicle
-        self.color = vehicle.route.color ?? UIColor.blueColor()
+        self.color = route.color ?? UIColor.blueColor()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -81,9 +81,13 @@ class RailVehicle: UIView {
     // TODO: this might belong on the vehicle model, since it's quite general purpose
     func isAtStation(station: Station) -> Bool {
         // A station may have been loaded from a stub, so we need to make sure it has a position.
-        guard let vehicle = self.vehicle else { return false }
-        let a = CLLocation(point: vehicle.position)
-        let b = CLLocation(point: station.position)
+        guard let vehicle = self.vehicle,
+        let vehiclePosition = vehicle.position,
+        let stationPosition = station.position
+        else { return false }
+
+        let a = CLLocation(point: vehiclePosition)
+        let b = CLLocation(point: stationPosition)
         return a.distanceFromLocation(b) < 10.0
     }
     

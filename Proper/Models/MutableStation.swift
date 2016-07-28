@@ -14,20 +14,30 @@ import Argo
 class MutableStation: MutableModel {
     typealias FromModel = Station
 
-    // MARK: Properties
-    let stop_code: FromModel.Identifier
+    // MARK: Interal Properties
+    internal let connection: ConnectionType = Connection.sharedInstance
+    var delegate: MutableModelDelegate
+    private static let retryAttempts = 3
+
+    // MARK: Station Support
+    internal var source: FromModel
     var identifier: FromModel.Identifier { return self.stop_code }
     var topic: String { return FromModel.topicFor(self.identifier) }
-    var delegate: MutableModelDelegate
     
-    let name: MutableProperty<String?>
-    let description: MutableProperty<String?>
-    let position: MutableProperty<Point?>
+    // MARK: Station Attributes
+    let stop_code: FromModel.Identifier
+    lazy var name: MutableProperty<String?> = self.lazyProperty { $0.name }
+    lazy var description: MutableProperty<String?> = self.lazyProperty { $0.description }
+    lazy var position: MutableProperty<Point?> = self.lazyProperty { $0.position }
+    lazy var routes: MutableProperty<[MutableRoute]> = self.lazyProperty { station in
+        // Map each static route to a MutableRoute or return an empty array
+        station.routes?.map { MutableRoute(from: $0, delegate: self.delegate) } ?? []
+    }
+    lazy var vehicles: MutableProperty<[MutableVehicle]> = self.lazyProperty { station in
+        station.vehicles?.map { MutableVehicle(from: $0, delegate: self.delegate) } ?? []
+    }
 
-    let routes: MutableProperty<[Route]?>
-
-    internal let connection: ConnectionType = Connection.sharedInstance
-    private static let retryAttempts = 3
+    // MARK: Signal Producer
     lazy var producer: SignalProducer<Station, NoError> = {
         let now = self.connection.call("meta.last_event", args: [self.topic, self.topic]).map {
             TopicEvent.parseFromRPC("meta.last_event", event: $0)
@@ -63,24 +73,14 @@ class MutableStation: MutableModel {
     required init(from station: Station, delegate: MutableModelDelegate) {
         self.stop_code = station.stop_code
         self.delegate = delegate
-
-        // Initialize mutable properties with their current values
-        self.name = .init(station.name)
-        self.description = .init(station.description)
-        self.position = .init(station.position)
-        self.routes = .init(station.routes)
-
-        // Bind mutable properties to changes from Shark, which implicitly creates a signal and starts listening
-        self.name <~ self.producer.map { $0.name }
-        self.description <~ self.producer.map { $0.description }
-        self.position <~ self.producer.map { $0.position }
-        self.routes <~ self.producer.map { $0.routes }
+        self.source = station
     }
 
     func apply(station: Station) -> Result<(), PSError> {
         if station.identifier != self.identifier {
             return .Failure(PSError(code: .mutableModelFailedApply))
         }
+        self.source = station
         
         self.name <- station.name
         self.description <- station.description

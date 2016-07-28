@@ -14,13 +14,14 @@ import Result
 /// Encapsulations of Models that know how to more information about the entity they contain, and how to respond
 /// to changes in that entity's non-identifying properties. MutableModels are used in controllers, where their properties
 /// can be bound to, with loading and availability abstracted away.
-protocol MutableModel: class {
+protocol MutableModel: class, Equatable {
     associatedtype FromModel: Model
+
+    /// The most recent static model applied to this instance.
+    var source: FromModel { get set }
     
-    /**
-     The mutable model should know its model's identifier, and the identifier should be immutable. (a model with a
-     different identifier cannot be applied; it is a different model altogether.)
-     */
+    /// The mutable model should know its model's identifier, and the identifier should be immutable. (a model with a
+    /// different identifier cannot be applied; it is a different model altogether.)
     var identifier: FromModel.Identifier { get }
     var topic: String { get }
 
@@ -37,6 +38,17 @@ protocol MutableModel: class {
     func apply(_: FromModel) -> Result<(), PSError>
 }
 
+extension MutableModel {
+    /// Returns a property obtained by calling `accessor` with this model's `source` instance. The property is bound
+    /// to this model's `producer`, so future changes to the model will cause updates to this property. This is used to
+    /// establish lazily-defined properties that don't activate the produce until accessed.
+    internal func lazyProperty<T>(accessor: (FromModel) -> T) -> MutableProperty<T> {
+        let property = MutableProperty(accessor(self.source))
+        property <~ self.producer.map(accessor)
+        return property
+    }
+}
+
 protocol MutableModelDelegate {
     /// Called whenever a model's producer encounters an unrecoverable error.
     func mutableModel<M: MutableModel>(model: M, receivedError error: PSError)
@@ -49,6 +61,10 @@ extension MutableModelDelegate {
     func mutableModel<M: MutableModel>(model: M, receivedTopicEvent event: TopicEvent) {
         // do nothing
     }
+}
+
+func ==<M: MutableModel>(a: M, b: M) -> Bool {
+    return a.identifier == b.identifier
 }
 
 /// Makes updates from a immutable value to a mutable property containing that value.

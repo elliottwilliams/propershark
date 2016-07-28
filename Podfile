@@ -11,6 +11,7 @@ target 'Proper' do
     pod 'Curry'
     pod 'Argo'
     pod 'Runes'
+    pod 'Dwifft', '~> 0.3.1'
 end
 
 target 'ProperTests' do
