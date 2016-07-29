@@ -31,13 +31,8 @@ class MutableRoute: MutableModel {
     lazy var description: MutableProperty<String?> = self.lazyProperty { $0.description }
     lazy var color: MutableProperty<UIColor?> = self.lazyProperty { $0.color }
     lazy var path:  MutableProperty<[Point]?> = self.lazyProperty { $0.path }
-    lazy var stations: MutableProperty<[MutableStation]> = self.lazyProperty { route in
-        // Map each static station to a MutableStation, or return an empty array
-        route.stations?.map { MutableStation(from: $0, delegate: self.delegate) } ?? []
-    }
-    lazy var vehicles: MutableProperty<[MutableVehicle]> = self.lazyProperty { route in
-        route.vehicles?.map { MutableVehicle(from: $0, delegate: self.delegate) } ?? []
-    }
+    lazy var stations: MutableProperty<[Station]> = self.lazyProperty { $0.stations ?? [] }
+    lazy var vehicles: MutableProperty<[Vehicle]> = self.lazyProperty { $0.vehicles ?? [] }
 
     // MARK: Signal Producer
     lazy var producer: SignalProducer<Route, NoError> = {
@@ -57,7 +52,7 @@ class MutableRoute: MutableModel {
                 case .Route(.update(let object, _)):
                     return decode(object)
                 case .Route(.vehicleUpdate(let vehicle, _)):
-                    self.vehicleUpdate(vehicle)
+                    self.handleEvent(vehicleUpdate: vehicle)
                     return nil
                 default:
                     self.delegate.mutableModel(self, receivedTopicEvent: event)
@@ -74,12 +69,6 @@ class MutableRoute: MutableModel {
                 self.apply(route)
             })
     }()
-
-    /// If any vehicles on this route match `vehicle`, apply `vehicle` to them, updating their information.
-    func vehicleUpdate(vehicle: Vehicle) {
-        self.vehicles.value.filter { $0.identifier == vehicle.identifier }
-            .forEach { $0.apply(vehicle) }
-    }
 
     // MARK: Functions
     required init(from route: Route, delegate: MutableModelDelegate) {
@@ -99,10 +88,21 @@ class MutableRoute: MutableModel {
         self.description <- route.description
         self.color <- route.color
         self.path <- route.path
-        self.stations <- route.stations?.map { MutableStation(from: $0, delegate: self.delegate) } ?? []
-        self.vehicles <- route.vehicles?.map { MutableVehicle(from: $0, delegate: self.delegate) } ?? []
+        self.stations <- route.stations ?? []
+        self.vehicles <- route.vehicles ?? []
 
         return .Success()
+    }
+
+    // MARK: Event Handlers
+
+    /// If any vehicles on this route match `vehicle`, apply `vehicle` to them, updating their information.
+    func handleEvent(vehicleUpdate vehicle: Vehicle) {
+        // Atomically modify the vehicles array. `modify` returns the old value, which could be useful to LCS diffing.
+        self.vehicles.modify { vehicles in
+            // Replace any vehicle whose identifier matches `vehicle`.
+            vehicles.filter { $0 == vehicle }.map { _ in vehicle }
+        }
     }
 }
 

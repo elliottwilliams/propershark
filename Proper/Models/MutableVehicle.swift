@@ -32,12 +32,8 @@ class MutableVehicle: MutableModel {
     lazy var capacity: MutableProperty<Int?> = self.lazyProperty { $0.capacity }
     lazy var onboard: MutableProperty<Int?> = self.lazyProperty { $0.onboard }
     lazy var saturation: MutableProperty<Double?> = self.lazyProperty { $0.saturation }
-    lazy var lastStation: MutableProperty<MutableStation?> = self.lazyProperty { vehicle in 
-        vehicle.lastStation.flatMap { MutableStation(from: $0, delegate: self.delegate) }
-    }
-    lazy var nextStation: MutableProperty<MutableStation?> = self.lazyProperty { vehicle in
-        vehicle.nextStation.flatMap { MutableStation(from: $0, delegate: self.delegate) }
-    }
+    lazy var lastStation: MutableProperty<Station?> = self.lazyProperty { $0.lastStation }
+    lazy var nextStation: MutableProperty<Station?> = self.lazyProperty { $0.nextStation }
     lazy var route: MutableProperty<Route?> = self.lazyProperty { $0.route }
     lazy var scheduleDelta: MutableProperty<Double?> = self.lazyProperty { $0.scheduleDelta }
     lazy var heading: MutableProperty<Double?> = self.lazyProperty { $0.heading }
@@ -61,10 +57,11 @@ class MutableVehicle: MutableModel {
                 case .Vehicle(.update(let object, _)):
                     return decode(object)
                 default:
+                    self.delegate.mutableModel(self, receivedTopicEvent: event)
                     return nil
                 }
             }
-            .unwrapOrFail { PSError(code: .decodeFailure) }
+            .ignoreNil()
             .retry(MutableVehicle.retryAttempts)
             .flatMapError { (error: PSError) -> SignalProducer<Vehicle, NoError> in
                 self.delegate.mutableModel(self, receivedError: error)
@@ -90,8 +87,8 @@ class MutableVehicle: MutableModel {
         self.capacity <- vehicle.capacity
         self.onboard <- vehicle.onboard
         self.saturation <- vehicle.saturation
-        self.lastStation <- vehicle.lastStation.flatMap { MutableStation(from: $0, delegate: self.delegate) }
-        self.nextStation <- vehicle.nextStation.flatMap { MutableStation(from: $0, delegate: self.delegate) }
+        self.lastStation <- vehicle.lastStation
+        self.nextStation <- vehicle.nextStation
         self.route <- vehicle.route
         self.scheduleDelta <- vehicle.scheduleDelta
         self.heading <- vehicle.heading

@@ -28,6 +28,7 @@ protocol Model: Equatable {
     static var fullyQualified: String { get }
 }
 
+/// Test model identifiers for equality.
 func ==<M: Model>(a: M, b: M) -> Bool {
     return a.identifier == b.identifier
 }

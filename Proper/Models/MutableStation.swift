@@ -29,13 +29,8 @@ class MutableStation: MutableModel {
     lazy var name: MutableProperty<String?> = self.lazyProperty { $0.name }
     lazy var description: MutableProperty<String?> = self.lazyProperty { $0.description }
     lazy var position: MutableProperty<Point?> = self.lazyProperty { $0.position }
-    lazy var routes: MutableProperty<[MutableRoute]> = self.lazyProperty { station in
-        // Map each static route to a MutableRoute or return an empty array
-        station.routes?.map { MutableRoute(from: $0, delegate: self.delegate) } ?? []
-    }
-    lazy var vehicles: MutableProperty<[MutableVehicle]> = self.lazyProperty { station in
-        station.vehicles?.map { MutableVehicle(from: $0, delegate: self.delegate) } ?? []
-    }
+    lazy var routes: MutableProperty<[Route]> = self.lazyProperty { $0.routes ?? [] }
+    lazy var vehicles: MutableProperty<[Vehicle]> = self.lazyProperty { $0.vehicles ?? [] }
 
     // MARK: Signal Producer
     lazy var producer: SignalProducer<Station, NoError> = {
@@ -85,6 +80,8 @@ class MutableStation: MutableModel {
         self.name <- station.name
         self.description <- station.description
         self.position <- station.position
+        self.routes <- station.routes ?? []
+        self.vehicles <- station.vehicles ?? []
 
         return .Success()
     }
