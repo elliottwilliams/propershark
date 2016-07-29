@@ -14,7 +14,7 @@ import Result
 /// Encapsulations of Models that know how to more information about the entity they contain, and how to respond
 /// to changes in that entity's non-identifying properties. MutableModels are used in controllers, where their properties
 /// can be bound to, with loading and availability abstracted away.
-protocol MutableModel: class, Equatable {
+protocol MutableModel: class, Hashable {
     associatedtype FromModel: Model
 
     /// The most recent static model applied to this instance.
@@ -36,6 +36,8 @@ protocol MutableModel: class, Equatable {
     
     /// Update state to match the model given. Implementations may throw an error if a given model cannot be applied.
     func apply(_: FromModel) -> Result<(), PSError>
+
+    var hashValue: Int { get }
 }
 
 extension MutableModel {
@@ -47,6 +49,8 @@ extension MutableModel {
         property <~ self.producer.map(accessor)
         return property
     }
+
+    var hashValue: Int { return self.identifier.hashValue }
 }
 
 protocol MutableModelDelegate {

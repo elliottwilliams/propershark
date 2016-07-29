@@ -148,7 +148,7 @@
                         </constraints>
                     </view>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" title="Stop Name" id="vmN-U0-ks9" customClass="TransitNavigationItem" customModule="Proper" customModuleProvider="target"/>
+                    <navigationItem key="navigationItem" title="Stop Name" id="vmN-U0-ks9"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="arrivalTableView" destination="ukB-4X-cca" id="5gH-bJ-QIm"/>
@@ -628,7 +628,7 @@
         <image name="cb-default" width="64" height="64"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="XSj-wo-Jw9"/>
         <segue reference="FDI-ip-xHU"/>
+        <segue reference="BLG-Pk-v7F"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -8,9 +8,9 @@
 
 import Foundation
 
-protocol Model: Equatable {
+protocol Model: Hashable {
 
-    associatedtype Identifier: Equatable
+    associatedtype Identifier: Hashable
     /// Distinguishes entities of this type within Proper Shark
     static var namespace: String { get }
 
@@ -26,6 +26,8 @@ protocol Model: Equatable {
 
     // The fully-qualified name of this object type as it exists on Shark
     static var fullyQualified: String { get }
+
+    var hashValue: Int { get }
 }
 
 /// Test model identifiers for equality.
@@ -33,8 +35,10 @@ func ==<M: Model>(a: M, b: M) -> Bool {
     return a.identifier == b.identifier
 }
 
+// Default implementations
 extension Model {   
     static func topicFor(identifier: Identifier) -> String {
         return "\(Self.namespace).\(identifier)"
     }
+    var hashValue: Int { return self.identifier.hashValue }
 }
