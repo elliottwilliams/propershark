@@ -16,6 +16,9 @@
 		2635DB781C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB771C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift */; };
 		2647825E1C2F7B34009D9AD0 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */; };
 		264782601C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647825F1C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift */; };
+		2649FDD01D4BA17300631CA0 /* Memoize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2649FDCF1D4BA17300631CA0 /* Memoize.swift */; };
+		2649FDD21D4BA78E00631CA0 /* Memoize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2649FDD11D4BA78E00631CA0 /* Memoize.swift */; };
+		2649FDD81D4BF07F00631CA0 /* MemoizedCurry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2649FDD71D4BF07F00631CA0 /* MemoizedCurry.swift */; };
 		264A13C71D26157400B44D47 /* PSError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264A13C61D26157400B44D47 /* PSError.swift */; };
 		264A13C91D2625CE00B44D47 /* TopicEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264A13C81D2625CE00B44D47 /* TopicEvent.swift */; };
 		2650D28E1D176B65003758BF /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2650D28D1D176B65003758BF /* Configuration.swift */; };
@@ -89,6 +92,9 @@
 		264782551C2C6F67009D9AD0 /* StartListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartListViewController.swift; sourceTree = "<group>"; };
 		2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		2647825F1C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PSLocationManagerDelegate.swift; sourceTree = "<group>"; };
+		2649FDCF1D4BA17300631CA0 /* Memoize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Memoize.swift; sourceTree = "<group>"; };
+		2649FDD11D4BA78E00631CA0 /* Memoize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Memoize.swift; sourceTree = "<group>"; };
+		2649FDD71D4BF07F00631CA0 /* MemoizedCurry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoizedCurry.swift; sourceTree = "<group>"; };
 		264A13C61D26157400B44D47 /* PSError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PSError.swift; sourceTree = "<group>"; };
 		264A13C81D2625CE00B44D47 /* TopicEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; name = TopicEvent.swift; path = ../Helpers/TopicEvent.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2650D28D1D176B65003758BF /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
@@ -227,6 +233,7 @@
 		264782651C309FB9009D9AD0 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				2649FDD71D4BF07F00631CA0 /* MemoizedCurry.swift */,
 				26A424B31BD2C1320035754F /* AppDelegate.swift */,
 				266BAE641D2B676F001C9EC8 /* Decoders.swift */,
 				26D3E21E1D2776AB00F85712 /* Matchers.swift */,
@@ -237,6 +244,7 @@
 				26B9E1D21D35E0C500794EB6 /* ReactiveCocoaOperators.swift */,
 				26E3E2CE1D3C7DF90018EF3F /* ProperViewController.swift */,
 				26DBCF481D3FF59A00B22562 /* EventLog.swift */,
+				2649FDCF1D4BA17300631CA0 /* Memoize.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -305,6 +313,7 @@
 			children = (
 				2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */,
 				26A424CA1BD2C1320035754F /* Info.plist */,
+				2649FDD11D4BA78E00631CA0 /* Memoize.swift */,
 			);
 			path = ProperTests;
 			sourceTree = "<group>";
@@ -669,6 +678,7 @@
 				2612F9FF1D2CCAE5005103E3 /* ConnectionStub.swift in Sources */,
 				264A13C71D26157400B44D47 /* PSError.swift in Sources */,
 				26D3E2241D28E07100F85712 /* Model.swift in Sources */,
+				2649FDD01D4BA17300631CA0 /* Memoize.swift in Sources */,
 				2635DB721C3CBF4700EB58F5 /* RouteTableView.swift in Sources */,
 				266BAE651D2B676F001C9EC8 /* Decoders.swift in Sources */,
 				26C598BC1C250D1E00BC9FE1 /* RouteBadge.swift in Sources */,
@@ -684,6 +694,7 @@
 				2650D28E1D176B65003758BF /* Configuration.swift in Sources */,
 				26E3E2CF1D3C7DF90018EF3F /* ProperViewController.swift in Sources */,
 				26DFB6761C35A7F7006A8AE0 /* ScheduleRail.swift in Sources */,
+				2649FDD81D4BF07F00631CA0 /* MemoizedCurry.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -691,6 +702,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2649FDD21D4BA78E00631CA0 /* Memoize.swift in Sources */,
 				2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

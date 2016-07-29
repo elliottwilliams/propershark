@@ -12,10 +12,10 @@ target 'Proper' do
     pod 'Argo'
     pod 'Runes'
     pod 'Dwifft', '~> 0.3.1'
-end
 
-target 'ProperTests' do
-
+    target 'ProperTests' do
+        inherit! :search_paths
+    end
 end
 
 target 'ProperUITests' do

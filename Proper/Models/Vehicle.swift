@@ -11,18 +11,17 @@ import Argo
 import Curry
 
 struct Vehicle: Model {
-    typealias Identifier = String
+    typealias Identifier = Int
 
     // MARK: Attributes
 
-    /// The (often) humanized name for this vehicle
-    let name: Identifier
-    
     /// The identifying code for this vehicle
-    let code: Int?
+    let code: Int
+
+    /// The (often) humanized name for this vehicle
+    let name: String?
     /// The geographic coordinates of this vehicle's current location
     let position: Point?
-    
     /// The number of passengers that this vehicle can carry at any given time
     let capacity: Int?
     /// The number of passengers currently onboard this vehicle
@@ -48,7 +47,7 @@ struct Vehicle: Model {
 
     // MARK: Support Properties
     static var namespace: String { return "vehicles" }
-    var identifier: String { return self.name }
+    var identifier: Identifier { return self.code }
     var topic: String { return Vehicle.topicFor(self.identifier) }
     static var fullyQualified: String { return "Shark::Vehicle" }
 }
