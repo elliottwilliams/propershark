@@ -15,6 +15,7 @@ PODS:
     - CocoaAsyncSocket
     - MPMessagePack
     - SocketRocket
+  - Memoize (1.0.0)
   - MPMessagePack (1.3.5):
     - GHODictionary
   - ReactiveCocoa (4.2.1):
@@ -30,9 +31,19 @@ DEPENDENCIES:
   - Curry
   - Dwifft (~> 0.3.1)
   - MDWamp
+  - Memoize (from `https://github.com/propershark/memoize.git`)
   - ReactiveCocoa (~> 4.2.1)
   - Reveal-iOS-SDK
   - Runes
+
+EXTERNAL SOURCES:
+  Memoize:
+    :git: https://github.com/propershark/memoize.git
+
+CHECKOUT OPTIONS:
+  Memoize:
+    :commit: 640b86bc80da6cee800de8cd3190c35c79e64e8a
+    :git: https://github.com/propershark/memoize.git
 
 SPEC CHECKSUMS:
   Argo: 22c5d62b7967020a641468c91dc9488bea9523b8
@@ -42,6 +53,7 @@ SPEC CHECKSUMS:
   Dwifft: b7eaeaaf4ac14a2e77b0c661cd1b5524c58fa891
   GHODictionary: 1f7873492445e0f33ac19575a358c3c91926b564
   MDWamp: c41dd5e15ffb61f4f23d027c925173e8c2313c3b
+  Memoize: 5b9cd0381c107c430012f1ff3c4026ebeccda559
   MPMessagePack: 7c9c9cdee049b62e3578ee423ba451fa406bbd08
   ReactiveCocoa: 5a42745f11ea236f405bb9ce5e97c5e3b23562dd
   Result: 6e722d4a66b1408680dbfcdf51c0b1c4b706316a
@@ -49,6 +61,6 @@ SPEC CHECKSUMS:
   Runes: ab2f892272d5165f64620f8086578b28cde98a02
   SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
 
-PODFILE CHECKSUM: c1c56596790a9c02e7d0115158e33225da507eca
+PODFILE CHECKSUM: 43b1c0c992b77eb316e34fd76ad96fa09b0fee48
 
 COCOAPODS: 1.0.1

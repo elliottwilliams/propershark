@@ -12,6 +12,7 @@ target 'Proper' do
     pod 'Argo'
     pod 'Runes'
     pod 'Dwifft', '~> 0.3.1'
+    pod 'Memoize', :git => 'https://github.com/propershark/memoize.git'
 
     target 'ProperTests' do
         inherit! :search_paths
