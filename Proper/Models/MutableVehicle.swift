@@ -22,12 +22,12 @@ class MutableVehicle: MutableModel {
 
     // MARK: Vehicle Support
     internal var source: FromModel
-    var identifier: FromModel.Identifier { return self.code }
+    var identifier: FromModel.Identifier { return self.name }
     var topic: String { return Vehicle.topicFor(self.identifier) }
 
     // MARK: Vehicle Attributes
-    let code: FromModel.Identifier
-    lazy var name: MutableProperty<String?> = self.lazyProperty { $0.name }
+    let name: FromModel.Identifier
+    lazy var code: MutableProperty<Int?> = self.lazyProperty { $0.code }
     lazy var position: MutableProperty<Point?> = self.lazyProperty { $0.position }
     lazy var capacity: MutableProperty<Int?> = self.lazyProperty { $0.capacity }
     lazy var onboard: MutableProperty<Int?> = self.lazyProperty { $0.onboard }
@@ -71,7 +71,7 @@ class MutableVehicle: MutableModel {
 
     // MARK: Functions
     required init(from vehicle: Vehicle, delegate: MutableModelDelegate) {
-        self.code = vehicle.code
+        self.name = vehicle.name
         self.delegate = delegate
         self.source = vehicle
     }
@@ -82,7 +82,7 @@ class MutableVehicle: MutableModel {
         }
         self.source = vehicle
 
-        self.name <- vehicle.name
+        self.code <- vehicle.code
         self.position <- vehicle.position
         self.capacity <- vehicle.capacity
         self.onboard <- vehicle.onboard
