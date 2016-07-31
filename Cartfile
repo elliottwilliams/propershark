@@ -1,6 +1,5 @@
 #github "Colours/Swift"
 github "mogui/MDWamp"
-
 github "ReactiveCocoa/ReactiveCocoa" ~> 4.2.1
 github "thoughtbot/Curry"
 github "thoughtbot/Argo"
