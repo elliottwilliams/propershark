@@ -65,9 +65,6 @@ class MutableRoute: MutableModel {
                 self.delegate.mutableModel(self, receivedError: error)
                 return SignalProducer<Route, NoError>.empty
             }
-            .on(next: { route in
-                self.apply(route)
-            })
     }()
 
     // MARK: Functions

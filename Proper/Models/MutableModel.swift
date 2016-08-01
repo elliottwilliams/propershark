@@ -14,7 +14,7 @@ import Result
 /// Encapsulations of Models that know how to more information about the entity they contain, and how to respond
 /// to changes in that entity's non-identifying properties. MutableModels are used in controllers, where their properties
 /// can be bound to, with loading and availability abstracted away.
-protocol MutableModel: class, Hashable {
+protocol MutableModel: Hashable {
     associatedtype FromModel: Model
 
     /// The most recent static model applied to this instance.
@@ -42,11 +42,10 @@ protocol MutableModel: class, Hashable {
 
 extension MutableModel {
     /// Returns a property obtained by calling `accessor` with this model's `source` instance. The property is bound
-    /// to this model's `producer`, so future changes to the model will cause updates to this property. This is used to
-    /// establish lazily-defined properties that don't activate the produce until accessed.
+    /// to this model's `producer`. The producer is not started automatically.
     internal func lazyProperty<T>(accessor: (FromModel) -> T) -> MutableProperty<T> {
         let property = MutableProperty(accessor(self.source))
-        property <~ self.producer.map(accessor)
+        self.producer.map(accessor).on(next: { property.value = $0 })
         return property
     }
 
