@@ -41,11 +41,20 @@ protocol MutableModel: Hashable {
 }
 
 extension MutableModel {
+
     /// Returns a property obtained by calling `accessor` with this model's `source` instance. The property is bound
     /// to this model's `producer`. The producer is not started automatically.
     internal func lazyProperty<T>(accessor: (FromModel) -> T) -> MutableProperty<T> {
         let property = MutableProperty(accessor(self.source))
         self.producer.map(accessor).on(next: { property.value = $0 })
+        return property
+    }
+
+    /// Returns a property obtained by calling `accessor` with this model's `source` instance. The property is bound
+    /// to future *non-nil* values of the model's `producer`.
+    internal func lazyProperty<T>(accessor: (FromModel) -> T?) -> MutableProperty<T?> {
+        let property = MutableProperty(accessor(self.source))
+        self.producer.map(accessor).ignoreNil().on(next: { property.value = $0 })
         return property
     }
 

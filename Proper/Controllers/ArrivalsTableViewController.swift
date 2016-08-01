@@ -1,5 +1,5 @@
 //
-//  StationTableViewController.swift
+//  ArrivalsTableViewController.swift
 //  Proper
 //
 //  Created by Elliott Williams on 7/26/16.
@@ -11,10 +11,10 @@ import ReactiveCocoa
 import Dwifft
 import Result
 
-class StationArrivalsTableViewController: UITableViewController, MutableModelDelegate {
+class ArrivalsTableViewController: UITableViewController, MutableModelDelegate {
 
     var station: MutableStation
-    let delegate: StationTableViewDelegate
+    let delegate: ArrivalsTableViewDelegate
 
     let routes: MutableProperty<[MutableRoute]>
     let associatedVehicles: MutableProperty<[VehicleOnRoute]>
@@ -24,12 +24,15 @@ class StationArrivalsTableViewController: UITableViewController, MutableModelDel
 
     // MARK: Methods
 
-    init(observing station: MutableStation, delegate: StationTableViewDelegate, view: UITableView) {
+    init(observing station: MutableStation, delegate: ArrivalsTableViewDelegate, view: UITableView) {
         self.station = station
         self.delegate = delegate
         self.routes = .init([])
         self.associatedVehicles = .init([])
         super.init(style: view.style)
+
+        // Subscribe to station updates.
+        station.producer.start()
 
         // Create MutablesRoutes out of the routes of the station given, and update our routes property.
         let routes = station.routes.value.map { MutableRoute(from: $0, delegate: self) }
@@ -45,8 +48,13 @@ class StationArrivalsTableViewController: UITableViewController, MutableModelDel
         self.routes <~ self.routesSignal()
         self.associatedVehicles <~ self.vehiclesSignal()
 
+        // When routes change, update the table.
+        self.routes.map { self.diffCalculator.rows = $0 }
+
         // Connect the table view to this controller now that everything is initialized.
         self.view = view
+        view.dataSource = self
+        view.delegate = self
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -121,8 +129,8 @@ class StationArrivalsTableViewController: UITableViewController, MutableModelDel
     
 }
 
-protocol StationTableViewDelegate: MutableModelDelegate {
-    func selectedStation(station: Station, indexPath: NSIndexPath)
+protocol ArrivalsTableViewDelegate: MutableModelDelegate {
+    func arrivalsTable(selectedVehicle: MutableVehicle, indexPath: NSIndexPath)
 }
 
 
