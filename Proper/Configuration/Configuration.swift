@@ -27,7 +27,7 @@ struct Config {
         name: "Proper Shark"
     )
     let connection = (
-        server: NSURL(string: "ws://162.243.171.187:8080/ws")!,
+        server: NSURL(string: "ws://shark-nyc1.transio.us:8080/ws")!,
         realm: "realm1"
     )
 }

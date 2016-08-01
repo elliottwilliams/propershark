@@ -14,9 +14,9 @@ struct Route: Model {
     typealias Identifier = String
 
     // Attributes
-    let code: Identifier
+    let code: Int?
     let name: String?
-    let shortName: String?
+    let shortName: Identifier
     let description: String?
     let color: UIColor?
     let path: [Point]?
@@ -27,16 +27,16 @@ struct Route: Model {
     
     static var namespace: String { return "routes" }
     static var fullyQualified: String { return "Shark::Route" }
-    var identifier: Identifier { return self.code }
+    var identifier: Identifier { return self.shortName }
     var topic: String { return Route.topicFor(self.identifier) }
 }
 
 extension Route: Decodable {
     static func decode(json: JSON) -> Decoded<Route> {
         return curry(Route.init)
-            <^> json <| "code"
+            <^> json <|? "code"
             <*> json <|? "name"
-            <*> json <|? "short_name"
+            <*> json <| "short_name"
             <*> json <|? "description"
             <*> json <|? "color"
             <*> json <||? "path"

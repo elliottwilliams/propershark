@@ -21,13 +21,13 @@ class MutableRoute: MutableModel {
 
     // MARK: Route Support
     internal var source: FromModel
-    var identifier: FromModel.Identifier { return self.code }
+    var identifier: FromModel.Identifier { return self.shortName }
     var topic: String { return FromModel.topicFor(self.identifier) }
 
     // MARK: Route Attributes
-    let code: FromModel.Identifier
+    let shortName: FromModel.Identifier
+    lazy var code: MutableProperty<Int?> = self.lazyProperty { $0.code }
     lazy var name: MutableProperty<String?> = self.lazyProperty { $0.name }
-    lazy var shortName: MutableProperty<String?> = self.lazyProperty { $0.shortName }
     lazy var description: MutableProperty<String?> = self.lazyProperty { $0.description }
     lazy var color: MutableProperty<UIColor?> = self.lazyProperty { $0.color }
     lazy var path:  MutableProperty<[Point]?> = self.lazyProperty { $0.path }
@@ -36,14 +36,10 @@ class MutableRoute: MutableModel {
 
     // MARK: Signal Producer
     lazy var producer: SignalProducer<Route, NoError> = {
-        let now = self.connection.call("meta.last_event", args: [self.topic, self.topic]).map {
-            TopicEvent.parseFromRPC("meta.last_event", event: $0)
-        }
-        let future = self.connection.subscribe(self.topic).map {
-            TopicEvent.parseFromTopic(self.topic, event: $0)
-        }
-        return SignalProducer<SignalProducer<TopicEvent?, PSError>, PSError>(values: [now, future])
-            .flatten(.Merge).unwrapOrFail { PSError(code: .parseFailure) }
+        let now = self.connection.call("meta.last_event", args: [self.topic, self.topic])
+        let future = self.connection.subscribe(self.topic)
+        return SignalProducer<SignalProducer<TopicEvent, PSError>, PSError>(values: [now, future])
+            .flatten(.Merge)
             .map { (event: TopicEvent) -> Route? in
                 switch event {
                 case .Meta(.lastEvent(let args, _)):
@@ -69,7 +65,7 @@ class MutableRoute: MutableModel {
 
     // MARK: Functions
     required init(from route: Route, delegate: MutableModelDelegate) {
-        self.code = route.code
+        self.shortName = route.shortName
         self.delegate = delegate
         self.source = route
     }
@@ -81,7 +77,7 @@ class MutableRoute: MutableModel {
         self.source = route
 
         self.name <- route.name
-        self.shortName <- route.shortName
+        self.code <- route.code
         self.description <- route.description
         self.color <- route.color
         self.path <- route.path

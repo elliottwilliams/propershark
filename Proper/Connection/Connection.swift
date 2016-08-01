@@ -10,22 +10,21 @@ import UIKit
 import MDWamp
 import ReactiveCocoa
 
+typealias WampArgs = [AnyObject]
+typealias WampKwargs = [NSObject: AnyObject]
+
+// All connections conform to this protocol, which allows ConnectionStub to be injected.
 protocol ConnectionType {
-    func call(procedure: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<MDWampResult, PSError>
-    func subscribe(topic: String) -> SignalProducer<MDWampEvent, PSError>
+    func call(procedure: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, PSError>
+    func subscribe(topic: String) -> SignalProducer<TopicEvent, PSError>
 }
 
 extension ConnectionType {
-    // Currently, Swift doesn't support default arguments in protocol methods ಠ_ಠ
-    // This is a convenience method to acheive the same thing.
-    // TODO: revisit in Swift 3
-    func call(procedure: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> SignalProducer<MDWampResult, PSError> {
+    // Convenience method to call a procedure while omitting args and/or kwargs
+    func call(procedure: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> SignalProducer<TopicEvent, PSError> {
         return self.call(procedure, args: args, kwargs: kwargs)
     }
 }
-
-typealias WampArgs = [AnyObject]
-typealias WampKwargs = [NSObject: AnyObject]
 
 class Connection: NSObject, MDWampClientDelegate, ConnectionType {
     
@@ -65,25 +64,37 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
     }
     
     // MARK: Communication Methods
-    
-    /// Returns a SignalProducer that will get a wamp connection, subscribe to `topic` on it, and forward events.
-    /// Disposing signals created from `subscribe` will unsubscribe from `topic`.
-    func subscribe(topic: String) -> SignalProducer<MDWampEvent, PSError> {
+
+    /// Subscribe to `topic` and forward parsed events. Disposing of signals created from this method will unsubscribe
+    /// `topic`.
+    func subscribe(topic: String) -> SignalProducer<TopicEvent, PSError> {
         return self.producer
         .map { wamp in wamp.subscribeWithSignal(topic) }
         .flatten(.Latest)
+        .attemptMap { (wampEvent: MDWampEvent) in
+            if let event = TopicEvent.parseFromTopic(topic, event: wampEvent) {
+                return .Success(event)
+            } else {
+                return .Failure(PSError(code: .parseFailure))
+            }
+        }
         .logEvents(identifier: "Connection.subscribe(topic:\"\(topic)\")", logger: logSignalEvent)
     }
-    
-    /// Returns a SignalProducer that will get a wamp connection, call `procedure` on it, and forward results.
-    func call(procedure: String,
-              args: WampArgs = [],
-              kwargs: WampKwargs = [:]) -> SignalProducer<MDWampResult, PSError> {
+
+    /// Call `procdure` and forward the result. Disposing the signal created will cancel the RPC call.
+    func call(procedure: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> SignalProducer<TopicEvent, PSError> {
         return self.producer.map { wamp in
-            wamp.callWithSignal(procedure, args, kwargs, [:])
+        wamp.callWithSignal(procedure, args, kwargs, [:])
             .timeoutWithError(PSError(code: .timeout), afterInterval: 10.0, onScheduler: QueueScheduler.mainQueueScheduler)
         }
         .flatten(.Latest)
+        .attemptMap { wampEvent in
+            if let event = TopicEvent.parseFromRPC(procedure, event: wampEvent) {
+                return .Success(event)
+            } else {
+                return .Failure(PSError(code: .parseFailure))
+            }
+        }
         .logEvents(identifier: "Connection.call(procedure:\"\(procedure)\")", logger: logSignalEvent)
     }
     
@@ -111,10 +122,9 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
 // MARK: MDWamp Extensions
 extension MDWamp {
     /// Follows semantics of `call` but returns a signal producer, rather than taking a result callback.
-    func callWithSignal(procUri: String,
-                        _ args: WampArgs,
-                        _ argsKw: WampKwargs,
-                        _ options: [NSObject: AnyObject]) -> SignalProducer<MDWampResult, PSError> {
+    func callWithSignal(procUri: String, _ args: WampArgs, _ argsKw: WampKwargs, _ options: [NSObject: AnyObject])
+        -> SignalProducer<MDWampResult, PSError>
+    {
         return SignalProducer<MDWampResult, PSError> { observer, _ in
             self.call(procUri, args: args, kwArgs: argsKw, options: options) { result, error in
                 if error != nil {

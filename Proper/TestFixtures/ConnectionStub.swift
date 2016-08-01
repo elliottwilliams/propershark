@@ -12,12 +12,12 @@ import ReactiveCocoa
 import Result
 
 class ConnectionStub: ConnectionType {
-    var callMap: [String: MDWampResult] = [:]
+    var callMap: [String: TopicEvent] = [:]
     
     
     class Channel {
-        typealias SignalType = Signal<(args: WampArgs, kwargs: WampKwargs), NoError>
-        typealias ObserverType = Observer<(args: WampArgs, kwargs: WampKwargs), NoError>
+        typealias SignalType = Signal<TopicEvent, NoError>
+        typealias ObserverType = Observer<TopicEvent, NoError>
         
         let topic: String
         let signal: SignalType
@@ -47,7 +47,7 @@ class ConnectionStub: ConnectionType {
             if let channel = channels[topic] {
                 return channel
             } else {
-                let (signal, observer) = Signal<(args: WampArgs, kwargs: WampKwargs), NoError>.pipe()
+                let (signal, observer) = Signal<TopicEvent, NoError>.pipe()
                 let channel = Channel(topic, signal, observer)
                 channels[topic] = channel
                 return channel
@@ -55,49 +55,33 @@ class ConnectionStub: ConnectionType {
         }
     }
     
-    func on(call procedure: String, send result: MDWampResult) {
-        callMap[procedure] = result
+    func on(call procedure: String, send event: TopicEvent) {
+        callMap[procedure] = event
     }
     
-    func on(call procedure: String, sendArgs args: WampArgs, kwargs: WampKwargs) {
-        let result = MDWampResult()
-        result.arguments = args
-        result.argumentsKw =  kwargs
-        result.options = [:]
-        callMap[procedure] = result
-    }
-    
-    func publish(to topic: String, args: WampArgs, kwargs: WampKwargs) {
+    func publish(to topic: String, event: TopicEvent) {
         let channel = Channel.findOrCreate(topic)
-        channel.observer.sendNext((args: args, kwargs: kwargs))
+        channel.observer.sendNext(event)
     }
     
-    func call(procedure: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<MDWampResult, PSError> {
-        return SignalProducer<MDWampResult, PSError> { observer, _ in
-            if let result = self.callMap[procedure] {
-                result.request = NSNumber(int: rand())
-                observer.sendNext(result)
+    func call(procedure: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, PSError> {
+        return SignalProducer<TopicEvent, PSError> { observer, _ in
+            if let event = self.callMap[procedure] {
+                observer.sendNext(event)
             } else {
                 observer.sendFailed(PSError(code: .mdwampError))
             }
         }.logEvents(identifier: "ConnectionStub.call", logger: logSignalEvent)
     }
     
-    func subscribe(topic: String) -> SignalProducer<MDWampEvent, PSError> {
+    func subscribe(topic: String) -> SignalProducer<TopicEvent, PSError> {
         let channel = Channel.findOrCreate(topic)
-        return SignalProducer<MDWampEvent, PSError> { observer, disposable in
+        return SignalProducer<TopicEvent, PSError> { observer, disposable in
             // Reduce the subscriber count on this channel, potentially deleting it
             disposable.addDisposable() { Channel.leave(topic) }
             
-            // Map emits from the channel to MDWampEvents...
-            channel.signal.map { (args: WampArgs, kwargs: WampKwargs) in
-                let event = MDWampEvent()
-                event.arguments = args
-                event.argumentsKw = kwargs
-                return event
-            }
-            // ...promote the signal to look as if it generates PSErrors...
-            .promoteErrors(PSError)
+            // Map channel errors to PSErrors...
+            channel.signal.promoteErrors(PSError)
             // ...and forward to this subscriber's observer
             .observe(observer)
         }

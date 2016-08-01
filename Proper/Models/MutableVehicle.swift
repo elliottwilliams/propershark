@@ -41,14 +41,10 @@ class MutableVehicle: MutableModel {
 
     // MARK: Signal Producer
     lazy var producer: SignalProducer<Vehicle, NoError> = {
-        let now = self.connection.call("meta.last_event", args: [self.topic, self.topic]).map {
-            TopicEvent.parseFromRPC("meta.last_event", event: $0)
-        }
-        let future = self.connection.subscribe(self.topic).map {
-            TopicEvent.parseFromTopic(self.topic, event: $0)
-        }
-        return SignalProducer<SignalProducer<TopicEvent?, PSError>, PSError>(values: [now, future])
-            .flatten(.Merge).unwrapOrFail { PSError(code: .parseFailure) }
+        let now = self.connection.call("meta.last_event", args: [self.topic, self.topic])
+        let future = self.connection.subscribe(self.topic)
+        return SignalProducer<SignalProducer<TopicEvent, PSError>, PSError>(values: [now, future])
+            .flatten(.Merge)
             .map { (event: TopicEvent) -> Vehicle? in
                 switch event {
                 case .Meta(.lastEvent(let args, _)):

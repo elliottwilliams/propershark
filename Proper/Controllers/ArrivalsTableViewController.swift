@@ -109,7 +109,7 @@ class ArrivalsTableViewController: UITableViewController, MutableModelDelegate {
         let association = associatedVehicles.value[indexPath.row]
         let (route, vehicle) = (association.route, association.vehicle)
 
-        cell.badge.routeNumber = route.code
+        cell.badge.routeNumber = route.shortName
         route.name.map { cell.routeTitle.text = $0 }
         route.color.map { color in
             color.flatMap { cell.badge.color = $0 }
