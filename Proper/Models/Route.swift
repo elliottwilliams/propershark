@@ -14,9 +14,9 @@ struct Route: Model {
     typealias Identifier = String
 
     // Attributes
+    let shortName: Identifier
     let code: Int?
     let name: String?
-    let shortName: Identifier
     let description: String?
     let color: UIColor?
     let path: [Point]?
@@ -34,9 +34,9 @@ struct Route: Model {
 extension Route: Decodable {
     static func decode(json: JSON) -> Decoded<Route> {
         return curry(Route.init)
-            <^> json <|? "code"
+            <^> Route.decodeIdentifier(json).or(json <| "short_name")
+            <*> json <|? "code"
             <*> json <|? "name"
-            <*> json <| "short_name"
             <*> json <|? "description"
             <*> json <|? "color"
             <*> json <||? "path"

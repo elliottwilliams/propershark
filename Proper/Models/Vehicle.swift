@@ -53,11 +53,13 @@ struct Vehicle: Model {
     static var fullyQualified: String { return "Shark::Vehicle" }
 }
 
+
+
 extension Vehicle: Decodable {
     static func decode(json: JSON) -> Decoded<Vehicle> {
         let curried = curry(Vehicle.init)
         return curried
-            <^> json <| "name"
+            <^> Vehicle.decodeIdentifier(json).or(json <| "name")
             <*> json <|? "code"
             <*> Point.decode(json)
             <*> json <|? "capacity"

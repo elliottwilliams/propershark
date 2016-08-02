@@ -7,10 +7,11 @@
 //
 
 import Foundation
+import Argo
 
 protocol Model: Hashable {
-
     associatedtype Identifier: Hashable
+
     /// Distinguishes entities of this type within Proper Shark
     static var namespace: String { get }
 
@@ -26,6 +27,7 @@ protocol Model: Hashable {
 
     // The fully-qualified name of this object type as it exists on Shark
     static var fullyQualified: String { get }
+    static func unqualify(fullyQualifiedId: String) -> String
 
     var hashValue: Int { get }
 }
@@ -36,9 +38,27 @@ func ==<M: Model>(a: M, b: M) -> Bool {
 }
 
 // Default implementations
-extension Model {   
+extension Model {
+    /// Returns the WAMP topic corresponding to an ID from this model.
     static func topicFor(identifier: Identifier) -> String {
         return "\(Self.namespace).\(identifier)"
     }
+    /// Returns a model ID string without the fully qualified prefix.
+    /// ("Shark::Vehicle::BUS123" -> "BUS123")
+    static func unqualify(fullyQualifiedId: String) -> String {
+        return fullyQualifiedId.stringByReplacingOccurrencesOfString(Self.fullyQualified + "::", withString: "")
+    }
+
+    /// Attempts to decode JSON data into a model identifier string.
+    /// Example: `JSON("routes.1A") -> Decoded("1A")`
+    static func decodeIdentifier(json: JSON) -> Decoded<String> {
+        switch json {
+        case .String(let id):
+            return pure(id.stringByReplacingOccurrencesOfString(Self.namespace + ".", withString: ""))
+        default:
+            return .typeMismatch("String", actual: json)
+        }
+    }
+
     var hashValue: Int { return self.identifier.hashValue }
 }

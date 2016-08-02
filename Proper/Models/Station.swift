@@ -14,8 +14,8 @@ struct Station: Model {
     typealias Identifier = String
 
     // Attributes
-    let name: String?
     let stop_code: Identifier
+    let name: String?
     let description: String?
     let position: Point?
 
@@ -32,8 +32,8 @@ struct Station: Model {
 extension Station: Decodable {
     static func decode(json: JSON) -> Decoded<Station> {
         return curry(Station.init)
-            <^> json <|? "name"
-            <*> json <| "stop_code"
+            <^> Station.decodeIdentifier(json).or(json <| "stop_code")
+            <*> json <|? "name"
             <*> json <|? "description"
             <*> Point.decode(json)
             <*> json <||? ["associated_objects", Route.fullyQualified]
