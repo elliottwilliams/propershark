@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		13998BF2C6862B42DFC8E00E /* Pods_ProperUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CE8BA5C320FDC4A6AA55F58 /* Pods_ProperUITests.framework */; };
+		2612B5271D50490500BF671D /* ModelDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2612B5261D50490500BF671D /* ModelDecodeTests.swift */; };
+		2612B52C1D50513600BF671D /* route.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B5291D50513600BF671D /* route.json */; };
+		2612B52D1D50513600BF671D /* station.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B52A1D50513600BF671D /* station.json */; };
+		2612B52E1D50513600BF671D /* vehicle.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B52B1D50513600BF671D /* vehicle.json */; };
 		2612F9FF1D2CCAE5005103E3 /* ConnectionStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2612F9FE1D2CCAE5005103E3 /* ConnectionStub.swift */; };
 		261DD1631C3424E1001336D4 /* RouteBadgeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 261DD1621C3424E1001336D4 /* RouteBadgeLabel.swift */; };
 		2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */; };
@@ -30,7 +34,6 @@
 		26A424B91BD2C1320035754F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 26A424B71BD2C1320035754F /* Main.storyboard */; };
 		26A424BB1BD2C1320035754F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26A424BA1BD2C1320035754F /* Assets.xcassets */; };
 		26A424BE1BD2C1320035754F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 26A424BC1BD2C1320035754F /* LaunchScreen.storyboard */; };
-		26A424D41BD2C1320035754F /* ProperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424D31BD2C1320035754F /* ProperUITests.swift */; };
 		26A424E21BD2C7EE0035754F /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26A424E11BD2C7EE0035754F /* MapKit.framework */; };
 		26A424E51BD2D3F20035754F /* ArrivalTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424E31BD2D3F20035754F /* ArrivalTableViewCell.swift */; };
 		26A424E61BD2D3F20035754F /* ArrivalTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26A424E41BD2D3F20035754F /* ArrivalTableViewCell.xib */; };
@@ -78,6 +81,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2612B5261D50490500BF671D /* ModelDecodeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelDecodeTests.swift; sourceTree = "<group>"; };
+		2612B5291D50513600BF671D /* route.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = route.json; sourceTree = "<group>"; };
+		2612B52A1D50513600BF671D /* station.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = station.json; sourceTree = "<group>"; };
+		2612B52B1D50513600BF671D /* vehicle.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = vehicle.json; sourceTree = "<group>"; };
 		2612F9FE1D2CCAE5005103E3 /* ConnectionStub.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ConnectionStub.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		261DD1601C323964001336D4 /* RouteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteViewController.swift; sourceTree = "<group>"; };
 		261DD1621C3424E1001336D4 /* RouteBadgeLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteBadgeLabel.swift; sourceTree = "<group>"; };
@@ -109,7 +116,6 @@
 		26A424C41BD2C1320035754F /* ProperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ProperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		26A424CA1BD2C1320035754F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		26A424CF1BD2C1320035754F /* ProperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ProperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		26A424D31BD2C1320035754F /* ProperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ProperUITests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26A424D51BD2C1320035754F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		26A424E11BD2C7EE0035754F /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		26A424E31BD2D3F20035754F /* ArrivalTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ArrivalTableViewCell.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -190,6 +196,16 @@
 				26AC8BB31BD34BA700AA0001 /* VehicleViewController.swift */,
 			);
 			name = Disabled;
+			sourceTree = "<group>";
+		};
+		2612B5281D504F1D00BF671D /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				2612B5291D50513600BF671D /* route.json */,
+				2612B52A1D50513600BF671D /* station.json */,
+				2612B52B1D50513600BF671D /* vehicle.json */,
+			);
+			path = Data;
 			sourceTree = "<group>";
 		};
 		264782611C309F4C009D9AD0 /* Views */ = {
@@ -311,8 +327,10 @@
 		26A424C71BD2C1320035754F /* ProperTests */ = {
 			isa = PBXGroup;
 			children = (
+				2612B5281D504F1D00BF671D /* Data */,
 				2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */,
 				26A424CA1BD2C1320035754F /* Info.plist */,
+				2612B5261D50490500BF671D /* ModelDecodeTests.swift */,
 			);
 			path = ProperTests;
 			sourceTree = "<group>";
@@ -320,7 +338,6 @@
 		26A424D21BD2C1320035754F /* ProperUITests */ = {
 			isa = PBXGroup;
 			children = (
-				26A424D31BD2C1320035754F /* ProperUITests.swift */,
 				26A424D51BD2C1320035754F /* Info.plist */,
 			);
 			path = ProperUITests;
@@ -516,6 +533,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2612B52D1D50513600BF671D /* station.json in Resources */,
+				2612B52E1D50513600BF671D /* vehicle.json in Resources */,
+				2612B52C1D50513600BF671D /* route.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -700,6 +720,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */,
+				2612B5271D50490500BF671D /* ModelDecodeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -707,7 +728,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				26A424D41BD2C1320035754F /* ProperUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

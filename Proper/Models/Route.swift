@@ -35,12 +35,13 @@ extension Route: Decodable {
     static func decode(json: JSON) -> Decoded<Route> {
         return curry(Route.init)
             <^> Route.decodeIdentifier(json).or(json <| "short_name")
-            <*> json <|? "code"
+            <*> json <|? "code")
             <*> json <|? "name"
             <*> json <|? "description"
             <*> json <|? "color"
             <*> json <||? "path"
-            <*> json <||? ["associated_objects", Station.fullyQualified]
+            // See shark#12 for discussion on which stations attribute should be used.
+            <*> (json <||? "stations").or(json <||? ["associated_objects", Station.fullyQualified])
             <*> json <||? ["associated_objects", Vehicle.fullyQualified]
     }
 }

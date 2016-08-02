@@ -1,0 +1,16 @@
+{
+   "heading" : 180,
+   "last_station" : "stations.BUS248",
+   "capacity" : 60,
+   "latitude" : 40.454631772913,
+   "saturation" : 6,
+   "speed" : 0,
+   "route" : "routes.9",
+   "code" : null,
+   "associated_objects" : {},
+   "schedule_delta" : null,
+   "name" : "1201",
+   "onboard" : 4,
+   "next_station" : "stations.BUS265",
+   "longitude" : -86.92457761911
+}

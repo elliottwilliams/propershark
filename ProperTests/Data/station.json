@@ -1,0 +1,16 @@
+{
+   "stop_code" : "BUS100W",
+   "description" : null,
+   "associated_objects" : {
+      "Shark::Route" : [
+         "routes.5B"
+      ],
+      "Shark::Vehicle" : [
+         "vehicles.1706"
+      ]
+   },
+   "longitude" : -86.92457761911,
+   "name" : "Beau Jardin Apts on Yeager (@ Shelter) - BUS100W ",
+   "code" : null,
+   "latitude" : 40.454631772913
+}
