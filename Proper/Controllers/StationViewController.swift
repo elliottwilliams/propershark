@@ -58,8 +58,12 @@ class StationViewController: UIViewController, ProperViewController, ArrivalsTab
         self.displayError(error)
     }
 
-    func arrivalsTable(selectedVehicle: MutableVehicle, indexPath: NSIndexPath) {
+    func arrivalsTable(selectedVehicle vehicle: MutableVehicle, indexPath: NSIndexPath) {
         // transition to vehicle view
+    }
+
+    func arrivalsTable(receivedError error: PSError) {
+        self.displayError(error)
     }
 
 #if false

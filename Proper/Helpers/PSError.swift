@@ -71,6 +71,8 @@ enum PSErrorCode: Int {
     
     var title: String { return self.description().title }
     var message: String { return self.description().message }
+
+    static let genericTitle = "Something went wrong"
     
     private func description(usingConfig config: Config = Config.sharedInstance) -> (title: String, message: String) {
         switch(self) {
@@ -83,7 +85,7 @@ enum PSErrorCode: Int {
         case .maxConnectionFailures:
             return ("Server connection failed", "We were unable to establish a connection with \(config.app.name) servers. Check that your Internet connection is functioning and try again.")
         case .parseFailure, .decodeFailure, .mutableModelFailedApply, .unhandledTopic:
-            return ("Something went wrong", "Our server sent us some information that could not be understood.")
+            return (PSErrorCode.genericTitle, "Our server sent us some information that could not be understood.")
         }
     }
 }

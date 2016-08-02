@@ -32,9 +32,9 @@ class MutableVehicle: MutableModel {
     lazy var capacity: MutableProperty<Int?> = self.lazyProperty { $0.capacity }
     lazy var onboard: MutableProperty<Int?> = self.lazyProperty { $0.onboard }
     lazy var saturation: MutableProperty<Double?> = self.lazyProperty { $0.saturation }
-    lazy var lastStation: MutableProperty<Station?> = self.lazyProperty { $0.lastStation }
-    lazy var nextStation: MutableProperty<Station?> = self.lazyProperty { $0.nextStation }
-    lazy var route: MutableProperty<Route?> = self.lazyProperty { $0.route }
+    lazy var lastStation: MutableProperty<MutableStation?> = self.lazyProperty { $0.lastStation.map(self.attachMutable) }
+    lazy var nextStation: MutableProperty<MutableStation?> = self.lazyProperty { $0.nextStation.map(self.attachMutable) }
+    lazy var route: MutableProperty<MutableRoute?> = self.lazyProperty { $0.route.map(self.attachMutable) }
     lazy var scheduleDelta: MutableProperty<Double?> = self.lazyProperty { $0.scheduleDelta }
     lazy var heading: MutableProperty<Double?> = self.lazyProperty { $0.heading }
     lazy var speed: MutableProperty<Double?> = self.lazyProperty { $0.speed }
@@ -83,9 +83,9 @@ class MutableVehicle: MutableModel {
         self.capacity <- vehicle.capacity
         self.onboard <- vehicle.onboard
         self.saturation <- vehicle.saturation
-        self.lastStation <- vehicle.lastStation
-        self.nextStation <- vehicle.nextStation
-        self.route <- vehicle.route
+        self.lastStation <- vehicle.lastStation.map(attachMutable)
+        self.nextStation <- vehicle.nextStation.map(attachMutable)
+        self.route <- vehicle.route.map(attachMutable)
         self.scheduleDelta <- vehicle.scheduleDelta
         self.heading <- vehicle.heading
         self.speed <- vehicle.speed

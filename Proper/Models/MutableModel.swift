@@ -58,6 +58,11 @@ extension MutableModel {
         return property
     }
 
+    /// Create a MutableModel from a static model and attach it to the calling MutableModel's delegate.
+    internal func attachMutable<M: MutableModel>(from model: M.FromModel) -> M {
+        return M(from: model, delegate: self.delegate)
+    }
+
     var hashValue: Int { return self.identifier.hashValue }
 }
 
@@ -76,6 +81,14 @@ extension MutableModelDelegate {
 }
 
 func ==<M: MutableModel>(a: M, b: M) -> Bool {
+    return a.identifier == b.identifier
+}
+
+func ==<M: MutableModel>(a: M, b: M.FromModel) -> Bool {
+    return a.identifier == b.identifier
+}
+
+func ==<M: MutableModel>(a: M.FromModel, b: M) -> Bool {
     return a.identifier == b.identifier
 }
 

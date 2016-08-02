@@ -11,13 +11,13 @@ import ReactiveCocoa
 import Dwifft
 import Result
 
-class ArrivalsTableViewController: UITableViewController, MutableModelDelegate {
+class ArrivalsTableViewController: UITableViewController {
 
     var station: MutableStation
     let delegate: ArrivalsTableViewDelegate
 
     let routes: MutableProperty<[MutableRoute]>
-    let associatedVehicles: MutableProperty<[VehicleOnRoute]>
+    let associatedVehicles: MutableProperty<[MutableVehicle]>
 
     private var diffCalculator: TableViewDiffCalculator<MutableRoute>!
 
@@ -35,7 +35,7 @@ class ArrivalsTableViewController: UITableViewController, MutableModelDelegate {
         station.producer.start()
 
         // Create MutablesRoutes out of the routes of the station given, and update our routes property.
-        let routes = station.routes.value.map { MutableRoute(from: $0, delegate: self) }
+        let routes = station.routes.value ?? []
         self.routes.swap(routes)
 
         // Initialize the diff calculator for the table, which starts using any routes already on `station`.
@@ -63,39 +63,27 @@ class ArrivalsTableViewController: UITableViewController, MutableModelDelegate {
 
 
     /// Produce a signal emitting a list of `MutableRoute`s whenever the routes on this station change.
-    ///
-    /// Complexity within signal: O(routes)
     func routesSignal() -> Signal<[MutableRoute], NoError> {
-        return self.station.routes.signal
-            .map { routes in
-                routes.map { route in MutableRoute(from: route, delegate: self) }
-        }
+        return self.station.routes.signal.ignoreNil()
+        // Each route emitted should subscribe to its topic.
+        .on(next: { $0.forEach { $0.producer.start () } })
     }
 
-    /// Access the `routes` attribute of this station and produce a signal which emits a list of (route,vehicle) pairs
+    /// Access the `routes` attribute of this station and produce a signal which emits a list vehicles pairs
     /// every time the vehicle association changes for a particular route.
-    ///
-    /// Complexity within signal: O(vehicles)
-    func vehiclesSignal() -> Signal<[VehicleOnRoute], NoError> {
+    func vehiclesSignal() -> Signal<[MutableVehicle], NoError> {
 
         // Given a signal emitting the list of MutableRoutes for this station...
         return self.routesSignal()
-            // ...flatMap down to the routes themselves...
-            .flatMap(.Concat) { routes in SignalProducer<MutableRoute, NoError>(values: routes) }
-            // ...and access the vehicles property of each. Map to a (route,vehicles) tuple so that route association
-            // information isn't lost downstream.
-            .map { route in
-                route.vehicles.signal.map { (route, $0) }
-            }
-            // We now have a signal of signals of (route,vehicles) tuples, which emits whever the list of routes changes.
-            // Flatten this into a signal of (route,vehicles) tuples that emits whenever a route:vehicles association
-            // changes.
-            .flatten(.Merge)
-            // Convert the (route,vehicles) tuple into a list of vehicle-route associations. By using an association struct,
-            // values from the signal are Equatable and can be used for diffing.
-            .map { (route, vehicles) in
-                vehicles.map { VehicleOnRoute(vehicle: $0, route: route) }
-        }
+        // ...flatMap down to the routes themselves...
+        .flatMap(.Concat) { routes in SignalProducer<MutableRoute, NoError>(values: routes) }
+        // ...and access the vehicles property of each.
+        .map { route in route.vehicles.signal }
+        // We now have a signal of signals of vehicles, which emits whever the list of routes changes.
+        // Flatten this into a signal of vehicles that emits whenever a route:vehicles association changes.
+        .flatten(.Merge)
+        // If vehicle list is nil, ignore (a list of zero vehicles should be an empty array [])
+        .map { $0 ?? [] }
     }
 
 
@@ -106,31 +94,32 @@ class ArrivalsTableViewController: UITableViewController, MutableModelDelegate {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         // ArrivalTableViewCell comes from the xib, and is registered upon the creation of this table
         let cell = tableView.dequeueReusableCellWithIdentifier("ArrivalTableViewCell", forIndexPath: indexPath) as! ArrivalTableViewCell
-        let association = associatedVehicles.value[indexPath.row]
-        let (route, vehicle) = (association.route, association.vehicle)
+        let vehicle = associatedVehicles.value[indexPath.row]
 
+        // Bind vehicle attributes
+        vehicle.saturation.map { cell.badge.capacity = $0 ?? 1 }
+        vehicle.scheduleDelta.map { cell.routeTimer.text = "Schedule ∆ = \($0)" }
+
+        guard let route = vehicle.route.value else {
+            // Vehicles here should have a route (since we got them by traversing along a route). If not available,
+            // consider displaying a loading indicator.
+            return cell
+        }
+
+        // Bind route attributes
         cell.badge.routeNumber = route.shortName
         route.name.map { cell.routeTitle.text = $0 }
         route.color.map { color in
             color.flatMap { cell.badge.color = $0 }
         }
 
-        cell.badge.capacity = vehicle.saturation ?? 1
-        cell.routeTimer.text = "Schedule delta = \(vehicle.scheduleDelta)"
-
         return cell
     }
-
-    func mutableModel<M : MutableModel>(model: M, receivedError error: PSError) {
-        // Pass upwards to parent delegate
-        self.delegate.mutableModel(model, receivedError: error)
-    }
-
-    
 }
 
 protocol ArrivalsTableViewDelegate: MutableModelDelegate {
-    func arrivalsTable(selectedVehicle: MutableVehicle, indexPath: NSIndexPath)
+    func arrivalsTable(selectedVehicle vehicle: MutableVehicle, indexPath: NSIndexPath)
+    func arrivalsTable(receivedError error: PSError)
 }
 
 

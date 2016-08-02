@@ -31,8 +31,8 @@ class MutableRoute: MutableModel {
     lazy var description: MutableProperty<String?> = self.lazyProperty { $0.description }
     lazy var color: MutableProperty<UIColor?> = self.lazyProperty { $0.color }
     lazy var path:  MutableProperty<[Point]?> = self.lazyProperty { $0.path }
-    lazy var stations: MutableProperty<[Station]> = self.lazyProperty { $0.stations ?? [] }
-    lazy var vehicles: MutableProperty<[Vehicle]> = self.lazyProperty { $0.vehicles ?? [] }
+    lazy var stations: MutableProperty<[MutableStation]?> = self.lazyProperty { ($0.stations?.map(self.attachMutable)) }
+    lazy var vehicles: MutableProperty<[MutableVehicle]?> = self.lazyProperty { $0.vehicles?.map(self.attachMutable) }
 
     // MARK: Signal Producer
     lazy var producer: SignalProducer<Route, NoError> = {
@@ -81,8 +81,8 @@ class MutableRoute: MutableModel {
         self.description <- route.description
         self.color <- route.color
         self.path <- route.path
-        self.stations <- route.stations ?? []
-        self.vehicles <- route.vehicles ?? []
+        self.stations <- route.stations?.map(attachMutable)
+        self.vehicles <- route.vehicles?.map(attachMutable)
 
         return .Success()
     }
@@ -94,11 +94,7 @@ class MutableRoute: MutableModel {
         // Atomically modify the vehicles array. `modify` returns the old value, which could be useful to LCS diffing.
         self.vehicles.modify { vehicles in
             // Replace any vehicle whose identifier matches `vehicle`.
-            vehicles.filter { $0 == vehicle }.map { _ in vehicle }
+            vehicles?.filter { $0 == vehicle }.map { _ in self.attachMutable(from: vehicle) }
         }
     }
-}
-
-func ==(a: [Point], b: [Point]) -> Bool {
-    return true
 }
