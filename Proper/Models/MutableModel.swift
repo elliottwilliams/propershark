@@ -95,6 +95,9 @@ func ==<M: MutableModel>(a: M.FromModel, b: M) -> Bool {
 /// Makes updates from a immutable value to a mutable property containing that value.
 infix operator <- {}
 
+/// Makes updates from a immutable array or collection to a mutable property containing that value.
+infix operator <-| {}
+
 /**
  Modify a property `mutable` if it differs from `source`.
  Returns a `Result`, which is successful if the modification was made.
@@ -112,25 +115,31 @@ internal func <- <T: Equatable>(mutable: MutableProperty<T>, source: T) -> Modif
  Returns a `Result`, which is successful if the modification was made.
  */
 internal func <- <T: Equatable>(mutable: MutableProperty<T?>, source: T?) -> ModifyPropertyResult<T> {
-    if let unwrapped = source {
-        return mutable <- unwrapped
-    }
-    return .unmodified
+    return source.map { mutable <- $0 } ?? .unmodified
 }
 
 /// Modify `mutable` if any elements in `source` are different.
-internal func <- <T: Equatable>(mutable: MutableProperty<[T]>, source: [T]) -> ModifyPropertyResult<[T]> {
-    if source.elementsEqual(mutable.value) {
+internal func <-| <C: CollectionType, T: Equatable where C.Generator.Element == T>(
+    mutable: MutableProperty<C?>, source: C) -> ModifyPropertyResult<C?>
+{
+    if mutable.value == nil || source.elementsEqual(mutable.value!) {
         return .modifiedValue(mutable.swap(source))
     }
     return .unmodified
 }
 
-internal func <- <T: Equatable>(mutable: MutableProperty<[T]?>, source: [T]?) -> ModifyPropertyResult<[T]?> {
-    if let unwrapped = source {
-        return mutable <- unwrapped
-    }
-    return .unmodified
+/// Modify `mutable` if `source` is defined and any elements in it are different.
+internal func <-| <T: Equatable>(mutable: MutableProperty<[T]?>, source: [T]?) -> ModifyPropertyResult<[T]?> {
+    return source.map { mutable <-| $0 } ?? .unmodified
+}
+
+/// Converts `source` into a Set before applying to `mutable`.
+internal func <-| <T: Hashable>(mutable: MutableProperty<Set<T>?>, source: [T]) -> ModifyPropertyResult<Set<T>?> {
+    return mutable <-| Set(source)
+}
+
+internal func <-| <T: Hashable>(mutable: MutableProperty<Set<T>?>, source: [T]?) -> ModifyPropertyResult<Set<T>> {
+    return source.map { mutable <-| $0 } ?? .unmodified
 }
 
 /// Return status from the modify mutable property operator (`<-`).

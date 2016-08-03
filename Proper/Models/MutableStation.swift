@@ -72,12 +72,12 @@ class MutableStation: MutableModel {
             return .Failure(PSError(code: .mutableModelFailedApply))
         }
         self.source = station
-        
+
         self.name <- station.name
         self.description <- station.description
         self.position <- station.position
-        self.routes <- (station.routes?.map(attachMutable)).map(Set.init)
-        self.vehicles <- (station.vehicles?.map(attachMutable)).map(Set.init)
+        self.routes <-| station.routes?.map(attachMutable)
+        self.vehicles <-| station.vehicles?.map(attachMutable)
 
         return .Success()
     }
