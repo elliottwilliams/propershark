@@ -21,11 +21,11 @@ class MutableStation: MutableModel {
 
     // MARK: Station Support
     internal var source: FromModel
-    var identifier: FromModel.Identifier { return self.stop_code }
+    var identifier: FromModel.Identifier { return self.stopCode }
     var topic: String { return FromModel.topicFor(self.identifier) }
     
     // MARK: Station Attributes
-    let stop_code: FromModel.Identifier
+    let stopCode: FromModel.Identifier
     lazy var name: MutableProperty<String?> = self.lazyProperty { $0.name }
     lazy var description: MutableProperty<String?> = self.lazyProperty { $0.description }
     lazy var position: MutableProperty<Point?> = self.lazyProperty { $0.position }
@@ -62,7 +62,7 @@ class MutableStation: MutableModel {
 
 
     required init(from station: Station, delegate: MutableModelDelegate) {
-        self.stop_code = station.stop_code
+        self.stopCode = station.stopCode
         self.delegate = delegate
         self.source = station
     }

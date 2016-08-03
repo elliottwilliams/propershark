@@ -14,7 +14,7 @@ struct Station: Model {
     typealias Identifier = String
 
     // Attributes
-    let stop_code: Identifier
+    let stopCode: String
     let name: String?
     let description: String?
     let position: Point?
@@ -25,19 +25,32 @@ struct Station: Model {
     
     static var namespace: String { return "stations" }
     static var fullyQualified: String { return "Shark::Station" }
-    var identifier: Identifier { return self.stop_code }
+    var identifier: Identifier { return self.stopCode }
     var topic: String { return Station.topicFor(self.identifier) }
+}
+
+extension Station {
+    init(stopCode: String) {
+        self.init(stopCode: stopCode, name: nil, description: nil, position: nil, routes: nil,
+                  vehicles: nil)
+    }
 }
 
 extension Station: Decodable {
     static func decode(json: JSON) -> Decoded<Station> {
-        return curry(Station.init)
-            <^> Station.decodeIdentifier(json).or(json <| "stop_code")
-            <*> json <|? "name"
-            <*> json <|? "description"
-            <*> Point.decode(json)
-            <*> json <||? ["associated_objects", Route.fullyQualified]
-            <*> json <||? ["associated_objects", Vehicle.fullyQualified]
+        switch json {
+        case .String(let id):
+            let stopCode = Station.unqualify(namespaced: id)
+            return pure(Station(stopCode: stopCode))
+        default:
+            let curried = curry(Station.init)
+            return curried
+                <^> json <| "stop_code"
+                <*> json <|? "name"
+                <*> json <|? "description"
+                <*> Point.decode(json)
+                <*> json <||? ["associated_objects", Route.fullyQualified]
+                <*> json <||? ["associated_objects", Vehicle.fullyQualified]
+        }
     }
 }
-

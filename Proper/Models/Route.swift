@@ -14,7 +14,7 @@ struct Route: Model {
     typealias Identifier = String
 
     // Attributes
-    let shortName: Identifier
+    let shortName: String
     let code: Int?
     let name: String?
     let description: String?
@@ -31,17 +31,32 @@ struct Route: Model {
     var topic: String { return Route.topicFor(self.identifier) }
 }
 
+extension Route {
+    init(shortName: String) {
+        self.init(shortName: shortName, code: nil, name: nil, description: nil, color: nil,
+                  path: nil, stations: nil, vehicles: nil)
+    }
+}
+
 extension Route: Decodable {
     static func decode(json: JSON) -> Decoded<Route> {
-        return curry(Route.init)
-            <^> Route.decodeIdentifier(json).or(json <| "short_name")
-            <*> json <|? "code")
-            <*> json <|? "name"
-            <*> json <|? "description"
-            <*> json <|? "color"
-            <*> json <||? "path"
-            // See shark#12 for discussion on which stations attribute should be used.
-            <*> (json <||? "stations").or(json <||? ["associated_objects", Station.fullyQualified])
-            <*> json <||? ["associated_objects", Vehicle.fullyQualified]
+        switch json {
+        case .String(let id):
+            let shortName = Route.unqualify(namespaced: id)
+            return pure(Route(shortName: shortName))
+        default:
+            let r = curry(Route.init)
+                <^> json <| "short_name"
+                <*> json <|? "code"
+            return r
+                <*> json <|? "name"
+                <*> json <|? "description"
+                <*> json <|? "color"
+                <*> json <||? "path"
+                // See shark#12 for discussion on which stations attribute should be used.
+                <*> (json <||? "stations").flatMap { $0.map(pure) ?? json <||? ["associated_objects", Station.fullyQualified] }
+                <*> json <||? ["associated_objects", Vehicle.fullyQualified]
+        }
+
     }
 }

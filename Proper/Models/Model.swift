@@ -27,7 +27,6 @@ protocol Model: Hashable {
 
     // The fully-qualified name of this object type as it exists on Shark
     static var fullyQualified: String { get }
-    static func unqualify(fullyQualifiedId: String) -> String
 
     var hashValue: Int { get }
 }
@@ -44,20 +43,14 @@ extension Model {
         return "\(Self.namespace).\(identifier)"
     }
     /// Returns a model ID string without the fully qualified prefix.
-    /// ("Shark::Vehicle::BUS123" -> "BUS123")
-    static func unqualify(fullyQualifiedId: String) -> String {
-        return fullyQualifiedId.stringByReplacingOccurrencesOfString(Self.fullyQualified + "::", withString: "")
+    /// Example: `Shark::Vehicle::BUS123 -> BUS123`
+    static func unqualify(fullyQualified id: String) -> String {
+        return id.stringByReplacingOccurrencesOfString(Self.fullyQualified + "::", withString: "")
     }
-
-    /// Attempts to decode JSON data into a model identifier string.
-    /// Example: `JSON("routes.1A") -> Decoded("1A")`
-    static func decodeIdentifier(json: JSON) -> Decoded<String> {
-        switch json {
-        case .String(let id):
-            return pure(id.stringByReplacingOccurrencesOfString(Self.namespace + ".", withString: ""))
-        default:
-            return .typeMismatch("String", actual: json)
-        }
+    /// Returns a model ID string without the namespace.
+    /// Example: `routes.1A -> 1A`
+    static func unqualify(namespaced id: String) -> String {
+        return id.stringByReplacingOccurrencesOfString(Self.namespace + ".", withString: "")
     }
 
     var hashValue: Int { return self.identifier.hashValue }

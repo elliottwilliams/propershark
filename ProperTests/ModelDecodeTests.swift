@@ -47,7 +47,7 @@ class ModelDecodeTests: XCTestCase {
         guard let station = decoded.value else { return }
 
         // Flat attributes
-        XCTAssertEqual(station.stop_code, "BUS100W")
+        XCTAssertEqual(station.stopCode, "BUS100W")
         XCTAssertEqual(station.name!, "Beau Jardin Apts on Yeager (@ Shelter) - BUS100W ")
         XCTAssertEqual(station.position!.lat, 40.454631772913)
         XCTAssertEqual(station.position!.long, -86.92457761911)
@@ -64,7 +64,7 @@ class ModelDecodeTests: XCTestCase {
     }
 
     func testDecodeRoute() {
-        let json = JSON(station)
+        let json = JSON(route)
         let decoded = Route.decode(json)
         XCTAssertNotNil(decoded.value, "Decode error: \(decoded.error)")
 

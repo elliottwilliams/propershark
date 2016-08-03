@@ -9,6 +9,7 @@
 import Foundation
 import Argo
 import Curry
+import Runes
 
 struct Vehicle: Model {
     typealias Identifier = String
@@ -16,7 +17,7 @@ struct Vehicle: Model {
     // MARK: Attributes
 
     /// The (often) humanized name for this vehicle
-    let name: Identifier
+    let name: String
     
     /// The identifying code for this vehicle
     let code: Int?
@@ -53,23 +54,37 @@ struct Vehicle: Model {
     static var fullyQualified: String { return "Shark::Vehicle" }
 }
 
+extension Vehicle {
+    init(name: String) {
+        self.init(name: name, code: nil, position: nil, capacity: nil, onboard: nil, saturation: nil,
+                  lastStation: nil, nextStation: nil, route: nil, scheduleDelta: nil, heading: nil,
+                  speed: nil)
+    }
 
+}
 
 extension Vehicle: Decodable {
     static func decode(json: JSON) -> Decoded<Vehicle> {
-        let curried = curry(Vehicle.init)
-        return curried
-            <^> Vehicle.decodeIdentifier(json).or(json <| "name")
-            <*> json <|? "code"
-            <*> Point.decode(json)
-            <*> json <|? "capacity"
-            <*> json <|? "onboard"
-            <*> json <|? "saturation"
-            <*> json <|? "last_station"
-            <*> json <|? "next_station"
-            <*> json <|? "route"
-            <*> json <|? "schedule_delta"
-            <*> json <|? "heading"
-            <*> json <|? "speed"
+        switch json {
+        case .String(let id):
+            let name = Vehicle.unqualify(namespaced: id)
+            return pure(Vehicle(name: name))
+        default:
+            let v = curry(Vehicle.init)
+                <^> json <| "name"
+                <*> json <|? "code"
+                <*> Point.decode(json)
+
+            return v
+                <*> json <|? "capacity"
+                <*> json <|? "onboard"
+                <*> json <|? "saturation"
+                <*> json <|? "last_station"
+                <*> json <|? "next_station"
+                <*> json <|? "route"
+                <*> json <|? "schedule_delta"
+                <*> json <|? "heading"
+                <*> json <|? "speed"
+        }
     }
 }
