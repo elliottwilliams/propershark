@@ -1,5 +1,5 @@
 //
-//  SignalOperators.swift
+//  SignalType.swift
 //  Proper
 //
 //  Created by Elliott Williams on 7/12/16.

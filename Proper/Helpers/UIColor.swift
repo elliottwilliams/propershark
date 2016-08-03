@@ -1,5 +1,5 @@
 //
-//  UIColor+Decodable.swift
+//  UIColor.swift
 //  Proper
 //
 //  Created by Elliott Williams on 7/4/16.

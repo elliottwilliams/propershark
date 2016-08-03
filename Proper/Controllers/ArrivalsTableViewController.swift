@@ -16,7 +16,7 @@ class ArrivalsTableViewController: UITableViewController {
     var station: MutableStation
     let delegate: ArrivalsTableViewDelegate
 
-    let routes: MutableProperty<[MutableRoute]>
+    let routes: MutableProperty<Set<MutableRoute>>
     let associatedVehicles: MutableProperty<[MutableVehicle]>
 
     private var diffCalculator: TableViewDiffCalculator<MutableRoute>!
@@ -35,11 +35,11 @@ class ArrivalsTableViewController: UITableViewController {
         station.producer.start()
 
         // Create MutablesRoutes out of the routes of the station given, and update our routes property.
-        let routes = station.routes.value ?? []
+        let routes = station.routes.value ?? Set()
         self.routes.swap(routes)
 
         // Initialize the diff calculator for the table, which starts using any routes already on `station`.
-        self.diffCalculator = TableViewDiffCalculator(tableView: view, initialRows: routes)
+        self.diffCalculator = TableViewDiffCalculator(tableView: view, initialRows: Array(routes))
 
         // Use our table cell UI. If the nib specified doesn't exist, `tableView(_:cellForRowAtIndexPath:)` will crash.
         view.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil), forCellReuseIdentifier: "ArrivalTableViewCell")
@@ -49,7 +49,7 @@ class ArrivalsTableViewController: UITableViewController {
         self.associatedVehicles <~ self.vehiclesSignal()
 
         // When routes change, update the table.
-        self.routes.map { self.diffCalculator.rows = $0 }
+        self.routes.map { self.diffCalculator.rows = Array($0) }
 
         // Connect the table view to this controller now that everything is initialized.
         self.view = view
@@ -62,11 +62,9 @@ class ArrivalsTableViewController: UITableViewController {
     }
 
 
-    /// Produce a signal emitting a list of `MutableRoute`s whenever the routes on this station change.
-    func routesSignal() -> Signal<[MutableRoute], NoError> {
+    /// Produce a signal emitting a set of `MutableRoute`s whenever the routes on this station change.
+    func routesSignal() -> Signal<Set<MutableRoute>, NoError> {
         return self.station.routes.signal.ignoreNil()
-        // Each route emitted should subscribe to its topic.
-        .on(next: { $0.forEach { $0.producer.start () } })
     }
 
     /// Access the `routes` attribute of this station and produce a signal which emits a list vehicles pairs
@@ -82,8 +80,10 @@ class ArrivalsTableViewController: UITableViewController {
         // We now have a signal of signals of vehicles, which emits whever the list of routes changes.
         // Flatten this into a signal of vehicles that emits whenever a route:vehicles association changes.
         .flatten(.Merge)
-        // If vehicle list is nil, ignore (a list of zero vehicles should be an empty array [])
-        .map { $0 ?? [] }
+        // If vehicle set is nil, default to an empty set.
+        .map { $0 ?? Set() }
+        // Sort by arrival time (TODO: actually do this)
+        .map { Array($0) }
     }
 
 

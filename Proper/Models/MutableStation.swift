@@ -29,8 +29,8 @@ class MutableStation: MutableModel {
     lazy var name: MutableProperty<String?> = self.lazyProperty { $0.name }
     lazy var description: MutableProperty<String?> = self.lazyProperty { $0.description }
     lazy var position: MutableProperty<Point?> = self.lazyProperty { $0.position }
-    lazy var routes: MutableProperty<[MutableRoute]?> = self.lazyProperty { $0.routes?.map(self.attachMutable) }
-    lazy var vehicles: MutableProperty<[MutableVehicle]?> = self.lazyProperty { $0.vehicles?.map(self.attachMutable) }
+    lazy var routes: MutableProperty<Set<MutableRoute>?> = self.lazyProperty { ($0.routes?.map(self.attachMutable)).map(Set.init) }
+    lazy var vehicles: MutableProperty<Set<MutableVehicle>?> = self.lazyProperty { ($0.vehicles?.map(self.attachMutable)).map(Set.init) }
 
     // MARK: Signal Producer
     lazy var producer: SignalProducer<Station, NoError> = {
@@ -76,8 +76,8 @@ class MutableStation: MutableModel {
         self.name <- station.name
         self.description <- station.description
         self.position <- station.position
-        self.routes <- station.routes?.map(attachMutable)
-        self.vehicles <- station.vehicles?.map(attachMutable)
+        self.routes <- (station.routes?.map(attachMutable)).map(Set.init)
+        self.vehicles <- (station.vehicles?.map(attachMutable)).map(Set.init)
 
         return .Success()
     }

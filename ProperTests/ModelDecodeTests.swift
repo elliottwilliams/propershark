@@ -87,8 +87,20 @@ class ModelDecodeTests: XCTestCase {
         // Stations should be defined, including name
         XCTAssertNotNil(route.stations)
         if let stations = route.stations {
-            XCTAssertEqual(stations.map { $0.identifier }.first, "BUS249")
-            XCTAssertEqual(stations.flatMap { $0.name }.first, "Discovery Parking Lot (at Shelter) - BUS249")
+            XCTAssertGreaterThan(stations.count, 1)
+            let parkingLotStop = stations.filter { $0 == Station(stopCode: "BUS249") }.first
+            XCTAssertNotNil(parkingLotStop)
+
+            // This will fail until propershark/shark#12 is implemented.
+            XCTAssertEqual(parkingLotStop?.name, "Discovery Parking Lot (at Shelter) - BUS249")
+        }
+
+        // Itinerary should be populated
+        XCTAssertNotNil(route.itinerary)
+        if let itinerary = route.itinerary, let stations = route.stations {
+            XCTAssertGreaterThan(itinerary.count, stations.count)
+            XCTAssertTrue(itinerary.filter { $0.identifier == "BUS249" }.count > 1,
+                          "A station on the route should appear multiple times.")
         }
 
         XCTAssertNotNil(route.vehicles)

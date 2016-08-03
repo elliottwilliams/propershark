@@ -31,8 +31,8 @@ class MutableRoute: MutableModel {
     lazy var description: MutableProperty<String?> = self.lazyProperty { $0.description }
     lazy var color: MutableProperty<UIColor?> = self.lazyProperty { $0.color }
     lazy var path:  MutableProperty<[Point]?> = self.lazyProperty { $0.path }
-    lazy var stations: MutableProperty<[MutableStation]?> = self.lazyProperty { ($0.stations?.map(self.attachMutable)) }
-    lazy var vehicles: MutableProperty<[MutableVehicle]?> = self.lazyProperty { $0.vehicles?.map(self.attachMutable) }
+    lazy var stations: MutableProperty<Set<MutableStation>?> = self.lazyProperty { ($0.stations?.map(self.attachMutable)).map(Set.init) }
+    lazy var vehicles: MutableProperty<Set<MutableVehicle>?> = self.lazyProperty { ($0.vehicles?.map(self.attachMutable)).map(Set.init) }
 
     // MARK: Signal Producer
     lazy var producer: SignalProducer<Route, NoError> = {
@@ -81,20 +81,16 @@ class MutableRoute: MutableModel {
         self.description <- route.description
         self.color <- route.color
         self.path <- route.path
-        self.stations <- route.stations?.map(attachMutable)
-        self.vehicles <- route.vehicles?.map(attachMutable)
+        self.stations <- (route.stations?.map(attachMutable)).map(Set.init)
+        self.vehicles <- (route.vehicles?.map(attachMutable)).map(Set.init)
 
         return .Success()
     }
 
     // MARK: Event Handlers
 
-    /// If any vehicles on this route match `vehicle`, apply `vehicle` to them, updating their information.
+    /// If any vehicles on this route match `vehicle`, update their information to match `vehicle`.
     func handleEvent(vehicleUpdate vehicle: Vehicle) {
-        // Atomically modify the vehicles array. `modify` returns the old value, which could be useful to LCS diffing.
-        self.vehicles.modify { vehicles in
-            // Replace any vehicle whose identifier matches `vehicle`.
-            vehicles?.filter { $0 == vehicle }.map { _ in self.attachMutable(from: vehicle) }
-        }
+        self.vehicles.value?.filter { $0 == vehicle }.forEach { $0.apply(vehicle) }
     }
 }

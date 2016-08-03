@@ -36,7 +36,6 @@ func ==<M: Model>(a: M, b: M) -> Bool {
     return a.identifier == b.identifier
 }
 
-// Default implementations
 extension Model {
     /// Returns the WAMP topic corresponding to an ID from this model.
     static func topicFor(identifier: Identifier) -> String {
@@ -54,4 +53,18 @@ extension Model {
     }
 
     var hashValue: Int { return self.identifier.hashValue }
+}
+
+extension Model where Identifier: Decodable, Identifier.DecodedType == Identifier {
+    /// Decode an "identifier" key from the given JSON.
+    static func decodeIdentifier(json: JSON) -> Decoded<Identifier> {
+        return (json <| "identifier")
+    }
+}
+
+extension Model where Identifier == String {
+    /// Decode an "identifier" key from the given JSON and its namespace prefix.
+    static func decodeNamespacedIdentifier(json: JSON) -> Decoded<Identifier> {
+        return decodeIdentifier(json).map { Self.unqualify(namespaced: $0) }
+    }
 }

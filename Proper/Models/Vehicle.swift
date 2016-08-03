@@ -71,9 +71,9 @@ extension Vehicle: Decodable {
             return pure(Vehicle(name: name))
         default:
             let v = curry(Vehicle.init)
-                <^> json <| "name"
+                <^> (json <| "name").or(Vehicle.decodeNamespacedIdentifier(json))
                 <*> json <|? "code"
-                <*> Point.decode(json)
+                <*> .optional(Point.decode(json))
 
             return v
                 <*> json <|? "capacity"

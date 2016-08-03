@@ -1,5 +1,5 @@
 //
-//  Array+SafeIndex.swift
+//  Array.swift
 //  Proper
 //
 //  Created by Elliott Williams on 1/9/16.

@@ -45,10 +45,10 @@ extension Station: Decodable {
         default:
             let curried = curry(Station.init)
             return curried
-                <^> json <| "stop_code"
+                <^> (json <| "stop_code").or(Station.decodeNamespacedIdentifier(json))
                 <*> json <|? "name"
                 <*> json <|? "description"
-                <*> Point.decode(json)
+                <*> .optional(Point.decode(json))
                 <*> json <||? ["associated_objects", Route.fullyQualified]
                 <*> json <||? ["associated_objects", Vehicle.fullyQualified]
         }

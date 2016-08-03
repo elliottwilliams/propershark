@@ -24,7 +24,9 @@ struct Route: Model {
     // Associated objects
     let stations: [Station]?
     let vehicles: [Vehicle]?
-    
+
+    let itinerary: [Station]?
+
     static var namespace: String { return "routes" }
     static var fullyQualified: String { return "Shark::Route" }
     var identifier: Identifier { return self.shortName }
@@ -34,7 +36,7 @@ struct Route: Model {
 extension Route {
     init(shortName: String) {
         self.init(shortName: shortName, code: nil, name: nil, description: nil, color: nil,
-                  path: nil, stations: nil, vehicles: nil)
+                  path: nil, stations: nil, vehicles: nil, itinerary: nil)
     }
 }
 
@@ -46,7 +48,7 @@ extension Route: Decodable {
             return pure(Route(shortName: shortName))
         default:
             let r = curry(Route.init)
-                <^> json <| "short_name"
+                <^> (json <| "short_name").or(Route.decodeNamespacedIdentifier(json))
                 <*> json <|? "code"
             return r
                 <*> json <|? "name"
@@ -54,8 +56,9 @@ extension Route: Decodable {
                 <*> json <|? "color"
                 <*> json <||? "path"
                 // See shark#12 for discussion on which stations attribute should be used.
-                <*> (json <||? "stations").flatMap { $0.map(pure) ?? json <||? ["associated_objects", Station.fullyQualified] }
+                <*> json <||? ["associated_objects", Station.fullyQualified]
                 <*> json <||? ["associated_objects", Vehicle.fullyQualified]
+                <*> json <||? "stations"
         }
 
     }
