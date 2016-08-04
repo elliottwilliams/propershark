@@ -19,19 +19,10 @@ class ModelDecodeTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-
-        let bundle = NSBundle(forClass: self.dynamicType)
-        let stationPath = bundle.pathForResource("station", ofType: "json")!
-        let stationData = NSData(contentsOfFile: stationPath)
-        station = try! NSJSONSerialization.JSONObjectWithData(stationData!, options: [])
-
-        let routePath = bundle.pathForResource("route", ofType: "json")!
-        let routeData = NSData(contentsOfFile: routePath)
-        route = try! NSJSONSerialization.JSONObjectWithData(routeData!, options: [])
-
-        let vehiclePath = bundle.pathForResource("vehicle", ofType: "json")!
-        let vehicleData = NSData(contentsOfFile: vehiclePath)
-        vehicle = try! NSJSONSerialization.JSONObjectWithData(vehicleData!, options: [])
+        let (station, route, vehicle) = rawModels()
+        self.station = station
+        self.route = route
+        self.vehicle = vehicle
     }
     
     override func tearDown() {
