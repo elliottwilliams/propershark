@@ -57,6 +57,7 @@ class MutableStation: MutableModel {
             .flatMapError { (error: PSError) -> SignalProducer<Station, NoError> in
                 self.delegate.mutableModel(self, receivedError: error)
                 return SignalProducer<Station, NoError>.empty
+            .logEvents(identifier: "MutableStation.producer", logger: logSignalEvent)
         }
     }()
 

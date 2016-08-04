@@ -62,6 +62,7 @@ class MutableVehicle: MutableModel {
             .flatMapError { (error: PSError) -> SignalProducer<Vehicle, NoError> in
                 self.delegate.mutableModel(self, receivedError: error)
                 return SignalProducer<Vehicle, NoError>.empty
+            .logEvents(identifier: "MutableVehicle.producer", logger: logSignalEvent)
         }
     }()
 

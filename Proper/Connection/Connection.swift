@@ -126,6 +126,7 @@ extension MDWamp {
         -> SignalProducer<MDWampResult, PSError>
     {
         return SignalProducer<MDWampResult, PSError> { observer, _ in
+            NSLog("Calling \(procUri)")
             self.call(procUri, args: args, kwArgs: argsKw, options: options) { result, error in
                 if error != nil {
                     observer.sendFailed(PSError(error: error, code: .mdwampError, associated: procUri))
@@ -143,11 +144,13 @@ extension MDWamp {
                 topic,
                 onEvent: { event in observer.sendNext(event) },
                 result: { error in
+                    NSLog("Subscribed to \(topic)")
                     if error != nil { observer.sendFailed(PSError(error: error, code: .mdwampError, associated: topic)) }
                 }
             )
             disposable.addDisposable {
                 self.unsubscribe(topic) { error in
+                    NSLog("Unsubscribed from \(topic)")
                     if error != nil { observer.sendFailed(PSError(error: error, code: .mdwampError, associated: topic)) }
                 }
             }

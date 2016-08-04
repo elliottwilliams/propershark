@@ -14,7 +14,8 @@ import Result
 class ArrivalsTableViewController: UITableViewController {
 
     var station: MutableStation
-    let delegate: ArrivalsTableViewDelegate
+    internal let delegate: ArrivalsTableViewDelegate
+//    internal let tableView: UITableView!
 
     let routes: MutableProperty<Set<MutableRoute>>
     let associatedVehicles: MutableProperty<[MutableVehicle]>
@@ -24,13 +25,19 @@ class ArrivalsTableViewController: UITableViewController {
 
     // MARK: Methods
 
-    init(observing station: MutableStation, delegate: ArrivalsTableViewDelegate, view: UITableView) {
+    init(observing station: MutableStation, delegate: ArrivalsTableViewDelegate, style: UITableViewStyle) {
         self.station = station
         self.delegate = delegate
         self.routes = .init([])
         self.associatedVehicles = .init([])
-        super.init(style: view.style)
+        super.init(style: style)
+    }
 
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
         // Subscribe to station updates.
         station.producer.start()
 
@@ -39,10 +46,10 @@ class ArrivalsTableViewController: UITableViewController {
         self.routes.swap(routes)
 
         // Initialize the diff calculator for the table, which starts using any routes already on `station`.
-        self.diffCalculator = TableViewDiffCalculator(tableView: view, initialRows: Array(routes))
+        self.diffCalculator = TableViewDiffCalculator(tableView: self.tableView, initialRows: Array(routes))
 
         // Use our table cell UI. If the nib specified doesn't exist, `tableView(_:cellForRowAtIndexPath:)` will crash.
-        view.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil), forCellReuseIdentifier: "ArrivalTableViewCell")
+        self.tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil), forCellReuseIdentifier: "ArrivalTableViewCell")
 
         // Follow changes to routes and vehicles of this station.
         self.routes <~ self.routesSignal()
@@ -50,21 +57,15 @@ class ArrivalsTableViewController: UITableViewController {
 
         // When routes change, update the table.
         self.routes.map { self.diffCalculator.rows = Array($0) }
-
-        // Connect the table view to this controller now that everything is initialized.
-        self.view = view
-        view.dataSource = self
-        view.delegate = self
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
 
     /// Produce a signal emitting a set of `MutableRoute`s whenever the routes on this station change.
     func routesSignal() -> Signal<Set<MutableRoute>, NoError> {
         return self.station.routes.signal.ignoreNil()
+        // Start the producer for each route received, to subscribe and obtain vehicle data.
+        .on(next: { routes in routes.forEach { $0.producer.start() } })
+        .logEvents(identifier: "ArrivalTableViewController.routesSignal", logger: logSignalEvent)
     }
 
     /// Access the `routes` attribute of this station and produce a signal which emits a list vehicles pairs
@@ -84,13 +85,16 @@ class ArrivalsTableViewController: UITableViewController {
         .map { $0 ?? Set() }
         // Sort by arrival time (TODO: actually do this)
         .map { Array($0) }
+        .logEvents(identifier: "ArrivalTableViewController.vehiclesSignal", logger: logSignalEvent)
     }
 
 
     // MARK: Delegate Methods
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int { return 1 }
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? { return "Arrivals" }
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int { return associatedVehicles.value.count }
+    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return associatedVehicles.value.count
+    }
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         // ArrivalTableViewCell comes from the xib, and is registered upon the creation of this table
         let cell = tableView.dequeueReusableCellWithIdentifier("ArrivalTableViewCell", forIndexPath: indexPath) as! ArrivalTableViewCell

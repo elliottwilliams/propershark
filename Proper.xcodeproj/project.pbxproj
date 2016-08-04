@@ -25,6 +25,8 @@
 		2650D28E1D176B65003758BF /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2650D28D1D176B65003758BF /* Configuration.swift */; };
 		2650EDA01C41CFCC006CCD42 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2650ED9F1C41CFCC006CCD42 /* Array.swift */; };
 		266111D21D51521500D8F46B /* UIColorDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111D11D51521500D8F46B /* UIColorDecodeTests.swift */; };
+		266111D81D52EA6100D8F46B /* MutableModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111D71D52EA6100D8F46B /* MutableModelTests.swift */; };
+		266111DB1D52EB4400D8F46B /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111DA1D52EB4400D8F46B /* Models.swift */; };
 		266BAE651D2B676F001C9EC8 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266BAE641D2B676F001C9EC8 /* UIColor.swift */; };
 		266BAE661D2B7159001C9EC8 /* StartListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264782551C2C6F67009D9AD0 /* StartListViewController.swift */; };
 		267019581C3F5BB50057FD11 /* RailVehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267019571C3F5BB50057FD11 /* RailVehicle.swift */; };
@@ -102,6 +104,8 @@
 		2650D28D1D176B65003758BF /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		2650ED9F1C41CFCC006CCD42 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		266111D11D51521500D8F46B /* UIColorDecodeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIColorDecodeTests.swift; path = ProperTests/UIColorDecodeTests.swift; sourceTree = SOURCE_ROOT; };
+		266111D71D52EA6100D8F46B /* MutableModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableModelTests.swift; sourceTree = "<group>"; };
+		266111DA1D52EB4400D8F46B /* Models.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Models.swift; path = Fixtures/Models.swift; sourceTree = "<group>"; };
 		266BAE641D2B676F001C9EC8 /* UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		267019571C3F5BB50057FD11 /* RailVehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RailVehicle.swift; sourceTree = "<group>"; };
 		268632801C319B0D00839A22 /* SceneMediator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SceneMediator.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -122,7 +126,6 @@
 		26A424E11BD2C7EE0035754F /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		26A424E31BD2D3F20035754F /* ArrivalTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ArrivalTableViewCell.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26A424E41BD2D3F20035754F /* ArrivalTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ArrivalTableViewCell.xib; sourceTree = "<group>"; };
-		26A424E71BD2DFA00035754F /* ArrivalTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ArrivalTableViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26A4B7AE1D32251100264F0D /* MutableStation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = MutableStation.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26A4B7B01D32CEC800264F0D /* MutableRoute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = MutableRoute.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26A4B7B21D33503600264F0D /* MutableVehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = MutableVehicle.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -194,7 +197,6 @@
 				26DFB6791C35B730006A8AE0 /* RouteTableViewController.swift */,
 				261DD1601C323964001336D4 /* RouteViewController.swift */,
 				261DD1681C345AAC001336D4 /* RouteBadgeController.swift */,
-				26A424E71BD2DFA00035754F /* ArrivalTableViewController.swift */,
 				26AC8BB31BD34BA700AA0001 /* VehicleViewController.swift */,
 			);
 			name = Disabled;
@@ -283,6 +285,14 @@
 			name = Extensions;
 			sourceTree = "<group>";
 		};
+		266111D91D52EB2300D8F46B /* Fixtures */ = {
+			isa = PBXGroup;
+			children = (
+				266111DA1D52EB4400D8F46B /* Models.swift */,
+			);
+			name = Fixtures;
+			sourceTree = "<group>";
+		};
 		26666EE31D2F654200D56A17 /* TestFixtures */ = {
 			isa = PBXGroup;
 			children = (
@@ -338,10 +348,12 @@
 			isa = PBXGroup;
 			children = (
 				2612B5281D504F1D00BF671D /* Data */,
+				266111D91D52EB2300D8F46B /* Fixtures */,
 				2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */,
 				26A424CA1BD2C1320035754F /* Info.plist */,
 				2612B5261D50490500BF671D /* ModelDecodeTests.swift */,
 				266111D11D51521500D8F46B /* UIColorDecodeTests.swift */,
+				266111D71D52EA6100D8F46B /* MutableModelTests.swift */,
 			);
 			path = ProperTests;
 			sourceTree = "<group>";
@@ -730,9 +742,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				266111D81D52EA6100D8F46B /* MutableModelTests.swift in Sources */,
 				2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */,
 				266111D21D51521500D8F46B /* UIColorDecodeTests.swift in Sources */,
 				2612B5271D50490500BF671D /* ModelDecodeTests.swift in Sources */,
+				266111DB1D52EB4400D8F46B /* Models.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

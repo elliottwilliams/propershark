@@ -14,7 +14,7 @@ import Result
 /// Encapsulations of Models that know how to more information about the entity they contain, and how to respond
 /// to changes in that entity's non-identifying properties. MutableModels are used in controllers, where their properties
 /// can be bound to, with loading and availability abstracted away.
-protocol MutableModel: Hashable {
+protocol MutableModel: class, Hashable {
     associatedtype FromModel: Model
 
     /// The most recent static model applied to this instance.
@@ -28,7 +28,7 @@ protocol MutableModel: Hashable {
     /// Connects to Shark and sends updates for this entity to the model's properties. Properties of MutableModels are
     /// bound at initialization to their producer, so it should only be accessed directly to listen for all changes to a
     /// model that come in.
-    var producer: SignalProducer<FromModel, NoError> { get }
+    var producer: SignalProducer<FromModel, NoError> { get set }
     
     /// Initialize all `MutableProperty`s of this `MutableModel` from a corresponding model.
     init(from _: FromModel, delegate: MutableModelDelegate)
