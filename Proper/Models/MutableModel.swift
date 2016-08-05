@@ -34,7 +34,8 @@ protocol MutableModel: class, Hashable {
     init(from _: FromModel, delegate: MutableModelDelegate)
     var delegate: MutableModelDelegate { get }
     
-    /// Update state to match the model given. Implementations may throw an error if a given model cannot be applied.
+    /// Update state to match the model given. Returns a failure result if the model given doesn't have the same
+    /// identifier.
     func apply(_: FromModel) -> Result<(), PSError>
 
     var hashValue: Int { get }
@@ -42,25 +43,19 @@ protocol MutableModel: class, Hashable {
 
 extension MutableModel {
 
-    /// Returns a property obtained by calling `accessor` with this model's `source` instance. The property is bound
-    /// to this model's `producer`. The producer is not started automatically.
+    /// Returns a property obtained by calling `accessor` with this model's `source` instance.
     internal func lazyProperty<T>(accessor: (FromModel) -> T) -> MutableProperty<T> {
-        let property = MutableProperty(accessor(self.source))
-        self.producer.map(accessor).on(next: { property.value = $0 })
-        return property
-    }
-
-    /// Returns a property obtained by calling `accessor` with this model's `source` instance. The property is bound
-    /// to future *non-nil* values of the model's `producer`.
-    internal func lazyProperty<T>(accessor: (FromModel) -> T?) -> MutableProperty<T?> {
-        let property = MutableProperty(accessor(self.source))
-        self.producer.map(accessor).ignoreNil().on(next: { property.value = $0 })
-        return property
+        return MutableProperty(accessor(self.source))
     }
 
     /// Create a MutableModel from a static model and attach it to the calling MutableModel's delegate.
     internal func attachMutable<M: MutableModel>(from model: M.FromModel) -> M {
         return M(from: model, delegate: self.delegate)
+    }
+
+    /// Attempt state to match the model given. Convenience form that returns Void.
+    func apply(model: FromModel) {
+        self.apply(model) as Result
     }
 
     var hashValue: Int { return self.identifier.hashValue }
@@ -99,23 +94,15 @@ infix operator <- {}
 infix operator <-| {}
 
 /**
- Modify a property `mutable` if it differs from `source`.
- Returns a `Result`, which is successful if the modification was made.
- */
-internal func <- <T: Equatable>(mutable: MutableProperty<T>, source: T) -> ModifyPropertyResult<T> {
-    if source != mutable.value {
-        return .modifiedValue(mutable.swap(source))
-    }
-    return .unmodified
-}
-
-/**
- Modify a property `mutable` if it differs from `source`, **and if `source` is not nil**.
+ Modify a property `mutable` if it differs from `source`, *and if `source` is not nil*.
  Because of the latter requirement, once a property has been given a non-nil value, it cannot be made nil again.
  Returns a `Result`, which is successful if the modification was made.
  */
-internal func <- <T: Equatable>(mutable: MutableProperty<T?>, source: T?) -> ModifyPropertyResult<T> {
-    return source.map { mutable <- $0 } ?? .unmodified
+internal func <- <T: Equatable>(mutable: MutableProperty<T?>, source: T?) -> ModifyPropertyResult<T?> {
+    if let value = source where value != mutable.value {
+        return .modifiedValue(mutable.swap(value))
+    }
+    return .unmodified
 }
 
 /// Modify `mutable` if any elements in `source` are different.

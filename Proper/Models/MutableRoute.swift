@@ -15,7 +15,7 @@ class MutableRoute: MutableModel {
     typealias FromModel = Route
 
     // MARK: Internal Properties
-    internal let connection: ConnectionType = Connection.sharedInstance
+    internal var connection: ConnectionType = Connection.sharedInstance
     internal var delegate: MutableModelDelegate
     private static let retryAttempts = 3
 
@@ -61,6 +61,7 @@ class MutableRoute: MutableModel {
                 self.delegate.mutableModel(self, receivedError: error)
                 return SignalProducer<Route, NoError>.empty
             }
+            .on(next: { self.apply($0) })
             .logEvents(identifier: "MutableRoute.producer", logger: logSignalEvent)
     }()
 

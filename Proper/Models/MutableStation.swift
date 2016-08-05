@@ -15,8 +15,8 @@ class MutableStation: MutableModel {
     typealias FromModel = Station
 
     // MARK: Interal Properties
-    internal let connection: ConnectionType = Connection.sharedInstance
-    var delegate: MutableModelDelegate
+    internal var connection: ConnectionType = Connection.sharedInstance
+    internal var delegate: MutableModelDelegate
     private static let retryAttempts = 3
 
     // MARK: Station Support
@@ -60,7 +60,6 @@ class MutableStation: MutableModel {
             .logEvents(identifier: "MutableStation.producer", logger: logSignalEvent)
         }
     }()
-
 
     required init(from station: Station, delegate: MutableModelDelegate) {
         self.stopCode = station.stopCode

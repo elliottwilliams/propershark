@@ -38,8 +38,8 @@ class ArrivalsTableViewController: UITableViewController {
     }
 
     override func viewDidLoad() {
-        // Subscribe to station updates.
-        station.producer.start()
+        // Subscribe to station updates and apply them.
+        station.producer.startWithNext(station.apply)
 
         // Create MutablesRoutes out of the routes of the station given, and update our routes property.
         let routes = station.routes.value ?? Set()
@@ -64,7 +64,7 @@ class ArrivalsTableViewController: UITableViewController {
     func routesSignal() -> Signal<Set<MutableRoute>, NoError> {
         return self.station.routes.signal.ignoreNil()
         // Start the producer for each route received, to subscribe and obtain vehicle data.
-        .on(next: { routes in routes.forEach { $0.producer.start() } })
+        .on(next: { routes in routes.forEach { $0.producer.startWithNext($0.apply) } })
         .logEvents(identifier: "ArrivalTableViewController.routesSignal", logger: logSignalEvent)
     }
 

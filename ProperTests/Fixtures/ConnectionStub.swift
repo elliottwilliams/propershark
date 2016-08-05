@@ -10,6 +10,7 @@ import Foundation
 import MDWamp
 import ReactiveCocoa
 import Result
+@testable import Proper
 
 class ConnectionStub: ConnectionType {
     var callMap: [String: TopicEvent] = [:]
@@ -42,9 +43,13 @@ class ConnectionStub: ConnectionType {
                 }
             }
         }
+
+        static func find(topic: String) -> Channel? {
+            return channels[topic]
+        }
         
         static func findOrCreate(topic: String) -> Channel {
-            if let channel = channels[topic] {
+            if let channel = find(topic) {
                 return channel
             } else {
                 let (signal, observer) = Signal<TopicEvent, NoError>.pipe()
@@ -55,35 +60,35 @@ class ConnectionStub: ConnectionType {
         }
     }
     
-    func on(call procedure: String, send event: TopicEvent) {
+    func on(procedure: String, send event: TopicEvent) {
         callMap[procedure] = event
     }
     
     func publish(to topic: String, event: TopicEvent) {
-        let channel = Channel.findOrCreate(topic)
-        channel.observer.sendNext(event)
+        if let channel = Channel.find(topic) {
+            channel.observer.sendNext(event)
+        }
     }
     
     func call(procedure: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, PSError> {
         return SignalProducer<TopicEvent, PSError> { observer, _ in
             if let event = self.callMap[procedure] {
                 observer.sendNext(event)
-            } else {
-                observer.sendFailed(PSError(code: .mdwampError))
             }
         }.logEvents(identifier: "ConnectionStub.call", logger: logSignalEvent)
     }
     
     func subscribe(topic: String) -> SignalProducer<TopicEvent, PSError> {
         let channel = Channel.findOrCreate(topic)
+        channel.subscribers += 1
         return SignalProducer<TopicEvent, PSError> { observer, disposable in
-            // Reduce the subscriber count on this channel, potentially deleting it
+            // Upon disposal, reduce the subscriber count on this channel, potentially deleting it.
             disposable.addDisposable() { Channel.leave(topic) }
             
             // Map channel errors to PSErrors...
             channel.signal.promoteErrors(PSError)
             // ...and forward to this subscriber's observer
             .observe(observer)
-        }
+        }.logEvents(identifier: "ConnectionStub.subscribe", logger: logSignalEvent)
     }
 }

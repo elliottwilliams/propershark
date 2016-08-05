@@ -16,7 +16,7 @@ class MutableVehicle: MutableModel {
     typealias FromModel = Vehicle
 
     // MARK: Internal Properties
-    internal let connection: ConnectionType = Connection.sharedInstance
+    internal var connection: ConnectionType = Connection.sharedInstance
     internal var delegate: MutableModelDelegate
     private static let retryAttempts = 3
 
@@ -62,6 +62,7 @@ class MutableVehicle: MutableModel {
             .flatMapError { (error: PSError) -> SignalProducer<Vehicle, NoError> in
                 self.delegate.mutableModel(self, receivedError: error)
                 return SignalProducer<Vehicle, NoError>.empty
+            .on(next: { self.apply($0) })
             .logEvents(identifier: "MutableVehicle.producer", logger: logSignalEvent)
         }
     }()

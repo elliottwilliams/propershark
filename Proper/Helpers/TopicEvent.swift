@@ -11,36 +11,32 @@ import MDWamp
 import Argo
 
 
-// Meta keys sent on every Shark event
-typealias EventDefaults = (originator: String, event: String)
-
 enum TopicEvent {
-    
     case Vehicle(VehicleEvent)
     enum VehicleEvent {
-        case update(object: AnyObject, EventDefaults)
-        case activate(object: AnyObject, EventDefaults)
-        case deactivate(object: AnyObject, EventDefaults)
+        case update(object: AnyObject, originator: String)
+        case activate(object: AnyObject, originator: String)
+        case deactivate(object: AnyObject, originator: String)
     }
     
     case Station(StationEvent)
     enum StationEvent {
-        case update(object: AnyObject, EventDefaults)
-        case activate(object: AnyObject, EventDefaults)
-        case deactivate(object: AnyObject, EventDefaults)
+        case update(object: AnyObject, originator: String)
+        case activate(object: AnyObject, originator: String)
+        case deactivate(object: AnyObject, originator: String)
         
-        case depart(vehicle: AnyObject, EventDefaults)
-        case arrive(vehicle: AnyObject, EventDefaults)
-        case approach(vehicle: AnyObject, distanceInStops: Int, EventDefaults)
+        case depart(vehicle: AnyObject, originator: String)
+        case arrive(vehicle: AnyObject, originator: String)
+        case approach(vehicle: AnyObject, distanceInStops: Int, originator: String)
     }
     
     case Route(RouteEvent)
     enum RouteEvent {
-        case update(object: AnyObject, EventDefaults)
-        case activate(object: AnyObject, EventDefaults)
-        case deactivate(object: AnyObject, EventDefaults)
+        case update(object: AnyObject, originator: String)
+        case activate(object: AnyObject, originator: String)
+        case deactivate(object: AnyObject, originator: String)
         
-        case vehicleUpdate(vehicle: Proper.Vehicle, EventDefaults)
+        case vehicleUpdate(vehicle: Proper.Vehicle, originator: String)
     }
 
     case Agency(AgencyEvent)
@@ -59,8 +55,8 @@ enum TopicEvent {
         // Arguments and argumentsKw come implicitly unwrapped (from their dirty dirty objc library), so we need to
         // check them manually.
         return parseFromTopic(topic,
-                              args: event.arguments != nil ? event.arguments : [],
-                              kwargs: event.argumentsKw != nil ? event.argumentsKw : [:])
+            args: event.arguments != nil ?  event.arguments : [],
+            kwargs: event.argumentsKw != nil ?  event.argumentsKw : [:])
     }
     
     static func parseFromTopic(topic: String, args: WampArgs, kwargs: WampKwargs) -> TopicEvent? {
@@ -69,44 +65,42 @@ enum TopicEvent {
             let object = args[safe: 0]
             else { return nil }
         
-        let baseValues: EventDefaults = (originator: originator, event: eventName)
-        
         switch (topic.hasPrefix, eventName) {
             
         // The base events that all topics emit are handled as one case each, for brevity.
         case (_, "update"):
             switch topic.hasPrefix {
-            case "vehicles.":   return .Vehicle(.update(object: object, baseValues))
-            case "stations.":   return .Station(.update(object: object, baseValues))
-            case "routes.":     return .Route(.update(object: object, baseValues))
+            case "vehicles.":   return .Vehicle(.update(object: object, originator: originator))
+            case "stations.":   return .Station(.update(object: object, originator: originator))
+            case "routes.":     return .Route(.update(object: object, originator: originator))
             default:            return nil
             }
         case (_, "activate"):
             switch topic.hasPrefix {
-            case "vehicles.":   return .Vehicle(.activate(object: object, baseValues))
-            case "stations.":   return .Station(.activate(object: object, baseValues))
-            case "routes.":     return .Route(.activate(object: object, baseValues))
+            case "vehicles.":   return .Vehicle(.activate(object: object, originator: originator))
+            case "stations.":   return .Station(.activate(object: object, originator: originator))
+            case "routes.":     return .Route(.activate(object: object, originator: originator))
             default:            return nil
             }
         case (_, "deactivate"):
             switch topic.hasPrefix {
-            case "vehicles.":   return .Vehicle(.deactivate(object: object, baseValues))
-            case "stations.":   return .Station(.deactivate(object: object, baseValues))
-            case "routes.":     return .Route(.deactivate(object: object, baseValues))
+            case "vehicles.":   return .Vehicle(.deactivate(object: object, originator: originator))
+            case "stations.":   return .Station(.deactivate(object: object, originator: originator))
+            case "routes.":     return .Route(.deactivate(object: object, originator: originator))
             default:            return nil
             }
             
         case ("stations.", "depart"):
-            return .Station(.depart(vehicle: object, baseValues))
+            return .Station(.depart(vehicle: object, originator: originator))
         case ("stations.", "arrive"):
-            return .Station(.arrive(vehicle: object, baseValues))
+            return .Station(.arrive(vehicle: object, originator: originator))
         case ("stations.", "approach"):
             guard let distance = args[1] as? Int else { return nil }
-            return .Station(.approach(vehicle: object, distanceInStops: distance, baseValues))
+            return .Station(.approach(vehicle: object, distanceInStops: distance, originator: originator))
         
         case ("routes.", "vehicle_update"):
             guard let vehicle = decode(object) as Proper.Vehicle? else { return nil }
-            return .Route(.vehicleUpdate(vehicle: vehicle, baseValues))
+            return .Route(.vehicleUpdate(vehicle: vehicle, originator: originator))
        
         default:
             return nil
@@ -144,5 +138,4 @@ enum TopicEvent {
             return nil
         }
     }
-
 }

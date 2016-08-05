@@ -84,7 +84,7 @@ class StartListViewController: UITableViewController, ProperViewController {
         // Start signals to populate the list
         self.routeSignal.start()
         self.stationSignal.start()
-//        self.vehicleSignal.start()
+        self.vehicleSignal.start()
     }
     
     // MARK: - Table view data source

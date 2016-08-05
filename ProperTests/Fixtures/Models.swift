@@ -8,6 +8,7 @@
 
 import XCTest
 import Argo
+import Curry
 @testable import Proper
 
 func rawModels() -> (station: AnyObject, route: AnyObject, vehicle: AnyObject) {
@@ -33,5 +34,17 @@ func decodedModels() -> (station: Station!, route: Route!, vehicle: Vehicle!) {
         Station.decode(JSON(station)).value,
         Route.decode(JSON(route)).value,
         Vehicle.decode(JSON(vehicle)).value
+    )
+}
+
+func mutableModels() -> (station: (delegate: MutableModelDelegate) -> MutableStation,
+    route: (delegate: MutableModelDelegate) -> MutableRoute,
+    vehicle: (delegate: MutableModelDelegate) -> MutableVehicle)
+{
+    let (station, route, vehicle) = decodedModels()
+    return (
+        curry(MutableStation.init)(station),
+        curry(MutableRoute.init)(route),
+        curry(MutableVehicle.init)(vehicle)
     )
 }

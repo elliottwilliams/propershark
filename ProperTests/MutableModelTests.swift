@@ -14,14 +14,16 @@ import Result
 
 class MutableModelTests: XCTestCase {
 
-    var station: Station!
-    var mutableStation: ((delegate: MutableModelDelegate) -> MutableStation)!
+    let (rawStation, rawRoute, rawVehicle) = rawModels()
+    let (station, route, vehicle) = decodedModels()
+    let (mutableStation, mutableRoute, mutableVehicle) = mutableModels()
+    let modifiedStation = Station(stopCode: "BUS100W", name: "~modified", description: nil, position: nil,
+                                  routes: nil, vehicles: nil)
 
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        (self.station, _, _) = decodedModels()
-        self.mutableStation = curry(MutableStation.init)(self.station)
+        Connection.sharedInstance.wamp.value = nil
     }
 
     override func tearDown() {
@@ -29,24 +31,14 @@ class MutableModelTests: XCTestCase {
         super.tearDown()
     }
 
-    func testLazyPropertyBindsToSignal() {
+    func testApplyUpdatesProperty() {
         let mutable = mutableStation(delegate: defaultDelegate)
-        let modifiedStation = Station(stopCode: station.stopCode, name: "~modified", description: nil, position: nil,
-                                      routes: nil, vehicles: nil)
-
-        let expectation = expectationWithDescription("Producer is started and emits a station")
-        mutable.producer = SignalProducer<Station, NoError>.init { observer, disposable in
-            observer.sendNext(modifiedStation)
-            XCTAssertEqual(mutable.name.value, "~modified", "Station name not modified by signal")
-            expectation.fulfill()
-            disposable.dispose()
-        }
 
         XCTAssertEqual(mutable.name.value, "Beau Jardin Apts on Yeager (@ Shelter) - BUS100W ",
                        "Station name does not have expected initial value")
-        mutable.producer.start()
+        mutable.apply(modifiedStation)
 
-        waitForExpectationsWithTimeout(5, handler: nil)
+        XCTAssertEqual(mutable.name.value, "~modified", "Station name not modified by signal")
     }
 
     func testPropertyAccessDoesntStartProducer() {
@@ -68,3 +60,5 @@ class MutableModelTests: XCTestCase {
     }
 
 }
+
+
