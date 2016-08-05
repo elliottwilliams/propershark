@@ -23,8 +23,8 @@ protocol MutableModelTests {
     func testPropertyAccessDoesntStartProducer()
 }
 extension MutableModelTests {
-    func createMutable(delegate: MutableModelDelegate) -> Model {
-        return Model(from: model, delegate: delegate)
+    func createMutable(delegate: MutableModelDelegate, connection: ConnectionType = ConnectionStub()) -> Model {
+        return Model(from: model, delegate: delegate, connection: connection)
     }
 }
 
@@ -52,10 +52,9 @@ class MutableStationTests: XCTestCase, MutableModelTests {
     }
 
     func testProducerForwardsModels() {
-        let mutable = MutableStation(from: modifiedStation, delegate: defaultDelegate)
         let stub = ConnectionStub()
+        let mutable = MutableStation(from: modifiedStation, delegate: defaultDelegate, connection: stub)
         let expectation = expectationWithDescription("Model forwarded")
-        mutable.connection = stub
         mutable.producer.startWithNext { station in
             XCTAssertEqual(station.name, self.model.name)
             expectation.fulfill()
@@ -109,10 +108,9 @@ class MutableRouteTests: XCTestCase, MutableModelTests {
     }
 
     func testProducerForwardsModels() {
-        let mutable = MutableRoute(from: modifiedRoute, delegate: defaultDelegate)
         let stub = ConnectionStub()
+        let mutable = MutableRoute(from: modifiedRoute, delegate: defaultDelegate, connection: stub)
         let expectation = expectationWithDescription("Model forwarded")
-        mutable.connection = stub
         mutable.producer.startWithNext { route in
             XCTAssertEqual(route.name, self.model.name)
             expectation.fulfill()
@@ -157,10 +155,9 @@ class MutableVehicleTests: XCTestCase, MutableModelTests {
     }
 
     func testProducerForwardsModels() {
-        let mutable = MutableVehicle(from: modifiedVehicle, delegate: defaultDelegate)
         let stub = ConnectionStub()
+        let mutable = MutableVehicle(from: modifiedVehicle, delegate: defaultDelegate, connection: stub)
         let expectation = expectationWithDescription("Model forwarded")
-        mutable.connection = stub
         mutable.producer.startWithNext { vehicle in
             XCTAssertEqual(vehicle.capacity, self.model.capacity)
             expectation.fulfill()

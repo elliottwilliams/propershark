@@ -25,7 +25,7 @@ extension ProperViewController where Self: UIViewController {
     /// Show a model alert corresponding to the error message of a `PSError`.
     func displayError(error: PSError) {
         self.presentViewController(error.alert as UIViewController, animated: true, completion: nil)
-        NSLog("[ProperViewController#displayError] \(error.description), \(error.alert.message)")
+        NSLog("[ProperViewController.displayError] \(error.description), \(error.alert.message)")
     }
 
     /// Completed when UIViewController.viewDidDisappear(_:) is called.

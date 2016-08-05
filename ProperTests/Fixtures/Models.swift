@@ -37,9 +37,9 @@ func decodedModels() -> (station: Station!, route: Route!, vehicle: Vehicle!) {
     )
 }
 
-func mutableModels() -> (station: (delegate: MutableModelDelegate) -> MutableStation,
-    route: (delegate: MutableModelDelegate) -> MutableRoute,
-    vehicle: (delegate: MutableModelDelegate) -> MutableVehicle)
+func mutableModels() -> (station: (MutableModelDelegate) -> (ConnectionType) -> MutableStation,
+    route: (MutableModelDelegate) -> (ConnectionType) -> MutableRoute,
+    vehicle: (MutableModelDelegate) -> (ConnectionType) -> MutableVehicle)
 {
     let (station, route, vehicle) = decodedModels()
     return (

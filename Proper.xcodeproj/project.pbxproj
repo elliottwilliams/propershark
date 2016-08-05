@@ -17,6 +17,7 @@
 		2635DB701C3CBEC500EB58F5 /* DemoTableFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2635DB6F1C3CBEC500EB58F5 /* DemoTableFooter.xib */; };
 		2635DB721C3CBF4700EB58F5 /* RouteTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB711C3CBF4700EB58F5 /* RouteTableView.swift */; };
 		2635DB781C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB771C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift */; };
+		264754901D551411000F0831 /* ArrivalsTableViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */; };
 		2647825E1C2F7B34009D9AD0 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */; };
 		264782601C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647825F1C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift */; };
 		264A13C71D26157400B44D47 /* PSError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264A13C61D26157400B44D47 /* PSError.swift */; };
@@ -98,6 +99,7 @@
 		2635DB6F1C3CBEC500EB58F5 /* DemoTableFooter.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DemoTableFooter.xib; sourceTree = "<group>"; };
 		2635DB711C3CBF4700EB58F5 /* RouteTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableView.swift; sourceTree = "<group>"; };
 		2635DB771C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableViewHeaderFooterView.swift; sourceTree = "<group>"; };
+		2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrivalsTableViewControllerTests.swift; sourceTree = "<group>"; };
 		264782551C2C6F67009D9AD0 /* StartListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = StartListViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		2647825F1C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PSLocationManagerDelegate.swift; sourceTree = "<group>"; };
@@ -344,6 +346,7 @@
 		26A424C71BD2C1320035754F /* ProperTests */ = {
 			isa = PBXGroup;
 			children = (
+				2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */,
 				2612B5281D504F1D00BF671D /* Data */,
 				266111D91D52EB2300D8F46B /* Fixtures */,
 				2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */,
@@ -741,6 +744,7 @@
 			files = (
 				26C3C21C1D543CFF008E2A46 /* MutableModelTests.swift in Sources */,
 				266111DD1D5378B500D8F46B /* NilConnection.swift in Sources */,
+				264754901D551411000F0831 /* ArrivalsTableViewControllerTests.swift in Sources */,
 				266111DE1D5380D300D8F46B /* ConnectionStub.swift in Sources */,
 				2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */,
 				266111D21D51521500D8F46B /* UIColorDecodeTests.swift in Sources */,

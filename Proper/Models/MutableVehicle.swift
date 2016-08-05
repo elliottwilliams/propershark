@@ -16,7 +16,7 @@ class MutableVehicle: MutableModel {
     typealias FromModel = Vehicle
 
     // MARK: Internal Properties
-    internal var connection: ConnectionType = Connection.sharedInstance
+    internal let connection: ConnectionType
     internal var delegate: MutableModelDelegate
     private static let retryAttempts = 3
 
@@ -68,10 +68,13 @@ class MutableVehicle: MutableModel {
     }()
 
     // MARK: Functions
-    required init(from vehicle: Vehicle, delegate: MutableModelDelegate) {
+    required init(from vehicle: Vehicle, delegate: MutableModelDelegate,
+                       connection: ConnectionType = Connection.sharedInstance)
+    {
         self.name = vehicle.name
         self.delegate = delegate
         self.source = vehicle
+        self.connection = connection
     }
 
     func apply(vehicle: Vehicle) -> Result<(), PSError> {

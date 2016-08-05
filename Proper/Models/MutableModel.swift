@@ -31,13 +31,14 @@ protocol MutableModel: class, Hashable {
     var producer: SignalProducer<FromModel, NoError> { get set }
     
     /// Initialize all `MutableProperty`s of this `MutableModel` from a corresponding model.
-    init(from _: FromModel, delegate: MutableModelDelegate)
+    init(from _: FromModel, delegate: MutableModelDelegate, connection: ConnectionType)
     var delegate: MutableModelDelegate { get }
     
     /// Update state to match the model given. Returns a failure result if the model given doesn't have the same
     /// identifier.
     func apply(_: FromModel) -> Result<(), PSError>
 
+    var connection: ConnectionType { get }
     var hashValue: Int { get }
 }
 
@@ -50,7 +51,7 @@ extension MutableModel {
 
     /// Create a MutableModel from a static model and attach it to the calling MutableModel's delegate.
     internal func attachMutable<M: MutableModel>(from model: M.FromModel) -> M {
-        return M(from: model, delegate: self.delegate)
+        return M(from: model, delegate: self.delegate, connection: self.connection)
     }
 
     /// Attempt state to match the model given. Convenience form that returns Void.
@@ -93,11 +94,7 @@ infix operator <- {}
 /// Makes updates from a immutable array or collection to a mutable property containing that value.
 infix operator <-| {}
 
-/**
- Modify a property `mutable` if it differs from `source`, *and if `source` is not nil*.
- Because of the latter requirement, once a property has been given a non-nil value, it cannot be made nil again.
- Returns a `Result`, which is successful if the modification was made.
- */
+/// Modify `mutable` if `source` is non-nil.
 internal func <- <T: Equatable>(mutable: MutableProperty<T?>, source: T?) -> ModifyPropertyResult<T?> {
     if let value = source where value != mutable.value {
         return .modifiedValue(mutable.swap(value))

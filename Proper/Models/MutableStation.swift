@@ -15,7 +15,7 @@ class MutableStation: MutableModel {
     typealias FromModel = Station
 
     // MARK: Interal Properties
-    internal var connection: ConnectionType = Connection.sharedInstance
+    internal let connection: ConnectionType
     internal var delegate: MutableModelDelegate
     private static let retryAttempts = 3
 
@@ -53,18 +53,21 @@ class MutableStation: MutableModel {
                 }
             }
             .ignoreNil()
+            .logEvents(identifier: "MutableStation.producer", logger: logSignalEvent)
             .retry(MutableStation.retryAttempts)
             .flatMapError { (error: PSError) -> SignalProducer<Station, NoError> in
                 self.delegate.mutableModel(self, receivedError: error)
                 return SignalProducer<Station, NoError>.empty
-            .logEvents(identifier: "MutableStation.producer", logger: logSignalEvent)
         }
     }()
 
-    required init(from station: Station, delegate: MutableModelDelegate) {
+    required init(from station: Station, delegate: MutableModelDelegate,
+                       connection: ConnectionType = Connection.sharedInstance)
+    {
         self.stopCode = station.stopCode
         self.delegate = delegate
         self.source = station
+        self.connection = connection
     }
 
     func apply(station: Station) -> Result<(), PSError> {

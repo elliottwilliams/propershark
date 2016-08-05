@@ -15,7 +15,7 @@ class MutableRoute: MutableModel {
     typealias FromModel = Route
 
     // MARK: Internal Properties
-    internal var connection: ConnectionType = Connection.sharedInstance
+    internal let connection: ConnectionType
     internal var delegate: MutableModelDelegate
     private static let retryAttempts = 3
 
@@ -66,10 +66,13 @@ class MutableRoute: MutableModel {
     }()
 
     // MARK: Functions
-    required init(from route: Route, delegate: MutableModelDelegate) {
+    required init(from route: Route, delegate: MutableModelDelegate,
+                       connection: ConnectionType = Connection.sharedInstance)
+    {
         self.shortName = route.shortName
         self.delegate = delegate
         self.source = route
+        self.connection = connection
     }
 
     func apply(route: Route) -> Result<(), PSError> {

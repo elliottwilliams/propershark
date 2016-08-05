@@ -53,6 +53,9 @@ class ArrivalsTableViewController: UITableViewController {
 
         // Follow changes to routes and vehicles of this station.
         self.routes <~ self.routesSignal()
+        self.routes.map { routes in
+            routes.forEach { route in route.producer.startWithNext(route.apply) }
+        }
         self.associatedVehicles <~ self.vehiclesSignal()
 
         // When routes change, update the table.
@@ -64,7 +67,7 @@ class ArrivalsTableViewController: UITableViewController {
     func routesSignal() -> Signal<Set<MutableRoute>, NoError> {
         return self.station.routes.signal.ignoreNil()
         // Start the producer for each route received, to subscribe and obtain vehicle data.
-        .on(next: { routes in routes.forEach { $0.producer.startWithNext($0.apply) } })
+//        .on(next: { routes in routes.forEach { $0.producer.startWithNext($0.apply) } })
         .logEvents(identifier: "ArrivalTableViewController.routesSignal", logger: logSignalEvent)
     }
 
@@ -73,7 +76,7 @@ class ArrivalsTableViewController: UITableViewController {
     func vehiclesSignal() -> Signal<[MutableVehicle], NoError> {
 
         // Given a signal emitting the list of MutableRoutes for this station...
-        return self.routesSignal()
+        return self.routes.signal
         // ...flatMap down to the routes themselves...
         .flatMap(.Concat) { routes in SignalProducer<MutableRoute, NoError>(values: routes) }
         // ...and access the vehicles property of each.
