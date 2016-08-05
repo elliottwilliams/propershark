@@ -107,26 +107,16 @@ internal func <- <T: Equatable>(mutable: MutableProperty<T?>, source: T?) -> Mod
 
 /// Modify `mutable` if any elements in `source` are different.
 internal func <-| <C: CollectionType, T: Equatable where C.Generator.Element == T>(
-    mutable: MutableProperty<C?>, source: C) -> ModifyPropertyResult<C?>
+    mutable: MutableProperty<C?>, source: C?) -> ModifyPropertyResult<C?>
 {
-    if mutable.value == nil || source.elementsEqual(mutable.value!) {
+    if let source = source where mutable.value == nil || source.elementsEqual(mutable.value!) {
         return .modifiedValue(mutable.swap(source))
     }
     return .unmodified
 }
 
-/// Modify `mutable` if `source` is defined and any elements in it are different.
-internal func <-| <T: Equatable>(mutable: MutableProperty<[T]?>, source: [T]?) -> ModifyPropertyResult<[T]?> {
-    return source.map { mutable <-| $0 } ?? .unmodified
-}
-
-/// Converts `source` into a Set before applying to `mutable`.
-internal func <-| <T: Hashable>(mutable: MutableProperty<Set<T>?>, source: [T]) -> ModifyPropertyResult<Set<T>?> {
-    return mutable <-| Set(source)
-}
-
-internal func <-| <T: Hashable>(mutable: MutableProperty<Set<T>?>, source: [T]?) -> ModifyPropertyResult<Set<T>> {
-    return source.map { mutable <-| $0 } ?? .unmodified
+internal func <-| <T: Hashable>(mutable: MutableProperty<Set<T>?>, source: [T]?) -> ModifyPropertyResult<Set<T>?> {
+    return source.map { mutable <-| Set($0) } ?? .unmodified
 }
 
 /// Return status from the modify mutable property operator (`<-`).
