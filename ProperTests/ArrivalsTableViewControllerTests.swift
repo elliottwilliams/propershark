@@ -15,15 +15,15 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
 
     let createMutable = mutableModels().station
     var station: MutableStation!
-    var stub: ConnectionStub!
+    var mock: ConnectionMock!
     var controller: ArrivalsTableViewController!
 
     var disposable: CompositeDisposable!
 
     override func setUp() {
         super.setUp()
-        stub = ConnectionStub()
-        station = createMutable(self)(stub)
+        mock = ConnectionMock()
+        station = createMutable(self)(mock)
         controller = ArrivalsTableViewController(observing: station, delegate: self, style: .Plain)
         disposable = CompositeDisposable()
     }
@@ -58,7 +58,7 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
         let expectation = expectationWithDescription("routes on station update")
         let payload = ["stop_code": station.stopCode, "associated_objects": ["Shark::Route": ["routes.221B"]]]
         disposable += controller.routes.signal.collect(count: 2).observeNext { routeSets in
-            let routes = routeSets[1]   // routeSets[0] is info before stub.publish
+            let routes = routeSets[1]   // routeSets[0] is info before mock.publish
 //        disposable += controller.routes.signal.observeNext { routes in
             XCTAssertTrue(routes.contains { $0.identifier == "221B" })
             XCTAssertEqual(routes.count, 1)
@@ -67,29 +67,28 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
 
         // When
         requestView()
-        stub.publish(to: station.topic, event: .Station(.update(object: payload, originator: station.topic)))
+        mock.publish(to: station.topic, event: .Station(.update(object: payload, originator: station.topic)))
 
         // Expect
         waitForExpectationsWithTimeout(3, handler: nil)
     }
 
     func testRoutesSignalSubscribesToRoutes() {
-        // Given a routesSignal observer that extracts the name signal of route 5B
-        let expectation = expectationWithDescription("received route name update")
-        disposable += controller.routesSignal().flatMap(.Latest) { (routes: Set<MutableRoute>) -> Signal<String?, NoError> in
-            let expectedRoute = routes.filter { $0.identifier == "5B" }.first!
-            return expectedRoute.name.signal
-        }.observeNext { routeName in
-            XCTAssertEqual(routeName, "~modified")
-            expectation.fulfill()
-        }
+        // Given
+        let firstPayload = ["short_name": "5B", "name": "initial name"]
+        let secondPayload = ["short_name": "5B", "name": "~modified"]
 
-        // When route information is published (establishing name), observer should be invoked
+        // When route information is published (establishing name), route should be subscribed to and name should
+        // change.
         requestView()
-        let payload = ["short_name": "5B", "name": "~modified"]
-        stub.publish(to: "routes.5B", event: .Route(.update(object: payload, originator: "routes.5B")))
+        XCTAssertNil(controller.routes.value.first!.name.value)
+        XCTAssertTrue(ConnectionMock.subscribed("routes.5B"))
 
-        waitForExpectationsWithTimeout(3, handler: nil)
+        mock.publish(to: "routes.5B", event: .Route(.update(object: firstPayload, originator: "routes.5B")))
+        XCTAssertEqual(controller.routes.value.first!.name.value, "initial name")
+
+        mock.publish(to: "routes.5B", event: .Route(.update(object: secondPayload, originator: "routes.5B")))
+        XCTAssertEqual(controller.routes.value.first!.name.value, "~modified")
     }
 
 

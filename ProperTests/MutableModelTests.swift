@@ -23,7 +23,7 @@ protocol MutableModelTests {
     func testPropertyAccessDoesntStartProducer()
 }
 extension MutableModelTests {
-    func createMutable(delegate: MutableModelDelegate, connection: ConnectionType = ConnectionStub()) -> Model {
+    func createMutable(delegate: MutableModelDelegate, connection: ConnectionType = ConnectionMock()) -> Model {
         return Model(from: model, delegate: delegate, connection: connection)
     }
 }
@@ -52,8 +52,8 @@ class MutableStationTests: XCTestCase, MutableModelTests {
     }
 
     func testProducerForwardsModels() {
-        let stub = ConnectionStub()
-        let mutable = MutableStation(from: modifiedStation, delegate: defaultDelegate, connection: stub)
+        let mock = ConnectionMock()
+        let mutable = MutableStation(from: modifiedStation, delegate: defaultDelegate, connection: mock)
         let expectation = expectationWithDescription("Model forwarded")
         mutable.producer.startWithNext { station in
             XCTAssertEqual(station.name, self.model.name)
@@ -61,7 +61,7 @@ class MutableStationTests: XCTestCase, MutableModelTests {
         }
 
         XCTAssertEqual(mutable.name.value, "~modified")
-        stub.publish(to: model.topic, event: .Station(.update(object: rawModel, originator: model.topic)))
+        mock.publish(to: model.topic, event: .Station(.update(object: rawModel, originator: model.topic)))
 
         waitForExpectationsWithTimeout(3, handler: nil)
     }
@@ -108,8 +108,8 @@ class MutableRouteTests: XCTestCase, MutableModelTests {
     }
 
     func testProducerForwardsModels() {
-        let stub = ConnectionStub()
-        let mutable = MutableRoute(from: modifiedRoute, delegate: defaultDelegate, connection: stub)
+        let mock = ConnectionMock()
+        let mutable = MutableRoute(from: modifiedRoute, delegate: defaultDelegate, connection: mock)
         let expectation = expectationWithDescription("Model forwarded")
         mutable.producer.startWithNext { route in
             XCTAssertEqual(route.name, self.model.name)
@@ -117,7 +117,7 @@ class MutableRouteTests: XCTestCase, MutableModelTests {
         }
 
         XCTAssertEqual(mutable.name.value, "~modified")
-        stub.publish(to: model.topic, event: .Route(.update(object: rawModel, originator: model.topic)))
+        mock.publish(to: model.topic, event: .Route(.update(object: rawModel, originator: model.topic)))
 
         waitForExpectationsWithTimeout(3, handler: nil)
     }
@@ -155,8 +155,8 @@ class MutableVehicleTests: XCTestCase, MutableModelTests {
     }
 
     func testProducerForwardsModels() {
-        let stub = ConnectionStub()
-        let mutable = MutableVehicle(from: modifiedVehicle, delegate: defaultDelegate, connection: stub)
+        let mock = ConnectionMock()
+        let mutable = MutableVehicle(from: modifiedVehicle, delegate: defaultDelegate, connection: mock)
         let expectation = expectationWithDescription("Model forwarded")
         mutable.producer.startWithNext { vehicle in
             XCTAssertEqual(vehicle.capacity, self.model.capacity)
@@ -164,7 +164,7 @@ class MutableVehicleTests: XCTestCase, MutableModelTests {
         }
 
         XCTAssertEqual(mutable.capacity.value, 9001)
-        stub.publish(to: model.topic, event: .Vehicle(.update(object: rawModel, originator: model.topic)))
+        mock.publish(to: model.topic, event: .Vehicle(.update(object: rawModel, originator: model.topic)))
 
         waitForExpectationsWithTimeout(3, handler: nil)
     }

@@ -13,7 +13,7 @@ import ReactiveCocoa
 typealias WampArgs = [AnyObject]
 typealias WampKwargs = [NSObject: AnyObject]
 
-// All connections conform to this protocol, which allows ConnectionStub to be injected.
+// All connections conform to this protocol, which allows ConnectionMock to be injected.
 protocol ConnectionType {
     func call(procedure: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, PSError>
     func subscribe(topic: String) -> SignalProducer<TopicEvent, PSError>

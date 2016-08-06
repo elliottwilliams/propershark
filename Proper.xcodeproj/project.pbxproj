@@ -27,7 +27,7 @@
 		266111D21D51521500D8F46B /* UIColorDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111D11D51521500D8F46B /* UIColorDecodeTests.swift */; };
 		266111DB1D52EB4400D8F46B /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111DA1D52EB4400D8F46B /* Models.swift */; };
 		266111DD1D5378B500D8F46B /* NilConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111DC1D5378B500D8F46B /* NilConnection.swift */; };
-		266111DE1D5380D300D8F46B /* ConnectionStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2612F9FE1D2CCAE5005103E3 /* ConnectionStub.swift */; };
+		266111DE1D5380D300D8F46B /* ConnectionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2612F9FE1D2CCAE5005103E3 /* ConnectionMock.swift */; };
 		266BAE651D2B676F001C9EC8 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266BAE641D2B676F001C9EC8 /* UIColor.swift */; };
 		266BAE661D2B7159001C9EC8 /* StartListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264782551C2C6F67009D9AD0 /* StartListViewController.swift */; };
 		267019581C3F5BB50057FD11 /* RailVehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267019571C3F5BB50057FD11 /* RailVehicle.swift */; };
@@ -49,7 +49,7 @@
 		26AC8BB61BD3503300AA0001 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26AC8BB51BD3503300AA0001 /* QuartzCore.framework */; };
 		26B3DC561D170BAE001E29AA /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B3DC551D170BAE001E29AA /* Connection.swift */; };
 		26B9E1D31D35E0C500794EB6 /* SignalType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B9E1D21D35E0C500794EB6 /* SignalType.swift */; };
-		26C3C21B1D542ED3008E2A46 /* ConnectionStubTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3C21A1D542ED3008E2A46 /* ConnectionStubTests.swift */; };
+		26C3C21B1D542ED3008E2A46 /* ConnectionMockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3C21A1D542ED3008E2A46 /* ConnectionMockTests.swift */; };
 		26C3C21C1D543CFF008E2A46 /* MutableModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111D71D52EA6100D8F46B /* MutableModelTests.swift */; };
 		26C598BC1C250D1E00BC9FE1 /* RouteBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C598BB1C250D1E00BC9FE1 /* RouteBadge.swift */; };
 		26D3E21F1D2776AB00F85712 /* Matchers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E21E1D2776AB00F85712 /* Matchers.swift */; };
@@ -91,7 +91,7 @@
 		2612B5291D50513600BF671D /* route.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = route.json; sourceTree = "<group>"; };
 		2612B52A1D50513600BF671D /* station.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = station.json; sourceTree = "<group>"; };
 		2612B52B1D50513600BF671D /* vehicle.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = vehicle.json; sourceTree = "<group>"; };
-		2612F9FE1D2CCAE5005103E3 /* ConnectionStub.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ConnectionStub.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		2612F9FE1D2CCAE5005103E3 /* ConnectionMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ConnectionMock.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		261DD1601C323964001336D4 /* RouteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteViewController.swift; sourceTree = "<group>"; };
 		261DD1621C3424E1001336D4 /* RouteBadgeLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteBadgeLabel.swift; sourceTree = "<group>"; };
 		261DD1681C345AAC001336D4 /* RouteBadgeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteBadgeController.swift; sourceTree = "<group>"; };
@@ -140,7 +140,7 @@
 		26AC8BB51BD3503300AA0001 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		26B3DC551D170BAE001E29AA /* Connection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Connection.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26B9E1D21D35E0C500794EB6 /* SignalType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalType.swift; sourceTree = "<group>"; };
-		26C3C21A1D542ED3008E2A46 /* ConnectionStubTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionStubTests.swift; sourceTree = "<group>"; };
+		26C3C21A1D542ED3008E2A46 /* ConnectionMockTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionMockTests.swift; sourceTree = "<group>"; };
 		26C598BB1C250D1E00BC9FE1 /* RouteBadge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RouteBadge.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26D3E21E1D2776AB00F85712 /* Matchers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Matchers.swift; sourceTree = "<group>"; };
 		26D3E2211D28DFE800F85712 /* Route.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
@@ -296,7 +296,7 @@
 			children = (
 				266111DA1D52EB4400D8F46B /* Models.swift */,
 				266111DC1D5378B500D8F46B /* NilConnection.swift */,
-				2612F9FE1D2CCAE5005103E3 /* ConnectionStub.swift */,
+				2612F9FE1D2CCAE5005103E3 /* ConnectionMock.swift */,
 			);
 			path = Fixtures;
 			sourceTree = "<group>";
@@ -346,15 +346,15 @@
 		26A424C71BD2C1320035754F /* ProperTests */ = {
 			isa = PBXGroup;
 			children = (
+				26A424CA1BD2C1320035754F /* Info.plist */,
 				2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */,
+				26C3C21A1D542ED3008E2A46 /* ConnectionMockTests.swift */,
+				2612B5261D50490500BF671D /* ModelDecodeTests.swift */,
+				266111D71D52EA6100D8F46B /* MutableModelTests.swift */,
+				2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */,
+				266111D11D51521500D8F46B /* UIColorDecodeTests.swift */,
 				2612B5281D504F1D00BF671D /* Data */,
 				266111D91D52EB2300D8F46B /* Fixtures */,
-				2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */,
-				26A424CA1BD2C1320035754F /* Info.plist */,
-				2612B5261D50490500BF671D /* ModelDecodeTests.swift */,
-				266111D11D51521500D8F46B /* UIColorDecodeTests.swift */,
-				266111D71D52EA6100D8F46B /* MutableModelTests.swift */,
-				26C3C21A1D542ED3008E2A46 /* ConnectionStubTests.swift */,
 			);
 			path = ProperTests;
 			sourceTree = "<group>";
@@ -745,10 +745,10 @@
 				26C3C21C1D543CFF008E2A46 /* MutableModelTests.swift in Sources */,
 				266111DD1D5378B500D8F46B /* NilConnection.swift in Sources */,
 				264754901D551411000F0831 /* ArrivalsTableViewControllerTests.swift in Sources */,
-				266111DE1D5380D300D8F46B /* ConnectionStub.swift in Sources */,
+				266111DE1D5380D300D8F46B /* ConnectionMock.swift in Sources */,
 				2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */,
 				266111D21D51521500D8F46B /* UIColorDecodeTests.swift in Sources */,
-				26C3C21B1D542ED3008E2A46 /* ConnectionStubTests.swift in Sources */,
+				26C3C21B1D542ED3008E2A46 /* ConnectionMockTests.swift in Sources */,
 				2612B5271D50490500BF671D /* ModelDecodeTests.swift in Sources */,
 				266111DB1D52EB4400D8F46B /* Models.swift in Sources */,
 			);

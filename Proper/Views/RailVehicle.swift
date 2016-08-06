@@ -80,7 +80,7 @@ class RailVehicle: UIView {
     
     // TODO: this might belong on the vehicle model, since it's quite general purpose
     func isAtStation(station: Station) -> Bool {
-        // A station may have been loaded from a stub, so we need to make sure it has a position.
+        // A station may have been created from a stub model, so we need to make sure it has a position.
         guard let vehicle = self.vehicle,
         let vehiclePosition = vehicle.position,
         let stationPosition = station.position

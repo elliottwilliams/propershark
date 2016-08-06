@@ -66,8 +66,6 @@ class ArrivalsTableViewController: UITableViewController {
     /// Produce a signal emitting a set of `MutableRoute`s whenever the routes on this station change.
     func routesSignal() -> Signal<Set<MutableRoute>, NoError> {
         return self.station.routes.signal.ignoreNil()
-        // Start the producer for each route received, to subscribe and obtain vehicle data.
-//        .on(next: { routes in routes.forEach { $0.producer.startWithNext($0.apply) } })
         .logEvents(identifier: "ArrivalTableViewController.routesSignal", logger: logSignalEvent)
     }
 

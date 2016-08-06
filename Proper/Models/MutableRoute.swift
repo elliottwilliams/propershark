@@ -27,7 +27,7 @@ class MutableRoute: MutableModel {
     // MARK: Route Attributes
     let shortName: FromModel.Identifier
     lazy var code: MutableProperty<Int?> = self.lazyProperty { $0.code }
-    lazy var name: MutableProperty<String?> = self.lazyProperty { $0.name ?? $0.shortName }
+    lazy var name: MutableProperty<String?> = self.lazyProperty { $0.name }
     lazy var description: MutableProperty<String?> = self.lazyProperty { $0.description }
     lazy var color: MutableProperty<UIColor?> = self.lazyProperty { $0.color }
     lazy var path:  MutableProperty<[Point]?> = self.lazyProperty { $0.path }

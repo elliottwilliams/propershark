@@ -1,5 +1,5 @@
 //
-//  ConnectionStubTests.swift
+//  ConnectionMockTests.swift
 //  Proper
 //
 //  Created by Elliott Williams on 8/4/16.
@@ -9,14 +9,14 @@
 import XCTest
 @testable import Proper
 
-class ConnectionStubTests: XCTestCase {
+class ConnectionMockTests: XCTestCase {
 
     let event = TopicEvent.Meta(.lastEvent(["foo"], ["bar": "baz"]))
 
     override func setUp() {
         super.setUp()
         // Reset internal state
-        ConnectionStub.Channel.channels = [:]
+        ConnectionMock.Channel.channels = [:]
     }
     
     override func tearDown() {
@@ -39,11 +39,11 @@ class ConnectionStubTests: XCTestCase {
     }
 
     func testRPC() {
-        let stub = ConnectionStub()
-        stub.on("it", send: event)
+        let mock = ConnectionMock()
+        mock.on("it", send: event)
 
         let expectation = expectationWithDescription("callback")
-        stub.call("it").startWithNext { event in
+        mock.call("it").startWithNext { event in
             self.checkEvent(event)
             expectation.fulfill()
         }
@@ -52,19 +52,19 @@ class ConnectionStubTests: XCTestCase {
     }
 
     func testUnexpectedRPC() {
-        let stub = ConnectionStub()
+        let mock = ConnectionMock()
 
-        stub.call("it").on(event: { event in
+        mock.call("it").on(event: { event in
             XCTFail("\(event.dynamicType) was received even though no RPC call was defined")
         }).start()
     }
 
     func testPubSub() {
-        let stub = ConnectionStub()
+        let mock = ConnectionMock()
         let expectationA = expectationWithDescription("first callback")
         var fulfilled = false
         let expectationB = expectationWithDescription("second callback")
-        stub.subscribe("it").startWithNext { event in
+        mock.subscribe("it").startWithNext { event in
             self.checkEvent(event)
             if !fulfilled {
                 expectationA.fulfill()
@@ -75,22 +75,32 @@ class ConnectionStubTests: XCTestCase {
         }
 
         // observer should get called twice
-        stub.publish(to: "it", event: event)
-        stub.publish(to: "it", event: event)
+        mock.publish(to: "it", event: event)
+        mock.publish(to: "it", event: event)
         // but not on another topic
-        stub.publish(to: "not_it", event: event)
+        mock.publish(to: "not_it", event: event)
 
         waitForExpectationsWithTimeout(2, handler: nil)
     }
 
     func testUnsubscribe() {
-        let stub = ConnectionStub()
-        let disposable = stub.subscribe("it").startWithNext { _ in
+        let mock = ConnectionMock()
+        let disposable = mock.subscribe("it").startWithNext { _ in
             XCTFail("Message received when this producer should have been unsubscribed")
         }
         disposable.dispose()
-        stub.publish(to: "it", event: event)
-        XCTAssertNil(ConnectionStub.Channel.channels["it"], "Not removed from channel storage")
+        mock.publish(to: "it", event: event)
+        XCTAssertNil(ConnectionMock.Channel.channels["it"], "Not removed from channel storage")
+    }
+
+    func testSubscribeCallback() {
+        let expectation = expectationWithDescription("subscribed callback")
+        let mock = ConnectionMock(onSubscribe: { topic in
+            XCTAssertEqual(topic, "it")
+            expectation.fulfill()
+        })
+        mock.subscribe("it")
+        waitForExpectationsWithTimeout(2, handler: nil)
     }
 
 }

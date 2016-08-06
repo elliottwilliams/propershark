@@ -1,5 +1,5 @@
 //
-//  ConnectionStub.swift
+//  ConnectionMock.swift
 //  Proper
 //
 //  Created by Elliott Williams on 7/6/16.
@@ -12,9 +12,9 @@ import ReactiveCocoa
 import Result
 @testable import Proper
 
-class ConnectionStub: ConnectionType {
+class ConnectionMock: ConnectionType {
     var callMap: [String: TopicEvent] = [:]
-    
+    var onSubscribe: (String -> ())?
     
     class Channel {
         typealias SignalType = Signal<TopicEvent, NoError>
@@ -59,6 +59,10 @@ class ConnectionStub: ConnectionType {
             }
         }
     }
+
+    init(onSubscribe: (String -> ())? = nil) {
+        self.onSubscribe = onSubscribe
+    }
     
     func on(procedure: String, send event: TopicEvent) {
         callMap[procedure] = event
@@ -75,12 +79,13 @@ class ConnectionStub: ConnectionType {
             if let event = self.callMap[procedure] {
                 observer.sendNext(event)
             }
-        }.logEvents(identifier: "ConnectionStub.call", logger: logSignalEvent)
+        }.logEvents(identifier: "ConnectionMock.call(\(procedure))", logger: logSignalEvent)
     }
     
     func subscribe(topic: String) -> SignalProducer<TopicEvent, PSError> {
         let channel = Channel.findOrCreate(topic)
         channel.subscribers += 1
+        self.onSubscribe?(topic)
         return SignalProducer<TopicEvent, PSError> { observer, disposable in
             // Upon disposal, reduce the subscriber count on this channel, potentially deleting it.
             disposable.addDisposable() { Channel.leave(topic) }
@@ -89,6 +94,10 @@ class ConnectionStub: ConnectionType {
             channel.signal.promoteErrors(PSError)
             // ...and forward to this subscriber's observer
             .observe(observer)
-        }.logEvents(identifier: "ConnectionStub.subscribe", logger: logSignalEvent)
+        }.logEvents(identifier: "ConnectionMock.subscribe(\(topic))", logger: logSignalEvent)
+    }
+
+    static func subscribed(topic: String) -> Bool {
+        return (Channel.find(topic)?.subscribers > 0) ?? false
     }
 }
