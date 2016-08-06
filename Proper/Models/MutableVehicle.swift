@@ -88,12 +88,32 @@ class MutableVehicle: MutableModel {
         self.capacity <- vehicle.capacity
         self.onboard <- vehicle.onboard
         self.saturation <- vehicle.saturation
-        self.lastStation <- vehicle.lastStation.map(attachMutable)
-        self.nextStation <- vehicle.nextStation.map(attachMutable)
-        self.route <- vehicle.route.map(attachMutable)
         self.scheduleDelta <- vehicle.scheduleDelta
         self.heading <- vehicle.heading
         self.speed <- vehicle.speed
+
+        // Currently we don't have a convenience function for 1-to-1 mutable model applies. Instead...
+        if let lastStation = vehicle.lastStation {
+            if let mutable = self.lastStation.value {
+                mutable.apply(lastStation)
+            } else {
+                self.lastStation.value = attachMutable(from: lastStation) as MutableStation
+            }
+        }
+        if let nextStation = vehicle.nextStation {
+            if let mutable = self.nextStation.value {
+                mutable.apply(nextStation)
+            } else {
+                self.nextStation.value = attachMutable(from: nextStation) as MutableStation
+            }
+        }
+        if let route = vehicle.route {
+            if let mutable = self.route.value {
+                mutable.apply(route)
+            } else {
+                self.route.value = attachMutable(from: route) as MutableRoute
+            }
+        }
 
         return .Success()
     }

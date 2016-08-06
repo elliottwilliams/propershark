@@ -86,8 +86,9 @@ class MutableRoute: MutableModel {
         self.description <- route.description
         self.color <- route.color
         self.path <-| route.path
-        self.stations <-| route.stations?.map(attachMutable)
-        self.vehicles <-| route.vehicles?.map(attachMutable)
+
+        applyChanges(to: self.stations, from: route.stations)
+        applyChanges(to: self.vehicles, from: route.vehicles)
 
         return .Success()
     }

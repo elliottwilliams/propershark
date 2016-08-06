@@ -59,6 +59,39 @@ extension MutableModel {
         self.apply(model) as Result
     }
 
+    /// Create and insert new MutableModels to a given set, remove old ones, and apply changes from
+    /// persistent ones.
+    func applyChanges<M: MutableModel>(to mutableSet: MutableProperty<Set<M>?>, from new: Set<M.FromModel>?) {
+        // Don't proceed unless we have a set to apply.
+        guard let new = new else { return }
+
+        mutableSet.modify { mutables in
+            // Initialize to an empty set if nil.
+            var mutables = mutables ?? Set()
+
+            // For each stored mutable model...
+            for model in mutables {
+                if let idx = new.indexOf(model.source) {
+                    // ...apply changes from a corresponding static model in `new`...
+                    model.apply(new[idx])
+                } else {
+                    // ...otherwise, remove it.
+                    mutables.remove(model)
+                }
+            }
+
+            // Then, insert new MutableModels for models in `new` but not in `mutables`.
+            new.subtract(Set(mutables.map { $0.source }))
+                .forEach { mutables.insert(attachMutable(from: $0)) }
+
+            return mutables
+        }
+    }
+
+    func applyChanges<M: MutableModel>(to mutableSet: MutableProperty<Set<M>?>, from new: [M.FromModel]?) {
+        return applyChanges(to: mutableSet, from: Set(new ?? []))
+    }
+
     var hashValue: Int { return self.identifier.hashValue }
 }
 
@@ -97,7 +130,7 @@ infix operator <-| {}
 /// Modify `mutable` if `source` is non-nil.
 internal func <- <T: Equatable>(mutable: MutableProperty<T?>, source: T?) -> ModifyPropertyResult<T?> {
     if let value = source where value != mutable.value {
-        return .modifiedValue(mutable.swap(value))
+        return .modifiedFrom(mutable.swap(value))
     }
     return .unmodified
 }
@@ -107,17 +140,18 @@ internal func <-| <C: CollectionType, T: Equatable where C.Generator.Element == 
     mutable: MutableProperty<C?>, source: C?) -> ModifyPropertyResult<C?>
 {
     if let source = source where mutable.value == nil || source.elementsEqual(mutable.value!) {
-        return .modifiedValue(mutable.swap(source))
+        return .modifiedFrom(mutable.swap(source))
     }
     return .unmodified
 }
 
+/// Modify `mutable` if any elements in `source` are different, by building a Set from `source`.
 internal func <-| <T: Hashable>(mutable: MutableProperty<Set<T>?>, source: [T]?) -> ModifyPropertyResult<Set<T>?> {
     return source.map { mutable <-| Set($0) } ?? .unmodified
 }
 
 /// Return status from the modify mutable property operator (`<-`).
 enum ModifyPropertyResult<T> {
-    case modifiedValue(T)
+    case modifiedFrom(T)
     case unmodified
 }

@@ -79,8 +79,9 @@ class MutableStation: MutableModel {
         self.name <- station.name
         self.description <- station.description
         self.position <- station.position
-        self.routes <-| station.routes?.map(attachMutable)
-        self.vehicles <-| station.vehicles?.map(attachMutable)
+        
+        applyChanges(to: self.routes, from: station.routes)
+        applyChanges(to: self.vehicles, from: station.vehicles)
 
         return .Success()
     }
