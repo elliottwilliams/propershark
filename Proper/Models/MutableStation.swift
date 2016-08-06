@@ -61,9 +61,7 @@ class MutableStation: MutableModel {
         }
     }()
 
-    required init(from station: Station, delegate: MutableModelDelegate,
-                       connection: ConnectionType = Connection.sharedInstance)
-    {
+    required init(from station: Station, delegate: MutableModelDelegate, connection: ConnectionType) {
         self.stopCode = station.stopCode
         self.delegate = delegate
         self.source = station

@@ -142,7 +142,7 @@ class StartListViewController: UITableViewController, ProperViewController {
                 let index = self.tableView.indexPathForSelectedRow
                 else { break }
             let station = self.stations[index.row]
-            dest.station = MutableStation(from: station, delegate: dest)
+            dest.station = MutableStation(from: station, delegate: dest, connection: Connection.sharedInstance)
         default:
             break
         }

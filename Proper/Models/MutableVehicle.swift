@@ -68,9 +68,7 @@ class MutableVehicle: MutableModel {
     }()
 
     // MARK: Functions
-    required init(from vehicle: Vehicle, delegate: MutableModelDelegate,
-                       connection: ConnectionType = Connection.sharedInstance)
-    {
+    required init(from vehicle: Vehicle, delegate: MutableModelDelegate, connection: ConnectionType) {
         self.name = vehicle.name
         self.delegate = delegate
         self.source = vehicle

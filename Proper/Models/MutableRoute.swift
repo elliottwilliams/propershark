@@ -66,9 +66,7 @@ class MutableRoute: MutableModel {
     }()
 
     // MARK: Functions
-    required init(from route: Route, delegate: MutableModelDelegate,
-                       connection: ConnectionType = Connection.sharedInstance)
-    {
+    required init(from route: Route, delegate: MutableModelDelegate, connection: ConnectionType) {
         self.shortName = route.shortName
         self.delegate = delegate
         self.source = route
