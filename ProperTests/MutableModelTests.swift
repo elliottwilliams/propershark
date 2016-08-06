@@ -2,179 +2,83 @@
 //  MutableModelTests.swift
 //  Proper
 //
-//  Created by Elliott Williams on 8/3/16.
+//  Created by Elliott Williams on 8/6/16.
 //  Copyright © 2016 Elliott Williams. All rights reserved.
 //
 
 import XCTest
-import ReactiveCocoa
-import Curry
 import Result
+import ReactiveCocoa
 @testable import Proper
 
-// MutableModel tests conform to this, which provides shared utilities between MutableModel tests.
-protocol MutableModelTests {
-    associatedtype Model: MutableModel
-    var rawModel: AnyObject! { get set }
-    var model: Model.FromModel! { get set }
+class MutableModelTests: XCTestCase {
 
-    func testApplyUpdatesProperty()
-    func testProducerForwardsModels()
-    func testPropertyAccessDoesntStartProducer()
-}
-extension MutableModelTests {
-    func createMutable(delegate: MutableModelDelegate, connection: ConnectionType = ConnectionMock()) -> Model {
-        return Model(from: model, delegate: delegate, connection: connection)
-    }
-}
-
-class MutableStationTests: XCTestCase, MutableModelTests {
-    typealias Model = MutableStation
-
-    var rawModel: AnyObject!
-    var model: Model.FromModel!
+    var route: MutableRoute!
+    var mock: ConnectionMock!
     let defaultDelegate = DefaultDelegate()
-    let modifiedStation = Station(stopCode: "BUS100W", name: "~modified", description: nil, position: nil,
-                                  routes: nil, vehicles: nil)
+
+    var stations: [String]!
 
     override func setUp() {
         super.setUp()
-        self.rawModel = rawModels().station
-        self.model = decodedModels().station
+        mock = ConnectionMock()
+        route = MutableRoute(from: decodedModels().route, delegate: defaultDelegate, connection: mock)
+        stations = [ "BUS249", "BUS543SE", "BUS440", "BUS324", "BUS598",
+            "BUS320", "BUS154", "BUS271", "BUS313NE", "BUS547", "BUS899",
+            "BUS900", "BUS543NE", "BUS319N", "BUS272N", "BUS275", "BUS456" ]
+    }
+    
+    override func tearDown() {
+        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        super.tearDown()
     }
 
-    func testApplyUpdatesProperty() {
-        let mutable = createMutable(defaultDelegate)
-        XCTAssertEqual(mutable.name.value, "Beau Jardin Apts on Yeager (@ Shelter) - BUS100W ",
-                       "Station name does not have expected initial value")
-        mutable.apply(modifiedStation)
-        XCTAssertEqual(mutable.name.value, "~modified", "Station name not modified by signal")
-    }
+    func testApplyChangesApplies() {
+        // Given
+        let modifiedStations = stations.map { Station(stopCode: $0, name: "~modified", description: nil,
+            position: nil, routes: nil, vehicles: nil) }
+        let expectation = expectationWithDescription("names applied")
+        let nameSignals = route.stations.value!.map { $0.name.signal }
 
-    func testProducerForwardsModels() {
-        let mock = ConnectionMock()
-        let mutable = MutableStation(from: modifiedStation, delegate: defaultDelegate, connection: mock)
-        let expectation = expectationWithDescription("Model forwarded")
-        mutable.producer.startWithNext { station in
-            XCTAssertEqual(station.name, self.model.name)
+        // After emitting `modifiedStations.count` route names, invoke this observer.
+        SignalProducer(values: nameSignals).flatMap(.Merge, transform: { signal in signal })
+        .collect(count: modifiedStations.count)
+        .startWithNext { names in
             expectation.fulfill()
+            let should = [String](count: modifiedStations.count, repeatedValue: "~modified")
+            XCTAssertEqual(names.flatMap { $0 }, should)
         }
 
-        XCTAssertEqual(mutable.name.value, "~modified")
-        mock.publish(to: model.topic, event: .Station(.update(object: rawModel, originator: model.topic)))
+        // When
+        route.applyChanges(to: route.stations, from: modifiedStations)
 
+        // Then
         waitForExpectationsWithTimeout(3, handler: nil)
     }
 
-    func testPropertyAccessDoesntStartProducer() {
-        let mutable = createMutable(defaultDelegate)
-        mutable.producer = SignalProducer<Station, NoError>.init { observer, disposable in
-            XCTFail("Signal producer started due to property access")
-        }
+    func testApplyChangesRemoves() {
+        // Given
+        var modifiedStations = stations.map { Station(stopCode: $0, name: "~modified", description: nil,
+            position: nil, routes: nil, vehicles: nil) }
+        modifiedStations.removeFirst()
 
-        XCTAssertEqual(mutable.name.value, "Beau Jardin Apts on Yeager (@ Shelter) - BUS100W ",
-                       "Station name does not have expected initial value")
+        // When
+        route.applyChanges(to: route.stations, from: modifiedStations)
+
+        // Then
+        XCTAssertFalse(route.stations.value!.map { $0.identifier }.contains("BUS249"))
+    }
+
+    func testApplyChangesInserts() {
+        // Given
+        var modifiedStations = stations.map { Station(stopCode: $0, name: "~modified", description: nil,
+            position: nil, routes: nil, vehicles: nil) }
+        modifiedStations.append(Station(stopCode: "test123"))
+
+        // When
+        route.applyChanges(to: route.stations, from: modifiedStations)
+
+        // Then
+        XCTAssertTrue(route.stations.value!.map { $0.identifier }.contains("test123"))
     }
 }
-
-class MutableRouteTests: XCTestCase, MutableModelTests {
-    typealias Model = MutableRoute
-
-    var rawModel: AnyObject!
-    var model: Model.FromModel!
-    let defaultDelegate = DefaultDelegate()
-    let modifiedRoute = Route(shortName: "19", code: nil, name: "~modified", description: nil, color: nil,
-                              path: nil, stations: nil, vehicles: nil, itinerary: nil)
-    override func setUp() {
-        super.setUp()
-        self.rawModel = rawModels().route
-        self.model = decodedModels().route
-    }
-
-    func testApplyUpdatesProperty() {
-        let mutable = createMutable(defaultDelegate)
-        XCTAssertEqual(mutable.name.value, "Inner Loop")
-        mutable.apply(modifiedRoute)
-        XCTAssertEqual(mutable.name.value, "~modified")
-    }
-
-
-    func testPropertyAccessDoesntStartProducer() {
-        let mutable = createMutable(defaultDelegate)
-        mutable.producer = SignalProducer<Route, NoError>.init { observer, disposable in
-            XCTFail("Signal producer started due to property access")
-        }
-        XCTAssertEqual(mutable.name.value, "Inner Loop")
-    }
-
-    func testProducerForwardsModels() {
-        let mock = ConnectionMock()
-        let mutable = MutableRoute(from: modifiedRoute, delegate: defaultDelegate, connection: mock)
-        let expectation = expectationWithDescription("Model forwarded")
-        mutable.producer.startWithNext { route in
-            XCTAssertEqual(route.name, self.model.name)
-            expectation.fulfill()
-        }
-
-        XCTAssertEqual(mutable.name.value, "~modified")
-        mock.publish(to: model.topic, event: .Route(.update(object: rawModel, originator: model.topic)))
-
-        waitForExpectationsWithTimeout(3, handler: nil)
-    }
-}
-
-class MutableVehicleTests: XCTestCase, MutableModelTests {
-    typealias Model = MutableVehicle
-
-    var rawModel: AnyObject!
-    var model: Model.FromModel!
-    let defaultDelegate = DefaultDelegate()
-    let modifiedVehicle = Vehicle(name: "1201", code: nil, position: nil, capacity: 9001, onboard: nil,
-                                  saturation: nil, lastStation: nil, nextStation: nil, route: nil, scheduleDelta: nil,
-                                  heading: nil, speed: nil)
-    override func setUp() {
-        super.setUp()
-        self.rawModel = rawModels().vehicle
-        self.model = decodedModels().vehicle
-    }
-
-    func testApplyUpdatesProperty() {
-        let mutable = createMutable(defaultDelegate)
-        XCTAssertEqual(mutable.capacity.value, 60)
-        mutable.apply(modifiedVehicle)
-        XCTAssertEqual(mutable.capacity.value, 9001)
-    }
-
-
-    func testPropertyAccessDoesntStartProducer() {
-        let mutable = createMutable(defaultDelegate)
-        mutable.producer = SignalProducer<Vehicle, NoError>.init { observer, disposable in
-            XCTFail("Signal producer started due to property access")
-        }
-        XCTAssertEqual(mutable.capacity.value, 60)
-    }
-
-    func testProducerForwardsModels() {
-        let mock = ConnectionMock()
-        let mutable = MutableVehicle(from: modifiedVehicle, delegate: defaultDelegate, connection: mock)
-        let expectation = expectationWithDescription("Model forwarded")
-        mutable.producer.startWithNext { vehicle in
-            XCTAssertEqual(vehicle.capacity, self.model.capacity)
-            expectation.fulfill()
-        }
-
-        XCTAssertEqual(mutable.capacity.value, 9001)
-        mock.publish(to: model.topic, event: .Vehicle(.update(object: rawModel, originator: model.topic)))
-
-        waitForExpectationsWithTimeout(3, handler: nil)
-    }
-}
-
-internal class DefaultDelegate: MutableModelDelegate {
-    func mutableModel<M : MutableModel>(model: M, receivedError error: PSError) {
-    }
-    func mutableModel<M : MutableModel>(model: M, receivedTopicEvent event: TopicEvent) {
-    }
-}
-
-
