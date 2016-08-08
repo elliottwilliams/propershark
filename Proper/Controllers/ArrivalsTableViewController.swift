@@ -11,72 +11,21 @@ import ReactiveCocoa
 import Dwifft
 import Result
 
-class ArrivalsTableViewController: UITableViewController {
+class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
     var station: MutableStation
     internal let delegate: ArrivalsTableViewDelegate
-//    internal let tableView: UITableView!
 
-    let routes: MutableProperty<Set<MutableRoute>>
-    let associatedVehicles: MutableProperty<[MutableVehicle]>
+    lazy var routes: AnyProperty<Set<MutableRoute>> = {
+        return AnyProperty(initialValue: Set(), producer: self.station.routes.producer.ignoreNil())
+    }()
 
-    private var diffCalculator: TableViewDiffCalculator<MutableRoute>!
-
-
-    // MARK: Methods
-
-    init(observing station: MutableStation, delegate: ArrivalsTableViewDelegate, style: UITableViewStyle) {
-        self.station = station
-        self.delegate = delegate
-        self.routes = .init([])
-        self.associatedVehicles = .init([])
-        super.init(style: style)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func viewDidLoad() {
-        // Subscribe to station updates and apply them.
-        station.producer.startWithNext(station.apply)
-
-        // Create MutablesRoutes out of the routes of the station given, and update our routes property.
-        let routes = station.routes.value ?? Set()
-        self.routes.swap(routes)
-
-        // Initialize the diff calculator for the table, which starts using any routes already on `station`.
-        self.diffCalculator = TableViewDiffCalculator(tableView: self.tableView, initialRows: Array(routes))
-
-        // Use our table cell UI. If the nib specified doesn't exist, `tableView(_:cellForRowAtIndexPath:)` will crash.
-        self.tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil), forCellReuseIdentifier: "ArrivalTableViewCell")
-
-        // Follow changes to routes and vehicles of this station.
-        self.routes <~ self.routesSignal()
-        self.routes.map { routes in
-            routes.forEach { route in route.producer.startWithNext(route.apply) }
-        }
-        self.associatedVehicles <~ self.vehiclesSignal()
-
-        // When routes change, update the table.
-        self.routes.map { self.diffCalculator.rows = Array($0) }
-    }
-
-
-    /// Produce a signal emitting a set of `MutableRoute`s whenever the routes on this station change.
-    func routesSignal() -> Signal<Set<MutableRoute>, NoError> {
-        return self.station.routes.signal.ignoreNil()
-        .logEvents(identifier: "ArrivalTableViewController.routesSignal", logger: logSignalEvent)
-    }
-
-    /// Access the `routes` attribute of this station and produce a signal which emits a list vehicles pairs
-    /// every time the vehicle association changes for a particular route.
-    func vehiclesSignal() -> Signal<[MutableVehicle], NoError> {
-
+    /// A signal which emits a list of vehicles every time the vehicle association changes for a particular route.
+    lazy var vehicles: AnyProperty<[MutableVehicle]> = {
         // Given a signal emitting the list of MutableRoutes for this station...
-        return self.routes.signal
+        let producer = self.routes.producer
         // ...flatMap down to the routes themselves...
-        .flatMap(.Concat) { routes in SignalProducer<MutableRoute, NoError>(values: routes) }
+        .flatMap(.Concat) { routes in SignalProducer(values: routes) }
         // ...and access the vehicles property of each.
         .map { route in route.vehicles.signal }
         // We now have a signal of signals of vehicles, which emits whever the list of routes changes.
@@ -86,7 +35,58 @@ class ArrivalsTableViewController: UITableViewController {
         .map { $0 ?? Set() }
         // Sort by arrival time (TODO: actually do this)
         .map { Array($0) }
-        .logEvents(identifier: "ArrivalTableViewController.vehiclesSignal", logger: logSignalEvent)
+
+        return AnyProperty(initialValue: [], producer: producer)
+    }()
+
+    func foo() {
+        let prop = MutableProperty<[MutableVehicle]>([])
+        prop <~ vehicles
+    }
+
+    internal var diffCalculator: TableViewDiffCalculator<MutableVehicle>!
+
+    internal var connection: ConnectionType
+    internal var config: Config
+
+    // MARK: Methods
+
+    init(observing station: MutableStation, delegate: ArrivalsTableViewDelegate, style: UITableViewStyle,
+                   connection: ConnectionType, config: Config)
+    {
+        self.station = station
+        self.delegate = delegate
+        self.connection = connection
+        self.config = config
+        super.init(style: style)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        // Initialize the diff calculator for the table, which starts using any routes already on `station`.
+        self.diffCalculator = TableViewDiffCalculator(tableView: self.tableView, initialRows: vehicles.value)
+
+        // Use our table cell UI. If the nib specified doesn't exist, `tableView(_:cellForRowAtIndexPath:)` will crash.
+        self.tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil), forCellReuseIdentifier: "ArrivalTableViewCell")
+
+        // Follow changes to the station and its routes.
+        station.producer.takeUntil(self.onDisappear()).startWithNext(station.apply)
+
+        var routeDisposables = [MutableRoute: Disposable]()
+        routes.producer.takeUntil(self.onDisappear())
+        .combinePrevious(Set())
+        .startWithNext { old, new in
+            new.subtract(old).forEach { route in routeDisposables[route] = route.producer.startWithNext(route.apply) }
+            old.subtract(new).forEach { route in routeDisposables[route]?.dispose() }
+        }
+
+        // When the list of vehicles for this station changes, update the table.
+        self.vehicles.producer.takeUntil(self.onDisappear()).startWithNext { vehicles in
+            self.diffCalculator.rows = vehicles
+        }
     }
 
 
@@ -94,12 +94,12 @@ class ArrivalsTableViewController: UITableViewController {
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int { return 1 }
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? { return "Arrivals" }
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return associatedVehicles.value.count
+        return diffCalculator.rows.count
     }
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         // ArrivalTableViewCell comes from the xib, and is registered upon the creation of this table
         let cell = tableView.dequeueReusableCellWithIdentifier("ArrivalTableViewCell", forIndexPath: indexPath) as! ArrivalTableViewCell
-        let vehicle = associatedVehicles.value[indexPath.row]
+        let vehicle = diffCalculator.rows[indexPath.row]
 
         // Bind vehicle attributes
         vehicle.saturation.map { cell.badge.capacity = $0 ?? 1 }

@@ -47,7 +47,8 @@ class StationViewController: UIViewController, ProperViewController, ArrivalsTab
         }
         
         // Initialize and embed the arrivals table.
-        let table = ArrivalsTableViewController(observing: station, delegate: self, style: arrivalTableView.style)
+        let table = ArrivalsTableViewController(observing: station, delegate: self, style: arrivalTableView.style,
+                                                connection: self.connection, config: self.config)
         table.view = arrivalTableView
         table.viewDidLoad()
         arrivalTableView.dataSource = table

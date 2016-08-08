@@ -21,23 +21,22 @@ class MutableVehicle: MutableModel {
     private static let retryAttempts = 3
 
     // MARK: Vehicle Support
-    internal var source: FromModel
     var identifier: FromModel.Identifier { return self.name }
     var topic: String { return Vehicle.topicFor(self.identifier) }
 
     // MARK: Vehicle Attributes
     let name: FromModel.Identifier
-    lazy var code: MutableProperty<Int?> = self.lazyProperty { $0.code }
-    lazy var position: MutableProperty<Point?> = self.lazyProperty { $0.position }
-    lazy var capacity: MutableProperty<Int?> = self.lazyProperty { $0.capacity }
-    lazy var onboard: MutableProperty<Int?> = self.lazyProperty { $0.onboard }
-    lazy var saturation: MutableProperty<Double?> = self.lazyProperty { $0.saturation }
-    lazy var lastStation: MutableProperty<MutableStation?> = self.lazyProperty { $0.lastStation.map(self.attachMutable) }
-    lazy var nextStation: MutableProperty<MutableStation?> = self.lazyProperty { $0.nextStation.map(self.attachMutable) }
-    lazy var route: MutableProperty<MutableRoute?> = self.lazyProperty { $0.route.map(self.attachMutable) }
-    lazy var scheduleDelta: MutableProperty<Double?> = self.lazyProperty { $0.scheduleDelta }
-    lazy var heading: MutableProperty<Double?> = self.lazyProperty { $0.heading }
-    lazy var speed: MutableProperty<Double?> = self.lazyProperty { $0.speed }
+    var code: MutableProperty<Int?> = .init(nil)
+    var position: MutableProperty<Point?> = .init(nil)
+    var capacity: MutableProperty<Int?> = .init(nil)
+    var onboard: MutableProperty<Int?> = .init(nil)
+    var saturation: MutableProperty<Double?> = .init(nil)
+    var lastStation: MutableProperty<MutableStation?> = .init(nil)
+    var nextStation: MutableProperty<MutableStation?> = .init(nil)
+    var route: MutableProperty<MutableRoute?> = .init(nil)
+    var scheduleDelta: MutableProperty<Double?> = .init(nil)
+    var heading: MutableProperty<Double?> = .init(nil)
+    var speed: MutableProperty<Double?> = .init(nil)
 
     // MARK: Signal Producer
     lazy var producer: SignalProducer<Vehicle, NoError> = {
@@ -71,15 +70,14 @@ class MutableVehicle: MutableModel {
     required init(from vehicle: Vehicle, delegate: MutableModelDelegate, connection: ConnectionType) {
         self.name = vehicle.name
         self.delegate = delegate
-        self.source = vehicle
         self.connection = connection
+        apply(vehicle)
     }
 
     func apply(vehicle: Vehicle) -> Result<(), PSError> {
         if vehicle.identifier != self.identifier {
             return .Failure(PSError(code: .mutableModelFailedApply))
         }
-        self.source = vehicle
 
         self.code <- vehicle.code
         self.position <- vehicle.position

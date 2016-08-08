@@ -12,7 +12,7 @@ import enum Result.NoError
 
 protocol ProperViewController {
 
-    // Support properties. Usually private on the conforming view controller.
+    // Support properties. Set as internal on the conforming view controller.
     var connection: ConnectionType { get set }
     var config: Config { get set }
 

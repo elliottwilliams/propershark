@@ -73,7 +73,7 @@ class MutableModelTests: XCTestCase {
         // Given
         var modifiedStations = stations.map { Station(stopCode: $0, name: "~modified", description: nil,
             position: nil, routes: nil, vehicles: nil) }
-        modifiedStations.append(Station(stopCode: "test123"))
+        modifiedStations.append(Station(id: "test123"))
 
         // When
         route.applyChanges(to: route.stations, from: modifiedStations)

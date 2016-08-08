@@ -55,7 +55,7 @@ struct Vehicle: Model {
 }
 
 extension Vehicle {
-    init(name: String) {
+    init(id name: String) {
         self.init(name: name, code: nil, position: nil, capacity: nil, onboard: nil, saturation: nil,
                   lastStation: nil, nextStation: nil, route: nil, scheduleDelta: nil, heading: nil,
                   speed: nil)
@@ -68,7 +68,7 @@ extension Vehicle: Decodable {
         switch json {
         case .String(let id):
             let name = Vehicle.unqualify(namespaced: id)
-            return pure(Vehicle(name: name))
+            return pure(Vehicle(id: name))
         default:
             let v = curry(Vehicle.init)
                 <^> (json <| "name").or(Vehicle.decodeNamespacedIdentifier(json))

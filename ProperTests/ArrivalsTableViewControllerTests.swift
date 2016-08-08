@@ -24,7 +24,8 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
         super.setUp()
         mock = ConnectionMock()
         station = createMutable(self)(mock)
-        controller = ArrivalsTableViewController(observing: station, delegate: self, style: .Plain)
+        controller = ArrivalsTableViewController(observing: station, delegate: self, style: .Plain, connection: mock,
+                                                 config: .sharedInstance)
         disposable = CompositeDisposable()
     }
 
@@ -37,58 +38,84 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
         let _ = controller.view
     }
 
-    /// When controller loads, a list of routes should be emitted.
-    func testRoutesOnLoad() {
-        // Given
-        let expectation = expectationWithDescription("routes on load")
-        disposable += controller.routes.signal.observeNext { routes in
-            XCTAssertEqual(routes.count, self.station.routes.value?.count)
-            expectation.fulfill()
-        }
-
-        // When
+    func testSubscribeToStation() {
+        // When the view is loaded...
         requestView()
 
-        // Expect
-        waitForExpectationsWithTimeout(3, handler: nil)
+        // ...then the topic for its station should be subscribed to.
+        XCTAssertTrue(ConnectionMock.subscribed("stations.BUS100W"))
     }
 
     func testRoutesSignalEmitsOnChanges() {
         // Given
-        let expectation = expectationWithDescription("routes on station update")
         let payload = ["stop_code": station.stopCode, "associated_objects": ["Shark::Route": ["routes.221B"]]]
-        disposable += controller.routes.signal.collect(count: 2).observeNext { routeSets in
-            let routes = routeSets[1]   // routeSets[0] is info before mock.publish
-//        disposable += controller.routes.signal.observeNext { routes in
-            XCTAssertTrue(routes.contains { $0.identifier == "221B" })
-            XCTAssertEqual(routes.count, 1)
-            expectation.fulfill()
-        }
 
-        // When
+        // When the list of routes on a station changes...
         requestView()
         mock.publish(to: station.topic, event: .Station(.update(object: payload, originator: station.topic)))
 
-        // Expect
-        waitForExpectationsWithTimeout(3, handler: nil)
+        // ...expect the routes signal to emit a new set of routes.
+        XCTAssertTrue(controller.routes.value.contains { $0.identifier == "221B" })
+        XCTAssertEqual(controller.routes.value.count, 1)
     }
 
     func testRoutesSignalSubscribesToRoutes() {
         // Given
-        let firstPayload = ["short_name": "5B", "name": "initial name"]
-        let secondPayload = ["short_name": "5B", "name": "~modified"]
+        let payload = ["short_name": "5B", "name": "~modified"]
 
-        // When route information is published (establishing name), route should be subscribed to and name should
-        // change.
+        // When view loads, route should be subscribed to.
         requestView()
-        XCTAssertNil(controller.routes.value.first!.name.value)
         XCTAssertTrue(ConnectionMock.subscribed("routes.5B"))
 
-        mock.publish(to: "routes.5B", event: .Route(.update(object: firstPayload, originator: "routes.5B")))
-        XCTAssertEqual(controller.routes.value.first!.name.value, "initial name")
+        // Thus, when a route update is published (establishing name), route name should change.
+        mock.publish(to: "routes.5B", event: .Route(.update(object: payload, originator: "routes.5B")))
+        XCTAssertNotNil(controller.routes.value.first)
+        if let route = controller.routes.value.first {
+            XCTAssertEqual(route.name.value, "~modified")
+        }
+    }
 
-        mock.publish(to: "routes.5B", event: .Route(.update(object: secondPayload, originator: "routes.5B")))
-        XCTAssertEqual(controller.routes.value.first!.name.value, "~modified")
+
+    func testRouteUnsubscribedWhenLeft() {
+        // Given a route subscribed to from when the view was created
+        requestView()
+        XCTAssertTrue(ConnectionMock.subscribed("routes.5B"))
+
+        // When a route is removed from the station's associatons...
+        controller.station.routes.swap(Set())
+
+        // ...it should be unsubscribed from.
+        XCTAssertFalse(ConnectionMock.subscribed("routes.5B"))
+    }
+
+    func testVehiclesSignalForNewVehicles() {
+        // Given
+        let vehicles = [
+            Vehicle(id: "test1"),
+            Vehicle(id: "test2"),
+            Vehicle(id: "test3")
+        ]
+        let modifiedRoute = Route(shortName: "5B", code: nil, name: nil,
+                                  description: nil, color: nil, path: nil, stations: nil, vehicles: vehicles,
+                                  itinerary: nil)
+
+        // When Route 5B is modified to contain a new list of vehicles...
+        requestView()
+        XCTAssertNotNil(controller.routes.value.first)
+        if let route = controller.routes.value.first {
+            route.apply(modifiedRoute)
+        }
+
+        // ...then the list of vehicles should be updated
+        XCTAssertEqual(controller.vehicles.value.map { $0.name }.sort(), vehicles.map { $0.name }.sort())
+    }
+
+    func testVehiclesSignalOnInitialVehicles() {
+        // When the view is loaded...
+        requestView()
+
+        // ...then there should be no known vehicles.
+        XCTAssertEqual(controller.vehicles.value.count, 0)
     }
 
 

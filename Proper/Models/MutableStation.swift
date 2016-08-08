@@ -20,17 +20,16 @@ class MutableStation: MutableModel {
     private static let retryAttempts = 3
 
     // MARK: Station Support
-    internal var source: FromModel
     var identifier: FromModel.Identifier { return self.stopCode }
     var topic: String { return FromModel.topicFor(self.identifier) }
     
     // MARK: Station Attributes
     let stopCode: FromModel.Identifier
-    lazy var name: MutableProperty<String?> = self.lazyProperty { $0.name }
-    lazy var description: MutableProperty<String?> = self.lazyProperty { $0.description }
-    lazy var position: MutableProperty<Point?> = self.lazyProperty { $0.position }
-    lazy var routes: MutableProperty<Set<MutableRoute>?> = self.lazyProperty { ($0.routes?.map(self.attachMutable)).map(Set.init) }
-    lazy var vehicles: MutableProperty<Set<MutableVehicle>?> = self.lazyProperty { ($0.vehicles?.map(self.attachMutable)).map(Set.init) }
+    var name: MutableProperty<String?> = .init(nil)
+    var description: MutableProperty<String?> = .init(nil)
+    var position: MutableProperty<Point?> = .init(nil)
+    var routes: MutableProperty<Set<MutableRoute>?> = .init(nil)
+    var vehicles: MutableProperty<Set<MutableVehicle>?> = .init(nil)
 
     // MARK: Signal Producer
     lazy var producer: SignalProducer<Station, NoError> = {
@@ -64,15 +63,14 @@ class MutableStation: MutableModel {
     required init(from station: Station, delegate: MutableModelDelegate, connection: ConnectionType) {
         self.stopCode = station.stopCode
         self.delegate = delegate
-        self.source = station
         self.connection = connection
+        apply(station)
     }
 
     func apply(station: Station) -> Result<(), PSError> {
         if station.identifier != self.identifier {
             return .Failure(PSError(code: .mutableModelFailedApply))
         }
-        self.source = station
 
         self.name <- station.name
         self.description <- station.description

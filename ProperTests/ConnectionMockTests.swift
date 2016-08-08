@@ -103,4 +103,17 @@ class ConnectionMockTests: XCTestCase {
         waitForExpectationsWithTimeout(2, handler: nil)
     }
 
+    func testSubscribedQuery() {
+        // Given
+        let mock = ConnectionMock()
+
+        // When test subscribed to, it should report it.
+        let disposable = mock.subscribe("it").start()
+        XCTAssertTrue(ConnectionMock.subscribed("it"))
+
+        // When unsubscribed, it should report correctly, too.
+        disposable.dispose()
+        XCTAssertFalse(ConnectionMock.subscribed("it"))
+    }
+
 }

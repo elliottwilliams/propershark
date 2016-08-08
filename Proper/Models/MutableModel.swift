@@ -16,9 +16,6 @@ import Result
 /// can be bound to, with loading and availability abstracted away.
 protocol MutableModel: class, Hashable {
     associatedtype FromModel: Model
-
-    /// The most recent static model applied to this instance.
-    var source: FromModel { get set }
     
     /// The mutable model should know its model's identifier, and the identifier should be immutable. (a model with a
     /// different identifier cannot be applied; it is a different model altogether.)
@@ -44,11 +41,6 @@ protocol MutableModel: class, Hashable {
 
 extension MutableModel {
 
-    /// Returns a property obtained by calling `accessor` with this model's `source` instance.
-    internal func lazyProperty<T>(accessor: (FromModel) -> T) -> MutableProperty<T> {
-        return MutableProperty(accessor(self.source))
-    }
-
     /// Create a MutableModel from a static model and attach it to the calling MutableModel's delegate.
     internal func attachMutable<M: MutableModel>(from model: M.FromModel) -> M {
         return M(from: model, delegate: self.delegate, connection: self.connection)
@@ -61,9 +53,9 @@ extension MutableModel {
 
     /// Create and insert new MutableModels to a given set, remove old ones, and apply changes from
     /// persistent ones.
-    func applyChanges<M: MutableModel>(to mutableSet: MutableProperty<Set<M>?>, from new: Set<M.FromModel>?) {
-        // Don't proceed unless we have a set to apply.
-        guard let new = new else { return }
+    func applyChanges<M: MutableModel>(to mutableSet: MutableProperty<Set<M>?>, from new: [M.FromModel.Identifier: M.FromModel]?) {
+        // Attempt to unwrap `new` and create a mutable copy of it.
+        guard var new = new else { return }
 
         mutableSet.modify { mutables in
             // Initialize to an empty set if nil.
@@ -71,25 +63,33 @@ extension MutableModel {
 
             // For each stored mutable model...
             for model in mutables {
-                if let idx = new.indexOf(model.source) {
+                if let replacement = new.removeValueForKey(model.identifier) {
                     // ...apply changes from a corresponding static model in `new`...
-                    model.apply(new[idx])
+                    model.apply(replacement)
                 } else {
                     // ...otherwise, remove it.
                     mutables.remove(model)
                 }
             }
 
-            // Then, insert new MutableModels for models in `new` but not in `mutables`.
-            new.subtract(Set(mutables.map { $0.source }))
-                .forEach { mutables.insert(attachMutable(from: $0)) }
+            // Remaining models in `new` are new to the set. Attch MutableModels for them.
+            new.forEach { id, model in mutables.insert(attachMutable(from: model)) }
 
             return mutables
         }
     }
 
-    func applyChanges<M: MutableModel>(to mutableSet: MutableProperty<Set<M>?>, from new: [M.FromModel]?) {
-        return applyChanges(to: mutableSet, from: Set(new ?? []))
+    func applyChanges<C: CollectionType, M: MutableModel where C.Generator.Element == M.FromModel>
+        (to mutableSet: MutableProperty<Set<M>?>, from new: C?)
+    {
+        guard let new = new else { return }
+        
+        let dict: [M.FromModel.Identifier: M.FromModel] = new.reduce([:]) { dict, model in
+            var dict = dict
+            dict[model.identifier] = model
+            return dict
+        }
+        return applyChanges(to: mutableSet, from: dict)
     }
 
     var hashValue: Int { return self.identifier.hashValue }

@@ -34,7 +34,7 @@ struct Route: Model {
 }
 
 extension Route {
-    init(shortName: String) {
+    init(id shortName: String) {
         self.init(shortName: shortName, code: nil, name: nil, description: nil, color: nil,
                   path: nil, stations: nil, vehicles: nil, itinerary: nil)
     }
@@ -45,7 +45,7 @@ extension Route: Decodable {
         switch json {
         case .String(let id):
             let shortName = Route.unqualify(namespaced: id)
-            return pure(Route(shortName: shortName))
+            return pure(Route(id: shortName))
         default:
             let r = curry(Route.init)
                 <^> (json <| "short_name").or(Route.decodeNamespacedIdentifier(json))

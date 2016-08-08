@@ -20,19 +20,18 @@ class MutableRoute: MutableModel {
     private static let retryAttempts = 3
 
     // MARK: Route Support
-    internal var source: FromModel
     var identifier: FromModel.Identifier { return self.shortName }
     var topic: String { return FromModel.topicFor(self.identifier) }
 
     // MARK: Route Attributes
     let shortName: FromModel.Identifier
-    lazy var code: MutableProperty<Int?> = self.lazyProperty { $0.code }
-    lazy var name: MutableProperty<String?> = self.lazyProperty { $0.name }
-    lazy var description: MutableProperty<String?> = self.lazyProperty { $0.description }
-    lazy var color: MutableProperty<UIColor?> = self.lazyProperty { $0.color }
-    lazy var path:  MutableProperty<[Point]?> = self.lazyProperty { $0.path }
-    lazy var stations: MutableProperty<Set<MutableStation>?> = self.lazyProperty { ($0.stations?.map(self.attachMutable)).map(Set.init) }
-    lazy var vehicles: MutableProperty<Set<MutableVehicle>?> = self.lazyProperty { ($0.vehicles?.map(self.attachMutable)).map(Set.init) }
+    var code: MutableProperty<Int?> = .init(nil)
+    var name: MutableProperty<String?> = .init(nil)
+    var description: MutableProperty<String?> = .init(nil)
+    var color: MutableProperty<UIColor?> = .init(nil)
+    var path:  MutableProperty<[Point]?> = .init(nil)
+    var stations: MutableProperty<Set<MutableStation>?> = .init(nil)
+    var vehicles: MutableProperty<Set<MutableVehicle>?> = .init(nil)
 
     // MARK: Signal Producer
     lazy var producer: SignalProducer<Route, NoError> = {
@@ -69,15 +68,14 @@ class MutableRoute: MutableModel {
     required init(from route: Route, delegate: MutableModelDelegate, connection: ConnectionType) {
         self.shortName = route.shortName
         self.delegate = delegate
-        self.source = route
         self.connection = connection
+        apply(route)
     }
 
     func apply(route: Route) -> Result<(), PSError> {
         if route.identifier != self.identifier {
             return .Failure(PSError(code: .mutableModelFailedApply))
         }
-        self.source = route
 
         self.name <- route.name
         self.code <- route.code

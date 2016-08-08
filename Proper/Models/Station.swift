@@ -30,7 +30,7 @@ struct Station: Model {
 }
 
 extension Station {
-    init(stopCode: String) {
+    init(id stopCode: String) {
         self.init(stopCode: stopCode, name: nil, description: nil, position: nil, routes: nil,
                   vehicles: nil)
     }
@@ -41,7 +41,7 @@ extension Station: Decodable {
         switch json {
         case .String(let id):
             let stopCode = Station.unqualify(namespaced: id)
-            return pure(Station(stopCode: stopCode))
+            return pure(Station(id: stopCode))
         default:
             let curried = curry(Station.init)
             return curried

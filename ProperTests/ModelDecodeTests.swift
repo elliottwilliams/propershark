@@ -79,7 +79,7 @@ class ModelDecodeTests: XCTestCase {
         XCTAssertNotNil(route.stations)
         if let stations = route.stations {
             XCTAssertGreaterThan(stations.count, 1)
-            let parkingLotStop = stations.filter { $0 == Station(stopCode: "BUS249") }.first
+            let parkingLotStop = stations.filter { $0 == Station(id: "BUS249") }.first
             XCTAssertNotNil(parkingLotStop)
 
             // This will fail until propershark/shark#12 is implemented.
