@@ -11,12 +11,10 @@ import XCTest
 
 class ConnectionMockTests: XCTestCase {
 
-    let event = TopicEvent.Meta(.lastEvent(["foo"], ["bar": "baz"]))
+    let event = TopicEvent.Meta(.unknownLastEvent(["foo"], ["bar": "baz"]))
 
     override func setUp() {
         super.setUp()
-        // Reset internal state
-        ConnectionMock.Channel.channels = [:]
     }
     
     override func tearDown() {
@@ -31,7 +29,7 @@ class ConnectionMockTests: XCTestCase {
     }
 
     func checkEvent(event: TopicEvent) {
-        if case .Meta(.lastEvent(let args, let kwargs)) = event {
+        if case .Meta(.unknownLastEvent(let args, let kwargs)) = event {
             XCTAssertTrue(self.compareEvent(args, kwargs), "Unexpected event")
         } else {
             XCTFail("Expected TopicEvent not received")
@@ -90,7 +88,7 @@ class ConnectionMockTests: XCTestCase {
         }
         disposable.dispose()
         mock.publish(to: "it", event: event)
-        XCTAssertNil(ConnectionMock.Channel.channels["it"], "Not removed from channel storage")
+        XCTAssertNil(mock.server.topics["it"], "Not removed from channel storage")
     }
 
     func testSubscribeCallback() {
@@ -109,11 +107,11 @@ class ConnectionMockTests: XCTestCase {
 
         // When test subscribed to, it should report it.
         let disposable = mock.subscribe("it").start()
-        XCTAssertTrue(ConnectionMock.subscribed("it"))
+        XCTAssertTrue(mock.subscribed("it"))
 
         // When unsubscribed, it should report correctly, too.
         disposable.dispose()
-        XCTAssertFalse(ConnectionMock.subscribed("it"))
+        XCTAssertFalse(mock.subscribed("it"))
     }
 
 }

@@ -34,34 +34,27 @@ class MutableRoute: MutableModel {
     var vehicles: MutableProperty<Set<MutableVehicle>?> = .init(nil)
 
     // MARK: Signal Producer
-    lazy var producer: SignalProducer<Route, NoError> = {
+    lazy var producer: SignalProducer<TopicEvent, PSError> = {
         let now = self.connection.call("meta.last_event", args: [self.topic, self.topic])
         let future = self.connection.subscribe(self.topic)
         return SignalProducer<SignalProducer<TopicEvent, PSError>, PSError>(values: [now, future])
             .flatten(.Merge)
-            .map { (event: TopicEvent) -> Route? in
+            .logEvents(identifier: "MutableRoute.producer", logger: logSignalEvent)
+            .attempt { event in
+                if let error = event.error {
+                    return .Failure(PSError(code: .decodeFailure, associated: error))
+                }
+
                 switch event {
-                case .Meta(.lastEvent(let args, _)):
-                    guard let object = args.first else { return nil }
-                    return decode(object)
-                case .Route(.update(let object, _)):
-                    return decode(object)
+                case .Route(.update(let route, _)):
+                    self.apply(route.value!)
                 case .Route(.vehicleUpdate(let vehicle, _)):
-                    self.handleEvent(vehicleUpdate: vehicle)
-                    return nil
+                    self.handleEvent(vehicleUpdate: vehicle.value!)
                 default:
                     self.delegate.mutableModel(self, receivedTopicEvent: event)
-                    return nil
                 }
+                return .Success()
             }
-            .ignoreNil()
-            .retry(MutableRoute.retryAttempts)
-            .flatMapError { (error: PSError) -> SignalProducer<Route, NoError> in
-                self.delegate.mutableModel(self, receivedError: error)
-                return SignalProducer<Route, NoError>.empty
-            }
-            .on(next: { self.apply($0) })
-            .logEvents(identifier: "MutableRoute.producer", logger: logSignalEvent)
     }()
 
     // MARK: Functions
@@ -70,6 +63,11 @@ class MutableRoute: MutableModel {
         self.delegate = delegate
         self.connection = connection
         apply(route)
+
+        // Create back-references to this MutableRoute on all vehicles associated with the route. 
+        self.vehicles.producer.ignoreNil().flatten(.Latest).startWithNext { vehicle in
+            vehicle.route.modify { $0 ?? self }
+        }
     }
 
     func apply(route: Route) -> Result<(), PSError> {

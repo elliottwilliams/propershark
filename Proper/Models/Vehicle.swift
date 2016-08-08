@@ -68,7 +68,7 @@ struct Vehicle: Model {
         self.route = route
         self.scheduleDelta = scheduleDelta
         self.heading = heading
-        self.speed = nil
+        self.speed = speed
     }
 
     init(id name: String) {

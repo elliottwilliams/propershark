@@ -54,6 +54,7 @@ class ModelDecodeTests: XCTestCase {
         }
     }
 
+    // Disabled until propershark/shark#12 is implemented
     func testDecodeRoute() {
         let json = JSON(route)
         let decoded = Route.decode(json)

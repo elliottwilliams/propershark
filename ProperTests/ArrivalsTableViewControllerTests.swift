@@ -43,16 +43,18 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
         requestView()
 
         // ...then the topic for its station should be subscribed to.
-        XCTAssertTrue(ConnectionMock.subscribed("stations.BUS100W"))
+        XCTAssertTrue(mock.subscribed("stations.BUS100W"))
     }
 
     func testRoutesSignalEmitsOnChanges() {
         // Given
-        let payload = ["stop_code": station.stopCode, "associated_objects": ["Shark::Route": ["routes.221B"]]]
+        let update = Station(stopCode: station.stopCode, routes: [
+            Route(shortName: "221B")
+        ])
 
         // When the list of routes on a station changes...
         requestView()
-        mock.publish(to: station.topic, event: .Station(.update(object: payload, originator: station.topic)))
+        mock.publish(to: station.topic, event: .Station(.update(object: .Success(update), originator: station.topic)))
 
         // ...expect the routes signal to emit a new set of routes.
         XCTAssertTrue(controller.routes.value.contains { $0.identifier == "221B" })
@@ -61,14 +63,14 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
 
     func testRoutesSignalSubscribesToRoutes() {
         // Given
-        let payload = ["short_name": "5B", "name": "~modified"]
+        let update = Route(shortName: "5B", name: "~modified")
 
         // When view loads, route should be subscribed to.
         requestView()
-        XCTAssertTrue(ConnectionMock.subscribed("routes.5B"))
+        XCTAssertTrue(mock.subscribed("routes.5B"))
 
-        // Thus, when a route update is published (establishing name), route name should change.
-        mock.publish(to: "routes.5B", event: .Route(.update(object: payload, originator: "routes.5B")))
+        // Thus, when a route update is published specifying the route name, it should change.
+        mock.publish(to: "routes.5B", event: .Route(.update(object: .Success(update), originator: "routes.5B")))
         XCTAssertNotNil(controller.routes.value.first)
         if let route = controller.routes.value.first {
             XCTAssertEqual(route.name.value, "~modified")
@@ -79,13 +81,13 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
     func testRouteUnsubscribedWhenLeft() {
         // Given a route subscribed to from when the view was created
         requestView()
-        XCTAssertTrue(ConnectionMock.subscribed("routes.5B"))
+        XCTAssertTrue(mock.subscribed("routes.5B"))
 
         // When a route is removed from the station's associatons...
         controller.station.routes.swap(Set())
 
         // ...it should be unsubscribed from.
-        XCTAssertFalse(ConnectionMock.subscribed("routes.5B"))
+        XCTAssertFalse(mock.subscribed("routes.5B"))
     }
 
     func testVehiclesSignalForNewVehicles() {

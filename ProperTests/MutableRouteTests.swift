@@ -11,22 +11,22 @@ import ReactiveCocoa
 import Result
 @testable import Proper
 
-class MutableRouteTests: XCTestCase, GenericMutableModelTests {
+class MutableRouteTests: XCTestCase, MutableModelTestSpec {
     typealias Model = MutableRoute
 
-    var rawModel: AnyObject!
-    var model: Model.FromModel!
-    let defaultDelegate = DefaultDelegate()
-    let modifiedRoute = Route(shortName: "19", code: nil, name: "~modified", description: nil, color: nil,
-                              path: nil, stations: nil, vehicles: nil, itinerary: nil)
+    var rawModel = rawModels().route
+    var model = decodedModels().route
+    let delegate = MutableModelDelegateMock()
+    let modifiedRoute = Route(shortName: "19", name: "~modified")
+    let mock = ConnectionMock()
+    var mutable: MutableRoute!
+
     override func setUp() {
         super.setUp()
-        self.rawModel = rawModels().route
-        self.model = decodedModels().route
+        self.mutable = MutableRoute(from: model, delegate: delegate, connection: mock)
     }
 
     func testApplyUpdatesProperty() {
-        let mutable = createMutable(defaultDelegate)
         XCTAssertEqual(mutable.name.value, "Inner Loop")
         mutable.apply(modifiedRoute)
         XCTAssertEqual(mutable.name.value, "~modified")
@@ -34,25 +34,19 @@ class MutableRouteTests: XCTestCase, GenericMutableModelTests {
 
 
     func testPropertyAccessDoesntStartProducer() {
-        let mutable = createMutable(defaultDelegate)
-        mutable.producer = SignalProducer<Route, NoError>.init { observer, disposable in
+        mutable.producer = SignalProducer.init { observer, disposable in
             XCTFail("Signal producer started due to property access")
         }
         XCTAssertEqual(mutable.name.value, "Inner Loop")
     }
 
-    func testProducerForwardsModels() {
-        let mock = ConnectionMock()
-        let mutable = MutableRoute(from: modifiedRoute, delegate: defaultDelegate, connection: mock)
-        let expectation = expectationWithDescription("Model forwarded")
-        mutable.producer.startWithNext { route in
-            XCTAssertEqual(route.name, self.model.name)
-            expectation.fulfill()
-        }
+    func testProducerApplies() {
+        // When producer is subscribed...
+        mutable.producer.start()
 
+        // Then the name should change when an update is published
+        XCTAssertEqual(mutable.name.value, "Inner Loop")
+        mock.publish(to: model.topic, event: .Route(.update(object: .Success(modifiedRoute), originator: model.topic)))
         XCTAssertEqual(mutable.name.value, "~modified")
-        mock.publish(to: model.topic, event: .Route(.update(object: rawModel, originator: model.topic)))
-
-        waitForExpectationsWithTimeout(3, handler: nil)
     }
 }

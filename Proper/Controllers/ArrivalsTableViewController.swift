@@ -73,14 +73,18 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
         self.tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil), forCellReuseIdentifier: "ArrivalTableViewCell")
 
         // Follow changes to the station and its routes.
-        station.producer.takeUntil(self.onDisappear()).startWithNext(station.apply)
+        station.producer.takeUntil(self.onDisappear()).startWithFailed(self.delegate.arrivalsTable(receivedError:))
 
         var routeDisposables = [MutableRoute: Disposable]()
         routes.producer.takeUntil(self.onDisappear())
         .combinePrevious(Set())
         .startWithNext { old, new in
-            new.subtract(old).forEach { route in routeDisposables[route] = route.producer.startWithNext(route.apply) }
-            old.subtract(new).forEach { route in routeDisposables[route]?.dispose() }
+            new.subtract(old).forEach { route in
+                routeDisposables[route] = route.producer.startWithFailed(self.delegate.arrivalsTable(receivedError:))
+            }
+            old.subtract(new).forEach { route in
+                routeDisposables[route]?.dispose()
+            }
         }
 
         // When the list of vehicles for this station changes, update the table.
@@ -92,14 +96,14 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
     // MARK: Delegate Methods
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int { return 1 }
-    override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? { return "Arrivals" }
+    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? { return "Arrivals" }
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return diffCalculator.rows.count
     }
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         // ArrivalTableViewCell comes from the xib, and is registered upon the creation of this table
         let cell = tableView.dequeueReusableCellWithIdentifier("ArrivalTableViewCell", forIndexPath: indexPath) as! ArrivalTableViewCell
-        let vehicle = diffCalculator.rows[indexPath.row]
+        let vehicle = vehicles.value[indexPath.row]
 
         // Bind vehicle attributes
         vehicle.saturation.map { cell.badge.capacity = $0 ?? 1 }

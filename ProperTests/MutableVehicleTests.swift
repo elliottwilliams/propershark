@@ -9,25 +9,27 @@
 import XCTest
 import ReactiveCocoa
 import Result
+import Argo
 @testable import Proper
 
-class MutableVehicleTests: XCTestCase, GenericMutableModelTests {
+class MutableVehicleTests: XCTestCase, MutableModelTestSpec {
     typealias Model = MutableVehicle
 
-    var rawModel: AnyObject!
-    var model: Model.FromModel!
-    let defaultDelegate = DefaultDelegate()
+    var rawModel = rawModels().vehicle
+    var model = decodedModels().vehicle
+    let defaultDelegate = MutableModelDelegateMock()
     let modifiedVehicle = Vehicle(name: "1201", code: nil, position: nil, capacity: 9001, onboard: nil,
                                   saturation: nil, lastStation: nil, nextStation: nil, route: nil, scheduleDelta: nil,
                                   heading: nil, speed: nil)
+    let mock = ConnectionMock()
+    var mutable: MutableVehicle!
+
     override func setUp() {
         super.setUp()
-        self.rawModel = rawModels().vehicle
-        self.model = decodedModels().vehicle
+        self.mutable = MutableVehicle(from: model, delegate: defaultDelegate, connection: mock)
     }
 
     func testApplyUpdatesProperty() {
-        let mutable = createMutable(defaultDelegate)
         XCTAssertEqual(mutable.capacity.value, 60)
         mutable.apply(modifiedVehicle)
         XCTAssertEqual(mutable.capacity.value, 9001)
@@ -35,25 +37,19 @@ class MutableVehicleTests: XCTestCase, GenericMutableModelTests {
 
 
     func testPropertyAccessDoesntStartProducer() {
-        let mutable = createMutable(defaultDelegate)
-        mutable.producer = SignalProducer<Vehicle, NoError>.init { observer, disposable in
+        mutable.producer = SignalProducer.init { observer, disposable in
             XCTFail("Signal producer started due to property access")
         }
         XCTAssertEqual(mutable.capacity.value, 60)
     }
 
-    func testProducerForwardsModels() {
-        let mock = ConnectionMock()
-        let mutable = MutableVehicle(from: modifiedVehicle, delegate: defaultDelegate, connection: mock)
-        let expectation = expectationWithDescription("Model forwarded")
-        mutable.producer.startWithNext { vehicle in
-            XCTAssertEqual(vehicle.capacity, self.model.capacity)
-            expectation.fulfill()
-        }
+    func testProducerApplies() {
+        // When producer is subscribed...
+        mutable.producer.start()
 
+        // Then the capacity value should change when an update is published.
+        XCTAssertEqual(mutable.capacity.value, 60)
+        mock.publish(to: model.topic, event: .Vehicle(.update(object: .Success(modifiedVehicle), originator: model.topic)))
         XCTAssertEqual(mutable.capacity.value, 9001)
-        mock.publish(to: model.topic, event: .Vehicle(.update(object: rawModel, originator: model.topic)))
-
-        waitForExpectationsWithTimeout(3, handler: nil)
     }
 }

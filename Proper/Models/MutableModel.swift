@@ -10,6 +10,7 @@ import Foundation
 import ReactiveCocoa
 import Curry
 import Result
+import Argo
 
 /// Encapsulations of Models that know how to more information about the entity they contain, and how to respond
 /// to changes in that entity's non-identifying properties. MutableModels are used in controllers, where their properties
@@ -22,10 +23,10 @@ protocol MutableModel: class, Hashable {
     var identifier: FromModel.Identifier { get }
     var topic: String { get }
 
-    /// Connects to Shark and sends updates for this entity to the model's properties. Properties of MutableModels are
-    /// bound at initialization to their producer, so it should only be accessed directly to listen for all changes to a
-    /// model that come in.
-    var producer: SignalProducer<FromModel, NoError> { get set }
+    /// A producer that, when started, connects to Shark and subscribes to this model's topic. Applies updates to the
+    /// model's properties as they are emitted, and calls `delegate.handleEvent(_:)` on this model's delegate on other
+    /// events. Calls `delegate.mutableModel(receivedError:)` on decode errors.
+    var producer: SignalProducer<TopicEvent, PSError> { get set }
     
     /// Initialize all `MutableProperty`s of this `MutableModel` from a corresponding model.
     init(from _: FromModel, delegate: MutableModelDelegate, connection: ConnectionType)
@@ -96,8 +97,6 @@ extension MutableModel {
 }
 
 protocol MutableModelDelegate {
-    /// Called whenever a model's producer encounters an unrecoverable error.
-    func mutableModel<M: MutableModel>(model: M, receivedError error: PSError)
     /// Called when a model's producer receives a topic event it does not handle.
     func mutableModel<M: MutableModel>(model: M, receivedTopicEvent event: TopicEvent)
 }

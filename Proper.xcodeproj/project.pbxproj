@@ -50,7 +50,7 @@
 		26B3DC561D170BAE001E29AA /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B3DC551D170BAE001E29AA /* Connection.swift */; };
 		26B9E1D31D35E0C500794EB6 /* SignalType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B9E1D21D35E0C500794EB6 /* SignalType.swift */; };
 		26C3C21B1D542ED3008E2A46 /* ConnectionMockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3C21A1D542ED3008E2A46 /* ConnectionMockTests.swift */; };
-		26C3C21C1D543CFF008E2A46 /* GenericMutableModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111D71D52EA6100D8F46B /* GenericMutableModelTests.swift */; };
+		26C3C21C1D543CFF008E2A46 /* MutableModelTestSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111D71D52EA6100D8F46B /* MutableModelTestSpec.swift */; };
 		26C598BC1C250D1E00BC9FE1 /* RouteBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C598BB1C250D1E00BC9FE1 /* RouteBadge.swift */; };
 		26D3E21F1D2776AB00F85712 /* Matchers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E21E1D2776AB00F85712 /* Matchers.swift */; };
 		26D3E2221D28DFE800F85712 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E2211D28DFE800F85712 /* Route.swift */; };
@@ -58,7 +58,6 @@
 		26D3E2261D28E0B000F85712 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E2251D28E0B000F85712 /* Point.swift */; };
 		26D3E2291D28E24B00F85712 /* Station.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E2281D28E24B00F85712 /* Station.swift */; };
 		26D3E22B1D28E25200F85712 /* Vehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E22A1D28E25200F85712 /* Vehicle.swift */; };
-		26D3E22D1D29BB6D00F85712 /* RPCResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E22C1D29BB6D00F85712 /* RPCResult.swift */; };
 		26D3E22F1D29BBA700F85712 /* MutableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E22E1D29BBA700F85712 /* MutableModel.swift */; };
 		26DBCF491D3FF59A00B22562 /* EventLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DBCF481D3FF59A00B22562 /* EventLog.swift */; };
 		26DFB6761C35A7F7006A8AE0 /* ScheduleRail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DFB6751C35A7F7006A8AE0 /* ScheduleRail.swift */; };
@@ -69,6 +68,7 @@
 		26E964F61D56386000F83797 /* MutableRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964F51D56386000F83797 /* MutableRouteTests.swift */; };
 		26E964F81D56388800F83797 /* MutableVehicleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964F71D56388800F83797 /* MutableVehicleTests.swift */; };
 		26E964FA1D56396F00F83797 /* MutableModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964F91D56396F00F83797 /* MutableModelTests.swift */; };
+		26E964FD1D58E00600F83797 /* MutableModelDelegateMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964FC1D58E00600F83797 /* MutableModelDelegateMock.swift */; };
 		3214B8DE3FF5F9DAC64C4F1E /* Pods_ProperTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F18E4F39BC780A247F3BA1E /* Pods_ProperTests.framework */; };
 		CFC1B8CBCF535D1C2D440D5F /* Pods_Proper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E5D7134B5937B58022529F /* Pods_Proper.framework */; };
 /* End PBXBuildFile section */
@@ -112,7 +112,7 @@
 		2650D28D1D176B65003758BF /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		2650ED9F1C41CFCC006CCD42 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		266111D11D51521500D8F46B /* UIColorDecodeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColorDecodeTests.swift; sourceTree = "<group>"; };
-		266111D71D52EA6100D8F46B /* GenericMutableModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GenericMutableModelTests.swift; sourceTree = "<group>"; };
+		266111D71D52EA6100D8F46B /* MutableModelTestSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableModelTestSpec.swift; sourceTree = "<group>"; };
 		266111DA1D52EB4400D8F46B /* Models.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		266111DC1D5378B500D8F46B /* NilConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NilConnection.swift; sourceTree = "<group>"; };
 		266BAE641D2B676F001C9EC8 /* UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
@@ -152,7 +152,6 @@
 		26D3E2251D28E0B000F85712 /* Point.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Point.swift; sourceTree = "<group>"; };
 		26D3E2281D28E24B00F85712 /* Station.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Station.swift; sourceTree = "<group>"; };
 		26D3E22A1D28E25200F85712 /* Vehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vehicle.swift; sourceTree = "<group>"; };
-		26D3E22C1D29BB6D00F85712 /* RPCResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RPCResult.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26D3E22E1D29BBA700F85712 /* MutableModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableModel.swift; sourceTree = "<group>"; };
 		26DBCF481D3FF59A00B22562 /* EventLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventLog.swift; sourceTree = "<group>"; };
 		26DFB6751C35A7F7006A8AE0 /* ScheduleRail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleRail.swift; sourceTree = "<group>"; };
@@ -163,6 +162,7 @@
 		26E964F51D56386000F83797 /* MutableRouteTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableRouteTests.swift; sourceTree = "<group>"; };
 		26E964F71D56388800F83797 /* MutableVehicleTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableVehicleTests.swift; sourceTree = "<group>"; };
 		26E964F91D56396F00F83797 /* MutableModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableModelTests.swift; sourceTree = "<group>"; };
+		26E964FC1D58E00600F83797 /* MutableModelDelegateMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableModelDelegateMock.swift; sourceTree = "<group>"; };
 		2CE8BA5C320FDC4A6AA55F58 /* Pods_ProperUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ProperUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		39B9CC6A8948B1CA574DBA9F /* Pods-ProperUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ProperUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ProperUITests/Pods-ProperUITests.release.xcconfig"; sourceTree = "<group>"; };
 		63811A4C3CF2A1AAC4E1C93E /* Pods-ProperTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ProperTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ProperTests/Pods-ProperTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -302,10 +302,10 @@
 		266111D91D52EB2300D8F46B /* Fixtures */ = {
 			isa = PBXGroup;
 			children = (
-				266111D71D52EA6100D8F46B /* GenericMutableModelTests.swift */,
 				266111DA1D52EB4400D8F46B /* Models.swift */,
 				266111DC1D5378B500D8F46B /* NilConnection.swift */,
 				2612F9FE1D2CCAE5005103E3 /* ConnectionMock.swift */,
+				26E964FC1D58E00600F83797 /* MutableModelDelegateMock.swift */,
 			);
 			path = Fixtures;
 			sourceTree = "<group>";
@@ -359,14 +359,15 @@
 				2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */,
 				26C3C21A1D542ED3008E2A46 /* ConnectionMockTests.swift */,
 				2612B5261D50490500BF671D /* ModelDecodeTests.swift */,
-				26E964F51D56386000F83797 /* MutableRouteTests.swift */,
 				26E964F91D56396F00F83797 /* MutableModelTests.swift */,
+				26E964F51D56386000F83797 /* MutableRouteTests.swift */,
 				26E964F31D56382300F83797 /* MutableStationTests.swift */,
 				26E964F71D56388800F83797 /* MutableVehicleTests.swift */,
 				2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */,
 				266111D11D51521500D8F46B /* UIColorDecodeTests.swift */,
 				2612B5281D504F1D00BF671D /* Data */,
 				266111D91D52EB2300D8F46B /* Fixtures */,
+				26E964FB1D58DFBC00F83797 /* Specs */,
 			);
 			path = ProperTests;
 			sourceTree = "<group>";
@@ -384,7 +385,6 @@
 			children = (
 				26B3DC551D170BAE001E29AA /* Connection.swift */,
 				264A13C81D2625CE00B44D47 /* TopicEvent.swift */,
-				26D3E22C1D29BB6D00F85712 /* RPCResult.swift */,
 			);
 			path = Connection;
 			sourceTree = "<group>";
@@ -411,6 +411,14 @@
 				26D3E2251D28E0B000F85712 /* Point.swift */,
 			);
 			name = Support;
+			sourceTree = "<group>";
+		};
+		26E964FB1D58DFBC00F83797 /* Specs */ = {
+			isa = PBXGroup;
+			children = (
+				266111D71D52EA6100D8F46B /* MutableModelTestSpec.swift */,
+			);
+			path = Specs;
 			sourceTree = "<group>";
 		};
 		B5E33AC07E572163AA4EF035 /* Pods */ = {
@@ -723,7 +731,6 @@
 				26D3E2221D28DFE800F85712 /* Route.swift in Sources */,
 				26A4B7AF1D32251100264F0D /* MutableStation.swift in Sources */,
 				26A4B7B11D32CEC800264F0D /* MutableRoute.swift in Sources */,
-				26D3E22D1D29BB6D00F85712 /* RPCResult.swift in Sources */,
 				26A424E51BD2D3F20035754F /* ArrivalTableViewCell.swift in Sources */,
 				26D3E22B1D28E25200F85712 /* Vehicle.swift in Sources */,
 				268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */,
@@ -754,11 +761,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				26C3C21C1D543CFF008E2A46 /* GenericMutableModelTests.swift in Sources */,
+				26C3C21C1D543CFF008E2A46 /* MutableModelTestSpec.swift in Sources */,
 				266111DD1D5378B500D8F46B /* NilConnection.swift in Sources */,
 				264754901D551411000F0831 /* ArrivalsTableViewControllerTests.swift in Sources */,
 				26E964FA1D56396F00F83797 /* MutableModelTests.swift in Sources */,
 				266111DE1D5380D300D8F46B /* ConnectionMock.swift in Sources */,
+				26E964FD1D58E00600F83797 /* MutableModelDelegateMock.swift in Sources */,
 				2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */,
 				26E964F81D56388800F83797 /* MutableVehicleTests.swift in Sources */,
 				266111D21D51521500D8F46B /* UIColorDecodeTests.swift in Sources */,

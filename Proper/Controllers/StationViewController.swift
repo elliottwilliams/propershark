@@ -29,7 +29,7 @@ class StationViewController: UIViewController, ProperViewController, ArrivalsTab
         super.viewDidLoad()
 
         // Subscribe to station updates.
-        station.producer.startWithNext(station.apply)
+        station.producer.startWithFailed(self.displayError)
         
         // Set the navigation bar's title to the name of the stop.
         station.name.map { self.nav.title = $0 }

@@ -39,31 +39,25 @@ class MutableVehicle: MutableModel {
     var speed: MutableProperty<Double?> = .init(nil)
 
     // MARK: Signal Producer
-    lazy var producer: SignalProducer<Vehicle, NoError> = {
+    lazy var producer: SignalProducer<TopicEvent, PSError> = {
         let now = self.connection.call("meta.last_event", args: [self.topic, self.topic])
         let future = self.connection.subscribe(self.topic)
         return SignalProducer<SignalProducer<TopicEvent, PSError>, PSError>(values: [now, future])
             .flatten(.Merge)
-            .map { (event: TopicEvent) -> Vehicle? in
+            .logEvents(identifier: "MutableVehicle.producer", logger: logSignalEvent)
+            .attempt { event in
+                if let error = event.error {
+                    return .Failure(PSError(code: .decodeFailure, associated: error))
+                }
+
                 switch event {
-                case .Meta(.lastEvent(let args, _)):
-                    guard let object = args.first else { return nil }
-                    return decode(object)
-                case .Vehicle(.update(let object, _)):
-                    return decode(object)
+                case .Vehicle(.update(let vehicle, _)):
+                    self.apply(vehicle.value!)
                 default:
                     self.delegate.mutableModel(self, receivedTopicEvent: event)
-                    return nil
                 }
+                return .Success()
             }
-            .ignoreNil()
-            .retry(MutableVehicle.retryAttempts)
-            .flatMapError { (error: PSError) -> SignalProducer<Vehicle, NoError> in
-                self.delegate.mutableModel(self, receivedError: error)
-                return SignalProducer<Vehicle, NoError>.empty
-            .on(next: { self.apply($0) })
-            .logEvents(identifier: "MutableVehicle.producer", logger: logSignalEvent)
-        }
     }()
 
     // MARK: Functions

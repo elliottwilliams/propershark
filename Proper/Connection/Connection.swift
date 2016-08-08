@@ -13,6 +13,12 @@ import ReactiveCocoa
 typealias WampArgs = [AnyObject]
 typealias WampKwargs = [NSObject: AnyObject]
 
+struct WampRPCCall {
+    let topic: String
+    let args: WampArgs
+    let kwargs: WampKwargs
+}
+
 // All connections conform to this protocol, which allows ConnectionMock to be injected.
 protocol ConnectionType {
     func call(procedure: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, PSError>
@@ -82,20 +88,20 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
     }
 
     /// Call `procdure` and forward the result. Disposing the signal created will cancel the RPC call.
-    func call(procedure: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> SignalProducer<TopicEvent, PSError> {
+    func call(topic: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> SignalProducer<TopicEvent, PSError> {
         return self.producer.map { wamp in
-        wamp.callWithSignal(procedure, args, kwargs, [:])
+        wamp.callWithSignal(topic, args, kwargs, [:])
             .timeoutWithError(PSError(code: .timeout), afterInterval: 10.0, onScheduler: QueueScheduler.mainQueueScheduler)
         }
         .flatten(.Latest)
         .attemptMap { wampEvent in
-            if let event = TopicEvent.parseFromRPC(procedure, event: wampEvent) {
+            if let event = TopicEvent.parseFromRPC(topic, args, kwargs, wampEvent) {
                 return .Success(event)
             } else {
                 return .Failure(PSError(code: .parseFailure))
             }
         }
-        .logEvents(identifier: "Connection.call(procedure:\"\(procedure)\")", logger: logSignalEvent)
+        .logEvents(identifier: "Connection.call(procedure:\"\(topic)\")", logger: logSignalEvent)
     }
     
     // MARK: MDWamp Delegate

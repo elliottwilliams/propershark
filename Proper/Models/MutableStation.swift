@@ -32,32 +32,25 @@ class MutableStation: MutableModel {
     var vehicles: MutableProperty<Set<MutableVehicle>?> = .init(nil)
 
     // MARK: Signal Producer
-    lazy var producer: SignalProducer<Station, NoError> = {
+    lazy var producer: SignalProducer<TopicEvent, PSError> = {
         let now = self.connection.call("meta.last_event", args: [self.topic, self.topic])
         let future = self.connection.subscribe(self.topic)
         return SignalProducer<SignalProducer<TopicEvent, PSError>, PSError>(values: [now, future])
             .flatten(.Merge)
-            .map { (event: TopicEvent) -> Station? in
-                switch event {
-                case .Meta(.lastEvent(let args, _)):
-                    guard let object = args.first else { return nil }
-                    return decode(object)
-                case .Station(.update(let object, _)):
-                    return decode(object)
-                default:
-                    // Send this event up to the delegate for possible processing
-                    self.delegate.mutableModel(self, receivedTopicEvent: event)
-                    // its value is now meaningless to us, however
-                    return nil
-                }
-            }
-            .ignoreNil()
             .logEvents(identifier: "MutableStation.producer", logger: logSignalEvent)
-            .retry(MutableStation.retryAttempts)
-            .flatMapError { (error: PSError) -> SignalProducer<Station, NoError> in
-                self.delegate.mutableModel(self, receivedError: error)
-                return SignalProducer<Station, NoError>.empty
-        }
+            .attempt { event in
+                if let error = event.error {
+                    return .Failure(PSError(code: .decodeFailure, associated: error))
+                }
+
+                switch event {
+                case .Station(.update(let station, _)):
+                    self.apply(station.value!)
+                default:
+                    self.delegate.mutableModel(self, receivedTopicEvent: event)
+                }
+                return .Success()
+            }
     }()
 
     required init(from station: Station, delegate: MutableModelDelegate, connection: ConnectionType) {

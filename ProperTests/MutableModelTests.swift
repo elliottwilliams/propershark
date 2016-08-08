@@ -15,7 +15,7 @@ class MutableModelTests: XCTestCase {
 
     var route: MutableRoute!
     var mock: ConnectionMock!
-    let defaultDelegate = DefaultDelegate()
+    let defaultDelegate = MutableModelDelegateMock()
 
     var stations: [String]!
 
