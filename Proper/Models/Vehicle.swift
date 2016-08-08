@@ -52,15 +52,28 @@ struct Vehicle: Model {
     var identifier: String { return self.name }
     var topic: String { return Vehicle.topicFor(self.identifier) }
     static var fullyQualified: String { return "Shark::Vehicle" }
-}
 
-extension Vehicle {
-    init(id name: String) {
-        self.init(name: name, code: nil, position: nil, capacity: nil, onboard: nil, saturation: nil,
-                  lastStation: nil, nextStation: nil, route: nil, scheduleDelta: nil, heading: nil,
-                  speed: nil)
+    init(name: String, code: Int? = nil, position: Point? = nil, capacity: Int? = nil, onboard: Int? = nil,
+         saturation: Double? = nil, lastStation: Station? = nil, nextStation: Station? = nil, route: Route? = nil,
+         scheduleDelta: Double? = nil, heading: Double? = nil, speed: Double? = nil)
+    {
+        self.name = name
+        self.code = code
+        self.position = position
+        self.capacity = capacity
+        self.onboard = onboard
+        self.saturation = saturation
+        self.lastStation = lastStation
+        self.nextStation = nextStation
+        self.route = route
+        self.scheduleDelta = scheduleDelta
+        self.heading = heading
+        self.speed = nil
     }
 
+    init(id name: String) {
+        self.init(name: name)
+    }
 }
 
 extension Vehicle: Decodable {

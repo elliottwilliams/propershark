@@ -31,12 +31,23 @@ struct Route: Model {
     static var fullyQualified: String { return "Shark::Route" }
     var identifier: Identifier { return self.shortName }
     var topic: String { return Route.topicFor(self.identifier) }
-}
 
-extension Route {
+    init(shortName: String, code: Int? = nil, name: String? = nil, description: String? = nil, color: UIColor? = nil,
+         path: [Point]? = nil, stations: [Station]? = nil, vehicles: [Vehicle]? = nil, itinerary: [Station]? = nil)
+    {
+        self.shortName = shortName
+        self.code = code
+        self.name = name
+        self.description = description
+        self.color = color
+        self.path = path
+        self.stations = stations
+        self.vehicles = vehicles
+        self.itinerary = itinerary
+    }
+
     init(id shortName: String) {
-        self.init(shortName: shortName, code: nil, name: nil, description: nil, color: nil,
-                  path: nil, stations: nil, vehicles: nil, itinerary: nil)
+        self.init(shortName: shortName)
     }
 }
 

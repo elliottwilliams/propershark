@@ -11,12 +11,8 @@ import XCTest
 
 // MutableModel tests conform to this, which provides shared utilities between MutableModel tests.
 protocol GenericMutableModelTests {
-    associatedtype Model: MutableModel
-    var rawModel: AnyObject! { get set }
-    var model: Model.FromModel! { get set }
-
     func testApplyUpdatesProperty()
-    func testProducerForwardsModels()
+    func testProducerApplies()
     func testPropertyAccessDoesntStartProducer()
 }
 

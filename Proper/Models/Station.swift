@@ -27,12 +27,20 @@ struct Station: Model {
     static var fullyQualified: String { return "Shark::Station" }
     var identifier: Identifier { return self.stopCode }
     var topic: String { return Station.topicFor(self.identifier) }
-}
 
-extension Station {
+    init(stopCode: String, name: String? = nil, description: String? = nil, position: Point? = nil,
+         routes: [Route]? = nil, vehicles: [Vehicle]? = nil)
+    {
+        self.stopCode = stopCode
+        self.name = name
+        self.description = description
+        self.position = position
+        self.routes = routes
+        self.vehicles = vehicles
+    }
+
     init(id stopCode: String) {
-        self.init(stopCode: stopCode, name: nil, description: nil, position: nil, routes: nil,
-                  vehicles: nil)
+        self.init(stopCode: stopCode)
     }
 }
 
