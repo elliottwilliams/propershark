@@ -11,7 +11,7 @@ import MDWamp
 import Argo
 
 
-enum TopicEvent {
+enum TopicEvent: CustomStringConvertible {
     case Vehicle(VehicleEvent)
     enum VehicleEvent {
         case update(object: Decoded<Proper.Vehicle>, originator: String)
@@ -56,32 +56,59 @@ enum TopicEvent {
         // TODO: In Swift 3, case statements with multiple patterns can contain variables, so the number of cases here can
         // be dramatically reduced (SE-0043).
         switch self {
-        case let .Vehicle(.update(decoded, _)):
-            return decoded.error
-        case let .Vehicle(.activate(decoded, _)):
-            return decoded.error
-        case let .Vehicle(.deactivate(decoded, _)):
-            return decoded.error
-        case let .Station(.update(decoded, _)):
-            return decoded.error
-        case let .Station(.activate(decoded, _)):
-            return decoded.error
-        case let .Station(.depart(decoded, _)):
-            return decoded.error
-        case let .Station(.arrive(decoded, _)):
-            return decoded.error
-        case let .Station(.approach(decoded, _, _)):
-            return decoded.error
-        case let .Route(.update(decoded, _)):
-            return decoded.error
-        case let .Route(.activate(decoded, _)):
-            return decoded.error
-        case let .Route(.deactivate(decoded, _)):
-            return decoded.error
-        case let .Route(.vehicleUpdate(decoded, _)):
-            return decoded.error
+        case let .Vehicle(.update(decoded, _)): 	    return decoded.error
+        case let .Vehicle(.activate(decoded, _)): 	    return decoded.error
+        case let .Vehicle(.deactivate(decoded, _)): 	return decoded.error
+        case let .Station(.update(decoded, _)): 	    return decoded.error
+        case let .Station(.activate(decoded, _)): 	    return decoded.error
+        case let .Station(.depart(decoded, _)): 	    return decoded.error
+        case let .Station(.arrive(decoded, _)): 	    return decoded.error
+        case let .Station(.approach(decoded, _, _)): 	return decoded.error
+        case let .Route(.update(decoded, _)): 	        return decoded.error
+        case let .Route(.activate(decoded, _)): 	    return decoded.error
+        case let .Route(.deactivate(decoded, _)): 	    return decoded.error
+        case let .Route(.vehicleUpdate(decoded, _)): 	return decoded.error
         default:
             return nil
+        }
+    }
+
+    var description: String {
+        switch self {
+        case let .Vehicle(.update(decoded, originator)):
+            return "vehicle.update(\(decoded.value?.identifier)) <- \(originator)"
+        case let .Vehicle(.activate(decoded, originator)): 	    
+            return "vehicle.activate(\(decoded.value?.identifier)) <- \(originator)"
+        case let .Vehicle(.deactivate(decoded, originator)):     
+            return "vehicle.deactivate(\(decoded.value?.identifier)) <- \(originator)"
+        case let .Station(.update(decoded, originator)): 	    
+            return "station.update(\(decoded.value?.identifier)) <- \(originator)"
+        case let .Station(.activate(decoded, originator)): 	    
+            return "station.activate(\(decoded.value?.identifier)) <- \(originator)"
+        case let .Station(.deactivate(decoded, originator)):
+            return "station.deactivate(\(decoded.value?.identifier)) <- \(originator)"
+        case let .Station(.depart(decoded, originator)):
+            return "station.depart(\(decoded.value?.identifier)) <- \(originator)"
+        case let .Station(.arrive(decoded, originator)): 	    
+            return "station.arrive(\(decoded.value?.identifier)) <- \(originator)"
+        case let .Station(.approach(decoded, originator, _)):    
+            return "station.approach(\(decoded.value?.identifier)) <- \(originator)"
+        case let .Route(.update(decoded, originator)): 	        
+            return "route.update(\(decoded.value?.identifier)) <- \(originator)"
+        case let .Route(.activate(decoded, originator)): 	    
+            return "route.activate(\(decoded.value?.identifier)) <- \(originator)"
+        case let .Route(.deactivate(decoded, originator)): 	    
+            return "route.deactivate(\(decoded.value?.identifier)) <- \(originator)"
+        case let .Route(.vehicleUpdate(decoded, originator)):    
+            return "route.vehicleUpdate(\(decoded.value?.identifier)) <- \(originator)"
+        case let .Agency(.vehicles(list)):
+            return "agency.vehicles (\(list.count) vehicles)"
+        case let .Agency(.stations(list)):
+            return "agency.stations (\(list.count) stations)"
+        case let .Agency(.routes(list)):
+            return "agency.routes (\(list.count) routes)"
+        case .Meta(.unknownLastEvent(_, _)):
+            return "meta.unknownLastEvent"
         }
     }
     
