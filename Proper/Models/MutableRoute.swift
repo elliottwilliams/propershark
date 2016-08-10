@@ -15,6 +15,7 @@ class MutableRoute: MutableModel {
     typealias FromModel = Route
 
     // MARK: Internal Properties
+    internal let config: Config
     internal let connection: ConnectionType
     internal var delegate: MutableModelDelegate
     private static let retryAttempts = 3
@@ -39,7 +40,7 @@ class MutableRoute: MutableModel {
         let future = self.connection.subscribe(self.topic)
         return SignalProducer<SignalProducer<TopicEvent, PSError>, PSError>(values: [now, future])
             .flatten(.Merge)
-            .logEvents(identifier: "MutableRoute.producer", logger: logSignalEvent)
+            .logEvents(identifier: "MutableRoute.producer", logger: logSignalEvent(self.config))
             .attempt { event in
                 if let error = event.error {
                     return .Failure(PSError(code: .decodeFailure, associated: error))
@@ -58,10 +59,13 @@ class MutableRoute: MutableModel {
     }()
 
     // MARK: Functions
-    required init(from route: Route, delegate: MutableModelDelegate, connection: ConnectionType) {
+    required init(from route: Route, delegate: MutableModelDelegate, connection: ConnectionType,
+                       config: Config = .sharedInstance)
+    {
         self.shortName = route.shortName
         self.delegate = delegate
         self.connection = connection
+        self.config = config
         apply(route)
 
         // Create back-references to this MutableRoute on all vehicles associated with the route. 

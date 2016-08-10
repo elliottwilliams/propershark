@@ -17,6 +17,7 @@ class MutableVehicle: MutableModel, Comparable {
 
     // MARK: Internal Properties
     internal let connection: ConnectionType
+    internal let config: Config
     internal var delegate: MutableModelDelegate
     private static let retryAttempts = 3
 
@@ -44,7 +45,7 @@ class MutableVehicle: MutableModel, Comparable {
         let future = self.connection.subscribe(self.topic)
         return SignalProducer<SignalProducer<TopicEvent, PSError>, PSError>(values: [now, future])
             .flatten(.Merge)
-            .logEvents(identifier: "MutableVehicle.producer", logger: logSignalEvent)
+            .logEvents(identifier: "MutableVehicle.producer", logger: logSignalEvent(self.config))
             .attempt { event in
                 if let error = event.error {
                     return .Failure(PSError(code: .decodeFailure, associated: error))
@@ -61,10 +62,12 @@ class MutableVehicle: MutableModel, Comparable {
     }()
 
     // MARK: Functions
-    required init(from vehicle: Vehicle, delegate: MutableModelDelegate, connection: ConnectionType) {
+    required init(from vehicle: Vehicle, delegate: MutableModelDelegate, connection: ConnectionType,
+                       config: Config = .sharedInstance) {
         self.name = vehicle.name
         self.delegate = delegate
         self.connection = connection
+        self.config = config
         apply(vehicle)
     }
 

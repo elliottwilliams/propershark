@@ -29,14 +29,16 @@ protocol MutableModel: class, Hashable {
     var producer: SignalProducer<TopicEvent, PSError> { get set }
     
     /// Initialize all `MutableProperty`s of this `MutableModel` from a corresponding model.
-    init(from _: FromModel, delegate: MutableModelDelegate, connection: ConnectionType)
+    init(from _: FromModel, delegate: MutableModelDelegate, connection: ConnectionType, config: Config)
     var delegate: MutableModelDelegate { get }
     
     /// Update state to match the model given. Returns a failure result if the model given doesn't have the same
     /// identifier.
     func apply(_: FromModel) -> Result<(), PSError>
 
+    var config: Config { get }
     var connection: ConnectionType { get }
+
     var hashValue: Int { get }
 }
 
@@ -44,7 +46,7 @@ extension MutableModel {
 
     /// Create a MutableModel from a static model and attach it to the calling MutableModel's delegate.
     internal func attachMutable<M: MutableModel>(from model: M.FromModel) -> M {
-        return M(from: model, delegate: self.delegate, connection: self.connection)
+        return M(from: model, delegate: self.delegate, connection: self.connection, config: self.config)
     }
 
     /// Attempt state to match the model given. Convenience form that returns Void.

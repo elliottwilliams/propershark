@@ -66,7 +66,7 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
             return SignalProducer<MDWamp, PSError>.init(error: PSError(code: .maxConnectionFailures))
         }
         // ...and logs all events for debugging
-        .logEvents(identifier: "Connection.connectionProducer", logger: logSignalEvent)
+        .logEvents(identifier: "Connection.connectionProducer", logger: logSignalEvent(config))
     }
     
     // MARK: Communication Methods
@@ -84,7 +84,7 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
                 return .Failure(PSError(code: .parseFailure))
             }
         }
-        .logEvents(identifier: "Connection.subscribe(topic:\"\(topic)\")", logger: logSignalEvent)
+        .logEvents(identifier: "Connection.subscribe", logger: logSignalEvent(config))
     }
 
     /// Call `procdure` and forward the result. Disposing the signal created will cancel the RPC call.
@@ -101,7 +101,7 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
                 return .Failure(PSError(code: .parseFailure))
             }
         }
-        .logEvents(identifier: "Connection.call(procedure:\"\(topic)\")", logger: logSignalEvent)
+        .logEvents(identifier: "Connection.call", logger: logSignalEvent(config))
     }
     
     // MARK: MDWamp Delegate
@@ -128,8 +128,8 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
 // MARK: MDWamp Extensions
 extension MDWamp {
     /// Follows semantics of `call` but returns a signal producer, rather than taking a result callback.
-    func callWithSignal(procUri: String, _ args: WampArgs, _ argsKw: WampKwargs, _ options: [NSObject: AnyObject])
-        -> SignalProducer<MDWampResult, PSError>
+    func callWithSignal(procUri: String, _ args: WampArgs, _ argsKw: WampKwargs, _ options: [NSObject: AnyObject],
+                        config: Config = .sharedInstance) -> SignalProducer<MDWampResult, PSError>
     {
         return SignalProducer<MDWampResult, PSError> { observer, _ in
             NSLog("Calling \(procUri)")
@@ -141,10 +141,10 @@ extension MDWamp {
                 observer.sendNext(result)
                 observer.sendCompleted()
             }
-        }.logEvents(identifier: "MDWamp.callWithSignal", logger: logSignalEvent)
+        }.logEvents(identifier: "MDWamp.callWithSignal", logger: logSignalEvent(config))
     }
     
-    func subscribeWithSignal(topic: String) -> SignalProducer<MDWampEvent, PSError> {
+    func subscribeWithSignal(topic: String, config: Config = .sharedInstance) -> SignalProducer<MDWampEvent, PSError> {
         return SignalProducer<MDWampEvent, PSError> { observer, disposable in
             self.subscribe(
                 topic,
@@ -160,6 +160,6 @@ extension MDWamp {
                     if error != nil { observer.sendFailed(PSError(error: error, code: .mdwampError, associated: topic)) }
                 }
             }
-        }.logEvents(identifier: "MDWamp.subscribeWithSignal", logger: logSignalEvent)
+        }.logEvents(identifier: "MDWamp.subscribeWithSignal", logger: logSignalEvent(config))
     }
 }

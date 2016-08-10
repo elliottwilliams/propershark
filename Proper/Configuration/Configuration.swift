@@ -14,7 +14,6 @@ struct Config {
     let environment = Environments.dev
     enum Environments {
         case dev
-        case test
         case prod
     }
     
@@ -30,4 +29,15 @@ struct Config {
         server: NSURL(string: "ws://shark-nyc1.transio.us:8080/ws")!,
         realm: "realm1"
     )
+
+    let ignoreSignalProducers = Set(
+        arrayLiteral:
+            "MDWamp.subscribeWithSignal",
+            "MDWamp.callWithSignal",
+            "Connection.connectionProducer"
+    )
+}
+
+func foo() {
+    Config.sharedInstance
 }

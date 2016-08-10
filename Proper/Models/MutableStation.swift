@@ -16,6 +16,7 @@ class MutableStation: MutableModel {
 
     // MARK: Interal Properties
     internal let connection: ConnectionType
+    internal let config: Config
     internal var delegate: MutableModelDelegate
     private static let retryAttempts = 3
 
@@ -37,7 +38,7 @@ class MutableStation: MutableModel {
         let future = self.connection.subscribe(self.topic)
         return SignalProducer<SignalProducer<TopicEvent, PSError>, PSError>(values: [now, future])
             .flatten(.Merge)
-            .logEvents(identifier: "MutableStation.producer", logger: logSignalEvent)
+            .logEvents(identifier: "MutableStation.producer", logger: logSignalEvent(self.config))
             .attempt { event in
                 if let error = event.error {
                     return .Failure(PSError(code: .decodeFailure, associated: error))
@@ -53,10 +54,12 @@ class MutableStation: MutableModel {
             }
     }()
 
-    required init(from station: Station, delegate: MutableModelDelegate, connection: ConnectionType) {
+    required init(from station: Station, delegate: MutableModelDelegate, connection: ConnectionType,
+                       config: Config = .sharedInstance) {
         self.stopCode = station.stopCode
         self.delegate = delegate
         self.connection = connection
+        self.config = config
         apply(station)
     }
 
