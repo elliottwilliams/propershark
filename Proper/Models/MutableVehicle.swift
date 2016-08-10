@@ -12,7 +12,7 @@ import Curry
 import Result
 import Argo
 
-class MutableVehicle: MutableModel {
+class MutableVehicle: MutableModel, Comparable {
     typealias FromModel = Vehicle
 
     // MARK: Internal Properties
@@ -107,4 +107,8 @@ class MutableVehicle: MutableModel {
 
         return .Success()
     }
+}
+
+func < (a: MutableVehicle, b: MutableVehicle) -> Bool {
+    return a.name < b.name
 }

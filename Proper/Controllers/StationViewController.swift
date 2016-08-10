@@ -24,12 +24,10 @@ class StationViewController: UIViewController, ProperViewController, ArrivalsTab
     // MARK: Internal properties
     internal lazy var connection: ConnectionType = Connection.sharedInstance
     internal lazy var config = Config.sharedInstance
+    internal let disposable = CompositeDisposable()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Subscribe to station updates.
-        station.producer.startWithFailed(self.displayError)
         
         // Set the navigation bar's title to the name of the stop.
         station.name.map { self.nav.title = $0 }
@@ -57,6 +55,18 @@ class StationViewController: UIViewController, ProperViewController, ArrivalsTab
         table.willMoveToParentViewController(self)
         self.addChildViewController(table)
         table.didMoveToParentViewController(self)
+    }
+
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // Subscribe to station updates.
+        disposable += station.producer.startWithFailed(self.displayError)
+    }
+
+    override func viewWillDisappear(animated: Bool) {
+        disposable.dispose()
+        super.viewWillDisappear(animated)
     }
 
     // MARK: Delegate methods

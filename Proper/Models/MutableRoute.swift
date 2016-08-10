@@ -65,7 +65,7 @@ class MutableRoute: MutableModel {
         apply(route)
 
         // Create back-references to this MutableRoute on all vehicles associated with the route. 
-        self.vehicles.producer.ignoreNil().flatten(.Latest).startWithNext { vehicle in
+        self.vehicles.producer.ignoreNil().flatten(.Latest).startWithNext { [weak self] vehicle in
             vehicle.route.modify { $0 ?? self }
         }
     }

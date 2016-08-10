@@ -47,7 +47,6 @@ class StartListViewController: UITableViewController, ProperViewController {
             .on(next: { self.routes = $0; self.tableView.reloadData() },
                 failed: self.displayError)
             .takeUntil(self.onDisappear())
-            .logEvents(identifier: "routeSignal", logger: logSignalEvent)
     }()
 
     private lazy var stationSignal: SignalProducer<[Station], PSError> = {
@@ -60,7 +59,6 @@ class StartListViewController: UITableViewController, ProperViewController {
             .on(next: { self.stations = $0; self.tableView.reloadData() },
                 failed: self.displayError)
             .takeUntil(self.onDisappear())
-            .logEvents(identifier: "stationSignal", logger: logSignalEvent)
     }()
 
     private lazy var vehicleSignal: SignalProducer<[Vehicle], PSError> = {
@@ -73,7 +71,16 @@ class StartListViewController: UITableViewController, ProperViewController {
             .on(next: { self.vehicles = $0; self.tableView.reloadData() },
                 failed: self.displayError)
             .takeUntil(self.onDisappear())
-            .logEvents(identifier: "vehicleSignal", logger: logSignalEvent)
+    }()
+
+    lazy var pinnedStations: AnyProperty<[Station]> = {
+        let pinned = Set(["BUS313NE"])
+        let producer = self.stationSignal.map { stations in
+            stations.filter { pinned.contains($0.stopCode) }
+        }.flatMapError { error in
+            return SignalProducer<[Station], NoError>.empty
+        }
+        return AnyProperty(initialValue: [], producer: producer)
     }()
 
     // MARK: View events
@@ -85,35 +92,43 @@ class StartListViewController: UITableViewController, ProperViewController {
         self.routeSignal.start()
         self.stationSignal.start()
         self.vehicleSignal.start()
+
+        self.pinnedStations.producer.startWithNext { _ in
+            self.tableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Automatic)
+        }
     }
     
     // MARK: - Table view data source
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return [routes.count, vehicles.count, stations.count][section]
+        return [pinnedStations.value.count, routes.count, vehicles.count, stations.count][section]
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
     
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return ["Routes", "Vehicles", "Stations"][section]
+        return ["Pinned Stations", "Routes", "Vehicles", "Stations"][section]
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        var cell:UITableViewCell? = nil
+        var cell: UITableViewCell? = nil
         
         switch (indexPath.section) {
         case 0:
+            cell = tableView.dequeueReusableCellWithIdentifier("PinnedStationPrototypeCell", forIndexPath: indexPath)
+            let station = pinnedStations.value[indexPath.row]
+            cell!.textLabel?.text = station.name
+        case 1:
             cell = tableView.dequeueReusableCellWithIdentifier("RoutePrototypeCell", forIndexPath: indexPath)
             let route = routes[indexPath.row]
             cell!.textLabel?.text = route.name
-        case 1:
+        case 2:
             cell = tableView.dequeueReusableCellWithIdentifier("VehiclePrototypeCell", forIndexPath: indexPath)
             let vehicle = vehicles[indexPath.row]
             cell!.textLabel?.text = vehicle.name
-        case 2:
+        case 3:
             cell = tableView.dequeueReusableCellWithIdentifier("StationPrototypeCell", forIndexPath: indexPath)
             let station = stations[indexPath.row]
             cell!.textLabel?.text = station.name
@@ -137,6 +152,12 @@ class StartListViewController: UITableViewController, ProperViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         guard let id = segue.identifier else { return }
         switch id {
+        case "ShowPinnedStation":
+            guard let dest = segue.destinationViewController as? StationViewController,
+                let index = self.tableView.indexPathForSelectedRow
+                else { break }
+            let station = self.pinnedStations.value[index.row]
+            dest.station = MutableStation(from: station, delegate: dest, connection: Connection.sharedInstance)
         case "ShowStationAfterSelectionFromList":
             guard let dest = segue.destinationViewController as? StationViewController,
                 let index = self.tableView.indexPathForSelectedRow

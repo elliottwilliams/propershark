@@ -29,22 +29,24 @@
                             </mask>
                         </variation>
                     </view>
-                    <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h5M-sx-SHG">
-                        <rect key="frame" x="68" y="12" width="90" height="20"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="442" id="5sY-oX-xtj"/>
-                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="90" id="ED4-Cx-aOP"/>
-                        </constraints>
-                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                        <nil key="highlightedColor"/>
-                        <variation key="default">
-                            <mask key="constraints">
-                                <exclude reference="5sY-oX-xtj"/>
-                            </mask>
-                        </variation>
-                    </label>
-                    <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="t4C-ob-D8K">
+                    <stackView opaque="NO" contentMode="scaleToFill" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="zAw-iH-6R1">
+                        <rect key="frame" x="68" y="12" width="215" height="20"/>
+                        <subviews>
+                            <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Route Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h5M-sx-SHG">
+                                <rect key="frame" x="0.0" y="0.0" width="90" height="20"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="(#Vehicle Name)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3Vr-sS-1rU" userLabel="Vehicle Name">
+                                <rect key="frame" x="95" y="0.0" width="120" height="20"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                    </stackView>
+                    <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="0 min" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="t4C-ob-D8K">
                         <rect key="frame" x="494" y="12" width="98" height="20"/>
                         <constraints>
                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="98" id="OxQ-VC-1wb"/>
@@ -64,18 +66,16 @@
                 </subviews>
                 <constraints>
                     <constraint firstItem="ZP1-Jh-1Ko" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="8" id="57f-g6-VZi"/>
-                    <constraint firstItem="h5M-sx-SHG" firstAttribute="leading" secondItem="ZP1-Jh-1Ko" secondAttribute="trailing" constant="8" id="As8-CP-Pbg"/>
-                    <constraint firstItem="t4C-ob-D8K" firstAttribute="leading" secondItem="h5M-sx-SHG" secondAttribute="trailing" id="KmX-or-IDy"/>
                     <constraint firstItem="ZP1-Jh-1Ko" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="-8" id="XGg-NU-dUP"/>
+                    <constraint firstItem="zAw-iH-6R1" firstAttribute="leading" secondItem="ZP1-Jh-1Ko" secondAttribute="trailing" constant="8" id="a25-3U-pik"/>
                     <constraint firstItem="t4C-ob-D8K" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="4" id="iBK-ia-JjS"/>
                     <constraint firstItem="ZP1-Jh-1Ko" firstAttribute="width" secondItem="ZP1-Jh-1Ko" secondAttribute="height" multiplier="1:1" id="jHD-NI-X6Y"/>
                     <constraint firstItem="t4C-ob-D8K" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" id="joE-ID-gUG"/>
-                    <constraint firstItem="h5M-sx-SHG" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="4" id="wEx-f1-FeN"/>
+                    <constraint firstItem="zAw-iH-6R1" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="4" id="t7g-va-5y1"/>
                 </constraints>
                 <variation key="default">
                     <mask key="constraints">
                         <exclude reference="jHD-NI-X6Y"/>
-                        <exclude reference="KmX-or-IDy"/>
                     </mask>
                 </variation>
             </tableViewCellContentView>
@@ -84,6 +84,7 @@
                 <outlet property="ornament" destination="ZP1-Jh-1Ko" id="lcA-Iz-uaq"/>
                 <outlet property="routeTimer" destination="t4C-ob-D8K" id="tV6-LP-3Ln"/>
                 <outlet property="routeTitle" destination="h5M-sx-SHG" id="nk8-ol-Hsb"/>
+                <outlet property="vehicleName" destination="3Vr-sS-1rU" id="PLq-nz-17Z"/>
             </connections>
             <point key="canvasLocation" x="465.5" y="341"/>
         </tableViewCell>

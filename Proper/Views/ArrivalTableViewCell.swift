@@ -14,6 +14,7 @@ class ArrivalTableViewCell: UITableViewCell {
     @IBOutlet weak var routeTimer: UILabel!
     @IBOutlet weak var routeTitle: UILabel!
     @IBOutlet weak var ornament: UIView!
+    @IBOutlet weak var vehicleName: UILabel!
     
     var badge: RouteBadge!
 
@@ -29,11 +30,5 @@ class ArrivalTableViewCell: UITableViewCell {
         self.ornament.addSubview(badge)
         self.badge = badge
     }
-
-//    override func setSelected(selected: Bool, animated: Bool) {
-//        super.setSelected(selected, animated: animated)
-//
-//        // Configure the view for the selected state
-//    }
     
 }

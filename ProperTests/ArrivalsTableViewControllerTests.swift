@@ -97,9 +97,7 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
             Vehicle(id: "test2"),
             Vehicle(id: "test3")
         ]
-        let modifiedRoute = Route(shortName: "5B", code: nil, name: nil,
-                                  description: nil, color: nil, path: nil, stations: nil, vehicles: vehicles,
-                                  itinerary: nil)
+        let modifiedRoute = Route(shortName: "5B", vehicles: vehicles)
 
         // When Route 5B is modified to contain a new list of vehicles...
         requestView()
@@ -118,6 +116,24 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
 
         // ...then there should be no known vehicles.
         XCTAssertEqual(controller.vehicles.value.count, 0)
+    }
+
+    func testVehiclesSignalFromMultipleRoutes() {
+        // Given a station with two routes, each with vehicles.
+        let routeA = Route(shortName: "r1", vehicles: [
+            Vehicle(id: "v1"), Vehicle(id: "v2"), Vehicle(id: "v3")
+            ])
+        let routeB = Route(shortName: "r2", vehicles: [
+            Vehicle(id: "v4"), Vehicle(id: "v5")
+            ])
+        let modifiedStation = Station(stopCode: station.stopCode, routes: [routeA, routeB])
+
+        // When the view is loaded and the new routes are applied...
+        requestView()
+        controller.station.apply(modifiedStation)
+
+        // Then the list of vehicles should contain vehicles from both routes.
+        XCTAssertEqual(controller.vehicles.value.map { $0.identifier }.sort(), ["v1", "v2", "v3", "v4", "v5"])
     }
 
 

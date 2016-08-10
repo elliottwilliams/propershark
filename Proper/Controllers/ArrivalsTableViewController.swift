@@ -20,28 +20,37 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
         return AnyProperty(initialValue: Set(), producer: self.station.routes.producer.ignoreNil())
     }()
 
-    /// A signal which emits a list of vehicles every time the vehicle association changes for a particular route.
-    lazy var vehicles: AnyProperty<[MutableVehicle]> = {
+    lazy var vehicles: AnyProperty<Set<MutableVehicle>> = {
         // Given a signal emitting the list of MutableRoutes for this station...
         let producer = self.routes.producer
-        // ...flatMap down to the routes themselves...
-        .flatMap(.Concat) { routes in SignalProducer(values: routes) }
-        // ...and access the vehicles property of each.
-        .map { route in route.vehicles.signal }
-        // We now have a signal of signals of vehicles, which emits whever the list of routes changes.
-        // Flatten this into a signal of vehicles that emits whenever a route:vehicles association changes.
-        .flatten(.Merge)
-        // If vehicle set is nil, default to an empty set.
-        .map { $0 ?? Set() }
-        // Sort by arrival time (TODO: actually do this)
-        .map { Array($0) }
+        // ...flatMap down to a joint set of vehicles.
+        .flatMap(.Latest) { (routes: Set<MutableRoute>) -> SignalProducer<Set<MutableVehicle>, NoError> in
 
-        return AnyProperty(initialValue: [], producer: producer)
+            // Each member of `routes` has a producer for vehicles on that route. Combine the sets produced by each
+            // producer into a joint set.
+
+            // Obtain the first set's producer and combine all other sets' producers with this one. Return an empty set
+            // if there are no routes in the set.
+            guard let firstProducer = routes.first?.vehicles.producer.ignoreNil() else {
+                return SignalProducer(value: Set())
+            }
+
+            return routes.dropFirst().reduce(firstProducer) { producer, route in
+                let vehicles = route.vehicles.producer.ignoreNil()
+                // `combineLatest` causes the producer to wait until the two signals being combines have emitted. In
+                // this case, it means that no vehicles will be forwarded until all routes have produced a list of
+                // vehicles. After that, changes to vehicles of any route will forward the entire set again.
+                return producer.combineLatestWith(vehicles).map { $0.union($1) }
+            }
+        }
+
+        return AnyProperty(initialValue: Set(), producer: producer)
     }()
 
-    func foo() {
-        let prop = MutableProperty<[MutableVehicle]>([])
-        prop <~ vehicles
+    func vehiclesOnRoute(route: SignalProducer<MutableRoute, NoError>) -> SignalProducer<Set<MutableVehicle>?, NoError> {
+        return route.flatMap(.Merge) { route in
+            route.vehicles.producer
+        }
     }
 
     internal var diffCalculator: TableViewDiffCalculator<MutableVehicle>!
@@ -65,32 +74,41 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    internal var disposable = CompositeDisposable()
+    internal var routeDisposables = [MutableRoute: Disposable]()
+
     override func viewDidLoad() {
         // Initialize the diff calculator for the table, which starts using any routes already on `station`.
-        self.diffCalculator = TableViewDiffCalculator(tableView: self.tableView, initialRows: vehicles.value)
+        self.diffCalculator = TableViewDiffCalculator(tableView: self.tableView, initialRows: vehicles.value.sort())
 
         // Use our table cell UI. If the nib specified doesn't exist, `tableView(_:cellForRowAtIndexPath:)` will crash.
         self.tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil), forCellReuseIdentifier: "ArrivalTableViewCell")
 
-        // Follow changes to the station and its routes.
-        station.producer.takeUntil(self.onDisappear()).startWithFailed(self.delegate.arrivalsTable(receivedError:))
-
-        var routeDisposables = [MutableRoute: Disposable]()
-        routes.producer.takeUntil(self.onDisappear())
-        .combinePrevious(Set())
-        .startWithNext { old, new in
-            new.subtract(old).forEach { route in
-                routeDisposables[route] = route.producer.startWithFailed(self.delegate.arrivalsTable(receivedError:))
-            }
-            old.subtract(new).forEach { route in
-                routeDisposables[route]?.dispose()
-            }
-        }
-
         // When the list of vehicles for this station changes, update the table.
         self.vehicles.producer.takeUntil(self.onDisappear()).startWithNext { vehicles in
-            self.diffCalculator.rows = vehicles
+            self.diffCalculator.rows = vehicles.sort()
         }
+    }
+
+    override func viewDidAppear(animated: Bool) {
+        // Follow changes to the station and its routes.
+        disposable += station.producer.startWithFailed(self.delegate.arrivalsTable(receivedError:))
+
+        disposable += routes.producer.combinePrevious(Set())
+            .startWithNext { old, new in
+                new.subtract(old).forEach { route in
+                    self.routeDisposables[route] = route.producer.startWithFailed(self.delegate.arrivalsTable(receivedError:))
+                    self.disposable += self.routeDisposables[route]
+                }
+                old.subtract(new).forEach { route in
+                    self.routeDisposables[route]?.dispose()
+                }
+        }
+    }
+
+    override func viewWillDisappear(animated: Bool) {
+        disposable.dispose()
+        super.viewWillDisappear(animated)
     }
 
 
@@ -103,11 +121,12 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         // ArrivalTableViewCell comes from the xib, and is registered upon the creation of this table
         let cell = tableView.dequeueReusableCellWithIdentifier("ArrivalTableViewCell", forIndexPath: indexPath) as! ArrivalTableViewCell
-        let vehicle = vehicles.value[indexPath.row]
+        let vehicle = diffCalculator.rows[indexPath.row]
 
         // Bind vehicle attributes
+        cell.vehicleName.text = "(Bus #\(vehicle.name))"
         vehicle.saturation.map { cell.badge.capacity = $0 ?? 1 }
-        vehicle.scheduleDelta.map { cell.routeTimer.text = "Schedule ∆ = \($0)" }
+        vehicle.scheduleDelta.map { cell.routeTimer.text = "∆\($0) min" }
 
         guard let route = vehicle.route.value else {
             // Vehicles here should have a route (since we got them by traversing along a route). If not available,
