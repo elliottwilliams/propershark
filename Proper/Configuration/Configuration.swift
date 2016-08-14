@@ -7,37 +7,32 @@
 //
 
 import Foundation
+import UIKit
 
 struct Config {
-    static let sharedInstance = Config()
-    
-    let environment = Environments.dev
-    enum Environments {
-        case dev
-        case prod
+    struct agency {
+        static let key = "citybus"
+        static let name = "CityBus"
     }
-    
-    let agency = (
-        key: "citybus",
-        name: "CityBus"
-    )
-    let app = (
-        key: "proper",
-        name: "Proper Shark"
-    )
-    let connection = (
-        server: NSURL(string: "ws://shark-nyc1.transio.us:8080/ws")!,
-        realm: "realm1"
-    )
 
-    let ignoreSignalProducers = Set(
+    struct app {
+        static let key = "proper"
+        static let name = "Proper Shark"
+    }
+
+    struct connection {
+        static let server = NSURL(string: "ws://shark-nyc1.transio.us:8080/ws")!
+        static let realm = "realm1"
+    }
+
+    static let ignoreSignalProducers = Set(
         arrayLiteral:
-            "MDWamp.subscribeWithSignal",
-            "MDWamp.callWithSignal",
-            "Connection.connectionProducer"
+        "MDWamp.subscribeWithSignal",
+        "MDWamp.callWithSignal",
+        "Connection.connectionProducer"
     )
-}
 
-func foo() {
-    Config.sharedInstance
+    struct ui {
+        static let defaultBadgeColor = UIColor.blueColor()
+    }
 }

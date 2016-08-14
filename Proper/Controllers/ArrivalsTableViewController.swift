@@ -14,8 +14,13 @@ import Result
 class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
     var station: MutableStation
-    internal let delegate: ArrivalsTableViewDelegate
 
+    // MARK: Internal properties
+    internal let delegate: ArrivalsTableViewDelegate
+    internal var diffCalculator: TableViewDiffCalculator<MutableVehicle>!
+    internal var connection: ConnectionType
+
+    // MARK: Signalled properties
     lazy var routes: AnyProperty<Set<MutableRoute>> = {
         return AnyProperty(initialValue: Set(), producer: self.station.routes.producer.ignoreNil())
     }()
@@ -47,26 +52,14 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
         return AnyProperty(initialValue: Set(), producer: producer)
     }()
 
-    func vehiclesOnRoute(route: SignalProducer<MutableRoute, NoError>) -> SignalProducer<Set<MutableVehicle>?, NoError> {
-        return route.flatMap(.Merge) { route in
-            route.vehicles.producer
-        }
-    }
-
-    internal var diffCalculator: TableViewDiffCalculator<MutableVehicle>!
-
-    internal var connection: ConnectionType
-    internal var config: Config
 
     // MARK: Methods
-
     init(observing station: MutableStation, delegate: ArrivalsTableViewDelegate, style: UITableViewStyle,
-                   connection: ConnectionType, config: Config)
+                   connection: ConnectionType)
     {
         self.station = station
         self.delegate = delegate
         self.connection = connection
-        self.config = config
         super.init(style: style)
     }
 

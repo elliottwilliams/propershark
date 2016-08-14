@@ -14,7 +14,6 @@ protocol ProperViewController {
 
     // Support properties. Set as internal on the conforming view controller.
     var connection: ConnectionType { get set }
-    var config: Config { get set }
 
     /// Produces a signal that completes when the view disappears. No other events shall be fired.
     func onDisappear() -> SignalProducer<(), NoError>

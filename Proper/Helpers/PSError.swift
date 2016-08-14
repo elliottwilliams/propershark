@@ -14,7 +14,6 @@ class PSError: NSError {
     
     static let domain = "ProperShark"
     lazy var alert: UIAlertController = self.makeAlert()
-    lazy var config: Config = Config.sharedInstance
     
     init(code: PSErrorCode, associated: Any? = nil, userInfo: [NSObject: AnyObject]? = nil) {
         var info = userInfo ?? [:]
@@ -42,10 +41,11 @@ class PSError: NSError {
         let alert = UIAlertController(title: self.errorCode.title,
                                       message: self.errorCode.message,
                                       preferredStyle: .Alert)
-        if case .dev = self.config.environment,
-            let reason = (self.userInfo[NSUnderlyingErrorKey] as? NSError)?.localizedDescription {
+        #if DEBUG
+        if let reason = (self.userInfo[NSUnderlyingErrorKey] as? NSError)?.localizedDescription {
             alert.message = [self.errorCode.message, reason].joinWithSeparator("\n")
         }
+        #endif
         
         if let associated = self.associated {
             alert.message = [alert.message!, String(associated)].joinWithSeparator("\n")
@@ -74,16 +74,16 @@ enum PSErrorCode: Int {
 
     static let genericTitle = "Something went wrong"
     
-    private func description(usingConfig config: Config = Config.sharedInstance) -> (title: String, message: String) {
+    private func description() -> (title: String, message: String) {
         switch(self) {
         case .mdwampError:
             return ("Server connection failed", "Our server sent us an error message. Check that your Internet connection is functioning and try again.")
         case .connectionLost:
             return ("Poor connection", "We lost the connection to our server.")
         case .timeout:
-            return ("Poor connection", "We were unable to reach \(config.app.name) servers. Check that your Internet connection is functioning and try again.")
+            return ("Poor connection", "We were unable to reach \(Config.app.name) servers. Check that your Internet connection is functioning and try again.")
         case .maxConnectionFailures:
-            return ("Server connection failed", "We were unable to establish a connection with \(config.app.name) servers. Check that your Internet connection is functioning and try again.")
+            return ("Server connection failed", "We were unable to establish a connection with \(Config.app.name) servers. Check that your Internet connection is functioning and try again.")
         case .parseFailure, .decodeFailure, .mutableModelFailedApply, .unhandledTopic:
             return (PSErrorCode.genericTitle, "Our server sent us some information that could not be understood.")
         }

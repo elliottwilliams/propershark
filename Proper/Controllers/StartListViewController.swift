@@ -20,7 +20,6 @@ class StartListViewController: UITableViewController, ProperViewController {
 
     internal lazy var sceneMediator = SceneMediator.sharedInstance
     internal lazy var connection: ConnectionType = Connection.sharedInstance
-    internal lazy var config = Config.sharedInstance
     private var routeDisposable: Disposable?
     
     required init?(coder aDecoder: NSCoder) {

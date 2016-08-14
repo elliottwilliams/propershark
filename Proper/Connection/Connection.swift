@@ -39,7 +39,6 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
     // Produces signals that passes the MDWamp object when it is available, and that handles reconnections transparently.
     lazy var producer: SignalProducer<MDWamp, PSError> = self.connectionProducer()
     
-    private lazy var config: Config = Config.sharedInstance
     private static let maxConnectionFailures = 5
     private var observer: Observer<MDWamp, PSError>?
     
@@ -54,9 +53,9 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
         
         // Set the instance observer and connect
         self.observer = observer
-        let ws = MDWampTransportWebSocket(server: self.config.connection.server,
+        let ws = MDWampTransportWebSocket(server: Config.connection.server,
                                           protocolVersions: [kMDWampProtocolWamp2msgpack, kMDWampProtocolWamp2json])
-        let wamp = MDWamp(transport: ws, realm: self.config.connection.realm, delegate: self)
+        let wamp = MDWamp(transport: ws, realm: Config.connection.realm, delegate: self)
         wamp.connect()
         
         // Return a producer that retries for awhile on in the event of a connection failure...
@@ -66,7 +65,7 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
             return SignalProducer<MDWamp, PSError>.init(error: PSError(code: .maxConnectionFailures))
         }
         // ...and logs all events for debugging
-        .logEvents(identifier: "Connection.connectionProducer", logger: logSignalEvent(config))
+        .logEvents(identifier: "Connection.connectionProducer", logger: logSignalEvent)
     }
     
     // MARK: Communication Methods
@@ -84,7 +83,7 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
                 return .Failure(PSError(code: .parseFailure))
             }
         }
-        .logEvents(identifier: "Connection.subscribe", logger: logSignalEvent(config))
+        .logEvents(identifier: "Connection.subscribe", logger: logSignalEvent)
     }
 
     /// Call `procdure` and forward the result. Disposing the signal created will cancel the RPC call.
@@ -101,7 +100,7 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
                 return .Failure(PSError(code: .parseFailure))
             }
         }
-        .logEvents(identifier: "Connection.call", logger: logSignalEvent(config))
+        .logEvents(identifier: "Connection.call", logger: logSignalEvent)
     }
     
     // MARK: MDWamp Delegate
@@ -128,8 +127,8 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
 // MARK: MDWamp Extensions
 extension MDWamp {
     /// Follows semantics of `call` but returns a signal producer, rather than taking a result callback.
-    func callWithSignal(procUri: String, _ args: WampArgs, _ argsKw: WampKwargs, _ options: [NSObject: AnyObject],
-                        config: Config = .sharedInstance) -> SignalProducer<MDWampResult, PSError>
+    func callWithSignal(procUri: String, _ args: WampArgs, _ argsKw: WampKwargs, _ options: [NSObject: AnyObject])
+        -> SignalProducer<MDWampResult, PSError>
     {
         return SignalProducer<MDWampResult, PSError> { observer, _ in
             NSLog("Calling \(procUri)")
@@ -141,10 +140,10 @@ extension MDWamp {
                 observer.sendNext(result)
                 observer.sendCompleted()
             }
-        }.logEvents(identifier: "MDWamp.callWithSignal", logger: logSignalEvent(config))
+        }.logEvents(identifier: "MDWamp.callWithSignal", logger: logSignalEvent)
     }
     
-    func subscribeWithSignal(topic: String, config: Config = .sharedInstance) -> SignalProducer<MDWampEvent, PSError> {
+    func subscribeWithSignal(topic: String) -> SignalProducer<MDWampEvent, PSError> {
         return SignalProducer<MDWampEvent, PSError> { observer, disposable in
             self.subscribe(
                 topic,
@@ -160,6 +159,6 @@ extension MDWamp {
                     if error != nil { observer.sendFailed(PSError(error: error, code: .mdwampError, associated: topic)) }
                 }
             }
-        }.logEvents(identifier: "MDWamp.subscribeWithSignal", logger: logSignalEvent(config))
+        }.logEvents(identifier: "MDWamp.subscribeWithSignal", logger: logSignalEvent)
     }
 }

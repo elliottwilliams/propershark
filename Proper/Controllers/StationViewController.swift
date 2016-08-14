@@ -23,7 +23,6 @@ class StationViewController: UIViewController, ProperViewController, ArrivalsTab
 
     // MARK: Internal properties
     internal lazy var connection: ConnectionType = Connection.sharedInstance
-    internal lazy var config = Config.sharedInstance
     internal let disposable = CompositeDisposable()
 
     override func viewDidLoad() {
@@ -46,7 +45,7 @@ class StationViewController: UIViewController, ProperViewController, ArrivalsTab
         
         // Initialize and embed the arrivals table.
         let table = ArrivalsTableViewController(observing: station, delegate: self, style: arrivalTableView.style,
-                                                connection: self.connection, config: self.config)
+                                                connection: self.connection)
         table.view = arrivalTableView
         table.viewDidLoad()
         arrivalTableView.dataSource = table
