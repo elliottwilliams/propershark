@@ -76,17 +76,14 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
         // Use our table cell UI. If the nib specified doesn't exist, `tableView(_:cellForRowAtIndexPath:)` will crash.
         self.tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil), forCellReuseIdentifier: "ArrivalTableViewCell")
-
-        // When the list of vehicles for this station changes, update the table.
-        self.vehicles.producer.takeUntil(self.onDisappear()).startWithNext { vehicles in
-            self.diffCalculator.rows = vehicles.sort()
-        }
     }
 
     override func viewDidAppear(animated: Bool) {
-        // Follow changes to the station and its routes.
+        // Follow changes to the station.
         disposable += station.producer.startWithFailed(self.delegate.arrivalsTable(receivedError:))
 
+        // Follow changes to routes on the station. As routes are associated and disassociated, maintain signals on all
+        // current routes, so that vehicle information can be obtained. Dispose these signals as routes go away.
         disposable += routes.producer.combinePrevious(Set())
             .startWithNext { old, new in
                 new.subtract(old).forEach { route in
@@ -96,6 +93,11 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
                 old.subtract(new).forEach { route in
                     self.routeDisposables[route]?.dispose()
                 }
+        }
+
+        // When the list of vehicles for this station changes, update the table.
+        disposable += vehicles.producer.startWithNext { vehicles in
+            self.diffCalculator.rows = vehicles.sort()
         }
     }
 

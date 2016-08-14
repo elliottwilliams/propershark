@@ -12,11 +12,12 @@ import enum Result.NoError
 
 protocol ProperViewController {
 
-    // Support properties. Set as internal on the conforming view controller.
+    // Internal Properties
     var connection: ConnectionType { get set }
+    var disposable: CompositeDisposable { get }
 
-    /// Produces a signal that completes when the view disappears. No other events shall be fired.
-    func onDisappear() -> SignalProducer<(), NoError>
+    // Should dispose `disposable` and call super.
+    func viewWillDisappear(animated: Bool)
 }
 
 extension ProperViewController where Self: UIViewController {
@@ -25,13 +26,5 @@ extension ProperViewController where Self: UIViewController {
     func displayError(error: PSError) {
         self.presentViewController(error.alert as UIViewController, animated: true, completion: nil)
         NSLog("[ProperViewController.displayError] \(error.description), \(error.alert.message)")
-    }
-
-    /// Completed when UIViewController.viewDidDisappear(_:) is called.
-    func onDisappear() -> SignalProducer<(), NoError> {
-        return self.rac_signalForSelector(#selector(UIViewController.viewDidDisappear(_:)))
-        .toSignalProducer()
-        .map { _ in () }
-        .assumeNoError()
     }
 }

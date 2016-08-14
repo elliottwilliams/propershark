@@ -20,6 +20,7 @@ class StartListViewController: UITableViewController, ProperViewController {
 
     internal lazy var sceneMediator = SceneMediator.sharedInstance
     internal lazy var connection: ConnectionType = Connection.sharedInstance
+    internal let disposable = CompositeDisposable()
     private var routeDisposable: Disposable?
     
     required init?(coder aDecoder: NSCoder) {
@@ -45,7 +46,6 @@ class StartListViewController: UITableViewController, ProperViewController {
             .decodeAnyAs(Route.self)
             .on(next: { self.routes = $0; self.tableView.reloadData() },
                 failed: self.displayError)
-            .takeUntil(self.onDisappear())
     }()
 
     private lazy var stationSignal: SignalProducer<[Station], PSError> = {
@@ -57,7 +57,6 @@ class StartListViewController: UITableViewController, ProperViewController {
             .decodeAnyAs(Station.self)
             .on(next: { self.stations = $0; self.tableView.reloadData() },
                 failed: self.displayError)
-            .takeUntil(self.onDisappear())
     }()
 
     private lazy var vehicleSignal: SignalProducer<[Vehicle], PSError> = {
@@ -69,7 +68,6 @@ class StartListViewController: UITableViewController, ProperViewController {
             .decodeAnyAs(Vehicle.self)
             .on(next: { self.vehicles = $0; self.tableView.reloadData() },
                 failed: self.displayError)
-            .takeUntil(self.onDisappear())
     }()
 
     lazy var pinnedStations: AnyProperty<[Station]> = {
@@ -163,6 +161,11 @@ class StartListViewController: UITableViewController, ProperViewController {
                 else { break }
             let station = self.stations[index.row]
             dest.station = MutableStation(from: station, delegate: dest, connection: Connection.sharedInstance)
+        case "ShowRouteAfterSelectionFromList":
+            let dest = segue.destinationViewController as! RouteViewController
+            let index = self.tableView.indexPathForSelectedRow!
+            let route = self.routes[index.row]
+            dest.route = MutableRoute(from: route, delegate: dest, connection: self.connection)
         default:
             break
         }
