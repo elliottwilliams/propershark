@@ -45,12 +45,12 @@ class PSError: NSError {
         if let reason = (self.userInfo[NSUnderlyingErrorKey] as? NSError)?.localizedDescription {
             alert.message = [self.errorCode.message, reason].joinWithSeparator("\n")
         }
-        #endif
         
         if let associated = self.associated {
             alert.message = [alert.message!, String(associated)].joinWithSeparator("\n")
         }
-        
+        #endif
+
         let action = UIAlertAction(title: "OK", style: .Default, handler: nil)
         alert.addAction(action)
         return alert
@@ -68,6 +68,7 @@ enum PSErrorCode: Int {
     case mutableModelFailedApply
     case unhandledTopic
     case timeout
+    case modelStateInconsistency
     
     var title: String { return self.description().title }
     var message: String { return self.description().message }
@@ -84,7 +85,7 @@ enum PSErrorCode: Int {
             return ("Poor connection", "We were unable to reach \(Config.app.name) servers. Check that your Internet connection is functioning and try again.")
         case .maxConnectionFailures:
             return ("Server connection failed", "We were unable to establish a connection with \(Config.app.name) servers. Check that your Internet connection is functioning and try again.")
-        case .parseFailure, .decodeFailure, .mutableModelFailedApply, .unhandledTopic:
+        case .parseFailure, .decodeFailure, .mutableModelFailedApply, .unhandledTopic, .modelStateInconsistency:
             return (PSErrorCode.genericTitle, "Our server sent us some information that could not be understood.")
         }
     }

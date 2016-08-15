@@ -45,7 +45,11 @@ class MutableStation: MutableModel {
 
                 switch event {
                 case .Station(.update(let station, _)):
-                    self.apply(station.value!)
+                    do {
+                        try self.apply(station.value!)
+                    } catch {
+                        return .Failure(error as? PSError ?? PSError(code: .mutableModelFailedApply))
+                    }
                 default:
                     self.delegate.mutableModel(self, receivedTopicEvent: event)
                 }
@@ -57,22 +61,20 @@ class MutableStation: MutableModel {
         self.stopCode = station.stopCode
         self.delegate = delegate
         self.connection = connection
-        apply(station)
+        try! apply(station)
     }
 
-    func apply(station: Station) -> Result<(), PSError> {
+    func apply(station: Station) throws {
         if station.identifier != self.identifier {
-            return .Failure(PSError(code: .mutableModelFailedApply))
+            throw PSError(code: .mutableModelFailedApply)
         }
 
         self.name <- station.name
         self.description <- station.description
         self.position <- station.position
         
-        applyChanges(to: self.routes, from: station.routes)
-        applyChanges(to: self.vehicles, from: station.vehicles)
-
-        return .Success()
+        try applyChanges(to: self.routes, from: station.routes)
+        try applyChanges(to: self.vehicles, from: station.vehicles)
     }
 
 

@@ -52,7 +52,11 @@ class MutableVehicle: MutableModel, Comparable {
 
                 switch event {
                 case .Vehicle(.update(let vehicle, _)):
-                    self.apply(vehicle.value!)
+                    do {
+                        try self.apply(vehicle.value!)
+                    } catch {
+                        return .Failure(error as? PSError ?? PSError(code: .mutableModelFailedApply))
+                    }
                 default:
                     self.delegate.mutableModel(self, receivedTopicEvent: event)
                 }
@@ -65,12 +69,12 @@ class MutableVehicle: MutableModel, Comparable {
         self.name = vehicle.name
         self.delegate = delegate
         self.connection = connection
-        apply(vehicle)
+        try! apply(vehicle)
     }
 
-    func apply(vehicle: Vehicle) -> Result<(), PSError> {
+    func apply(vehicle: Vehicle) throws {
         if vehicle.identifier != self.identifier {
-            return .Failure(PSError(code: .mutableModelFailedApply))
+            throw PSError(code: .mutableModelFailedApply)
         }
 
         self.code <- vehicle.code
@@ -85,27 +89,25 @@ class MutableVehicle: MutableModel, Comparable {
         // Currently we don't have a convenience function for 1-to-1 mutable model applies. Instead...
         if let lastStation = vehicle.lastStation {
             if let mutable = self.lastStation.value {
-                mutable.apply(lastStation)
+                try mutable.apply(lastStation)
             } else {
                 self.lastStation.value = attachMutable(from: lastStation) as MutableStation
             }
         }
         if let nextStation = vehicle.nextStation {
             if let mutable = self.nextStation.value {
-                mutable.apply(nextStation)
+                try mutable.apply(nextStation)
             } else {
                 self.nextStation.value = attachMutable(from: nextStation) as MutableStation
             }
         }
         if let route = vehicle.route {
             if let mutable = self.route.value {
-                mutable.apply(route)
+                try mutable.apply(route)
             } else {
                 self.route.value = attachMutable(from: route) as MutableRoute
             }
         }
-
-        return .Success()
     }
 }
 

@@ -32,9 +32,8 @@ protocol MutableModel: class, Hashable {
     init(from _: FromModel, delegate: MutableModelDelegate, connection: ConnectionType)
     var delegate: MutableModelDelegate { get }
     
-    /// Update state to match the model given. Returns a failure result if the model given doesn't have the same
-    /// identifier.
-    func apply(_: FromModel) -> Result<(), PSError>
+    /// Update state to match the model given. Throws PSError if a consistency check fails.
+    func apply(_: FromModel) throws
 
     var connection: ConnectionType { get }
 
@@ -48,18 +47,15 @@ extension MutableModel {
         return M(from: model, delegate: self.delegate, connection: self.connection)
     }
 
-    /// Attempt state to match the model given. Convenience form that returns Void.
-    func apply(model: FromModel) {
-        self.apply(model) as Result
-    }
-
     /// Create and insert new MutableModels to a given set, remove old ones, and apply changes from
     /// persistent ones.
-    func applyChanges<M: MutableModel>(to mutableSet: MutableProperty<Set<M>?>, from new: [M.FromModel.Identifier: M.FromModel]?) {
+    func applyChanges<M: MutableModel>(to mutableSet: MutableProperty<Set<M>?>,
+                      from new: [M.FromModel.Identifier: M.FromModel]?) throws
+    {
         // Attempt to unwrap `new` and create a mutable copy of it.
         guard var new = new else { return }
 
-        mutableSet.modify { mutables in
+        try mutableSet.modify { mutables in
             // Initialize to an empty set if nil.
             var mutables = mutables ?? Set()
 
@@ -67,7 +63,7 @@ extension MutableModel {
             for model in mutables {
                 if let replacement = new.removeValueForKey(model.identifier) {
                     // ...apply changes from a corresponding static model in `new`...
-                    model.apply(replacement)
+                    try model.apply(replacement)
                 } else {
                     // ...otherwise, remove it.
                     mutables.remove(model)
@@ -82,7 +78,7 @@ extension MutableModel {
     }
 
     func applyChanges<C: CollectionType, M: MutableModel where C.Generator.Element == M.FromModel>
-        (to mutableSet: MutableProperty<Set<M>?>, from new: C?)
+        (to mutableSet: MutableProperty<Set<M>?>, from new: C?) throws
     {
         guard let new = new else { return }
         
@@ -91,7 +87,7 @@ extension MutableModel {
             dict[model.identifier] = model
             return dict
         }
-        return applyChanges(to: mutableSet, from: dict)
+        return try applyChanges(to: mutableSet, from: dict)
     }
 
     var hashValue: Int { return self.identifier.hashValue }
