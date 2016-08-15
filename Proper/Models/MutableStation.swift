@@ -38,23 +38,7 @@ class MutableStation: MutableModel {
         return SignalProducer<SignalProducer<TopicEvent, PSError>, PSError>(values: [now, future])
             .flatten(.Merge)
             .logEvents(identifier: "MutableStation.producer", logger: logSignalEvent)
-            .attempt { event in
-                if let error = event.error {
-                    return .Failure(PSError(code: .decodeFailure, associated: error))
-                }
-
-                switch event {
-                case .Station(.update(let station, _)):
-                    do {
-                        try self.apply(station.value!)
-                    } catch {
-                        return .Failure(error as? PSError ?? PSError(code: .mutableModelFailedApply))
-                    }
-                default:
-                    self.delegate.mutableModel(self, receivedTopicEvent: event)
-                }
-                return .Success()
-            }
+            .attempt(self.handleEvent)
     }()
 
     required init(from station: Station, delegate: MutableModelDelegate, connection: ConnectionType) {
@@ -62,6 +46,24 @@ class MutableStation: MutableModel {
         self.delegate = delegate
         self.connection = connection
         try! apply(station)
+    }
+
+    func handleEvent(event: TopicEvent) -> Result<(), PSError> {
+        if let error = event.error {
+            return .Failure(PSError(code: .decodeFailure, associated: error))
+        }
+
+        do {
+            switch event {
+            case .Station(.update(let station, _)):
+                try self.apply(station.value!)
+            default:
+                self.delegate.mutableModel(self, receivedTopicEvent: event)
+            }
+        } catch {
+            return .Failure(error as? PSError ?? PSError(code: .mutableModelFailedApply))
+        }
+        return .Success()
     }
 
     func apply(station: Station) throws {

@@ -41,25 +41,7 @@ class MutableRoute: MutableModel {
         return SignalProducer<SignalProducer<TopicEvent, PSError>, PSError>(values: [now, future])
             .flatten(.Merge)
             .logEvents(identifier: "MutableRoute.producer", logger: logSignalEvent)
-            .attempt { event in
-                if let error = event.error {
-                    return .Failure(PSError(code: .decodeFailure, associated: error))
-                }
-
-                switch event {
-                case .Route(.update(let route, _)):
-                    do {
-                        try self.apply(route.value!)
-                    } catch {
-                        return .Failure(error as? PSError ?? PSError(code: .mutableModelFailedApply))
-                    }
-                case .Route(.vehicleUpdate(let vehicle, _)):
-                    self.handleEvent(vehicleUpdate: vehicle.value!)
-                default:
-                    self.delegate.mutableModel(self, receivedTopicEvent: event)
-                }
-                return .Success()
-            }
+            .attempt(self.handleEvent)
     }()
 
     // MARK: Functions
@@ -74,6 +56,28 @@ class MutableRoute: MutableModel {
         self.vehicles.producer.ignoreNil().flatten(.Latest).startWithNext { [weak self] vehicle in
             vehicle.route.modify { $0 ?? self }
         }
+    }
+
+
+    func handleEvent(event: TopicEvent) -> Result<(), PSError> {
+        if let error = event.error {
+            return .Failure(PSError(code: .decodeFailure, associated: error))
+        }
+
+        do {
+            switch event {
+            case .Route(.update(let route, _)):
+                try self.apply(route.value!)
+            case .Route(.vehicleUpdate(let vehicle, _)):
+                // If any vehicles on this route match `vehicle`, update their information to match `vehicle`.
+                try self.vehicles.value?.filter { $0 == vehicle.value! }.forEach { try $0.apply(vehicle.value!) }
+            default:
+                self.delegate.mutableModel(self, receivedTopicEvent: event)
+            }
+        } catch {
+            return .Failure(error as? PSError ?? PSError(code: .mutableModelFailedApply, associated: error))
+        }
+        return .Success()
     }
 
     func apply(route: Route) throws {
@@ -117,12 +121,5 @@ class MutableRoute: MutableModel {
 
     func condensedRoute() {
 
-    }
-
-    // MARK: Event Handlers
-
-    /// If any vehicles on this route match `vehicle`, update their information to match `vehicle`.
-    func handleEvent(vehicleUpdate vehicle: Vehicle) {
-        self.vehicles.value?.filter { $0 == vehicle }.forEach { $0.apply(vehicle) }
     }
 }

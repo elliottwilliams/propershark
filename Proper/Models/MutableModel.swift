@@ -23,10 +23,11 @@ protocol MutableModel: class, Hashable {
     var identifier: FromModel.Identifier { get }
     var topic: String { get }
 
-    /// A producer that, when started, connects to Shark and subscribes to this model's topic. Applies updates to the
-    /// model's properties as they are emitted, and calls `delegate.handleEvent(_:)` on this model's delegate on other
-    /// events. Calls `delegate.mutableModel(receivedError:)` on decode errors.
+    /// A producer that, when started, connects to Shark and subscribes to this model's topic. Calls `handleEvent` to
+    /// apply updates to the model's properties as they are emitted. Additional signals can be created to receive
+    /// failures or inject side effects to topic events.
     var producer: SignalProducer<TopicEvent, PSError> { get set }
+    func handleEvent(event: TopicEvent) -> Result<(), PSError>
     
     /// Initialize all `MutableProperty`s of this `MutableModel` from a corresponding model.
     init(from _: FromModel, delegate: MutableModelDelegate, connection: ConnectionType)

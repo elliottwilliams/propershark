@@ -45,23 +45,7 @@ class MutableVehicle: MutableModel, Comparable {
         return SignalProducer<SignalProducer<TopicEvent, PSError>, PSError>(values: [now, future])
             .flatten(.Merge)
             .logEvents(identifier: "MutableVehicle.producer", logger: logSignalEvent)
-            .attempt { event in
-                if let error = event.error {
-                    return .Failure(PSError(code: .decodeFailure, associated: error))
-                }
-
-                switch event {
-                case .Vehicle(.update(let vehicle, _)):
-                    do {
-                        try self.apply(vehicle.value!)
-                    } catch {
-                        return .Failure(error as? PSError ?? PSError(code: .mutableModelFailedApply))
-                    }
-                default:
-                    self.delegate.mutableModel(self, receivedTopicEvent: event)
-                }
-                return .Success()
-            }
+            .attempt(self.handleEvent)
     }()
 
     // MARK: Functions
@@ -70,6 +54,24 @@ class MutableVehicle: MutableModel, Comparable {
         self.delegate = delegate
         self.connection = connection
         try! apply(vehicle)
+    }
+
+    func handleEvent(event: TopicEvent) -> Result<(), PSError> {
+        if let error = event.error {
+            return .Failure(PSError(code: .decodeFailure, associated: error))
+        }
+
+        do {
+            switch event {
+            case .Vehicle(.update(let vehicle, _)):
+                try self.apply(vehicle.value!)
+            default:
+                self.delegate.mutableModel(self, receivedTopicEvent: event)
+            }
+        } catch {
+            return .Failure(error as? PSError ?? PSError(code: .mutableModelFailedApply))
+        }
+        return .Success()
     }
 
     func apply(vehicle: Vehicle) throws {
