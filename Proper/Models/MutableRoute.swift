@@ -87,8 +87,8 @@ class MutableRoute: MutableModel {
         self.color <- route.color
         self.path <-| route.path
 
-        try applyChanges(to: self.stations, from: route.stations)
-        try applyChanges(to: self.vehicles, from: route.vehicles)
+        try attachOrApplyChanges(to: self.stations, from: route.stations)
+        try attachOrApplyChanges(to: self.vehicles, from: route.vehicles)
 
         // Map the station stubs in `route.stations` to mutables in `self.stations`, then update the itinerary property
         // if objects or ordering has changed.

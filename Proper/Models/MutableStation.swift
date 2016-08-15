@@ -73,8 +73,8 @@ class MutableStation: MutableModel {
         self.description <- station.description
         self.position <- station.position
         
-        try applyChanges(to: self.routes, from: station.routes)
-        try applyChanges(to: self.vehicles, from: station.vehicles)
+        try attachOrApplyChanges(to: self.routes, from: station.routes)
+        try attachOrApplyChanges(to: self.vehicles, from: station.vehicles)
     }
 
 

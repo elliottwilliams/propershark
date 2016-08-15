@@ -86,28 +86,9 @@ class MutableVehicle: MutableModel, Comparable {
         self.heading <- vehicle.heading
         self.speed <- vehicle.speed
 
-        // Currently we don't have a convenience function for 1-to-1 mutable model applies. Instead...
-        if let lastStation = vehicle.lastStation {
-            if let mutable = self.lastStation.value {
-                try mutable.apply(lastStation)
-            } else {
-                self.lastStation.value = attachMutable(from: lastStation) as MutableStation
-            }
-        }
-        if let nextStation = vehicle.nextStation {
-            if let mutable = self.nextStation.value {
-                try mutable.apply(nextStation)
-            } else {
-                self.nextStation.value = attachMutable(from: nextStation) as MutableStation
-            }
-        }
-        if let route = vehicle.route {
-            if let mutable = self.route.value {
-                try mutable.apply(route)
-            } else {
-                self.route.value = attachMutable(from: route) as MutableRoute
-            }
-        }
+        try attachOrApply(to: lastStation, from: vehicle.lastStation)
+        try attachOrApply(to: nextStation, from: vehicle.nextStation)
+        try attachOrApply(to: route, from: vehicle.route)
     }
 }
 

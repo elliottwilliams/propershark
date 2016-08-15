@@ -49,7 +49,7 @@ extension MutableModel {
 
     /// Create and insert new MutableModels to a given set, remove old ones, and apply changes from
     /// persistent ones.
-    func applyChanges<M: MutableModel>(to mutableSet: MutableProperty<Set<M>?>,
+    func attachOrApplyChanges<M: MutableModel>(to mutableSet: MutableProperty<Set<M>?>,
                       from new: [M.FromModel.Identifier: M.FromModel]?) throws
     {
         // Attempt to unwrap `new` and create a mutable copy of it.
@@ -77,7 +77,7 @@ extension MutableModel {
         }
     }
 
-    func applyChanges<C: CollectionType, M: MutableModel where C.Generator.Element == M.FromModel>
+    func attachOrApplyChanges<C: CollectionType, M: MutableModel where C.Generator.Element == M.FromModel>
         (to mutableSet: MutableProperty<Set<M>?>, from new: C?) throws
     {
         guard let new = new else { return }
@@ -87,7 +87,16 @@ extension MutableModel {
             dict[model.identifier] = model
             return dict
         }
-        return try applyChanges(to: mutableSet, from: dict)
+        return try attachOrApplyChanges(to: mutableSet, from: dict)
+    }
+
+    func attachOrApply<M: MutableModel>(to property: MutableProperty<M?>, from update: M.FromModel?) throws {
+        guard let update = update else { return }
+        if let mutable = property.value {
+            try mutable.apply(update)
+        } else {
+            property.value = attachMutable(from: update) as M
+        }
     }
 
     var hashValue: Int { return self.identifier.hashValue }
