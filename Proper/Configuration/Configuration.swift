@@ -33,6 +33,6 @@ struct Config {
     )
 
     struct ui {
-        static let defaultBadgeColor = UIColor.blueColor()
+        static let defaultBadgeColor = UIColor.grayColor()
     }
 }

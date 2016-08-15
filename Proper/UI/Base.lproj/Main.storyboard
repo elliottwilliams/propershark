@@ -491,11 +491,12 @@
                                             </mask>
                                         </variation>
                                     </view>
-                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="gUB-Ee-uLe">
+                                    <containerView opaque="NO" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wzf-im-AzC">
                                         <rect key="frame" x="0.0" y="160" width="600" height="326"/>
-                                        <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
-                                        <color key="separatorColor" red="0.43529411759999997" green="0.4431372549" blue="0.47450980390000003" alpha="1" colorSpace="calibratedRGB"/>
-                                    </tableView>
+                                        <connections>
+                                            <segue destination="vAO-8U-l2g" kind="embed" identifier="embedRouteTable" id="rr2-ra-5dY"/>
+                                        </connections>
+                                    </containerView>
                                     <view contentMode="scaleToFill" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="7ch-GO-ufe">
                                         <rect key="frame" x="0.0" y="486" width="600" height="50"/>
                                         <subviews>
@@ -524,9 +525,7 @@
                                     <constraint firstAttribute="trailing" secondItem="7ch-GO-ufe" secondAttribute="trailing" id="1KP-XE-b59"/>
                                     <constraint firstAttribute="trailing" secondItem="QJh-Zd-cWb" secondAttribute="trailing" id="8jo-Cy-R8F"/>
                                     <constraint firstItem="7ch-GO-ufe" firstAttribute="leading" secondItem="29b-hJ-7Nz" secondAttribute="leading" id="WDf-K9-dV5"/>
-                                    <constraint firstAttribute="trailing" secondItem="gUB-Ee-uLe" secondAttribute="trailing" id="dqq-EW-kDf"/>
                                     <constraint firstItem="QJh-Zd-cWb" firstAttribute="leading" secondItem="29b-hJ-7Nz" secondAttribute="leading" id="iib-tB-HpG"/>
-                                    <constraint firstItem="gUB-Ee-uLe" firstAttribute="leading" secondItem="29b-hJ-7Nz" secondAttribute="leading" id="pfE-f0-f1V"/>
                                 </constraints>
                             </stackView>
                         </subviews>
@@ -541,7 +540,7 @@
                     <navigationItem key="navigationItem" title="Route" id="zm8-Ec-pp1" customClass="TransitNavigationItem" customModule="Proper" customModuleProvider="target"/>
                     <connections>
                         <outlet property="badge" destination="fdR-Mr-Tao" id="H65-0d-eRb"/>
-                        <outlet property="routeTableView" destination="gUB-Ee-uLe" id="aGf-Ta-YcE"/>
+                        <outlet property="nav" destination="zm8-Ec-pp1" id="ARH-c1-iLy"/>
                         <segue destination="BYZ-38-t0r" kind="show" identifier="ShowStationFromRouteTable" id="fGj-eR-Wrk"/>
                         <segue destination="CUs-dG-PVJ" kind="show" identifier="ShowVehicleFromRouteTable" id="Wc0-K5-kvk"/>
                     </connections>
@@ -549,6 +548,37 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uSK-yd-Xdh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="236" y="931"/>
+        </scene>
+        <!--Route Table View Controller-->
+        <scene sceneID="VUs-mh-rL8">
+            <objects>
+                <tableViewController id="vAO-8U-l2g" customClass="RouteTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="w9n-GE-zWC">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="326"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="zVO-ks-GRo" customClass="RouteTableViewCell">
+                                <rect key="frame" x="0.0" y="28" width="600" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="zVO-ks-GRo" id="nIH-aN-KFy">
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="vAO-8U-l2g" id="vHp-w3-Agz"/>
+                            <outlet property="delegate" destination="vAO-8U-l2g" id="tCc-u4-mXY"/>
+                        </connections>
+                    </tableView>
+                    <connections>
+                        <outlet property="table" destination="w9n-GE-zWC" id="wrU-hV-XlI"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="IMw-If-Yto" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-417" y="1530"/>
         </scene>
         <!--Vehicle Auxiliary Table-->
         <scene sceneID="1uW-xx-pDN">
