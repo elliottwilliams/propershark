@@ -13,6 +13,8 @@ import Argo
 
 class MutableStation: MutableModel {
     typealias FromModel = Station
+    typealias RouteType = MutableRoute
+    typealias VehicleType = MutableVehicle
 
     // MARK: Interal Properties
     internal let connection: ConnectionType
@@ -28,8 +30,8 @@ class MutableStation: MutableModel {
     var name: MutableProperty<String?> = .init(nil)
     var description: MutableProperty<String?> = .init(nil)
     var position: MutableProperty<Point?> = .init(nil)
-    var routes: MutableProperty<Set<MutableRoute>?> = .init(nil)
-    var vehicles: MutableProperty<Set<MutableVehicle>?> = .init(nil)
+    var routes: MutableProperty<Set<RouteType>?> = .init(nil)
+    var vehicles: MutableProperty<Set<VehicleType>?> = .init(nil)
 
     // MARK: Signal Producer
     lazy var producer: SignalProducer<TopicEvent, PSError> = {

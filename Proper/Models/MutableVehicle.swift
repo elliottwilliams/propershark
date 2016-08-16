@@ -14,6 +14,8 @@ import Argo
 
 class MutableVehicle: MutableModel, Comparable {
     typealias FromModel = Vehicle
+    typealias StationType = MutableStation
+    typealias RouteType = MutableRoute
 
     // MARK: Internal Properties
     internal let connection: ConnectionType
@@ -31,9 +33,9 @@ class MutableVehicle: MutableModel, Comparable {
     var capacity: MutableProperty<Int?> = .init(nil)
     var onboard: MutableProperty<Int?> = .init(nil)
     var saturation: MutableProperty<Double?> = .init(nil)
-    var lastStation: MutableProperty<MutableStation?> = .init(nil)
-    var nextStation: MutableProperty<MutableStation?> = .init(nil)
-    var route: MutableProperty<MutableRoute?> = .init(nil)
+    var lastStation: MutableProperty<StationType?> = .init(nil)
+    var nextStation: MutableProperty<StationType?> = .init(nil)
+    var route: MutableProperty<RouteType?> = .init(nil)
     var scheduleDelta: MutableProperty<Double?> = .init(nil)
     var heading: MutableProperty<Double?> = .init(nil)
     var speed: MutableProperty<Double?> = .init(nil)
