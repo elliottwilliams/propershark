@@ -9,40 +9,28 @@
 import Foundation
 
 /// Model computation that generates a unique, ordered list of routes, given a route itinerary.
-struct CanonicalRoute {
-    let stations: [StationType]
+struct CanonicalRoute<StationType: Equatable> {
+    typealias RouteStopType = RouteStop<StationType>
+    let stations: [RouteStopType]
 
-    init(from itinerary: [MutableStation]) {
+    init(from itinerary: [StationType]) {
         stations = CanonicalRoute.fromItinerary(itinerary)
     }
 
-    enum StationType: Equatable {
-        case constant(MutableStation)
-        case conditional(MutableStation)
-        var station: MutableStation {
-            switch self {
-            case .constant(let station):
-                return station
-            case .conditional(let station):
-                return station
-            }
-        }
-    }
-
     /// Reduce an itinerary down to an list of unique constant and conditional stations.
-    static func fromItinerary(itinerary: [MutableStation]) -> [StationType] {
+    static func fromItinerary(itinerary: [StationType]) -> [RouteStopType] {
         // Helper function: replace a given range of stations with conditional stations, and return the entire route.
-        func conditionals(on route: [StationType], from i: Int, until j: Int) -> [StationType] {
-            let replacement = route[i..<j].map { StationType.conditional($0.station) }
+        func conditionals(on route: [RouteStopType], from i: Int, until j: Int) -> [RouteStopType] {
+            let replacement = route[i..<j].map { RouteStopType.conditional($0.station) }
             return route[0..<i] + replacement + route[j..<route.count]
         }
 
         // Helper function: look up the index of a station on the condensed route.
-        func indexOf(station: MutableStation, on route: [StationType]) -> Int? {
+        func indexOf(station: StationType, on route: [RouteStopType]) -> Int? {
             return route.lazy.map { $0.station }.indexOf(station)
         }
 
-        let reduced = itinerary.reduce((route: [StationType](), idx: 0, foundRepeat: false)) { tt, station in
+        let reduced = itinerary.reduce((route: [RouteStopType](), idx: 0, foundRepeat: false)) { tt, station in
             var (route, i, foundRepeat) = tt
 
             // Phase 1: Walk the itinerary until a repeat station is found.
@@ -86,16 +74,5 @@ struct CanonicalRoute {
         }
         
         return reduced.route
-    }
-}
-
-func == (a: CanonicalRoute.StationType, b: CanonicalRoute.StationType) -> Bool {
-    switch (a, b) {
-    case (.constant(let stationA), .constant(let stationB)):
-        return stationA == stationB
-    case (.conditional(let stationA), .conditional(let stationB)):
-        return stationA == stationB
-    default:
-        return false
     }
 }

@@ -50,6 +50,8 @@
 		26AE681C1D601D0B0031E534 /* RouteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE681B1D601D0B0031E534 /* RouteViewController.swift */; };
 		26AE681E1D612B810031E534 /* RouteTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE681D1D612B810031E534 /* RouteTableViewController.swift */; };
 		26AE68201D622CCD0031E534 /* CanonicalRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE681F1D622CCD0031E534 /* CanonicalRoute.swift */; };
+		26AE68221D62AD250031E534 /* CanonicalRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE68211D62AD250031E534 /* CanonicalRouteTests.swift */; };
+		26AE68241D62BDF90031E534 /* RouteStop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE68231D62BDF90031E534 /* RouteStop.swift */; };
 		26B3DC561D170BAE001E29AA /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B3DC551D170BAE001E29AA /* Connection.swift */; };
 		26B9E1D31D35E0C500794EB6 /* SignalType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B9E1D21D35E0C500794EB6 /* SignalType.swift */; };
 		26C3C21B1D542ED3008E2A46 /* ConnectionMockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3C21A1D542ED3008E2A46 /* ConnectionMockTests.swift */; };
@@ -146,8 +148,10 @@
 		26AC8BB31BD34BA700AA0001 /* VehicleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VehicleViewController.swift; sourceTree = "<group>"; };
 		26AC8BB51BD3503300AA0001 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		26AE681B1D601D0B0031E534 /* RouteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteViewController.swift; sourceTree = "<group>"; };
-		26AE681D1D612B810031E534 /* RouteTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableViewController.swift; sourceTree = "<group>"; };
-		26AE681F1D622CCD0031E534 /* CanonicalRoute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanonicalRoute.swift; sourceTree = "<group>"; };
+		26AE681D1D612B810031E534 /* RouteTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RouteTableViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		26AE681F1D622CCD0031E534 /* CanonicalRoute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CanonicalRoute.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		26AE68211D62AD250031E534 /* CanonicalRouteTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanonicalRouteTests.swift; sourceTree = "<group>"; };
+		26AE68231D62BDF90031E534 /* RouteStop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteStop.swift; sourceTree = "<group>"; };
 		26B3DC551D170BAE001E29AA /* Connection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Connection.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26B9E1D21D35E0C500794EB6 /* SignalType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalType.swift; sourceTree = "<group>"; };
 		26C3C21A1D542ED3008E2A46 /* ConnectionMockTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionMockTests.swift; sourceTree = "<group>"; };
@@ -363,6 +367,7 @@
 		26A424C71BD2C1320035754F /* ProperTests */ = {
 			isa = PBXGroup;
 			children = (
+				26AE68211D62AD250031E534 /* CanonicalRouteTests.swift */,
 				26A424CA1BD2C1320035754F /* Info.plist */,
 				2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */,
 				26C3C21A1D542ED3008E2A46 /* ConnectionMockTests.swift */,
@@ -418,6 +423,7 @@
 				26D3E2231D28E07100F85712 /* Model.swift */,
 				26D3E22E1D29BBA700F85712 /* MutableModel.swift */,
 				26D3E2251D28E0B000F85712 /* Point.swift */,
+				26AE68231D62BDF90031E534 /* RouteStop.swift */,
 			);
 			name = Support;
 			sourceTree = "<group>";
@@ -762,6 +768,7 @@
 				26D3E2291D28E24B00F85712 /* Station.swift in Sources */,
 				268E72291BF9938800E981D4 /* TransitNavigationItem.swift in Sources */,
 				26A424B41BD2C1320035754F /* AppDelegate.swift in Sources */,
+				26AE68241D62BDF90031E534 /* RouteStop.swift in Sources */,
 				26DBCF491D3FF59A00B22562 /* EventLog.swift in Sources */,
 				2650D28E1D176B65003758BF /* Configuration.swift in Sources */,
 				26E3E2CF1D3C7DF90018EF3F /* ProperViewController.swift in Sources */,
@@ -780,6 +787,7 @@
 				266111DE1D5380D300D8F46B /* ConnectionMock.swift in Sources */,
 				26E964FD1D58E00600F83797 /* MutableModelDelegateMock.swift in Sources */,
 				2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */,
+				26AE68221D62AD250031E534 /* CanonicalRouteTests.swift in Sources */,
 				26E964F81D56388800F83797 /* MutableVehicleTests.swift in Sources */,
 				266111D21D51521500D8F46B /* UIColorDecodeTests.swift in Sources */,
 				26C3C21B1D542ED3008E2A46 /* ConnectionMockTests.swift in Sources */,

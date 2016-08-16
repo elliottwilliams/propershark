@@ -18,7 +18,7 @@ class RouteTableViewController: UITableViewController, ProperViewController {
 
     // MARK: Internal properties
     internal var connection: ConnectionType = Connection.sharedInstance
-    internal var diffCalculator: TableViewDiffCalculator<CanonicalRoute.StationType>!
+    internal var diffCalculator: TableViewDiffCalculator<RouteStop<MutableRoute.StationType>>!
     internal let disposable = CompositeDisposable()
 
     // MARK: Methods
