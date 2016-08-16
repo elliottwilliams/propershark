@@ -49,6 +49,7 @@
 		26AC8BB61BD3503300AA0001 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26AC8BB51BD3503300AA0001 /* QuartzCore.framework */; };
 		26AE681C1D601D0B0031E534 /* RouteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE681B1D601D0B0031E534 /* RouteViewController.swift */; };
 		26AE681E1D612B810031E534 /* RouteTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE681D1D612B810031E534 /* RouteTableViewController.swift */; };
+		26AE68201D622CCD0031E534 /* CanonicalRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE681F1D622CCD0031E534 /* CanonicalRoute.swift */; };
 		26B3DC561D170BAE001E29AA /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B3DC551D170BAE001E29AA /* Connection.swift */; };
 		26B9E1D31D35E0C500794EB6 /* SignalType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B9E1D21D35E0C500794EB6 /* SignalType.swift */; };
 		26C3C21B1D542ED3008E2A46 /* ConnectionMockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3C21A1D542ED3008E2A46 /* ConnectionMockTests.swift */; };
@@ -146,6 +147,7 @@
 		26AC8BB51BD3503300AA0001 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		26AE681B1D601D0B0031E534 /* RouteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteViewController.swift; sourceTree = "<group>"; };
 		26AE681D1D612B810031E534 /* RouteTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableViewController.swift; sourceTree = "<group>"; };
+		26AE681F1D622CCD0031E534 /* CanonicalRoute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanonicalRoute.swift; sourceTree = "<group>"; };
 		26B3DC551D170BAE001E29AA /* Connection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Connection.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26B9E1D21D35E0C500794EB6 /* SignalType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalType.swift; sourceTree = "<group>"; };
 		26C3C21A1D542ED3008E2A46 /* ConnectionMockTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionMockTests.swift; sourceTree = "<group>"; };
@@ -412,6 +414,7 @@
 		26D3E2271D28E0D900F85712 /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				26AE681F1D622CCD0031E534 /* CanonicalRoute.swift */,
 				26D3E2231D28E07100F85712 /* Model.swift */,
 				26D3E22E1D29BBA700F85712 /* MutableModel.swift */,
 				26D3E2251D28E0B000F85712 /* Point.swift */,
@@ -736,6 +739,7 @@
 				266BAE661D2B7159001C9EC8 /* StartListViewController.swift in Sources */,
 				26D3E2221D28DFE800F85712 /* Route.swift in Sources */,
 				26A4B7AF1D32251100264F0D /* MutableStation.swift in Sources */,
+				26AE68201D622CCD0031E534 /* CanonicalRoute.swift in Sources */,
 				26A4B7B11D32CEC800264F0D /* MutableRoute.swift in Sources */,
 				26AE681E1D612B810031E534 /* RouteTableViewController.swift in Sources */,
 				26A424E51BD2D3F20035754F /* ArrivalTableViewCell.swift in Sources */,

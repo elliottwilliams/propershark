@@ -33,6 +33,7 @@ class MutableRoute: MutableModel {
     var stations: MutableProperty<Set<MutableStation>?> = .init(nil)
     var vehicles: MutableProperty<Set<MutableVehicle>?> = .init(nil)
     var itinerary: MutableProperty<[MutableStation]?> = .init(nil)
+    var canonical: MutableProperty<CanonicalRoute?> = .init(nil)
 
     // MARK: Signal Producer
     lazy var producer: SignalProducer<TopicEvent, PSError> = {
@@ -95,9 +96,10 @@ class MutableRoute: MutableModel {
         try attachOrApplyChanges(to: self.vehicles, from: route.vehicles)
 
         // Map the station stubs in `route.stations` to mutables in `self.stations`, then update the itinerary property
-        // if objects or ordering has changed.
+        // and regenerate the condensed route if objects or ordering has changed.
         if let itinerary = try route.stations.map(mappedItinerary) where itinerary != self.itinerary.value! {
-            self.itinerary.swap(itinerary)
+            self.itinerary.value = itinerary
+            self.canonical.value = CanonicalRoute(from: itinerary)
         }
     }
 
@@ -117,9 +119,5 @@ class MutableRoute: MutableModel {
             }
             return mutable
         }
-    }
-
-    func condensedRoute() {
-
     }
 }

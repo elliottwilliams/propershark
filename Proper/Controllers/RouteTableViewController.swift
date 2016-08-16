@@ -18,7 +18,7 @@ class RouteTableViewController: UITableViewController, ProperViewController {
 
     // MARK: Internal properties
     internal var connection: ConnectionType = Connection.sharedInstance
-    internal var diffCalculator: TableViewDiffCalculator<MutableStation>!
+    internal var diffCalculator: TableViewDiffCalculator<CanonicalRoute.StationType>!
     internal let disposable = CompositeDisposable()
 
     // MARK: Methods
@@ -26,7 +26,7 @@ class RouteTableViewController: UITableViewController, ProperViewController {
         // Subscribe to route updates.
         disposable += route.producer.startWithFailed(self.displayError)
 
-        diffCalculator = TableViewDiffCalculator(tableView: table, initialRows: route.stations.value?.sort() ?? [])
+        diffCalculator = TableViewDiffCalculator(tableView: table, initialRows: route.canonical.value?.stations ?? [])
 
         table.registerNib(UINib(nibName: "RouteTableViewCell", bundle: nil), forCellReuseIdentifier: "RouteTableViewCell")
     }
