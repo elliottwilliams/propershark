@@ -28,7 +28,7 @@ class MutableRouteTests: XCTestCase, MutableModelTestSpec {
 
     func testApplyUpdatesProperty() {
         XCTAssertEqual(mutable.name.value, "Inner Loop")
-        mutable.apply(modifiedRoute)
+        try! mutable.apply(modifiedRoute)
         XCTAssertEqual(mutable.name.value, "~modified")
     }
 

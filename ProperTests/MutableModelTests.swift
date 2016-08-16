@@ -50,7 +50,7 @@ class MutableModelTests: XCTestCase {
         }
 
         // When
-        route.attachOrApplyChanges(to: route.stations, from: modifiedStations)
+        try! route.attachOrApplyChanges(to: route.stations, from: modifiedStations)
 
         // Then
         waitForExpectationsWithTimeout(3, handler: nil)
@@ -63,7 +63,7 @@ class MutableModelTests: XCTestCase {
         modifiedStations.removeFirst()
 
         // When
-        route.attachOrApplyChanges(to: route.stations, from: modifiedStations)
+        try! route.attachOrApplyChanges(to: route.stations, from: modifiedStations)
 
         // Then
         XCTAssertFalse(route.stations.value!.map { $0.identifier }.contains("BUS249"))
@@ -76,7 +76,7 @@ class MutableModelTests: XCTestCase {
         modifiedStations.append(Station(id: "test123"))
 
         // When
-        route.attachOrApplyChanges(to: route.stations, from: modifiedStations)
+        try! route.attachOrApplyChanges(to: route.stations, from: modifiedStations)
 
         // Then
         XCTAssertTrue(route.stations.value!.map { $0.identifier }.contains("test123"))

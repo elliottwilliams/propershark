@@ -24,8 +24,7 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
         super.setUp()
         mock = ConnectionMock()
         station = createMutable(self)(mock)
-        controller = ArrivalsTableViewController(observing: station, delegate: self, style: .Plain, connection: mock,
-                                                 config: .sharedInstance)
+        controller = ArrivalsTableViewController(observing: station, delegate: self, style: .Plain, connection: mock)
         disposable = CompositeDisposable()
     }
 
@@ -103,7 +102,7 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
         requestView()
         XCTAssertNotNil(controller.routes.value.first)
         if let route = controller.routes.value.first {
-            route.apply(modifiedRoute)
+            try! route.apply(modifiedRoute)
         }
 
         // ...then the list of vehicles should be updated
@@ -130,7 +129,7 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
 
         // When the view is loaded and the new routes are applied...
         requestView()
-        controller.station.apply(modifiedStation)
+        try! controller.station.apply(modifiedStation)
 
         // Then the list of vehicles should contain vehicles from both routes.
         XCTAssertEqual(controller.vehicles.value.map { $0.identifier }.sort(), ["v1", "v2", "v3", "v4", "v5"])

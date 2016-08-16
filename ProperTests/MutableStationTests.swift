@@ -30,7 +30,7 @@ class MutableStationTests: XCTestCase, MutableModelTestSpec {
     func testApplyUpdatesProperty() {
         XCTAssertEqual(mutable.name.value, "Beau Jardin Apts on Yeager (@ Shelter) - BUS100W ",
                        "Station name does not have expected initial value")
-        mutable.apply(modifiedStation)
+        try! mutable.apply(modifiedStation)
         XCTAssertEqual(mutable.name.value, "~modified", "Station name not modified by signal")
     }
 

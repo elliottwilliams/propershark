@@ -31,7 +31,7 @@ class MutableVehicleTests: XCTestCase, MutableModelTestSpec {
 
     func testApplyUpdatesProperty() {
         XCTAssertEqual(mutable.capacity.value, 60)
-        mutable.apply(modifiedVehicle)
+        try! mutable.apply(modifiedVehicle)
         XCTAssertEqual(mutable.capacity.value, 9001)
     }
 
