@@ -96,7 +96,9 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
         // When the list of vehicles for this station changes, update the table.
         disposable += vehicles.producer.startWithNext { vehicles in
+            self.tableView.beginUpdates()
             self.diffCalculator.rows = vehicles.sort()
+            self.tableView.endUpdates()
         }
     }
 
@@ -109,9 +111,7 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
     // MARK: Delegate Methods
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int { return 1 }
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? { return "Arrivals" }
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return diffCalculator.rows.count
-    }
+    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int { return diffCalculator.rows.count }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         // ArrivalTableViewCell comes from the xib, and is registered upon the creation of this table
