@@ -16,9 +16,11 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
     var station: MutableStation
 
     // MARK: Internal properties
+    internal var connection: ConnectionType
     internal let delegate: ArrivalsTableViewDelegate
     internal var diffCalculator: TableViewDiffCalculator<MutableVehicle>!
-    internal var connection: ConnectionType
+    internal var disposable = CompositeDisposable()
+    internal var routeDisposables = [MutableRoute: Disposable]()
 
     // MARK: Signalled properties
     lazy var routes: AnyProperty<Set<MutableRoute>> = {
@@ -67,9 +69,6 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    internal var disposable = CompositeDisposable()
-    internal var routeDisposables = [MutableRoute: Disposable]()
-
     override func viewDidLoad() {
         // Initialize the diff calculator for the table, which starts using any routes already on `station`.
         self.diffCalculator = TableViewDiffCalculator(tableView: self.tableView, initialRows: vehicles.value.sort())
@@ -113,6 +112,7 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return diffCalculator.rows.count
     }
+
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         // ArrivalTableViewCell comes from the xib, and is registered upon the creation of this table
         let cell = tableView.dequeueReusableCellWithIdentifier("ArrivalTableViewCell", forIndexPath: indexPath) as! ArrivalTableViewCell

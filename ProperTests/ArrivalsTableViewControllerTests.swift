@@ -35,6 +35,8 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
 
     func requestView() {
         let _ = controller.view
+        controller.viewWillAppear(false)
+        controller.viewDidAppear(false)
     }
 
     func testSubscribeToStation() {

@@ -98,8 +98,8 @@ class MutableRoute: MutableModel {
         try attachOrApplyChanges(to: self.vehicles, from: route.vehicles)
 
         // Map the station stubs in `route.stations` to mutables in `self.stations`, then update the itinerary property
-        // and regenerate the condensed route if objects or ordering has changed.
-        if let itinerary = try route.stations.map(mappedItinerary) where itinerary != self.itinerary.value! {
+        // and regenerate the condensed route *iff the stations or their ordering has changed*.
+        if let itinerary = try route.stations.map(mappedItinerary) where self.itinerary.value.map({ $0 == itinerary }) == false {
             self.itinerary.value = itinerary
             self.canonical.value = CanonicalRoute(from: itinerary)
         }
