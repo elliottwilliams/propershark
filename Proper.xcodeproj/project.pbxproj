@@ -14,7 +14,6 @@
 		2612B52E1D50513600BF671D /* vehicle.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B52B1D50513600BF671D /* vehicle.json */; };
 		261DD1631C3424E1001336D4 /* RouteBadgeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 261DD1621C3424E1001336D4 /* RouteBadgeLabel.swift */; };
 		2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */; };
-		2635DB701C3CBEC500EB58F5 /* DemoTableFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2635DB6F1C3CBEC500EB58F5 /* DemoTableFooter.xib */; };
 		2635DB721C3CBF4700EB58F5 /* RouteTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB711C3CBF4700EB58F5 /* RouteTableView.swift */; };
 		2635DB781C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB771C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift */; };
 		264754901D551411000F0831 /* ArrivalsTableViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */; };
@@ -31,6 +30,7 @@
 		266BAE651D2B676F001C9EC8 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266BAE641D2B676F001C9EC8 /* UIColor.swift */; };
 		266BAE661D2B7159001C9EC8 /* StartListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264782551C2C6F67009D9AD0 /* StartListViewController.swift */; };
 		267019581C3F5BB50057FD11 /* RailVehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267019571C3F5BB50057FD11 /* RailVehicle.swift */; };
+		2675254F1D66638C00F6C33F /* RouteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2675254E1D66638C00F6C33F /* RouteTableViewCell.swift */; };
 		268632811C319B0D00839A22 /* SceneMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268632801C319B0D00839A22 /* SceneMediator.swift */; };
 		268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72261BF9938800E981D4 /* TransitLabel.swift */; };
 		268E72291BF9938800E981D4 /* TransitNavigationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72271BF9938800E981D4 /* TransitNavigationItem.swift */; };
@@ -105,7 +105,6 @@
 		261DD1621C3424E1001336D4 /* RouteBadgeLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteBadgeLabel.swift; sourceTree = "<group>"; };
 		261DD1681C345AAC001336D4 /* RouteBadgeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteBadgeController.swift; sourceTree = "<group>"; };
 		2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabelTests.swift; sourceTree = "<group>"; };
-		2635DB6F1C3CBEC500EB58F5 /* DemoTableFooter.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DemoTableFooter.xib; sourceTree = "<group>"; };
 		2635DB711C3CBF4700EB58F5 /* RouteTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableView.swift; sourceTree = "<group>"; };
 		2635DB771C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableViewHeaderFooterView.swift; sourceTree = "<group>"; };
 		2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrivalsTableViewControllerTests.swift; sourceTree = "<group>"; };
@@ -122,6 +121,7 @@
 		266111DC1D5378B500D8F46B /* NilConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NilConnection.swift; sourceTree = "<group>"; };
 		266BAE641D2B676F001C9EC8 /* UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		267019571C3F5BB50057FD11 /* RailVehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RailVehicle.swift; sourceTree = "<group>"; };
+		2675254E1D66638C00F6C33F /* RouteTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableViewCell.swift; sourceTree = "<group>"; };
 		268632801C319B0D00839A22 /* SceneMediator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SceneMediator.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		268E72261BF9938800E981D4 /* TransitLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabel.swift; sourceTree = "<group>"; };
 		268E72271BF9938800E981D4 /* TransitNavigationItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitNavigationItem.swift; sourceTree = "<group>"; };
@@ -239,17 +239,17 @@
 		264782611C309F4C009D9AD0 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				2675254D1D6662F000F6C33F /* Disabled */,
 				267019571C3F5BB50057FD11 /* RailVehicle.swift */,
 				2635DB771C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift */,
 				2635DB711C3CBF4700EB58F5 /* RouteTableView.swift */,
-				2635DB6F1C3CBEC500EB58F5 /* DemoTableFooter.xib */,
 				26A424E31BD2D3F20035754F /* ArrivalTableViewCell.swift */,
-				269BE7F91C35E01400AE72D2 /* RouteTableViewCell.swift */,
 				26C598BB1C250D1E00BC9FE1 /* RouteBadge.swift */,
 				26DFB6751C35A7F7006A8AE0 /* ScheduleRail.swift */,
 				261DD1621C3424E1001336D4 /* RouteBadgeLabel.swift */,
 				268E72261BF9938800E981D4 /* TransitLabel.swift */,
 				268E72271BF9938800E981D4 /* TransitNavigationItem.swift */,
+				2675254E1D66638C00F6C33F /* RouteTableViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -320,6 +320,14 @@
 				26E964FC1D58E00600F83797 /* MutableModelDelegateMock.swift */,
 			);
 			path = Fixtures;
+			sourceTree = "<group>";
+		};
+		2675254D1D6662F000F6C33F /* Disabled */ = {
+			isa = PBXGroup;
+			children = (
+				269BE7F91C35E01400AE72D2 /* RouteTableViewCell.swift */,
+			);
+			path = Disabled;
 			sourceTree = "<group>";
 		};
 		26A424A71BD2C1320035754F = {
@@ -580,7 +588,6 @@
 			files = (
 				26AC8BB21BD345F100AA0001 /* Media.xcassets in Resources */,
 				26A424BE1BD2C1320035754F /* LaunchScreen.storyboard in Resources */,
-				2635DB701C3CBEC500EB58F5 /* DemoTableFooter.xib in Resources */,
 				26A424BB1BD2C1320035754F /* Assets.xcassets in Resources */,
 				26A424E61BD2D3F20035754F /* ArrivalTableViewCell.xib in Resources */,
 				26A424B91BD2C1320035754F /* Main.storyboard in Resources */,
@@ -751,6 +758,7 @@
 				26A424E51BD2D3F20035754F /* ArrivalTableViewCell.swift in Sources */,
 				26D3E22B1D28E25200F85712 /* Vehicle.swift in Sources */,
 				26AE681C1D601D0B0031E534 /* RouteViewController.swift in Sources */,
+				2675254F1D66638C00F6C33F /* RouteTableViewCell.swift in Sources */,
 				268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */,
 				26B9E1D31D35E0C500794EB6 /* SignalType.swift in Sources */,
 				26A8D6021D484944000434F9 /* ArrivalsTableViewController.swift in Sources */,

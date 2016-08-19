@@ -18,7 +18,7 @@ class MutableVehicleTests: XCTestCase, MutableModelTestSpec {
     var rawModel = rawModels().vehicle
     var model = decodedModels().vehicle
     let defaultDelegate = MutableModelDelegateMock()
-    let modifiedVehicle = Vehicle(name: "1201", code: nil, position: nil, capacity: 9001, onboard: nil,
+    let modifiedVehicle = Vehicle(name: "1708", code: nil, position: nil, capacity: 9001, onboard: nil,
                                   saturation: nil, lastStation: nil, nextStation: nil, route: nil, scheduleDelta: nil,
                                   heading: nil, speed: nil)
     let mock = ConnectionMock()

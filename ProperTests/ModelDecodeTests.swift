@@ -54,7 +54,6 @@ class ModelDecodeTests: XCTestCase {
         }
     }
 
-    // Disabled until propershark/shark#12 is implemented
     func testDecodeRoute() {
         let json = JSON(route)
         let decoded = Route.decode(json)
@@ -82,8 +81,6 @@ class ModelDecodeTests: XCTestCase {
             XCTAssertGreaterThan(stations.count, 1)
             let parkingLotStop = stations.filter { $0 == Station(id: "BUS249") }.first
             XCTAssertNotNil(parkingLotStop)
-
-            // This will fail until propershark/shark#12 is implemented.
             XCTAssertEqual(parkingLotStop?.name, "Discovery Parking Lot (at Shelter) - BUS249")
         }
 
@@ -97,7 +94,7 @@ class ModelDecodeTests: XCTestCase {
 
         XCTAssertNotNil(route.vehicles)
         if let vehicles = route.vehicles {
-            XCTAssertEqual(vehicles.first?.identifier, "1202")
+            XCTAssertEqual(vehicles.first?.identifier, "1203")
         }
     }
 
@@ -108,15 +105,15 @@ class ModelDecodeTests: XCTestCase {
 
         guard let vehicle = decoded.value else { return }
 
-        XCTAssertEqual(vehicle.name, "1201")
-        XCTAssertEqual(vehicle.heading, 180)
+        XCTAssertEqual(vehicle.name, "1708")
+        XCTAssertEqual(vehicle.heading, 88)
         XCTAssertEqual(vehicle.capacity, 60)
         XCTAssertEqual(vehicle.saturation, 6)
-        XCTAssertEqual(vehicle.speed, 0)
+        XCTAssertEqual(vehicle.speed, 13.995615604867572)
         XCTAssertEqual(vehicle.onboard, 4)
 
         XCTAssertEqual(vehicle.position, Point(lat: 40.454631772913, long: -86.92457761911))
-        XCTAssertEqual(vehicle.route.map { $0.identifier }, "9")
+        XCTAssertEqual(vehicle.route.map { $0.identifier }, "5B")
     }
 
     func testDecodePoint() {
