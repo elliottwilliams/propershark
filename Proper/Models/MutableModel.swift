@@ -30,7 +30,7 @@ protocol MutableModel: class, Hashable {
     func handleEvent(event: TopicEvent) -> Result<(), PSError>
     
     /// Initialize all `MutableProperty`s of this `MutableModel` from a corresponding model.
-    init(from _: FromModel, delegate: MutableModelDelegate, connection: ConnectionType)
+    init(from _: FromModel, delegate: MutableModelDelegate, connection: ConnectionType) throws
     var delegate: MutableModelDelegate { get }
     
     /// Update state to match the model given. Throws PSError if a consistency check fails.
@@ -44,8 +44,8 @@ protocol MutableModel: class, Hashable {
 extension MutableModel {
 
     /// Create a MutableModel from a static model and attach it to the calling MutableModel's delegate.
-    internal func attachMutable<M: MutableModel>(from model: M.FromModel) -> M {
-        return M(from: model, delegate: self.delegate, connection: self.connection)
+    internal func attachMutable<M: MutableModel>(from model: M.FromModel) throws -> M {
+        return try M(from: model, delegate: self.delegate, connection: self.connection)
     }
 
     /// Create and insert new MutableModels to a given set, remove old ones, and apply changes from
@@ -72,7 +72,9 @@ extension MutableModel {
             }
 
             // Remaining models in `new` are new to the set. Attch MutableModels for them.
-            new.forEach { id, model in mutables.insert(attachMutable(from: model)) }
+            try new.forEach { id, model in
+                try mutables.insert(attachMutable(from: model))
+            }
 
             return mutables
         }
@@ -96,7 +98,7 @@ extension MutableModel {
         if let mutable = property.value {
             try mutable.apply(update)
         } else {
-            property.value = attachMutable(from: update) as M
+            property.value = try attachMutable(from: update) as M
         }
     }
 

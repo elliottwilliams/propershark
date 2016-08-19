@@ -66,10 +66,9 @@ extension Route: Decodable {
                 <*> json <|? "description"
                 <*> json <|? "color"
                 <*> json <||? "path"
-                // See shark#12 for discussion on which stations attribute should be used.
                 <*> json <||? ["associated_objects", Station.fullyQualified]
                 <*> json <||? ["associated_objects", Vehicle.fullyQualified]
-                <*> json <||? "stations"
+                <*> json <||? "itinerary"
         }
 
     }

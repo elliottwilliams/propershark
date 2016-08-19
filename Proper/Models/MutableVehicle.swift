@@ -51,11 +51,11 @@ class MutableVehicle: MutableModel, Comparable {
     }()
 
     // MARK: Functions
-    required init(from vehicle: Vehicle, delegate: MutableModelDelegate, connection: ConnectionType) {
+    required init(from vehicle: Vehicle, delegate: MutableModelDelegate, connection: ConnectionType) throws {
         self.name = vehicle.name
         self.delegate = delegate
         self.connection = connection
-        try! apply(vehicle)
+        try apply(vehicle)
     }
 
     func handleEvent(event: TopicEvent) -> Result<(), PSError> {

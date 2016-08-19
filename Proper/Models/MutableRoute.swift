@@ -1,3 +1,4 @@
+
 //
 //  MutableRoute.swift
 //  Proper
@@ -48,12 +49,11 @@ class MutableRoute: MutableModel {
     }()
 
     // MARK: Functions
-    required init(from route: Route, delegate: MutableModelDelegate, connection: ConnectionType)
-    {
+    required init(from route: Route, delegate: MutableModelDelegate, connection: ConnectionType) throws {
         self.shortName = route.shortName
         self.delegate = delegate
         self.connection = connection
-        try! apply(route)
+        try apply(route)
 
         // Create back-references to this MutableRoute on all vehicles associated with the route. 
         self.vehicles.producer.ignoreNil().flatten(.Latest).startWithNext { [weak self] vehicle in
@@ -99,7 +99,7 @@ class MutableRoute: MutableModel {
 
         // Map the station stubs in `route.stations` to mutables in `self.stations`, then update the itinerary property
         // and regenerate the condensed route *iff the stations or their ordering has changed*.
-        if let itinerary = try route.stations.map(mappedItinerary) where self.itinerary.value.map({ $0 == itinerary }) == false {
+        if let itinerary = try route.itinerary.map(mappedItinerary) where self.itinerary.value.map({ $0 != itinerary }) ?? true {
             self.itinerary.value = itinerary
             self.canonical.value = CanonicalRoute(from: itinerary)
         }

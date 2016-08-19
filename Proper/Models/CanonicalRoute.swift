@@ -19,18 +19,9 @@ struct CanonicalRoute<StationType: Equatable> {
 
     /// Reduce an itinerary down to an list of unique constant and conditional stations.
     static func fromItinerary(itinerary: [StationType]) -> [RouteStopType] {
-        // Helper function: replace a given range of stations with conditional stations, and return the entire route.
-        func conditionals(on route: [RouteStopType], within range: Range<Int>) -> [RouteStopType] {
-            let replacement = route[range].map { RouteStopType.conditional($0.station) }
-            return route[0..<range.startIndex] + replacement + route[range.endIndex..<route.count]
-        }
-
-        // Helper function: look up the index of a station on the condensed route.
-        func indexOf(station: StationType, on route: [RouteStopType]) -> Int? {
-            return route.lazy.map { $0.station }.indexOf(station)
-        }
-
-        let reduced = itinerary.reduce((route: [RouteStopType](), idx: 0, foundRepeat: false)) { tt, station in
+        // Remove adjacent repeats in the itinerary.
+        let normalized = normalize(itinerary)
+        let reduced = normalized.reduce((route: [RouteStopType](), idx: 0, foundRepeat: false)) { tt, station in
             var (route, i, foundRepeat) = tt
 
             // Phase 1: Walk the itinerary until a repeat station is found.
@@ -38,7 +29,7 @@ struct CanonicalRoute<StationType: Equatable> {
                 if let j = indexOf(station, on: route) {
                     // The repeat might not have been the first item in the itinerary. Mark any stations that came before
                     // this first repeat as conditional.
-                    route = conditionals(on: route, within: 0..<j)
+                    route = conditionals(on: route, from: 0, to: j)
                     // We found the first repeat, so we can proceed to Phase 2 in the next iteration, starting with the
                     // station indexed after this one.
                     return (route, j+1, true)
@@ -61,7 +52,7 @@ struct CanonicalRoute<StationType: Equatable> {
                     // If this station occurs in the route but wasn't expected here, that stations between it and the
                     // expected station are conditional. Mark them as such, and continue reducing from the position in
                     // the route after this station was found.
-                    route = conditionals(on: route, within: min(ri,j) ..< max(ri,j))
+                    route = conditionals(on: route, from: ri, to: j)
                     return (route, j+1, true)
                 } else {
                     // This station must be a conditional, because it isn't on the route even though we've made a
@@ -77,5 +68,41 @@ struct CanonicalRoute<StationType: Equatable> {
         }
         
         return reduced.route
+    }
+
+    /// Apply cleaning and normalization steps to an itinerary to prepare it for reduction.
+    private static func normalize(itinerary: [StationType]) -> [StationType] {
+        // Remove adjacent repeats in the itinerary.
+        return itinerary.reduce([]) { normalized, station in
+            if normalized.last != station {
+                return normalized + [station]
+            } else {
+                return normalized
+            }
+        }
+    }
+
+    /// Replace a given range of stations with conditional stations, and return the entire route.
+    private static func conditionals(on route: [RouteStopType], from: Int, to: Int) -> [RouteStopType] {
+        // If from > to, mark conditionals around the end of the route, back to the beginning.
+        let ranges: [Range<Int>]
+        if from > to {
+            ranges = [0..<to, from..<route.count]
+        } else {
+            ranges = [from..<to]
+        }
+
+        // For each range, return the route with that range of stations marked conditional.
+        return ranges.reduce(route) { route, range in
+            var route = route
+            let replacement = route[range].map { RouteStopType.conditional($0.station) }
+            route.replaceRange(range, with: replacement)
+            return route
+        }
+    }
+
+    /// Look up the index of a station on the condensed route.
+    private static func indexOf(station: StationType, on route: [RouteStopType]) -> Int? {
+        return route.lazy.map { $0.station }.indexOf(station)
     }
 }

@@ -43,11 +43,11 @@ class MutableStation: MutableModel {
             .attempt(self.handleEvent)
     }()
 
-    required init(from station: Station, delegate: MutableModelDelegate, connection: ConnectionType) {
+    required init(from station: Station, delegate: MutableModelDelegate, connection: ConnectionType) throws {
         self.stopCode = station.stopCode
         self.delegate = delegate
         self.connection = connection
-        try! apply(station)
+        try apply(station)
     }
 
     func handleEvent(event: TopicEvent) -> Result<(), PSError> {
