@@ -491,10 +491,10 @@
                                             </mask>
                                         </variation>
                                     </view>
-                                    <containerView opaque="NO" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wzf-im-AzC">
+                                    <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wzf-im-AzC">
                                         <rect key="frame" x="0.0" y="160" width="600" height="326"/>
                                         <connections>
-                                            <segue destination="vAO-8U-l2g" kind="embed" identifier="embedRouteTable" id="rr2-ra-5dY"/>
+                                            <segue destination="vAO-8U-l2g" kind="embed" identifier="embedRouteTable" id="35N-y2-3Bx"/>
                                         </connections>
                                     </containerView>
                                     <view contentMode="scaleToFill" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="7ch-GO-ufe">
@@ -524,6 +524,8 @@
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="7ch-GO-ufe" secondAttribute="trailing" id="1KP-XE-b59"/>
                                     <constraint firstAttribute="trailing" secondItem="QJh-Zd-cWb" secondAttribute="trailing" id="8jo-Cy-R8F"/>
+                                    <constraint firstAttribute="trailing" secondItem="wzf-im-AzC" secondAttribute="trailing" id="Htg-iY-DiV"/>
+                                    <constraint firstItem="wzf-im-AzC" firstAttribute="leading" secondItem="29b-hJ-7Nz" secondAttribute="leading" id="T8A-TF-1mD"/>
                                     <constraint firstItem="7ch-GO-ufe" firstAttribute="leading" secondItem="29b-hJ-7Nz" secondAttribute="leading" id="WDf-K9-dV5"/>
                                     <constraint firstItem="QJh-Zd-cWb" firstAttribute="leading" secondItem="29b-hJ-7Nz" secondAttribute="leading" id="iib-tB-HpG"/>
                                 </constraints>
@@ -541,8 +543,6 @@
                     <connections>
                         <outlet property="badge" destination="fdR-Mr-Tao" id="H65-0d-eRb"/>
                         <outlet property="nav" destination="zm8-Ec-pp1" id="ARH-c1-iLy"/>
-                        <segue destination="BYZ-38-t0r" kind="show" identifier="ShowStationFromRouteTable" id="fGj-eR-Wrk"/>
-                        <segue destination="CUs-dG-PVJ" kind="show" identifier="ShowVehicleFromRouteTable" id="Wc0-K5-kvk"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uSK-yd-Xdh" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -552,13 +552,13 @@
         <!--Route Table View Controller-->
         <scene sceneID="VUs-mh-rL8">
             <objects>
-                <tableViewController id="vAO-8U-l2g" customClass="RouteTableViewController" sceneMemberID="viewController">
+                <tableViewController id="vAO-8U-l2g" customClass="RouteTableViewController" customModule="Proper" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="w9n-GE-zWC">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="326"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="zVO-ks-GRo" customClass="RouteTableViewCell">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="RouteTableViewCell" id="zVO-ks-GRo" customClass="RouteTableViewCell">
                                 <rect key="frame" x="0.0" y="28" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="zVO-ks-GRo" id="nIH-aN-KFy">
@@ -578,7 +578,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IMw-If-Yto" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-417" y="1530"/>
+            <point key="canvasLocation" x="-559" y="998"/>
         </scene>
         <!--Vehicle Auxiliary Table-->
         <scene sceneID="1uW-xx-pDN">
@@ -678,7 +678,7 @@
         <image name="cb-default" width="64" height="64"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Wc0-K5-kvk"/>
-        <segue reference="fGj-eR-Wrk"/>
+        <segue reference="XSj-wo-Jw9"/>
+        <segue reference="mwx-A8-Xb3"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -29,7 +29,9 @@ class ScheduleRail: UIView {
         get { return !_stationLayer.hidden }
         set(newState) { setStationState(newState) }
     }
-    var shape: RailShape = .NorthSouth
+    var shape: RailShape = .NorthSouth {
+        didSet { self.setNeedsDisplay() }
+    }
     
     let _railColor = UIColor.lightGrayColor()
     let _stationLayer = CAShapeLayer()
@@ -151,16 +153,7 @@ class ScheduleRail: UIView {
             }
         }
     }
-    
-    @available(*, deprecated=1.0, message="Use drawRailPath: instead")
-    func railPath() -> (full: CGMutablePathRef, entrance: CGMutablePathRef, exit: CGMutablePathRef) {
-        let paths = (CGPathCreateMutable(), CGPathCreateMutable(), CGPathCreateMutable())
-        drawRailPath(paths.0, shape: self.shape, segment: .Full, width: _width, height: _height)
-        drawRailPath(paths.1, shape: self.shape, segment: .Entrance, width: _width, height: _height)
-        drawRailPath(paths.2, shape: self.shape, segment: .Exit, width: _width, height: _height)
-        return paths
-    }
-    
+
     func entrancePoint() -> CGPoint {
         switch (self.shape) {
         case .NorthSouth, .NorthWest:

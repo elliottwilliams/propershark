@@ -81,24 +81,5 @@ class StationViewController: UIViewController, ProperViewController, ArrivalsTab
         self.displayError(error)
     }
 
-#if false
-    func showUserLocationIfEnabled() {
-        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
-        delegate.locationManager?.requestWhenInUseAuthorization()
-        let status = CLLocationManager.authorizationStatus()
-        map.showsUserLocation = (status == CLAuthorizationStatus.AuthorizedAlways ||
-                                 status == CLAuthorizationStatus.AuthorizedWhenInUse)
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        _sceneMediator.sendMessagesForSegueWithIdentifier(segue.identifier, segue: segue, sender: sender)
-    }
-#endif
-
 }
 
