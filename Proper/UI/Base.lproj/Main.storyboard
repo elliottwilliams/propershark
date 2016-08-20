@@ -557,24 +557,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="326"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="RouteTableViewCell" id="zVO-ks-GRo" customClass="RouteTableViewCell">
-                                <rect key="frame" x="0.0" y="28" width="600" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="zVO-ks-GRo" id="nIH-aN-KFy">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="vAO-8U-l2g" id="vHp-w3-Agz"/>
                             <outlet property="delegate" destination="vAO-8U-l2g" id="tCc-u4-mXY"/>
                         </connections>
                     </tableView>
-                    <connections>
-                        <outlet property="table" destination="w9n-GE-zWC" id="wrU-hV-XlI"/>
-                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IMw-If-Yto" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

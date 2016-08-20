@@ -1,4 +1,3 @@
-
 //
 //  MutableRoute.swift
 //  Proper
@@ -108,7 +107,7 @@ class MutableRoute: MutableModel {
     /// Map an itinerary of static Stations to MutableStations contained by this object's `stations` set.
     func mappedItinerary(source: [Station]) throws -> [MutableStation] {
         guard let mutables = self.stations.value else {
-            throw PSError(code: .modelStateInconsistency, associated: "Expected a set of stations to be defined on this MutableRoute")
+            return []
         }
         let dict: [Station.Identifier: MutableStation] = mutables.reduce([:]) { dict, station in
             var dict = dict

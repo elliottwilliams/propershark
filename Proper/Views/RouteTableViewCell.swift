@@ -15,8 +15,8 @@ class RouteTableViewCell: UITableViewCell {
     @IBOutlet weak var subtitle: TransitLabel!
 
     var represents: RouteStop<MutableStation>? {
-        didSet(stop) {
-            guard let stop = stop else { return }
+        didSet {
+            guard let stop = self.represents else { return }
 
             // Bind changes on this station to text
             stop.station.name.map { self.title.text = $0 }

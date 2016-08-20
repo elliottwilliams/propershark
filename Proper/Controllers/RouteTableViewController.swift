@@ -13,9 +13,6 @@ import Dwifft
 class RouteTableViewController: UITableViewController, ProperViewController {
     var route: MutableRoute!
 
-    // MARK: UI references
-    @IBOutlet var table: UITableView!
-
     // MARK: Internal properties
     internal var connection: ConnectionType = Connection.sharedInstance
     internal var diffCalculator: TableViewDiffCalculator<RouteStop<MutableRoute.StationType>>!
@@ -29,7 +26,8 @@ class RouteTableViewController: UITableViewController, ProperViewController {
 
     // MARK: Methods
     override func viewDidLoad() {
-        diffCalculator = TableViewDiffCalculator(tableView: table, initialRows: stops.value)
+        diffCalculator = TableViewDiffCalculator(tableView: tableView, initialRows: stops.value)
+        tableView.registerNib(UINib(nibName: "RouteTableViewCell", bundle: nil), forCellReuseIdentifier: "RouteTableViewCell")
     }
 
     override func viewWillAppear(animated: Bool) {
