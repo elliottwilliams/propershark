@@ -25,12 +25,14 @@ struct Config {
         static let realm = "realm1"
     }
 
-    static let ignoreSignalProducers = Set(
-        arrayLiteral:
-        "MDWamp.subscribeWithSignal",
-        "MDWamp.callWithSignal",
-        "Connection.connectionProducer"
-    )
+    struct logging {
+        static let ignoreSignalProducers = Set([
+            "MDWamp.subscribeWithSignal",
+            "MDWamp.callWithSignal",
+            "Connection.connectionProducer"
+        ])
+        static let logJSON = false
+    }
 
     struct ui {
         static let defaultBadgeColor = UIColor.grayColor()

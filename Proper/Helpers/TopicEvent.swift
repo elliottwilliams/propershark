@@ -181,6 +181,10 @@ enum TopicEvent: CustomStringConvertible {
     static func parseFromRPC(topic: String, request: (args: WampArgs, kwargs: WampKwargs),
                              response: (args: WampArgs, kwargs: WampKwargs)) -> TopicEvent?
     {
+        if Config.logging.logJSON {
+            NSLog("[TopicEvent.parseFromRPC] \(topic) -> \(response)")
+        }
+
         switch topic {
         case "agency.vehicles":
             guard let list = response.args as? [[String: AnyObject]],
