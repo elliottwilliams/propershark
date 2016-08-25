@@ -27,7 +27,7 @@ class RouteTableViewController: UITableViewController, ProperViewController {
     // MARK: Methods
     override func viewDidLoad() {
         diffCalculator = TableViewDiffCalculator(tableView: tableView, initialRows: stops.value)
-        tableView.registerNib(UINib(nibName: "RouteTableViewCell", bundle: nil), forCellReuseIdentifier: "RouteTableViewCell")
+//        tableView.registerNib(UINib(nibName: "RouteTableViewCell", bundle: nil), forCellReuseIdentifier: "RouteTableViewCell")
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -51,10 +51,10 @@ class RouteTableViewController: UITableViewController, ProperViewController {
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int { return stops.value.count }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("RouteTableViewCell", forIndexPath: indexPath) as! RouteTableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("PrototypeCell", forIndexPath: indexPath) as! RouteTableViewCell
         let station = stops.value[indexPath.row]
 
-        cell.represents = station
+        cell.presenting = station
         return cell
     }
 }
