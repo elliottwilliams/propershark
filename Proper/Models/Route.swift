@@ -46,22 +46,36 @@ struct Route: Model {
         self.itinerary = itinerary
     }
 
-    init(id shortName: String) {
+    init(id shortName: String) throws {
         self.init(shortName: shortName)
     }
-}
 
+    static func validate(route: Route) throws {
+        // A defined itinerary necessarily implies defined stations.
+        guard (route.itinerary != nil && route.stations != nil) ||
+            (route.itinerary == nil && route.stations == nil) else {
+                throw PSError(code: .modelStateInconsistency, associated: "itinerary is non-nil but associated stations nil")
+        }
+
+        // An itinerary must be a subset of associated stations.
+        if let itinerary = route.itinerary, let stations = route.stations {
+            let ids: Set<Station.Identifier> = itinerary.reduce(Set()) { set, station in set.union([station.identifier]) }
+            guard ids.elementsEqual(stations.map { $0.identifier }) else {
+                throw PSError(code: .modelStateInconsistency, associated: "route itinerary is not set equivalent with associated stations")
+            }
+        }
+    }
+}
 extension Route: Decodable {
     static func decode(json: JSON) -> Decoded<Route> {
         switch json {
         case .String(let id):
             let shortName = Route.unqualify(namespaced: id)
-            return pure(Route(id: shortName))
+            return .attempt(try pure(Route(id: shortName)))
         default:
-            let r = curry(Route.init)
+            let c = curry(Route.init)
                 <^> (json <| "short_name").or(Route.decodeNamespacedIdentifier(json))
                 <*> json <|? "code"
-            return r
                 <*> json <|? "name"
                 <*> json <|? "description"
                 <*> json <|? "color"
@@ -70,6 +84,5 @@ extension Route: Decodable {
                 <*> json <||? ["associated_objects", Vehicle.fullyQualified]
                 <*> json <||? "itinerary"
         }
-
     }
 }

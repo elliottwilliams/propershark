@@ -28,7 +28,7 @@ protocol Model: Hashable {
     // The fully-qualified name of this object type as it exists on Shark
     static var fullyQualified: String { get }
 
-    init(id: Identifier)
+    init(id: Identifier) throws
 
     var hashValue: Int { get }
 }

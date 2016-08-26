@@ -114,11 +114,9 @@ class MutableRoute: MutableModel {
             dict[station.identifier] = station
             return dict
         }
-        return try source.map { station in
-            guard let mutable = dict[station.identifier] else {
-                throw PSError(code: .modelStateInconsistency, associated: "Expected mutable for \(station.identifier) to exist in the set")
-            }
-            return mutable
+        return source.map { station in
+            // Route.validate has ensured that itinerary ⊆ stations
+            return dict[station.identifier]!
         }
     }
 }

@@ -45,6 +45,10 @@ struct Station: Model {
 }
 
 extension Station: Decodable {
+    private func validate(station: Station) -> Bool {
+        
+    }
+
     static func decode(json: JSON) -> Decoded<Station> {
         switch json {
         case .String(let id):
