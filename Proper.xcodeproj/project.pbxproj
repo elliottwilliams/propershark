@@ -32,6 +32,7 @@
 		267019581C3F5BB50057FD11 /* RailVehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267019571C3F5BB50057FD11 /* RailVehicle.swift */; };
 		2675254F1D66638C00F6C33F /* RouteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2675254E1D66638C00F6C33F /* RouteTableViewCell.swift */; };
 		267525521D6D3B4F00F6C33F /* Decoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267525511D6D3B4F00F6C33F /* Decoded.swift */; };
+		267525611D6FF07500F6C33F /* ThrowingCurry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267525601D6FF07500F6C33F /* ThrowingCurry.swift */; };
 		268632811C319B0D00839A22 /* SceneMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268632801C319B0D00839A22 /* SceneMediator.swift */; };
 		268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72261BF9938800E981D4 /* TransitLabel.swift */; };
 		268E72291BF9938800E981D4 /* TransitNavigationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72271BF9938800E981D4 /* TransitNavigationItem.swift */; };
@@ -124,6 +125,7 @@
 		267019571C3F5BB50057FD11 /* RailVehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RailVehicle.swift; sourceTree = "<group>"; };
 		2675254E1D66638C00F6C33F /* RouteTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableViewCell.swift; sourceTree = "<group>"; };
 		267525511D6D3B4F00F6C33F /* Decoded.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Decoded.swift; sourceTree = "<group>"; };
+		267525601D6FF07500F6C33F /* ThrowingCurry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThrowingCurry.swift; sourceTree = "<group>"; };
 		268632801C319B0D00839A22 /* SceneMediator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SceneMediator.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		268E72261BF9938800E981D4 /* TransitLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabel.swift; sourceTree = "<group>"; };
 		268E72271BF9938800E981D4 /* TransitNavigationItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitNavigationItem.swift; sourceTree = "<group>"; };
@@ -289,6 +291,7 @@
 				264A13C61D26157400B44D47 /* PSError.swift */,
 				2647825F1C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift */,
 				268632801C319B0D00839A22 /* SceneMediator.swift */,
+				267525601D6FF07500F6C33F /* ThrowingCurry.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -741,6 +744,7 @@
 				26D3E21F1D2776AB00F85712 /* Matchers.swift in Sources */,
 				2635DB781C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift in Sources */,
 				261DD1631C3424E1001336D4 /* RouteBadgeLabel.swift in Sources */,
+				267525611D6FF07500F6C33F /* ThrowingCurry.swift in Sources */,
 				26A4B7B31D33503600264F0D /* MutableVehicle.swift in Sources */,
 				266BAE661D2B7159001C9EC8 /* StartListViewController.swift in Sources */,
 				267525521D6D3B4F00F6C33F /* Decoded.swift in Sources */,
