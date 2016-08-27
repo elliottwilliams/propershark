@@ -73,7 +73,7 @@ extension Route: Decodable {
             let shortName = Route.unqualify(namespaced: id)
             return .attempt(try pure(Route(id: shortName)))
         default:
-            let c = curry(Route.init)
+            return curry(Route.init)
                 <^> (json <| "short_name").or(Route.decodeNamespacedIdentifier(json))
                 <*> json <|? "code"
                 <*> json <|? "name"
