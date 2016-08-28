@@ -21,13 +21,13 @@ struct WampRPCCall {
 
 // All connections conform to this protocol, which allows ConnectionMock to be injected.
 protocol ConnectionType {
-    func call(procedure: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, PSError>
-    func subscribe(topic: String) -> SignalProducer<TopicEvent, PSError>
+    func call(procedure: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, ConnectionError>
+    func subscribe(topic: String) -> SignalProducer<TopicEvent, ConnectionError>
 }
 
 extension ConnectionType {
     // Convenience method to call a procedure while omitting args and/or kwargs
-    func call(procedure: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> SignalProducer<TopicEvent, PSError> {
+    func call(procedure: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> SignalProducer<TopicEvent, ConnectionError> {
         return self.call(procedure, args: args, kwargs: kwargs)
     }
 }
@@ -37,19 +37,19 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
     static var sharedInstance = Connection.init()
     
     // Produces signals that passes the MDWamp object when it is available, and that handles reconnections transparently.
-    lazy var producer: SignalProducer<MDWamp, PSError> = self.connectionProducer()
+    lazy var producer: SignalProducer<MDWamp, ConnectionError> = self.connectionProducer()
     
     private static let maxConnectionFailures = 5
-    private var observer: Observer<MDWamp, PSError>?
+    private var observer: Observer<MDWamp, ConnectionError>?
     
     var wamp = MutableProperty<MDWamp?>(nil)
     
     // MARK: Startup
     
     // Lazy evaluator for self.producer
-    func connectionProducer() -> SignalProducer<MDWamp, PSError> {
+    func connectionProducer() -> SignalProducer<MDWamp, ConnectionError> {
         NSLog("opening connection to wamp router")
-        let (producer, observer) = SignalProducer<MDWamp, PSError>.buffer(1)
+        let (producer, observer) = SignalProducer<MDWamp, ConnectionError>.buffer(1)
         
         // Set the instance observer and connect
         self.observer = observer
@@ -62,7 +62,7 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
         return producer
         .retry(Connection.maxConnectionFailures).flatMapError() { _ in
             NSLog("connection failure after \(Connection.maxConnectionFailures) retries")
-            return SignalProducer<MDWamp, PSError>.init(error: PSError(code: .maxConnectionFailures))
+            return SignalProducer(error: .maxConnectionFailures)
         }
         // ...and logs all events for debugging
         .logEvents(identifier: "Connection.connectionProducer", logger: logSignalEvent)
@@ -72,7 +72,7 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
 
     /// Subscribe to `topic` and forward parsed events. Disposing of signals created from this method will unsubscribe
     /// `topic`.
-    func subscribe(topic: String) -> SignalProducer<TopicEvent, PSError> {
+    func subscribe(topic: String) -> SignalProducer<TopicEvent, ConnectionError> {
         return self.producer
         .map { wamp in wamp.subscribeWithSignal(topic) }
         .flatten(.Latest)
@@ -80,24 +80,24 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
             if let event = TopicEvent.parseFromTopic(topic, event: wampEvent) {
                 return .Success(event)
             } else {
-                return .Failure(PSError(code: .parseFailure))
+                return .Failure(.eventParseFailure)
             }
         }
         .logEvents(identifier: "Connection.subscribe", logger: logSignalEvent)
     }
 
     /// Call `procdure` and forward the result. Disposing the signal created will cancel the RPC call.
-    func call(topic: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> SignalProducer<TopicEvent, PSError> {
+    func call(topic: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> SignalProducer<TopicEvent, ConnectionError> {
         return self.producer.map { wamp in
         wamp.callWithSignal(topic, args, kwargs, [:])
-            .timeoutWithError(PSError(code: .timeout), afterInterval: 10.0, onScheduler: QueueScheduler.mainQueueScheduler)
+            .timeoutWithError(ProperError(code: .timeout), afterInterval: 10.0, onScheduler: QueueScheduler.mainQueueScheduler)
         }
         .flatten(.Latest)
         .attemptMap { wampEvent in
             if let event = TopicEvent.parseFromRPC(topic, args, kwargs, wampEvent) {
                 return .Success(event)
             } else {
-                return .Failure(PSError(code: .parseFailure))
+                return .Failure(.eventParseFailure)
             }
         }
         .logEvents(identifier: "Connection.call", logger: logSignalEvent)
@@ -119,8 +119,7 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
         }
         
         // Otherwise, it is assumed that the session closed due to an error.
-        let errorDict = [NSUnderlyingErrorKey: reason]
-        self.observer?.sendFailed(PSError(code: .connectionLost, userInfo: errorDict))
+        self.observer?.sendFailed(.connectionLost(reason: reason))
     }
 }
 
@@ -128,13 +127,13 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
 extension MDWamp {
     /// Follows semantics of `call` but returns a signal producer, rather than taking a result callback.
     func callWithSignal(procUri: String, _ args: WampArgs, _ argsKw: WampKwargs, _ options: [NSObject: AnyObject])
-        -> SignalProducer<MDWampResult, PSError>
+        -> SignalProducer<MDWampResult, ConnectionError>
     {
-        return SignalProducer<MDWampResult, PSError> { observer, _ in
+        return SignalProducer<MDWampResult, ConnectionError> { observer, _ in
             NSLog("Calling \(procUri)")
             self.call(procUri, args: args, kwArgs: argsKw, options: options) { result, error in
                 if error != nil {
-                    observer.sendFailed(PSError(error: error, code: .mdwampError, associated: procUri))
+                    observer.sendFailed(.mdwampError(topic: procUri, object: error))
                     return
                 }
                 observer.sendNext(result)
@@ -143,20 +142,20 @@ extension MDWamp {
         }.logEvents(identifier: "MDWamp.callWithSignal", logger: logSignalEvent)
     }
     
-    func subscribeWithSignal(topic: String) -> SignalProducer<MDWampEvent, PSError> {
-        return SignalProducer<MDWampEvent, PSError> { observer, disposable in
+    func subscribeWithSignal(topic: String) -> SignalProducer<MDWampEvent, ConnectionError> {
+        return SignalProducer<MDWampEvent, ConnectionError> { observer, disposable in
             self.subscribe(
                 topic,
                 onEvent: { event in observer.sendNext(event) },
                 result: { error in
                     NSLog("Subscribed to \(topic)")
-                    if error != nil { observer.sendFailed(PSError(error: error, code: .mdwampError, associated: topic)) }
+                    if error != nil { observer.sendFailed(.mdwampError(topic: topic, object: error)) }
                 }
             )
             disposable.addDisposable {
                 self.unsubscribe(topic) { error in
                     NSLog("Unsubscribed from \(topic)")
-                    if error != nil { observer.sendFailed(PSError(error: error, code: .mdwampError, associated: topic)) }
+                    if error != nil { observer.sendFailed(.mdwampError(topic: topic, object: error)) }
                 }
             }
         }.logEvents(identifier: "MDWamp.subscribeWithSignal", logger: logSignalEvent)
