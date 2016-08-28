@@ -102,3 +102,16 @@ extension SignalProducerType {
         return lift { $0.assumeNoError() }
     }
 }
+
+
+// MARK: ProperErrorType
+extension SignalType where Error: ProperErrorType {
+    internal func genericErrors() -> Signal<Value, ProperError> {
+        return mapError { ProperError($0) }
+    }
+}
+extension SignalProducerType where Error: ProperErrorType {
+    internal func genericErrors() -> SignalProducer<Value, ProperError> {
+        return lift { $0.genericErrors() }
+    }
+}
