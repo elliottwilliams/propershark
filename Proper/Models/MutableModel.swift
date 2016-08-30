@@ -15,7 +15,7 @@ import Argo
 /// Encapsulations of Models that know how to more information about the entity they contain, and how to respond
 /// to changes in that entity's non-identifying properties. MutableModels are used in controllers, where their properties
 /// can be bound to, with loading and availability abstracted away.
-protocol MutableModel: class, Hashable {
+protocol MutableModel: class, Hashable, CustomStringConvertible {
     associatedtype FromModel: Model
     
     /// The mutable model should know its model's identifier, and the identifier should be immutable. (a model with a
@@ -102,6 +102,7 @@ extension MutableModel {
         }
     }
 
+    var description: String { return String(Self) + "(\(self.identifier))" }
     var hashValue: Int { return self.identifier.hashValue }
 }
 

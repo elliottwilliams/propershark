@@ -20,7 +20,7 @@ enum ProperError: ErrorType {
     // Model
     case decodeFailure(error: DecodeError)
     case decodeFailures(errors: [DecodeError])
-    case stateInconsistency(description: String)
+    case stateInconsistency(description: String, within: Any)
     case applyFailure(from: String, onto: String)
 
     case unexpected(error: ErrorType)

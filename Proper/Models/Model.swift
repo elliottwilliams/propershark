@@ -9,7 +9,7 @@
 import Foundation
 import Argo
 
-protocol Model: Hashable {
+protocol Model: Hashable, CustomStringConvertible {
     associatedtype Identifier: Hashable
 
     /// Distinguishes entities of this type within Proper Shark
@@ -54,6 +54,7 @@ extension Model {
         return id.stringByReplacingOccurrencesOfString(Self.namespace + ".", withString: "")
     }
 
+    var description: String { return String(Self) + "(\(self.identifier))" }
     var hashValue: Int { return self.identifier.hashValue }
 }
 

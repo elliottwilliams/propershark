@@ -118,7 +118,10 @@ class MutableRoute: MutableModel {
         }
         return try source.map { station in
             guard let mutable = dict[station.identifier] else {
-                throw ProperError.stateInconsistency(description: "Expected mutable for \(station.identifier) to exist in the set")
+                throw ProperError.stateInconsistency(
+                    description: "Expected mutable for \(station.identifier) to exist in the set",
+                    within: self
+                )
             }
             return mutable
         }
