@@ -23,16 +23,12 @@ protocol ProperViewController {
 extension ProperViewController where Self: UIViewController {
 
     /// Show a model alert corresponding to the error message of a `PSError`.
-    func displayError<T: ProperErrorType>(error: T) {
-        #if DEBUG
-        let alert = UIAlertController(title: error.title,
-                                      message: [error.message, error.debugMessage].joinWithSeparator("\n"),
+    func displayError(error: ProperError) {
+        let alert = UIAlertController(title: "An improper error:",
+                                      message: String(error),
                                       preferredStyle: .Alert)
-        #else
-        let alert = UIAlertController(title: error.title, message: error.message, preferredStyle: .Alert)
-        #endif
-
         let action = UIAlertAction(title: "OK", style: .Default, handler: nil)
+        
         alert.addAction(action)
         self.presentViewController(alert, animated: true, completion: nil)
         NSLog("[ProperViewController.displayError] \(error)")

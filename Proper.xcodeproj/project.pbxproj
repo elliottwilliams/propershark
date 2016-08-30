@@ -19,7 +19,7 @@
 		264754901D551411000F0831 /* ArrivalsTableViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */; };
 		2647825E1C2F7B34009D9AD0 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */; };
 		264782601C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647825F1C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift */; };
-		264A13C71D26157400B44D47 /* ProperErrorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264A13C61D26157400B44D47 /* ProperErrorType.swift */; };
+		264A13C71D26157400B44D47 /* ProperError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264A13C61D26157400B44D47 /* ProperError.swift */; };
 		264A13C91D2625CE00B44D47 /* TopicEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264A13C81D2625CE00B44D47 /* TopicEvent.swift */; };
 		2650D28E1D176B65003758BF /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2650D28D1D176B65003758BF /* Configuration.swift */; };
 		2650EDA01C41CFCC006CCD42 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2650ED9F1C41CFCC006CCD42 /* Array.swift */; };
@@ -32,7 +32,6 @@
 		267019581C3F5BB50057FD11 /* RailVehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267019571C3F5BB50057FD11 /* RailVehicle.swift */; };
 		2675254F1D66638C00F6C33F /* RouteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2675254E1D66638C00F6C33F /* RouteTableViewCell.swift */; };
 		267525521D6D3B4F00F6C33F /* Decoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267525511D6D3B4F00F6C33F /* Decoded.swift */; };
-		2675256A1D72AF9200F6C33F /* ConnectionError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267525691D72AF9200F6C33F /* ConnectionError.swift */; };
 		268632811C319B0D00839A22 /* SceneMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268632801C319B0D00839A22 /* SceneMediator.swift */; };
 		268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72261BF9938800E981D4 /* TransitLabel.swift */; };
 		268E72291BF9938800E981D4 /* TransitNavigationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72271BF9938800E981D4 /* TransitNavigationItem.swift */; };
@@ -113,7 +112,7 @@
 		264782551C2C6F67009D9AD0 /* StartListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = StartListViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		2647825F1C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PSLocationManagerDelegate.swift; sourceTree = "<group>"; };
-		264A13C61D26157400B44D47 /* ProperErrorType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProperErrorType.swift; sourceTree = "<group>"; };
+		264A13C61D26157400B44D47 /* ProperError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProperError.swift; sourceTree = "<group>"; };
 		264A13C81D2625CE00B44D47 /* TopicEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = TopicEvent.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2650D28D1D176B65003758BF /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		2650ED9F1C41CFCC006CCD42 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
@@ -125,7 +124,6 @@
 		267019571C3F5BB50057FD11 /* RailVehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RailVehicle.swift; sourceTree = "<group>"; };
 		2675254E1D66638C00F6C33F /* RouteTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableViewCell.swift; sourceTree = "<group>"; };
 		267525511D6D3B4F00F6C33F /* Decoded.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Decoded.swift; sourceTree = "<group>"; };
-		267525691D72AF9200F6C33F /* ConnectionError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionError.swift; sourceTree = "<group>"; };
 		268632801C319B0D00839A22 /* SceneMediator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SceneMediator.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		268E72261BF9938800E981D4 /* TransitLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabel.swift; sourceTree = "<group>"; };
 		268E72271BF9938800E981D4 /* TransitNavigationItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitNavigationItem.swift; sourceTree = "<group>"; };
@@ -288,7 +286,7 @@
 				26DBCF481D3FF59A00B22562 /* EventLog.swift */,
 				26D3E21E1D2776AB00F85712 /* Matchers.swift */,
 				26E3E2CE1D3C7DF90018EF3F /* ProperViewController.swift */,
-				264A13C61D26157400B44D47 /* ProperErrorType.swift */,
+				264A13C61D26157400B44D47 /* ProperError.swift */,
 				2647825F1C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift */,
 				268632801C319B0D00839A22 /* SceneMediator.swift */,
 			);
@@ -401,7 +399,6 @@
 			children = (
 				26B3DC551D170BAE001E29AA /* Connection.swift */,
 				264A13C81D2625CE00B44D47 /* TopicEvent.swift */,
-				267525691D72AF9200F6C33F /* ConnectionError.swift */,
 			);
 			path = Connection;
 			sourceTree = "<group>";
@@ -760,13 +757,12 @@
 				26B9E1D31D35E0C500794EB6 /* SignalType.swift in Sources */,
 				26A8D6021D484944000434F9 /* ArrivalsTableViewController.swift in Sources */,
 				264A13C91D2625CE00B44D47 /* TopicEvent.swift in Sources */,
-				264A13C71D26157400B44D47 /* ProperErrorType.swift in Sources */,
+				264A13C71D26157400B44D47 /* ProperError.swift in Sources */,
 				26D3E2241D28E07100F85712 /* Model.swift in Sources */,
 				2635DB721C3CBF4700EB58F5 /* RouteTableView.swift in Sources */,
 				266BAE651D2B676F001C9EC8 /* UIColor.swift in Sources */,
 				26C598BC1C250D1E00BC9FE1 /* RouteBadge.swift in Sources */,
 				26B3DC561D170BAE001E29AA /* Connection.swift in Sources */,
-				2675256A1D72AF9200F6C33F /* ConnectionError.swift in Sources */,
 				2650EDA01C41CFCC006CCD42 /* Array.swift in Sources */,
 				26D3E22F1D29BBA700F85712 /* MutableModel.swift in Sources */,
 				267019581C3F5BB50057FD11 /* RailVehicle.swift in Sources */,

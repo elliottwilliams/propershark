@@ -12,38 +12,37 @@ import Argo
 import Result
 
 // MARK: Value is AnyObject
-extension SignalType where Value: AnyObject, Error == PSError {
+extension SignalType where Value: AnyObject, Error == ProperError {
     /// Attempt to decode an `AnyObject` to the model given.
-    internal func decodeAs<M: Decodable>(_: M.Type) -> Signal<M.DecodedType, PSError> {
+    internal func decodeAs<M: Decodable>(_: M.Type) -> Signal<M.DecodedType, ProperError> {
         return attemptMap { object in
             let decoded = M.decode(JSON(object))
             switch decoded {
             case Decoded.Failure(let error):
-                return Result.Failure(PSError(code: .parseFailure, associated: error))
+                return .Failure(.decodeFailure(error: error))
             case Decoded.Success(let model):
-                return Result.Success(model)
+                return .Success(model)
             }
         }
     }
 }
 
-extension SignalProducerType where Value: AnyObject, Error == PSError {
+extension SignalProducerType where Value: AnyObject, Error == ProperError {
     /// Attempt to decode an `AnyObject` to the model given.
-    internal func decodeAs<M: Decodable>(_: M.Type) -> SignalProducer<M.DecodedType, PSError> {
+    internal func decodeAs<M: Decodable>(_: M.Type) -> SignalProducer<M.DecodedType, ProperError> {
         return lift { $0.decodeAs(M) }
     }
 }
 
 
 // MARK: Value is Collection
-extension SignalType where Value: CollectionType, Error == PSError {
+extension SignalType where Value: CollectionType, Value.Generator.Element: AnyObject, Error == ProperError {
     /// Attempt to decode each member of a list to the `to` type. If *any* decode successfully, an array of successfully
     /// decoded models will be forwarded.
-    internal func decodeAnyAs<M: Decodable>(_: M.Type) -> Signal<[M.DecodedType], PSError> {
+    internal func decodeAnyAs<M: Decodable>(_: M.Type) -> Signal<[M.DecodedType], ProperError> {
         return attemptMap { list in
-            guard list is [AnyObject] else { return .Failure(PSError(code: .parseFailure)) }
-            let decoded = list.flatMap { M.decode(JSON($0 as! AnyObject)) }
-            let errors = decoded.map { $0.error }
+            let decoded = list.map(JSON.init).flatMap(M.decode)
+            let errors = decoded.flatMap { $0.error }
             let models = decoded.flatMap { $0.value }
 
             // If some models were decoded, or if no models were passed in the list to begin with, the prodecure
@@ -51,16 +50,16 @@ extension SignalType where Value: CollectionType, Error == PSError {
             if !models.isEmpty || list.isEmpty {
                 return .Success(models)
             } else {
-                return .Failure(PSError(code: .parseFailure, associated: errors))
+                return .Failure(.decodeFailures(errors: errors))
             }
         }
     }
 }
 
-extension SignalProducerType where Value: CollectionType, Error == PSError {
+extension SignalProducerType where Value: CollectionType, Value.Generator.Element: AnyObject, Error == ProperError {
     /// Attempt to decode each member of a list to the `to` type. If *any* decode successfully, an array of successfully
     /// decoded models will be forwarded.
-    internal func decodeAnyAs<M: Decodable>(_: M.Type) -> SignalProducer<[M.DecodedType], PSError> {
+    internal func decodeAnyAs<M: Decodable>(_: M.Type) -> SignalProducer<[M.DecodedType], ProperError> {
         return lift { $0.decodeAnyAs(M) }
     }
 }
@@ -100,18 +99,5 @@ extension SignalType {
 extension SignalProducerType {
     internal func assumeNoError() -> SignalProducer<Self.Value, NoError> {
         return lift { $0.assumeNoError() }
-    }
-}
-
-
-// MARK: ProperErrorType
-extension SignalType where Error: ProperErrorType {
-    internal func genericErrors() -> Signal<Value, ProperError> {
-        return mapError { ProperError($0) }
-    }
-}
-extension SignalProducerType where Error: ProperErrorType {
-    internal func genericErrors() -> SignalProducer<Value, ProperError> {
-        return lift { $0.genericErrors() }
     }
 }

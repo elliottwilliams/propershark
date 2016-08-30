@@ -34,10 +34,10 @@ class MutableStation: MutableModel {
     var vehicles: MutableProperty<Set<VehicleType>?> = .init(nil)
 
     // MARK: Signal Producer
-    lazy var producer: SignalProducer<TopicEvent, PSError> = {
+    lazy var producer: SignalProducer<TopicEvent, ProperError> = {
         let now = self.connection.call("meta.last_event", args: [self.topic, self.topic])
         let future = self.connection.subscribe(self.topic)
-        return SignalProducer<SignalProducer<TopicEvent, PSError>, PSError>(values: [now, future])
+        return SignalProducer<SignalProducer<TopicEvent, ProperError>, ProperError>(values: [now, future])
             .flatten(.Merge)
             .logEvents(identifier: "MutableStation.producer", logger: logSignalEvent)
             .attempt(self.handleEvent)
@@ -50,9 +50,9 @@ class MutableStation: MutableModel {
         try apply(station)
     }
 
-    func handleEvent(event: TopicEvent) -> Result<(), PSError> {
+    func handleEvent(event: TopicEvent) -> Result<(), ProperError> {
         if let error = event.error {
-            return .Failure(PSError(code: .decodeFailure, associated: error))
+            return .Failure(.decodeFailure(error: error))
         }
 
         do {
@@ -62,15 +62,17 @@ class MutableStation: MutableModel {
             default:
                 self.delegate.mutableModel(self, receivedTopicEvent: event)
             }
+        } catch let error as ProperError {
+            return .Failure(error)
         } catch {
-            return .Failure(error as? PSError ?? PSError(code: .mutableModelFailedApply))
+            return .Failure(.unexpected(error: error))
         }
         return .Success()
     }
 
     func apply(station: Station) throws {
         if station.identifier != self.identifier {
-            throw PSError(code: .mutableModelFailedApply)
+            throw ProperError.applyFailure(from: station.identifier, onto: self.identifier)
         }
 
         self.name <- station.name

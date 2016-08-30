@@ -26,14 +26,14 @@ protocol MutableModel: class, Hashable {
     /// A producer that, when started, connects to Shark and subscribes to this model's topic. Calls `handleEvent` to
     /// apply updates to the model's properties as they are emitted. Additional signals can be created to receive
     /// failures or inject side effects to topic events.
-    var producer: SignalProducer<TopicEvent, PSError> { get set }
-    func handleEvent(event: TopicEvent) -> Result<(), PSError>
+    var producer: SignalProducer<TopicEvent, ProperError> { get set }
+    func handleEvent(event: TopicEvent) -> Result<(), ProperError>
     
     /// Initialize all `MutableProperty`s of this `MutableModel` from a corresponding model.
     init(from _: FromModel, delegate: MutableModelDelegate, connection: ConnectionType) throws
     var delegate: MutableModelDelegate { get }
     
-    /// Update state to match the model given. Throws PSError if a consistency check fails.
+    /// Update state to match the model given. Throws ProperError if a consistency check fails.
     func apply(_: FromModel) throws
 
     var connection: ConnectionType { get }

@@ -38,10 +38,10 @@ class MutableRoute: MutableModel {
     var canonical: MutableProperty<CanonicalRoute<StationType>?> = .init(nil)
 
     // MARK: Signal Producer
-    lazy var producer: SignalProducer<TopicEvent, PSError> = {
+    lazy var producer: SignalProducer<TopicEvent, ProperError> = {
         let now = self.connection.call("meta.last_event", args: [self.topic, self.topic])
         let future = self.connection.subscribe(self.topic)
-        return SignalProducer<SignalProducer<TopicEvent, PSError>, PSError>(values: [now, future])
+        return SignalProducer<SignalProducer<TopicEvent, ProperError>, ProperError>(values: [now, future])
             .flatten(.Merge)
             .logEvents(identifier: "MutableRoute.producer", logger: logSignalEvent)
             .attempt(self.handleEvent)
@@ -61,9 +61,9 @@ class MutableRoute: MutableModel {
     }
 
 
-    func handleEvent(event: TopicEvent) -> Result<(), PSError> {
+    func handleEvent(event: TopicEvent) -> Result<(), ProperError> {
         if let error = event.error {
-            return .Failure(PSError(code: .decodeFailure, associated: error))
+            return .Failure(.decodeFailure(error: error))
         }
 
         do {
@@ -76,15 +76,17 @@ class MutableRoute: MutableModel {
             default:
                 self.delegate.mutableModel(self, receivedTopicEvent: event)
             }
+        } catch let error as ProperError {
+            return .Failure(error)
         } catch {
-            return .Failure(error as? PSError ?? PSError(code: .mutableModelFailedApply, associated: error))
+            return .Failure(.unexpected(error: error))
         }
         return .Success()
     }
 
     func apply(route: Route) throws {
         if route.identifier != self.identifier {
-            throw PSError(code: .mutableModelFailedApply)
+            throw ProperError.applyFailure(from: route.identifier, onto: self.identifier)
         }
 
         self.name <- route.name
@@ -116,7 +118,7 @@ class MutableRoute: MutableModel {
         }
         return try source.map { station in
             guard let mutable = dict[station.identifier] else {
-                throw PSError(code: .modelStateInconsistency, associated: "Expected mutable for \(station.identifier) to exist in the set")
+                throw ProperError.stateInconsistency(description: "Expected mutable for \(station.identifier) to exist in the set")
             }
             return mutable
         }

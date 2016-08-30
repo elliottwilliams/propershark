@@ -69,7 +69,7 @@ class StationViewController: UIViewController, ProperViewController, ArrivalsTab
     }
 
     // MARK: Delegate methods
-    func mutableModel<M: MutableModel>(model: M, receivedError error: PSError) {
+    func mutableModel<M: MutableModel>(model: M, receivedError error: ProperError) {
         self.displayError(error)
     }
 
@@ -77,7 +77,7 @@ class StationViewController: UIViewController, ProperViewController, ArrivalsTab
         // transition to vehicle view
     }
 
-    func arrivalsTable(receivedError error: PSError) {
+    func arrivalsTable(receivedError error: ProperError) {
         self.displayError(error)
     }
 

@@ -142,7 +142,7 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
 protocol ArrivalsTableViewDelegate: MutableModelDelegate {
     func arrivalsTable(selectedVehicle vehicle: MutableVehicle, indexPath: NSIndexPath)
-    func arrivalsTable(receivedError error: PSError)
+    func arrivalsTable(receivedError error: ProperError)
 }
 
 

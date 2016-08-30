@@ -37,10 +37,10 @@ class StartListViewController: UITableViewController, ProperViewController {
         .assumeNoError()
     }()
 
-    private lazy var routeSignal: SignalProducer<[Route], PSError> = {
+    private lazy var routeSignal: SignalProducer<[Route], ProperError> = {
         return self.connection.call("agency.routes")
-            .attemptMap { event -> Result<[AnyObject], PSError> in
-                guard case .Agency(.routes(let routes)) = event else { return .Failure(PSError(code: .parseFailure)) }
+            .attemptMap { event -> Result<[AnyObject], ProperError> in
+                guard case .Agency(.routes(let routes)) = event else { return .Failure(.eventParseFailure) }
                 return .Success(routes)
             }
             .decodeAnyAs(Route.self)
@@ -48,10 +48,10 @@ class StartListViewController: UITableViewController, ProperViewController {
                 failed: self.displayError)
     }()
 
-    private lazy var stationSignal: SignalProducer<[Station], PSError> = {
+    private lazy var stationSignal: SignalProducer<[Station], ProperError> = {
         return self.connection.call("agency.stations")
-            .attemptMap { event -> Result<[AnyObject], PSError> in
-                guard case .Agency(.stations(let stations)) = event else { return .Failure(PSError(code: .parseFailure)) }
+            .attemptMap { event -> Result<[AnyObject], ProperError> in
+                guard case .Agency(.stations(let stations)) = event else { return .Failure(.eventParseFailure) }
                 return .Success(stations)
             }
             .decodeAnyAs(Station.self)
@@ -59,10 +59,10 @@ class StartListViewController: UITableViewController, ProperViewController {
                 failed: self.displayError)
     }()
 
-    private lazy var vehicleSignal: SignalProducer<[Vehicle], PSError> = {
+    private lazy var vehicleSignal: SignalProducer<[Vehicle], ProperError> = {
         return self.connection.call("agency.vehicles")
-            .attemptMap { event -> Result<[AnyObject], PSError> in
-                guard case .Agency(.vehicles(let vehicles)) = event else { return .Failure(PSError(code: .parseFailure)) }
+            .attemptMap { event -> Result<[AnyObject], ProperError> in
+                guard case .Agency(.vehicles(let vehicles)) = event else { return .Failure(.eventParseFailure) }
                 return .Success(vehicles)
             }
             .decodeAnyAs(Vehicle.self)
