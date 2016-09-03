@@ -66,22 +66,22 @@ extension SignalProducerType where Value: CollectionType, Value.Generator.Elemen
 
 
 // MARK: Value is Optional
-extension SignalType where Value: OptionalType {
+extension SignalType where Value: OptionalType, Error: ErrorType {
     /// Unwrap the optional value in the signal, or produce an error by calling the closure given.
-    internal func unwrapOrFail(error: () -> Error) -> Signal<Value.Wrapped, Error> {
+    internal func unwrapOrSendFailure(error: Error) -> Signal<Value.Wrapped, Error> {
         return attemptMap { value in
             if let value = value.optional {
                 return .Success(value)
             } else {
-                return .Failure(error())
+                return .Failure(error)
             }
         }
     }
 }
 
-extension SignalProducerType where Value: OptionalType {
-    internal func unwrapOrFail(error: () -> Error) -> SignalProducer<Value.Wrapped, Error> {
-        return lift { $0.unwrapOrFail(error) }
+extension SignalProducerType where Value: OptionalType, Error: ErrorType {
+    internal func unwrapOrSendFailure(error: Error) -> SignalProducer<Value.Wrapped, Error> {
+        return lift { $0.unwrapOrSendFailure(error) }
     }
 }
 

@@ -9,6 +9,7 @@
 import UIKit
 import MDWamp
 import ReactiveCocoa
+import Result
 
 typealias WampArgs = [AnyObject]
 typealias WampKwargs = [NSObject: AnyObject]
@@ -43,6 +44,7 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
     private var observer: Observer<MDWamp, ProperError>?
     
     var wamp = MutableProperty<MDWamp?>(nil)
+    var cache = LastEventCache()
     
     // MARK: Startup
     
@@ -74,33 +76,46 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
     /// `topic`.
     func subscribe(topic: String) -> SignalProducer<TopicEvent, ProperError> {
         return self.producer
-        .map { wamp in wamp.subscribeWithSignal(topic) }
-        .flatten(.Latest)
-        .attemptMap { (wampEvent: MDWampEvent) in
-            if let event = TopicEvent.parseFromTopic(topic, event: wampEvent) {
-                return .Success(event)
-            } else {
-                return .Failure(.eventParseFailure)
-            }
-        }
-        .logEvents(identifier: "Connection.subscribe", logger: logSignalEvent)
+            .map { wamp in wamp.subscribeWithSignal(topic) }
+            .flatten(.Latest)
+            .map { TopicEvent.parseFromTopic(topic, event: $0) }
+            .unwrapOrSendFailure(ProperError.eventParseFailure)
+            .logEvents(identifier: "Connection.subscribe", logger: logSignalEvent)
+
+            // Include side effects to update the last event cache.
+            .on(next: { [weak self] in self?.cache.store(topic, event: $0) },
+                terminated: { [weak self] in self?.cache.void(topic) })
     }
 
-    /// Call `procdure` and forward the result. Disposing the signal created will cancel the RPC call.
+    /// Call `topic` and forward the result. Disposing the signal created will cancel the RPC call.
     func call(topic: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> SignalProducer<TopicEvent, ProperError> {
-        return self.producer.map { wamp in
-        wamp.callWithSignal(topic, args, kwargs, [:])
-            .timeoutWithError(.timeout, afterInterval: 10.0, onScheduler: QueueScheduler.mainQueueScheduler)
-        }
-        .flatten(.Latest)
-        .attemptMap { wampEvent in
-            if let event = TopicEvent.parseFromRPC(topic, args, kwargs, wampEvent) {
-                return .Success(event)
-            } else {
-                return .Failure(.eventParseFailure)
+
+        // A producer that checks the cache, then completes.
+        let cached = SignalProducer<TopicEvent?, NoError> { [weak self] observer, disposable in
+            observer.sendNext(self?.cache.lookup(rpc: topic, args))
+            observer.sendCompleted()
+        }.logEvents(identifier: "Connection.call (cache)", logger: logSignalEvent)
+
+
+        // A producer that calls the RPC on the server.
+        let called = self.producer.map { wamp in
+            wamp.callWithSignal(topic, args, kwargs, [:])
+                .timeoutWithError(.timeout, afterInterval: 10.0, onScheduler: QueueScheduler.mainQueueScheduler)
             }
-        }
-        .logEvents(identifier: "Connection.call", logger: logSignalEvent)
+            .flatten(.Latest)
+            .map { TopicEvent.parseFromRPC(topic, args, kwargs, $0) }
+            .unwrapOrSendFailure(ProperError.eventParseFailure)
+            .logEvents(identifier: "Connection.call (server)", logger: logSignalEvent)
+
+            // Include side effects to update the last event cache.
+            .on(next: { [weak self] in self?.cache.store(rpc: topic, args: args, event: $0) })
+
+        // Return a producer that will perform the cache lookup, then call the RPC if the cache returns nil. The
+        // transformation below waits until `cached` completes, then either produces the cache hit, or produces
+        // the server call.
+        return cached.flatMap(.Concat) { cacheResult in
+            return cacheResult.map(SignalProducer.init) ?? called
+        }.logEvents(identifier: "Connection.call", logger: logSignalEvent)
     }
     
     // MARK: MDWamp Delegate
