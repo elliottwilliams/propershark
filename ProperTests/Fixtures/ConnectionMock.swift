@@ -63,8 +63,8 @@ class ConnectionMock: ConnectionType {
         self.onSubscribe = onSubscribe
     }
     
-    func on(procedure: String, send event: TopicEvent) {
-        callMap[procedure] = event
+    func on(proc: String, send event: TopicEvent) {
+        callMap[proc] = event
     }
     
     func publish(to id: String, event: TopicEvent) {

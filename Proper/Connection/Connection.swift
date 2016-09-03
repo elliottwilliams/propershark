@@ -14,12 +14,6 @@ import Result
 typealias WampArgs = [AnyObject]
 typealias WampKwargs = [NSObject: AnyObject]
 
-struct WampRPCCall {
-    let topic: String
-    let args: WampArgs
-    let kwargs: WampKwargs
-}
-
 // All connections conform to this protocol, which allows ConnectionMock to be injected.
 protocol ConnectionType {
     func call(procedure: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, ProperError>
@@ -87,28 +81,28 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
                 terminated: { [weak self] in self?.cache.void(topic) })
     }
 
-    /// Call `topic` and forward the result. Disposing the signal created will cancel the RPC call.
-    func call(topic: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> SignalProducer<TopicEvent, ProperError> {
+    /// Call `proc` and forward the result. Disposing the signal created will cancel the RPC call.
+    func call(proc: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> SignalProducer<TopicEvent, ProperError> {
 
         // A producer that checks the cache, then completes.
         let cached = SignalProducer<TopicEvent?, NoError> { [weak self] observer, disposable in
-            observer.sendNext(self?.cache.lookup(rpc: topic, args))
+            observer.sendNext(self?.cache.lookup(rpc: proc, args))
             observer.sendCompleted()
         }.logEvents(identifier: "Connection.call (cache)", logger: logSignalEvent)
 
 
-        // A producer that calls the RPC on the server.
+        // A producer that performs the RPC.
         let called = self.producer.map { wamp in
-            wamp.callWithSignal(topic, args, kwargs, [:])
+            wamp.callWithSignal(proc, args, kwargs, [:])
                 .timeoutWithError(.timeout, afterInterval: 10.0, onScheduler: QueueScheduler.mainQueueScheduler)
             }
             .flatten(.Latest)
-            .map { TopicEvent.parseFromRPC(topic, args, kwargs, $0) }
+            .map { TopicEvent.parseFromRPC(proc, args, kwargs, $0) }
             .unwrapOrSendFailure(ProperError.eventParseFailure)
             .logEvents(identifier: "Connection.call (server)", logger: logSignalEvent)
 
             // Include side effects to update the last event cache.
-            .on(next: { [weak self] in self?.cache.store(rpc: topic, args: args, event: $0) })
+            .on(next: { [weak self] in self?.cache.store(rpc: proc, args: args, event: $0) })
 
         // Return a producer that will perform the cache lookup, then call the RPC if the cache returns nil. The
         // transformation below waits until `cached` completes, then either produces the cache hit, or produces

@@ -18,8 +18,8 @@ struct LastEventCache {
     }
 
     /// Look up a cache result for an `meta.last_event` call.
-    func lookup(rpc topic: String, _ args: WampArgs) -> TopicEvent? {
-        if let (metaTopic, originator) = LastEventCache.eventParams(topic, args) {
+    func lookup(rpc proc: String, _ args: WampArgs) -> TopicEvent? {
+        if let (metaTopic, originator) = LastEventCache.eventParams(proc, args) {
             return lookup(metaTopic, originator: originator)
         } else {
             return nil
@@ -33,8 +33,8 @@ struct LastEventCache {
     }
 
     /// Store the `event` returned by a call to `rpc`. Returns `true` if stored.
-    func store(rpc topic: String, args: WampArgs, event: TopicEvent) -> Bool {
-        if let (metaTopic, _) = LastEventCache.eventParams(topic, args) {
+    func store(rpc proc: String, args: WampArgs, event: TopicEvent) -> Bool {
+        if let (metaTopic, _) = LastEventCache.eventParams(proc, args) {
             return store(metaTopic, event: event)
         } else {
             return false
@@ -65,9 +65,9 @@ struct LastEventCache {
         cache.removeObjectForKey(topic)
     }
 
-    private static func eventParams(topic: String, _ args: WampArgs) -> (metaTopic: String, originator: String)? {
+    private static func eventParams(proc: String, _ args: WampArgs) -> (metaTopic: String, originator: String)? {
         guard let metaTopic = args[safe: 0] as? String, originator = args[safe: 1] as? String where
-            topic == "meta.last_event" else {
+            proc == "meta.last_event" else {
                 return nil
         }
 

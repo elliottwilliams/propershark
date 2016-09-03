@@ -187,10 +187,10 @@ enum TopicEvent: CustomStringConvertible {
         }
     }
 
-    static func parseFromRPC(topic: String, _ args: WampArgs, _ kwargs: WampKwargs, _ event: MDWampResult) -> TopicEvent? {
+    static func parseFromRPC(proc: String, _ args: WampArgs, _ kwargs: WampKwargs, _ event: MDWampResult) -> TopicEvent? {
         // Arguments and argumentsKw come implicitly unwrapped (from their dirty dirty objc library), so we need to
         // check them manually.
-        return parseFromRPC(topic,
+        return parseFromRPC(proc,
                             request: (args: args, kwargs: kwargs),
                             response: (
                                 args: event.arguments != nil ? event.arguments : [],
@@ -198,14 +198,14 @@ enum TopicEvent: CustomStringConvertible {
                             ))
     }
 
-    static func parseFromRPC(topic: String, request: (args: WampArgs, kwargs: WampKwargs),
+    static func parseFromRPC(proc: String, request: (args: WampArgs, kwargs: WampKwargs),
                              response: (args: WampArgs, kwargs: WampKwargs)) -> TopicEvent?
     {
         if Config.logging.logJSON {
-            NSLog("[TopicEvent.parseFromRPC] \(topic) -> \(response)")
+            NSLog("[TopicEvent.parseFromRPC] \(proc) -> \(response)")
         }
 
-        switch topic {
+        switch proc {
         case "agency.vehicles":
             guard let list = response.args as? [[String: AnyObject]],
                 let vehicles = list.first?.values
