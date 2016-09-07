@@ -13,10 +13,10 @@ import Result
 
 class MutableModelDelegateMock: MutableModelDelegate {
 
-    let (onReceivedError, _errorObserver) = Signal<PSError, NoError>.pipe()
+    let (onReceivedError, _errorObserver) = Signal<ProperError, NoError>.pipe()
     let (onReceivedTopicEvent, _topicEventObserver) = Signal<TopicEvent, NoError>.pipe()
 
-    func mutableModel<M : MutableModel>(model: M, receivedError error: PSError) {
+    func mutableModel<M : MutableModel>(model: M, receivedError error: ProperError) {
         _errorObserver.sendNext(error)
     }
     func mutableModel<M : MutableModel>(model: M, receivedTopicEvent event: TopicEvent) {

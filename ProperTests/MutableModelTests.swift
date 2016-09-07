@@ -22,10 +22,16 @@ class MutableModelTests: XCTestCase {
     override func setUp() {
         super.setUp()
         mock = ConnectionMock()
-        route = MutableRoute(from: decodedModels().route, delegate: defaultDelegate, connection: mock)
         stations = [ "BUS249", "BUS543SE", "BUS440", "BUS324", "BUS598",
             "BUS320", "BUS154", "BUS271", "BUS313NE", "BUS547", "BUS899",
             "BUS900", "BUS543NE", "BUS319N", "BUS272N", "BUS275", "BUS456" ]
+
+        let expectation = expectationWithDescription("fixtures")
+        Route.fixture("routes.4B").startWithNext { model in
+            self.route = try! MutableRoute(from: model, delegate: self.defaultDelegate, connection: self.mock)
+            expectation.fulfill()
+        }
+        waitForExpectationsWithTimeout(5.0, handler: nil)
     }
     
     override func tearDown() {
@@ -50,7 +56,7 @@ class MutableModelTests: XCTestCase {
         }
 
         // When
-        try! route.attachOrApplyChanges(to: route.stations, from: modifiedStations)
+        XCTAssertNotNil(try? route.attachOrApplyChanges(to: route.stations, from: modifiedStations))
 
         // Then
         waitForExpectationsWithTimeout(3, handler: nil)
@@ -63,7 +69,7 @@ class MutableModelTests: XCTestCase {
         modifiedStations.removeFirst()
 
         // When
-        try! route.attachOrApplyChanges(to: route.stations, from: modifiedStations)
+        XCTAssertNotNil(try? route.attachOrApplyChanges(to: route.stations, from: modifiedStations))
 
         // Then
         XCTAssertFalse(route.stations.value!.map { $0.identifier }.contains("BUS249"))
@@ -76,7 +82,7 @@ class MutableModelTests: XCTestCase {
         modifiedStations.append(Station(id: "test123"))
 
         // When
-        try! route.attachOrApplyChanges(to: route.stations, from: modifiedStations)
+        XCTAssertNotNil(try? route.attachOrApplyChanges(to: route.stations, from: modifiedStations))
 
         // Then
         XCTAssertTrue(route.stations.value!.map { $0.identifier }.contains("test123"))

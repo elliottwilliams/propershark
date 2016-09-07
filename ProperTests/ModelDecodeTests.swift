@@ -9,6 +9,7 @@
 import XCTest
 import Argo
 import Colours
+import ReactiveCocoa
 @testable import Proper
 
 class ModelDecodeTests: XCTestCase {
@@ -19,10 +20,18 @@ class ModelDecodeTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        let (station, route, vehicle) = rawModels()
-        self.station = station
-        self.route = route
-        self.vehicle = vehicle
+        let expectation = expectationWithDescription("fixtures")
+        combineLatest(
+            Station.rawFixture("stations.BUS100W"),
+            Route.rawFixture("routes.4B"),
+            Vehicle.rawFixture("vehicles.1708")
+        ).startWithNext { station, route, vehicle in
+            self.station = station
+            self.route = route
+            self.vehicle = vehicle
+            expectation.fulfill()
+        }
+        waitForExpectationsWithTimeout(5.0, handler: nil)
     }
     
     override func tearDown() {

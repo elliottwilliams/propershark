@@ -14,21 +14,28 @@ import Result
 class MutableRouteTests: XCTestCase, MutableModelTestSpec {
     typealias Model = MutableRoute
 
-    var rawModel = rawModels().route
-    var model = decodedModels().route
+    var model: Route!
+    var mutable: MutableRoute!
+
     let delegate = MutableModelDelegateMock()
     let modifiedRoute = Route(shortName: "19", name: "~modified")
     let mock = ConnectionMock()
-    var mutable: MutableRoute!
 
     override func setUp() {
         super.setUp()
-        self.mutable = MutableRoute(from: model, delegate: delegate, connection: mock)
+
+        let expectation = expectationWithDescription("fixtures")
+        Route.fixture("routes.4B").startWithNext { model in
+            self.model = model
+            self.mutable = try! MutableRoute(from: model, delegate: self.delegate, connection: self.mock)
+            expectation.fulfill()
+        }
+        waitForExpectationsWithTimeout(5.0, handler: nil)
     }
 
     func testApplyUpdatesProperty() {
         XCTAssertEqual(mutable.name.value, "Inner Loop")
-        try! mutable.apply(modifiedRoute)
+        XCTAssertNotNil(try? mutable.apply(modifiedRoute))
         XCTAssertEqual(mutable.name.value, "~modified")
     }
 
@@ -53,7 +60,7 @@ class MutableRouteTests: XCTestCase, MutableModelTestSpec {
     func testMappedItinerary() {
         // Given a set of static stations, an associated mutable station set and an itinerary...
         let stations = [Station(id: "s1"), Station(id: "s2"), Station(id: "s3"), Station(id: "s4")]
-        let associatedStations = Set(stations.map { MutableStation(from: $0, delegate: delegate, connection: mock) })
+        let associatedStations = Set(stations.map { try! MutableStation(from: $0, delegate: delegate, connection: mock) })
         let itinerary = [stations[0], stations[1], stations[2], stations[0], stations[1], stations[2], stations[0],
                          stations[1], stations[2]]
 
@@ -79,7 +86,7 @@ class MutableRouteTests: XCTestCase, MutableModelTestSpec {
 
         // When a changed itinerary is applied...
         let modified = [Station(id: "BUS249"), Station(id: "BUS440"), Station(id: "BUS154")]
-        try! mutable.apply(Route(shortName: mutable.shortName, itinerary: modified))
+        XCTAssertNotNil(try? mutable.apply(Route(shortName: mutable.shortName, itinerary: modified)))
 
         // Itinerary property should update
         XCTAssertNotNil(mutable.itinerary.value)
@@ -94,7 +101,7 @@ class MutableRouteTests: XCTestCase, MutableModelTestSpec {
 
         // When a changed itinerary is applied...
         let modified = [Station(id: "BUS249"), Station(id: "BUS440"), Station(id: "BUS154")]
-        try! mutable.apply(Route(shortName: mutable.shortName, itinerary: modified))
+        XCTAssertNotNil(try? mutable.apply(Route(shortName: mutable.shortName, itinerary: modified)))
 
         // Then the canonical route should recompute
         XCTAssertEqual(mutable.canonical.value?.stations.count, 3)

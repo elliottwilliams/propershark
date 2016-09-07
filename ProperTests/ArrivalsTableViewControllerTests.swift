@@ -13,19 +13,23 @@ import Result
 
 class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, MutableModelDelegate {
 
-    let createMutable = mutableModels().station
     var station: MutableStation!
     var mock: ConnectionMock!
     var controller: ArrivalsTableViewController!
-
     var disposable: CompositeDisposable!
 
     override func setUp() {
         super.setUp()
         mock = ConnectionMock()
-        station = createMutable(self)(mock)
-        controller = ArrivalsTableViewController(observing: station, delegate: self, style: .Plain, connection: mock)
         disposable = CompositeDisposable()
+
+        let expectation = expectationWithDescription("fixtures")
+        Station.fixture("stations.BUS100W").startWithNext { model in
+            self.station = try! MutableStation(from: model, delegate: MutableModelDelegateMock(), connection: self.mock)
+            self.controller = ArrivalsTableViewController(observing: self.station, delegate: self, style: .Plain, connection: self.mock)
+            expectation.fulfill()
+        }
+        waitForExpectationsWithTimeout(5.0, handler: nil)
     }
 
     override func tearDown() {
@@ -104,7 +108,7 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
         requestView()
         XCTAssertNotNil(controller.routes.value.first)
         if let route = controller.routes.value.first {
-            try! route.apply(modifiedRoute)
+            XCTAssertNotNil(try? route.apply(modifiedRoute))
         }
 
         // ...then the list of vehicles should be updated
@@ -131,7 +135,7 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
 
         // When the view is loaded and the new routes are applied...
         requestView()
-        try! controller.station.apply(modifiedStation)
+        XCTAssertNotNil(try? controller.station.apply(modifiedStation))
 
         // Then the list of vehicles should contain vehicles from both routes.
         XCTAssertEqual(controller.vehicles.value.map { $0.identifier }.sort(), ["v1", "v2", "v3", "v4", "v5"])
@@ -140,7 +144,7 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
 
     // MARK: Delegate Methods
     func arrivalsTable(selectedVehicle vehicle: MutableVehicle, indexPath: NSIndexPath) { }
-    func arrivalsTable(receivedError error: PSError) { }
-    func mutableModel<M: MutableModel>(model: M, receivedError error: PSError) { }
+    func arrivalsTable(receivedError error: ProperError) { }
+    func mutableModel<M: MutableModel>(model: M, receivedError error: ProperError) { }
     func mutableModel<M: MutableModel>(model: M, receivedTopicEvent event: TopicEvent) { }
 }

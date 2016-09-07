@@ -11,11 +11,11 @@ import ReactiveCocoa
 @testable import Proper
 
 class NilConnection: ConnectionType {
-    func call(procedure: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, PSError> {
+    func call(procedure: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, ProperError> {
         // A signal producer that does nothing
         return SignalProducer { _, _ in () }
     }
-    func subscribe(topic: String) -> SignalProducer<TopicEvent, PSError> {
+    func subscribe(topic: String) -> SignalProducer<TopicEvent, ProperError> {
         return SignalProducer { _, _ in () }
     }
 }

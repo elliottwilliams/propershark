@@ -73,24 +73,24 @@ class ConnectionMock: ConnectionType {
         }
     }
     
-    func call(procedure: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, PSError> {
-        return SignalProducer<TopicEvent, PSError> { observer, _ in
+    func call(procedure: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, ProperError> {
+        return SignalProducer<TopicEvent, ProperError> { observer, _ in
             if let event = self.callMap[procedure] {
                 observer.sendNext(event)
             }
         }.logEvents(identifier: "ConnectionMock.call(\(procedure))", logger: logSignalEvent)
     }
     
-    func subscribe(id: String) -> SignalProducer<TopicEvent, PSError> {
+    func subscribe(id: String) -> SignalProducer<TopicEvent, ProperError> {
         let topic = server.findOrCreate(id)
         topic.subscribers += 1
         self.onSubscribe?(id)
-        return SignalProducer<TopicEvent, PSError> { observer, disposable in
+        return SignalProducer<TopicEvent, ProperError> { observer, disposable in
             // Upon disposal, reduce the subscriber count on this channel, potentially deleting it.
             disposable.addDisposable() { self.server.leave(id) }
             
             // Map channel errors to PSErrors...
-            topic.signal.promoteErrors(PSError)
+            topic.signal.promoteErrors(ProperError)
             // ...and forward to this subscriber's observer
             .observe(observer)
         }.logEvents(identifier: "ConnectionMock.subscribe(\(id))", logger: logSignalEvent)

@@ -13,25 +13,29 @@ import Argo
 @testable import Proper
 
 class MutableVehicleTests: XCTestCase, MutableModelTestSpec {
-    typealias Model = MutableVehicle
 
-    var rawModel = rawModels().vehicle
-    var model = decodedModels().vehicle
-    let defaultDelegate = MutableModelDelegateMock()
-    let modifiedVehicle = Vehicle(name: "1708", code: nil, position: nil, capacity: 9001, onboard: nil,
-                                  saturation: nil, lastStation: nil, nextStation: nil, route: nil, scheduleDelta: nil,
-                                  heading: nil, speed: nil)
-    let mock = ConnectionMock()
+    var model: Vehicle!
     var mutable: MutableVehicle!
+
+    let delegate = MutableModelDelegateMock()
+    let modifiedVehicle = Vehicle(name: "1708", capacity: 9001)
+    let mock = ConnectionMock()
 
     override func setUp() {
         super.setUp()
-        self.mutable = MutableVehicle(from: model, delegate: defaultDelegate, connection: mock)
+
+        let expectation = expectationWithDescription("fixtures")
+        Vehicle.fixture("vehicles.1708").startWithNext { model in
+            self.model = model
+            self.mutable = try! MutableVehicle(from: model, delegate: self.delegate, connection: self.mock)
+            expectation.fulfill()
+        }
+        waitForExpectationsWithTimeout(5.0, handler: nil)
     }
 
     func testApplyUpdatesProperty() {
         XCTAssertEqual(mutable.capacity.value, 60)
-        try! mutable.apply(modifiedVehicle)
+        XCTAssertNotNil(try? mutable.apply(modifiedVehicle))
         XCTAssertEqual(mutable.capacity.value, 9001)
     }
 

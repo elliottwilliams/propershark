@@ -9,9 +9,9 @@
 /* Begin PBXBuildFile section */
 		13998BF2C6862B42DFC8E00E /* Pods_ProperUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CE8BA5C320FDC4A6AA55F58 /* Pods_ProperUITests.framework */; };
 		2612B5271D50490500BF671D /* ModelDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2612B5261D50490500BF671D /* ModelDecodeTests.swift */; };
-		2612B52C1D50513600BF671D /* route.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B5291D50513600BF671D /* route.json */; };
-		2612B52D1D50513600BF671D /* station.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B52A1D50513600BF671D /* station.json */; };
-		2612B52E1D50513600BF671D /* vehicle.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B52B1D50513600BF671D /* vehicle.json */; };
+		2612B52C1D50513600BF671D /* routes.4B.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B5291D50513600BF671D /* routes.4B.json */; };
+		2612B52D1D50513600BF671D /* stations.BUS100W.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B52A1D50513600BF671D /* stations.BUS100W.json */; };
+		2612B52E1D50513600BF671D /* vehicles.1708.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B52B1D50513600BF671D /* vehicles.1708.json */; };
 		261DD1631C3424E1001336D4 /* RouteBadgeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 261DD1621C3424E1001336D4 /* RouteBadgeLabel.swift */; };
 		2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */; };
 		2635DB721C3CBF4700EB58F5 /* RouteTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB711C3CBF4700EB58F5 /* RouteTableView.swift */; };
@@ -24,7 +24,6 @@
 		2650D28E1D176B65003758BF /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2650D28D1D176B65003758BF /* Configuration.swift */; };
 		2650EDA01C41CFCC006CCD42 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2650ED9F1C41CFCC006CCD42 /* Array.swift */; };
 		266111D21D51521500D8F46B /* UIColorDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111D11D51521500D8F46B /* UIColorDecodeTests.swift */; };
-		266111DB1D52EB4400D8F46B /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111DA1D52EB4400D8F46B /* Models.swift */; };
 		266111DD1D5378B500D8F46B /* NilConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111DC1D5378B500D8F46B /* NilConnection.swift */; };
 		266111DE1D5380D300D8F46B /* ConnectionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2612F9FE1D2CCAE5005103E3 /* ConnectionMock.swift */; };
 		266BAE651D2B676F001C9EC8 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266BAE641D2B676F001C9EC8 /* UIColor.swift */; };
@@ -59,6 +58,8 @@
 		26C3C21C1D543CFF008E2A46 /* MutableModelTestSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111D71D52EA6100D8F46B /* MutableModelTestSpec.swift */; };
 		26C598BC1C250D1E00BC9FE1 /* RouteBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C598BB1C250D1E00BC9FE1 /* RouteBadge.swift */; };
 		26CDF9591D7B344200E53F82 /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26CDF9581D7B344200E53F82 /* Box.swift */; };
+		26CDF95B1D7E58CD00E53F82 /* TestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26CDF95A1D7E58CD00E53F82 /* TestError.swift */; };
+		26CDF95D1D7E59C700E53F82 /* Model+fixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26CDF95C1D7E59C700E53F82 /* Model+fixture.swift */; };
 		26D3E21F1D2776AB00F85712 /* Matchers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E21E1D2776AB00F85712 /* Matchers.swift */; };
 		26D3E2221D28DFE800F85712 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E2211D28DFE800F85712 /* Route.swift */; };
 		26D3E2241D28E07100F85712 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E2231D28E07100F85712 /* Model.swift */; };
@@ -100,9 +101,9 @@
 
 /* Begin PBXFileReference section */
 		2612B5261D50490500BF671D /* ModelDecodeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelDecodeTests.swift; sourceTree = "<group>"; };
-		2612B5291D50513600BF671D /* route.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = route.json; sourceTree = "<group>"; };
-		2612B52A1D50513600BF671D /* station.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = station.json; sourceTree = "<group>"; };
-		2612B52B1D50513600BF671D /* vehicle.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = vehicle.json; sourceTree = "<group>"; };
+		2612B5291D50513600BF671D /* routes.4B.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = routes.4B.json; sourceTree = "<group>"; };
+		2612B52A1D50513600BF671D /* stations.BUS100W.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = stations.BUS100W.json; sourceTree = "<group>"; };
+		2612B52B1D50513600BF671D /* vehicles.1708.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = vehicles.1708.json; sourceTree = "<group>"; };
 		2612F9FE1D2CCAE5005103E3 /* ConnectionMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ConnectionMock.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		261DD1601C323964001336D4 /* RouteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteViewController.swift; sourceTree = "<group>"; };
 		261DD1621C3424E1001336D4 /* RouteBadgeLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteBadgeLabel.swift; sourceTree = "<group>"; };
@@ -120,7 +121,6 @@
 		2650ED9F1C41CFCC006CCD42 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		266111D11D51521500D8F46B /* UIColorDecodeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColorDecodeTests.swift; sourceTree = "<group>"; };
 		266111D71D52EA6100D8F46B /* MutableModelTestSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableModelTestSpec.swift; sourceTree = "<group>"; };
-		266111DA1D52EB4400D8F46B /* Models.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		266111DC1D5378B500D8F46B /* NilConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NilConnection.swift; sourceTree = "<group>"; };
 		266BAE641D2B676F001C9EC8 /* UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		267019571C3F5BB50057FD11 /* RailVehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RailVehicle.swift; sourceTree = "<group>"; };
@@ -160,6 +160,8 @@
 		26C3C21A1D542ED3008E2A46 /* ConnectionMockTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionMockTests.swift; sourceTree = "<group>"; };
 		26C598BB1C250D1E00BC9FE1 /* RouteBadge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RouteBadge.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26CDF9581D7B344200E53F82 /* Box.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
+		26CDF95A1D7E58CD00E53F82 /* TestError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestError.swift; sourceTree = "<group>"; };
+		26CDF95C1D7E59C700E53F82 /* Model+fixture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Model+fixture.swift"; sourceTree = "<group>"; };
 		26D3E21E1D2776AB00F85712 /* Matchers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Matchers.swift; sourceTree = "<group>"; };
 		26D3E2211D28DFE800F85712 /* Route.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
 		26D3E2231D28E07100F85712 /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
@@ -234,9 +236,9 @@
 		2612B5281D504F1D00BF671D /* Data */ = {
 			isa = PBXGroup;
 			children = (
-				2612B5291D50513600BF671D /* route.json */,
-				2612B52A1D50513600BF671D /* station.json */,
-				2612B52B1D50513600BF671D /* vehicle.json */,
+				2612B5291D50513600BF671D /* routes.4B.json */,
+				2612B52A1D50513600BF671D /* stations.BUS100W.json */,
+				2612B52B1D50513600BF671D /* vehicles.1708.json */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -320,10 +322,11 @@
 		266111D91D52EB2300D8F46B /* Fixtures */ = {
 			isa = PBXGroup;
 			children = (
-				266111DA1D52EB4400D8F46B /* Models.swift */,
 				266111DC1D5378B500D8F46B /* NilConnection.swift */,
 				2612F9FE1D2CCAE5005103E3 /* ConnectionMock.swift */,
 				26E964FC1D58E00600F83797 /* MutableModelDelegateMock.swift */,
+				26CDF95A1D7E58CD00E53F82 /* TestError.swift */,
+				26CDF95C1D7E59C700E53F82 /* Model+fixture.swift */,
 			);
 			path = Fixtures;
 			sourceTree = "<group>";
@@ -598,9 +601,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2612B52D1D50513600BF671D /* station.json in Resources */,
-				2612B52E1D50513600BF671D /* vehicle.json in Resources */,
-				2612B52C1D50513600BF671D /* route.json in Resources */,
+				2612B52D1D50513600BF671D /* stations.BUS100W.json in Resources */,
+				2612B52E1D50513600BF671D /* vehicles.1708.json in Resources */,
+				2612B52C1D50513600BF671D /* routes.4B.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -790,10 +793,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				26CDF95D1D7E59C700E53F82 /* Model+fixture.swift in Sources */,
 				26C3C21C1D543CFF008E2A46 /* MutableModelTestSpec.swift in Sources */,
 				266111DD1D5378B500D8F46B /* NilConnection.swift in Sources */,
 				264754901D551411000F0831 /* ArrivalsTableViewControllerTests.swift in Sources */,
 				26E964FA1D56396F00F83797 /* MutableModelTests.swift in Sources */,
+				26CDF95B1D7E58CD00E53F82 /* TestError.swift in Sources */,
 				266111DE1D5380D300D8F46B /* ConnectionMock.swift in Sources */,
 				26E964FD1D58E00600F83797 /* MutableModelDelegateMock.swift in Sources */,
 				2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */,
@@ -804,7 +809,6 @@
 				26E964F41D56382300F83797 /* MutableStationTests.swift in Sources */,
 				26E964F61D56386000F83797 /* MutableRouteTests.swift in Sources */,
 				2612B5271D50490500BF671D /* ModelDecodeTests.swift in Sources */,
-				266111DB1D52EB4400D8F46B /* Models.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

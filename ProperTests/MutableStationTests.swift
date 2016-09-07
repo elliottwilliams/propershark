@@ -14,23 +14,29 @@ import Result
 class MutableStationTests: XCTestCase, MutableModelTestSpec {
     typealias Model = MutableStation
 
-    var rawModel = rawModels().station
-    var model = decodedModels().station
-    let delegate = MutableModelDelegateMock()
-    let modifiedStation = Station(stopCode: "BUS100W", name: "~modified", description: nil, position: nil,
-                                  routes: nil, vehicles: nil)
-    let mock = ConnectionMock()
+    var model: Station!
     var mutable: MutableStation!
+
+    let delegate = MutableModelDelegateMock()
+    let modifiedStation = Station(stopCode: "BUS100W", name: "~modified")
+    let mock = ConnectionMock()
 
     override func setUp() {
         super.setUp()
-        self.mutable = MutableStation(from: model, delegate: delegate, connection: mock)
+
+        let expectation = expectationWithDescription("fixtures")
+        Station.fixture("stations.BUS100W").startWithNext { model in
+            self.model = model
+            self.mutable = try! MutableStation(from: model, delegate: self.delegate, connection: self.mock)
+            expectation.fulfill()
+        }
+        waitForExpectationsWithTimeout(5.0, handler: nil)
     }
 
     func testApplyUpdatesProperty() {
         XCTAssertEqual(mutable.name.value, "Beau Jardin Apts on Yeager (@ Shelter) - BUS100W ",
                        "Station name does not have expected initial value")
-        try! mutable.apply(modifiedStation)
+        XCTAssertNotNil(try? mutable.apply(modifiedStation))
         XCTAssertEqual(mutable.name.value, "~modified", "Station name not modified by signal")
     }
 
