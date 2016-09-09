@@ -11,7 +11,6 @@
 		2612B5271D50490500BF671D /* ModelDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2612B5261D50490500BF671D /* ModelDecodeTests.swift */; };
 		2612B52C1D50513600BF671D /* routes.4B.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B5291D50513600BF671D /* routes.4B.json */; };
 		2612B52D1D50513600BF671D /* stations.BUS100W.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B52A1D50513600BF671D /* stations.BUS100W.json */; };
-		2612B52E1D50513600BF671D /* vehicles.1708.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B52B1D50513600BF671D /* vehicles.1708.json */; };
 		261DD1631C3424E1001336D4 /* RouteBadgeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 261DD1621C3424E1001336D4 /* RouteBadgeLabel.swift */; };
 		2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */; };
 		2635DB721C3CBF4700EB58F5 /* RouteTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB711C3CBF4700EB58F5 /* RouteTableView.swift */; };
@@ -28,6 +27,7 @@
 		266111DE1D5380D300D8F46B /* ConnectionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2612F9FE1D2CCAE5005103E3 /* ConnectionMock.swift */; };
 		266BAE651D2B676F001C9EC8 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266BAE641D2B676F001C9EC8 /* UIColor.swift */; };
 		266BAE661D2B7159001C9EC8 /* StartListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264782551C2C6F67009D9AD0 /* StartListViewController.swift */; };
+		266CC4D81D826FC70022D064 /* vehicles.1801.json in Resources */ = {isa = PBXBuildFile; fileRef = 266CC4D71D826FC70022D064 /* vehicles.1801.json */; };
 		267019581C3F5BB50057FD11 /* RailVehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267019571C3F5BB50057FD11 /* RailVehicle.swift */; };
 		2675254F1D66638C00F6C33F /* RouteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2675254E1D66638C00F6C33F /* RouteTableViewCell.swift */; };
 		267525521D6D3B4F00F6C33F /* Decoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267525511D6D3B4F00F6C33F /* Decoded.swift */; };
@@ -103,7 +103,6 @@
 		2612B5261D50490500BF671D /* ModelDecodeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelDecodeTests.swift; sourceTree = "<group>"; };
 		2612B5291D50513600BF671D /* routes.4B.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = routes.4B.json; sourceTree = "<group>"; };
 		2612B52A1D50513600BF671D /* stations.BUS100W.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = stations.BUS100W.json; sourceTree = "<group>"; };
-		2612B52B1D50513600BF671D /* vehicles.1708.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = vehicles.1708.json; sourceTree = "<group>"; };
 		2612F9FE1D2CCAE5005103E3 /* ConnectionMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ConnectionMock.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		261DD1601C323964001336D4 /* RouteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteViewController.swift; sourceTree = "<group>"; };
 		261DD1621C3424E1001336D4 /* RouteBadgeLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteBadgeLabel.swift; sourceTree = "<group>"; };
@@ -123,6 +122,7 @@
 		266111D71D52EA6100D8F46B /* MutableModelTestSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableModelTestSpec.swift; sourceTree = "<group>"; };
 		266111DC1D5378B500D8F46B /* NilConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NilConnection.swift; sourceTree = "<group>"; };
 		266BAE641D2B676F001C9EC8 /* UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
+		266CC4D71D826FC70022D064 /* vehicles.1801.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = vehicles.1801.json; sourceTree = "<group>"; };
 		267019571C3F5BB50057FD11 /* RailVehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RailVehicle.swift; sourceTree = "<group>"; };
 		2675254E1D66638C00F6C33F /* RouteTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableViewCell.swift; sourceTree = "<group>"; };
 		267525511D6D3B4F00F6C33F /* Decoded.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Decoded.swift; sourceTree = "<group>"; };
@@ -238,7 +238,7 @@
 			children = (
 				2612B5291D50513600BF671D /* routes.4B.json */,
 				2612B52A1D50513600BF671D /* stations.BUS100W.json */,
-				2612B52B1D50513600BF671D /* vehicles.1708.json */,
+				266CC4D71D826FC70022D064 /* vehicles.1801.json */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -602,7 +602,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2612B52D1D50513600BF671D /* stations.BUS100W.json in Resources */,
-				2612B52E1D50513600BF671D /* vehicles.1708.json in Resources */,
+				266CC4D81D826FC70022D064 /* vehicles.1801.json in Resources */,
 				2612B52C1D50513600BF671D /* routes.4B.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

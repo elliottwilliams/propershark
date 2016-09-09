@@ -68,14 +68,14 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
 
     func testRoutesSignalSubscribesToRoutes() {
         // Given
-        let update = Route(shortName: "5B", name: "~modified")
+        let update = Route(shortName: "10", name: "~modified")
 
         // When view loads, route should be subscribed to.
         requestView()
-        XCTAssertTrue(mock.subscribed("routes.5B"))
+        XCTAssertTrue(mock.subscribed("routes.10"))
 
         // Thus, when a route update is published specifying the route name, it should change.
-        mock.publish(to: "routes.5B", event: .Route(.update(object: .Success(update), originator: "routes.5B")))
+        mock.publish(to: "routes.10", event: .Route(.update(object: .Success(update), originator: "routes.10")))
         XCTAssertNotNil(controller.routes.value.first)
         if let route = controller.routes.value.first {
             XCTAssertEqual(route.name.value, "~modified")
@@ -86,13 +86,13 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
     func testRouteUnsubscribedWhenLeft() {
         // Given a route subscribed to from when the view was created
         requestView()
-        XCTAssertTrue(mock.subscribed("routes.5B"))
+        XCTAssertTrue(mock.subscribed("routes.10"))
 
         // When a route is removed from the station's associatons...
         controller.station.routes.swap(Set())
 
         // ...it should be unsubscribed from.
-        XCTAssertFalse(mock.subscribed("routes.5B"))
+        XCTAssertFalse(mock.subscribed("routes.10"))
     }
 
     func testVehiclesSignalForNewVehicles() {
@@ -102,9 +102,9 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
             Vehicle(id: "test2"),
             Vehicle(id: "test3")
         ]
-        let modifiedRoute = Route(shortName: "5B", vehicles: vehicles)
+        let modifiedRoute = Route(shortName: "10", vehicles: vehicles)
 
-        // When Route 5B is modified to contain a new list of vehicles...
+        // When Route 10 is modified to contain a new list of vehicles...
         requestView()
         XCTAssertNotNil(controller.routes.value.first)
         if let route = controller.routes.value.first {

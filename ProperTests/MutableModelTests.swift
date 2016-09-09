@@ -22,9 +22,7 @@ class MutableModelTests: XCTestCase {
     override func setUp() {
         super.setUp()
         mock = ConnectionMock()
-        stations = [ "BUS249", "BUS543SE", "BUS440", "BUS324", "BUS598",
-            "BUS320", "BUS154", "BUS271", "BUS313NE", "BUS547", "BUS899",
-            "BUS900", "BUS543NE", "BUS319N", "BUS272N", "BUS275", "BUS456" ]
+        stations = ["BUS403", "BUS922", "BUS162", "BUS161", "BUS897", "BUS375W"]
 
         let expectation = expectationWithDescription("fixtures")
         Route.fixture("routes.4B").startWithNext { model in
@@ -41,8 +39,7 @@ class MutableModelTests: XCTestCase {
 
     func testApplyChangesApplies() {
         // Given
-        let modifiedStations = stations.map { Station(stopCode: $0, name: "~modified", description: nil,
-            position: nil, routes: nil, vehicles: nil) }
+        let modifiedStations = stations.map { Station(stopCode: $0, name: "~modified") }
         let expectation = expectationWithDescription("names applied")
         let nameSignals = route.stations.value!.map { $0.name.signal }
 
@@ -72,7 +69,7 @@ class MutableModelTests: XCTestCase {
         XCTAssertNotNil(try? route.attachOrApplyChanges(to: route.stations, from: modifiedStations))
 
         // Then
-        XCTAssertFalse(route.stations.value!.map { $0.identifier }.contains("BUS249"))
+        XCTAssertFalse(route.stations.value?.map { $0.identifier }.contains("BUS249") == true)
     }
 
     func testApplyChangesInserts() {
@@ -85,6 +82,6 @@ class MutableModelTests: XCTestCase {
         XCTAssertNotNil(try? route.attachOrApplyChanges(to: route.stations, from: modifiedStations))
 
         // Then
-        XCTAssertTrue(route.stations.value!.map { $0.identifier }.contains("test123"))
+        XCTAssertTrue(route.stations.value?.map { $0.identifier }.contains("test123") == true)
     }
 }

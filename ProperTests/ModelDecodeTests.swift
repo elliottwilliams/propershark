@@ -24,7 +24,7 @@ class ModelDecodeTests: XCTestCase {
         combineLatest(
             Station.rawFixture("stations.BUS100W"),
             Route.rawFixture("routes.4B"),
-            Vehicle.rawFixture("vehicles.1708")
+            Vehicle.rawFixture("vehicles.1801")
         ).startWithNext { station, route, vehicle in
             self.station = station
             self.route = route
@@ -55,11 +55,7 @@ class ModelDecodeTests: XCTestCase {
         // Associations
         XCTAssertNotNil(station.routes)
         if let routes = station.routes {
-            XCTAssertEqual(routes.map{ $0.identifier }, ["5B"])
-        }
-        XCTAssertNotNil(station.vehicles)
-        if let vehicles = station.vehicles {
-            XCTAssertEqual(vehicles.map{ $0.identifier }, ["1706"])
+            XCTAssertEqual(routes.map{ $0.identifier }, ["10"])
         }
     }
 
@@ -71,39 +67,39 @@ class ModelDecodeTests: XCTestCase {
         guard let route = decoded.value else { return }
 
         // Flat attributes
-        XCTAssertEqual(route.code!, 1824)
-        XCTAssertEqual(route.color!, UIColor(hex: "C71585"))
-        XCTAssertEqual(route.description!, "Inner Loop")
-        XCTAssertEqual(route.shortName, "19")
-        XCTAssertEqual(route.name!, "Inner Loop")
+        XCTAssertEqual(route.code, 1807)
+        XCTAssertEqual(route.color, UIColor(hex: "006400"))
+        XCTAssertEqual(route.description, "Purdue West")
+        XCTAssertEqual(route.shortName, "4B")
+        XCTAssertEqual(route.name, "Purdue West")
 
         // Path should contain multiple points
         XCTAssertNotNil(route.path)
         if let path = route.path {
-            XCTAssertEqual(path.first!, Point(lat: 40.41967, long: -86.923742))
+            XCTAssertEqual(path.first!, Point(lat: 40.420603, long: -86.894876))
             XCTAssertGreaterThan(path.count, 1)
         }
 
-        // Stations should be defined, including name
+        // Associated stations should include names
         XCTAssertNotNil(route.stations)
         if let stations = route.stations {
             XCTAssertGreaterThan(stations.count, 1)
-            let parkingLotStop = stations.filter { $0 == Station(id: "BUS249") }.first
-            XCTAssertNotNil(parkingLotStop)
-            XCTAssertEqual(parkingLotStop?.name, "Discovery Parking Lot (at Shelter) - BUS249")
+            let walmart = stations.filter { $0 == Station(id: "BUS403") }.first
+            XCTAssertEqual(walmart?.name, "Walmart West Lafayette (at Shelter) - BUS403")
         }
 
         // Itinerary should be populated
         XCTAssertNotNil(route.itinerary)
         if let itinerary = route.itinerary, let stations = route.stations {
             XCTAssertGreaterThan(itinerary.count, stations.count)
-            XCTAssertTrue(itinerary.filter { $0.identifier == "BUS249" }.count > 1,
+            XCTAssertTrue(itinerary.filter { $0.identifier == "BUS403" }.count > 1,
                           "A station on the route should appear multiple times.")
         }
 
+        // Route should have associated vehicles
         XCTAssertNotNil(route.vehicles)
         if let vehicles = route.vehicles {
-            XCTAssertEqual(vehicles.first?.identifier, "1203")
+            XCTAssertEqual(vehicles.first?.identifier, "1402")
         }
     }
 
@@ -114,15 +110,15 @@ class ModelDecodeTests: XCTestCase {
 
         guard let vehicle = decoded.value else { return }
 
-        XCTAssertEqual(vehicle.name, "1708")
-        XCTAssertEqual(vehicle.heading, 88)
+        XCTAssertEqual(vehicle.name, "1801")
+        XCTAssertEqual(vehicle.heading, 268)
         XCTAssertEqual(vehicle.capacity, 60)
-        XCTAssertEqual(vehicle.saturation, 6)
-        XCTAssertEqual(vehicle.speed, 13.995615604867572)
-        XCTAssertEqual(vehicle.onboard, 4)
+        XCTAssertEqual(vehicle.saturation, 10)
+        XCTAssertEqual(vehicle.speed, 0)
+        XCTAssertEqual(vehicle.onboard, 6)
 
-        XCTAssertEqual(vehicle.position, Point(lat: 40.454631772913, long: -86.92457761911))
-        XCTAssertEqual(vehicle.route.map { $0.identifier }, "5B")
+        XCTAssertEqual(vehicle.position, Point(lat: 40.43215, long:-86.8821))
+        XCTAssertEqual(vehicle.route.map { $0.identifier }, "1A")
     }
 
     func testDecodePoint() {

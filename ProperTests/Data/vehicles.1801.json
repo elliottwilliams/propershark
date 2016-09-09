@@ -1,0 +1,17 @@
+{
+  "saturation": 10,
+  "code": null,
+  "capacity": 60,
+  "name": "1801",
+  "route": "routes.1A",
+  "associated_objects": {},
+  "longitude": -86.8821,
+  "heading": 268,
+  "last_station": "stations.BUS508NE",
+  "latitude": 40.43215,
+  "schedule_delta": null,
+  "onboard": 6,
+  "identifier": "vehicles.1801",
+  "speed": 0,
+  "next_station": "stations.BUS508NE"
+}
