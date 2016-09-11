@@ -13,11 +13,11 @@ import Result
 
 class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
-    var station: MutableStation
+    var station: MutableStation!
+    var delegate: ArrivalsTableViewDelegate!
 
     // MARK: Internal properties
-    internal var connection: ConnectionType
-    internal let delegate: ArrivalsTableViewDelegate
+    internal var connection: ConnectionType = Connection.sharedInstance
     internal var diffCalculator: TableViewDiffCalculator<MutableVehicle>!
     internal var disposable = CompositeDisposable()
     internal var routeDisposables = [MutableRoute: Disposable]()
@@ -52,17 +52,13 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
 
     // MARK: Methods
-    init(observing station: MutableStation, delegate: ArrivalsTableViewDelegate, style: UITableViewStyle,
-                   connection: ConnectionType)
+    convenience init(observing station: MutableStation, delegate: ArrivalsTableViewDelegate, style: UITableViewStyle,
+                               connection: ConnectionType)
     {
+        self.init(style: style)
         self.station = station
         self.delegate = delegate
         self.connection = connection
-        super.init(style: style)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
     override func viewDidLoad() {
@@ -111,7 +107,7 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         // ArrivalTableViewCell comes from the xib, and is registered upon the creation of this table
-        let cell = tableView.dequeueReusableCellWithIdentifier("ArrivalTableViewCell", forIndexPath: indexPath) as! ArrivalTableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("PrototypeCell", forIndexPath: indexPath) as! ArrivalTableViewCell
         let vehicle = diffCalculator.rows[indexPath.row]
 
         // Bind vehicle attributes

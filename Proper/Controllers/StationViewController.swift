@@ -19,7 +19,6 @@ class StationViewController: UIViewController, ProperViewController, ArrivalsTab
     var station: MutableStation!
     @IBOutlet weak var map: MKMapView!
     @IBOutlet weak var nav: UINavigationItem!
-    @IBOutlet weak var arrivalTableView: UITableView!
 
     // MARK: Internal properties
     internal lazy var connection: ConnectionType = Connection.sharedInstance
@@ -42,18 +41,6 @@ class StationViewController: UIViewController, ProperViewController, ArrivalsTab
         station.position.producer.ignoreNil().take(1).startWithNext { point in
             self.map.addAnnotation(MutableStation.Annotation(from: self.station, at: point))
         }
-        
-        // Initialize and embed the arrivals table.
-        let table = ArrivalsTableViewController(observing: station, delegate: self, style: arrivalTableView.style,
-                                                connection: self.connection)
-        table.view = arrivalTableView
-        table.viewDidLoad()
-        arrivalTableView.dataSource = table
-        arrivalTableView.delegate = table
-
-        table.willMoveToParentViewController(self)
-        self.addChildViewController(table)
-        table.didMoveToParentViewController(self)
     }
 
     override func viewDidAppear(animated: Bool) {
@@ -66,6 +53,17 @@ class StationViewController: UIViewController, ProperViewController, ArrivalsTab
     override func viewWillDisappear(animated: Bool) {
         disposable.dispose()
         super.viewWillDisappear(animated)
+    }
+
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        switch segue.identifier ?? "" {
+        case "embedArrivalsTable":
+            let table = segue.destinationViewController as! ArrivalsTableViewController
+            table.station = station
+            table.delegate = self
+        default:
+            return
+        }
     }
 
     // MARK: Delegate methods
