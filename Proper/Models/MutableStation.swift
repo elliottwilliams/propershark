@@ -30,8 +30,8 @@ class MutableStation: MutableModel {
     var name: MutableProperty<String?> = .init(nil)
     var description: MutableProperty<String?> = .init(nil)
     var position: MutableProperty<Point?> = .init(nil)
-    var routes: MutableProperty<Set<RouteType>?> = .init(nil)
-    var vehicles: MutableProperty<Set<VehicleType>?> = .init(nil)
+    var routes: MutableProperty<Set<RouteType>> = .init(Set())
+    var vehicles: MutableProperty<Set<VehicleType>> = .init(Set())
 
     // MARK: Signal Producer
     lazy var producer: SignalProducer<TopicEvent, ProperError> = {

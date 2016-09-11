@@ -41,7 +41,7 @@ class MutableModelTests: XCTestCase {
         // Given
         let modifiedStations = stations.map { Station(stopCode: $0, name: "~modified") }
         let expectation = expectationWithDescription("names applied")
-        let nameSignals = route.stations.value!.map { $0.name.signal }
+        let nameSignals = route.stations.value.map { $0.name.signal }
 
         // After emitting `modifiedStations.count` route names, invoke this observer.
         SignalProducer(values: nameSignals).flatMap(.Merge, transform: { signal in signal })
@@ -69,7 +69,7 @@ class MutableModelTests: XCTestCase {
         XCTAssertNotNil(try? route.attachOrApplyChanges(to: route.stations, from: modifiedStations))
 
         // Then
-        XCTAssertFalse(route.stations.value?.map { $0.identifier }.contains("BUS249") == true)
+        XCTAssertFalse(route.stations.value.map { $0.identifier }.contains("BUS249") == true)
     }
 
     func testApplyChangesInserts() {
@@ -82,6 +82,6 @@ class MutableModelTests: XCTestCase {
         XCTAssertNotNil(try? route.attachOrApplyChanges(to: route.stations, from: modifiedStations))
 
         // Then
-        XCTAssertTrue(route.stations.value?.map { $0.identifier }.contains("test123") == true)
+        XCTAssertTrue(route.stations.value.map { $0.identifier }.contains("test123") == true)
     }
 }

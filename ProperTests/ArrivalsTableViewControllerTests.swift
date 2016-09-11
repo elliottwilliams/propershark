@@ -51,35 +51,11 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
         XCTAssertTrue(mock.subscribed("stations.BUS100W"))
     }
 
-    func testRoutesSignalEmitsOnChanges() {
-        // Given
-        let update = Station(stopCode: station.stopCode, routes: [
-            Route(shortName: "221B")
-        ])
-
-        // When the list of routes on a station changes...
-        requestView()
-        mock.publish(to: station.topic, event: .Station(.update(object: .Success(update), originator: station.topic)))
-
-        // ...expect the routes signal to emit a new set of routes.
-        XCTAssertTrue(controller.routes.value.contains { $0.identifier == "221B" })
-        XCTAssertEqual(controller.routes.value.count, 1)
-    }
 
     func testRoutesSignalSubscribesToRoutes() {
-        // Given
-        let update = Route(shortName: "10", name: "~modified")
-
         // When view loads, route should be subscribed to.
         requestView()
         XCTAssertTrue(mock.subscribed("routes.10"))
-
-        // Thus, when a route update is published specifying the route name, it should change.
-        mock.publish(to: "routes.10", event: .Route(.update(object: .Success(update), originator: "routes.10")))
-        XCTAssertNotNil(controller.routes.value.first)
-        if let route = controller.routes.value.first {
-            XCTAssertEqual(route.name.value, "~modified")
-        }
     }
 
 
@@ -106,8 +82,8 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
 
         // When Route 10 is modified to contain a new list of vehicles...
         requestView()
-        XCTAssertNotNil(controller.routes.value.first)
-        if let route = controller.routes.value.first {
+        XCTAssertNotNil(controller.station.routes.value.first)
+        if let route = controller.station.routes.value.first {
             XCTAssertNotNil(try? route.apply(modifiedRoute))
         }
 
@@ -124,7 +100,7 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
     }
 
     func testVehiclesSignalFromMultipleRoutes() {
-        // Given a station with two routes, each with vehicles.
+        // Given a station with two routes, each with vehicles:
         let routeA = Route(shortName: "r1", vehicles: [
             Vehicle(id: "v1"), Vehicle(id: "v2"), Vehicle(id: "v3")
             ])
@@ -139,6 +115,23 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
 
         // Then the list of vehicles should contain vehicles from both routes.
         XCTAssertEqual(controller.vehicles.value.map { $0.identifier }.sort(), ["v1", "v2", "v3", "v4", "v5"])
+    }
+
+    func testVehiclesSignalForVehiclelessRoute() {
+        // Given a station with two routes, one of which has no vehicles:
+        let routeA = Route(shortName: "r1", vehicles: [
+            Vehicle(id: "v1"), Vehicle(id: "v2"), Vehicle(id: "v3")
+            ])
+        // `vehicles: nil` is the result of having no associated_objects["Shark::Station"] key in the serialized model
+        let routeB = Route(shortName: "r2", vehicles: nil)
+        let modifiedStation = Station(stopCode: station.stopCode, routes: [routeA, routeB])
+
+        // When the view is loaded and the new routes are applied...
+        requestView()
+        XCTAssertNotNil(try? controller.station.apply(modifiedStation))
+
+        // Then the list of vehicles should have values from routeA.
+        XCTAssertEqual(controller.vehicles.value.map { $0.identifier }.sort(), ["v1", "v2", "v3"])
     }
 
 

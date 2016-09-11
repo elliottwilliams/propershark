@@ -50,15 +50,14 @@ extension MutableModel {
 
     /// Create and insert new MutableModels to a given set, remove old ones, and apply changes from
     /// persistent ones.
-    func attachOrApplyChanges<M: MutableModel>(to mutableSet: MutableProperty<Set<M>?>,
+    func attachOrApplyChanges<M: MutableModel>(to mutableSet: MutableProperty<Set<M>>,
                       from new: [M.FromModel.Identifier: M.FromModel]?) throws
     {
         // Attempt to unwrap `new` and create a mutable copy of it.
         guard var new = new else { return }
 
         try mutableSet.modify { mutables in
-            // Initialize to an empty set if nil.
-            var mutables = mutables ?? Set()
+            var mutables = mutables
 
             // For each stored mutable model...
             for model in mutables {
@@ -81,7 +80,7 @@ extension MutableModel {
     }
 
     func attachOrApplyChanges<C: CollectionType, M: MutableModel where C.Generator.Element == M.FromModel>
-        (to mutableSet: MutableProperty<Set<M>?>, from new: C?) throws
+        (to mutableSet: MutableProperty<Set<M>>, from new: C?) throws
     {
         guard let new = new else { return }
         

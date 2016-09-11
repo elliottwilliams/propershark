@@ -32,8 +32,8 @@ class MutableRoute: MutableModel {
     var description: MutableProperty<String?> = .init(nil)
     var color: MutableProperty<UIColor?> = .init(nil)
     var path:  MutableProperty<[Point]?> = .init(nil)
-    var stations: MutableProperty<Set<StationType>?> = .init(nil)
-    var vehicles: MutableProperty<Set<VehicleType>?> = .init(nil)
+    var stations: MutableProperty<Set<StationType>> = .init(Set())
+    var vehicles: MutableProperty<Set<VehicleType>> = .init(Set())
     var itinerary: MutableProperty<[StationType]?> = .init(nil)
     var canonical: MutableProperty<CanonicalRoute<StationType>?> = .init(nil)
 
@@ -55,7 +55,7 @@ class MutableRoute: MutableModel {
         try apply(route)
 
         // Create back-references to this MutableRoute on all vehicles associated with the route. 
-        self.vehicles.producer.ignoreNil().flatten(.Latest).startWithNext { [weak self] vehicle in
+        self.vehicles.producer.flatten(.Latest).startWithNext { [weak self] vehicle in
             vehicle.route.modify { $0 ?? self }
         }
     }
@@ -72,7 +72,7 @@ class MutableRoute: MutableModel {
                 try self.apply(route.value!)
             case .Route(.vehicleUpdate(let vehicle, _)):
                 // If any vehicles on this route match `vehicle`, update their information to match `vehicle`.
-                try self.vehicles.value?.filter { $0 == vehicle.value! }.forEach { try $0.apply(vehicle.value!) }
+                try self.vehicles.value.filter { $0 == vehicle.value! }.forEach { try $0.apply(vehicle.value!) }
             default:
                 self.delegate.mutableModel(self, receivedTopicEvent: event)
             }
@@ -108,9 +108,7 @@ class MutableRoute: MutableModel {
 
     /// Map an itinerary of static Stations to MutableStations contained by this object's `stations` set.
     func mappedItinerary(source: [Station]) throws -> [MutableStation] {
-        guard let mutables = self.stations.value else {
-            return []
-        }
+        let mutables = self.stations.value
         let dict: [Station.Identifier: MutableStation] = mutables.reduce([:]) { dict, station in
             var dict = dict
             dict[station.identifier] = station

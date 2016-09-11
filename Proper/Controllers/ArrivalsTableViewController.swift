@@ -23,13 +23,9 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
     internal var routeDisposables = [MutableRoute: Disposable]()
 
     // MARK: Signalled properties
-    lazy var routes: AnyProperty<Set<MutableRoute>> = {
-        return AnyProperty(initialValue: Set(), producer: self.station.routes.producer.ignoreNil())
-    }()
-
     lazy var vehicles: AnyProperty<Set<MutableVehicle>> = {
         // Given a signal emitting the list of MutableRoutes for this station...
-        let producer = self.routes.producer
+        let producer = self.station.routes.producer
         // ...flatMap down to a joint set of vehicles.
         .flatMap(.Latest) { (routes: Set<MutableRoute>) -> SignalProducer<Set<MutableVehicle>, NoError> in
 
@@ -38,12 +34,12 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
             // Obtain the first set's producer and combine all other sets' producers with this one. Return an empty set
             // if there are no routes in the set.
-            guard let firstProducer = routes.first?.vehicles.producer.ignoreNil() else {
+            guard let firstProducer = routes.first?.vehicles.producer else {
                 return SignalProducer(value: Set())
             }
 
             return routes.dropFirst().reduce(firstProducer) { producer, route in
-                let vehicles = route.vehicles.producer.ignoreNil()
+                let vehicles = route.vehicles.producer
                 // `combineLatest` causes the producer to wait until the two signals being combines have emitted. In
                 // this case, it means that no vehicles will be forwarded until all routes have produced a list of
                 // vehicles. After that, changes to vehicles of any route will forward the entire set again.
@@ -83,7 +79,7 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
         // Follow changes to routes on the station. As routes are associated and disassociated, maintain signals on all
         // current routes, so that vehicle information can be obtained. Dispose these signals as routes go away.
-        disposable += routes.producer.combinePrevious(Set())
+        disposable += station.routes.producer.combinePrevious(Set())
             .startWithNext { old, new in
                 new.subtract(old).forEach { route in
                     self.routeDisposables[route] = route.producer.startWithFailed(self.delegate.arrivalsTable(receivedError:))
