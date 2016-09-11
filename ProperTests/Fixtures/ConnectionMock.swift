@@ -37,8 +37,6 @@ class ConnectionMock: ConnectionType {
             if let topic = find(id) {
                 topic.subscribers -= 1
                 if topic.subscribers < 1 {
-                    // Close the signal and delete the channel
-                    topic.observer.sendCompleted()
                     topics[id] = nil
                 }
             }
