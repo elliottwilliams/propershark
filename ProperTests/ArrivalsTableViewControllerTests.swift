@@ -29,7 +29,9 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
             self.controller = ArrivalsTableViewController(observing: self.station, delegate: self, style: .Plain, connection: self.mock)
             expectation.fulfill()
         }
+        self.continueAfterFailure = false
         waitForExpectationsWithTimeout(5.0, handler: nil)
+        self.continueAfterFailure = true
     }
 
     override func tearDown() {

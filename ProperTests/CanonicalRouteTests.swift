@@ -105,34 +105,4 @@ class CanonicalRouteTests: XCTestCase {
         XCTAssertEqual(route.stations, [.conditional(stations[3]), .conditional(stations[0]), .conditional(stations[1]),
             .conditional(stations[2])])
     }
-
-    func testInnerLoopItinerary() {
-        // Given actual itinerary data
-        let expectation = expectationWithDescription("Route fixture load")
-        Route.fixture("routes.4B").startWithNext { model in
-            expectation.fulfill()
-
-            // When canonical route is computed and mapped to its stop codes
-            let route = CanonicalRoute(from: model.itinerary!)
-            let mapped: [RouteStop<String>] = route.stations.map { stop in
-                switch stop {
-                case .constant(let station):
-                    return .constant(station.stopCode)
-                case .conditional(let station):
-                    return .conditional(station.stopCode)
-                }
-            }
-
-            // Its stations should match the expected computation
-            let expected: [RouteStop<String>] = [.constant("BUS249"), .constant("BUS543SE"), .constant("BUS440"),
-                .constant("BUS324"), .constant("BUS598"), .constant("BUS320"),
-                .constant("BUS154"), .constant("BUS271"), .constant("BUS313NE"),
-                .conditional("BUS547"), .conditional("BUS899"), .conditional("BUS900"),
-                .conditional("BUS543NE"), .conditional("BUS319N"), .conditional("BUS272N"),
-                .conditional("BUS275"), .conditional("BUS456")]
-            XCTAssertEqual(mapped, expected)
-        }
-
-        waitForExpectationsWithTimeout(3.0, handler: nil)
-    }
 }

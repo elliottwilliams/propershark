@@ -18,19 +18,21 @@ class MutableVehicleTests: XCTestCase, MutableModelTestSpec {
     var mutable: MutableVehicle!
 
     let delegate = MutableModelDelegateMock()
-    let modifiedVehicle = Vehicle(name: "1708", capacity: 9001)
+    let modifiedVehicle = Vehicle(name: "1801", capacity: 9001)
     let mock = ConnectionMock()
 
     override func setUp() {
         super.setUp()
 
         let expectation = expectationWithDescription("fixtures")
-        Vehicle.fixture("vehicles.1708").startWithNext { model in
+        Vehicle.fixture("vehicles.1801").startWithNext { model in
             self.model = model
             self.mutable = try! MutableVehicle(from: model, delegate: self.delegate, connection: self.mock)
             expectation.fulfill()
         }
+        self.continueAfterFailure = false
         waitForExpectationsWithTimeout(5.0, handler: nil)
+        self.continueAfterFailure = true
     }
 
     func testApplyUpdatesProperty() {

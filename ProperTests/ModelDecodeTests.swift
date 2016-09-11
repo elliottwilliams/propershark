@@ -31,7 +31,9 @@ class ModelDecodeTests: XCTestCase {
             self.vehicle = vehicle
             expectation.fulfill()
         }
+        self.continueAfterFailure = false
         waitForExpectationsWithTimeout(5.0, handler: nil)
+        self.continueAfterFailure = true
     }
     
     override func tearDown() {

@@ -30,7 +30,9 @@ class MutableStationTests: XCTestCase, MutableModelTestSpec {
             self.mutable = try! MutableStation(from: model, delegate: self.delegate, connection: self.mock)
             expectation.fulfill()
         }
+        self.continueAfterFailure = false
         waitForExpectationsWithTimeout(5.0, handler: nil)
+        self.continueAfterFailure = true
     }
 
     func testApplyUpdatesProperty() {

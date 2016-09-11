@@ -29,7 +29,9 @@ class MutableModelTests: XCTestCase {
             self.route = try! MutableRoute(from: model, delegate: self.defaultDelegate, connection: self.mock)
             expectation.fulfill()
         }
+        self.continueAfterFailure = false
         waitForExpectationsWithTimeout(5.0, handler: nil)
+        self.continueAfterFailure = true
     }
     
     override func tearDown() {
