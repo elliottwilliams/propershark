@@ -61,6 +61,9 @@ class StationViewController: UIViewController, ProperViewController, ArrivalsTab
             let table = segue.destinationViewController as! ArrivalsTableViewController
             table.station = station
             table.delegate = self
+        case "embedRoutesCollection":
+            let collection = segue.destinationViewController as! RoutesCollectionViewController
+            collection.station = station
         default:
             return
         }

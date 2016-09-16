@@ -34,6 +34,8 @@
 		268632811C319B0D00839A22 /* SceneMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268632801C319B0D00839A22 /* SceneMediator.swift */; };
 		268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72261BF9938800E981D4 /* TransitLabel.swift */; };
 		268E72291BF9938800E981D4 /* TransitNavigationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72271BF9938800E981D4 /* TransitNavigationItem.swift */; };
+		2698CF011D8B8FC400E6174A /* RoutesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2698CF001D8B8FC400E6174A /* RoutesCollectionViewCell.swift */; };
+		2698CF031D8B904C00E6174A /* RoutesCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2698CF021D8B904C00E6174A /* RoutesCollectionViewController.swift */; };
 		26A424B41BD2C1320035754F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424B31BD2C1320035754F /* AppDelegate.swift */; };
 		26A424B91BD2C1320035754F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 26A424B71BD2C1320035754F /* Main.storyboard */; };
 		26A424BB1BD2C1320035754F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26A424BA1BD2C1320035754F /* Assets.xcassets */; };
@@ -128,6 +130,8 @@
 		268632801C319B0D00839A22 /* SceneMediator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SceneMediator.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		268E72261BF9938800E981D4 /* TransitLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabel.swift; sourceTree = "<group>"; };
 		268E72271BF9938800E981D4 /* TransitNavigationItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitNavigationItem.swift; sourceTree = "<group>"; };
+		2698CF001D8B8FC400E6174A /* RoutesCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoutesCollectionViewCell.swift; sourceTree = "<group>"; };
+		2698CF021D8B904C00E6174A /* RoutesCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoutesCollectionViewController.swift; sourceTree = "<group>"; };
 		26A424B01BD2C1320035754F /* Proper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Proper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		26A424B31BD2C1320035754F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AppDelegate.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26A424B51BD2C1320035754F /* StationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = StationViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -252,6 +256,7 @@
 				26DFB6751C35A7F7006A8AE0 /* ScheduleRail.swift */,
 				268E72261BF9938800E981D4 /* TransitLabel.swift */,
 				268E72271BF9938800E981D4 /* TransitNavigationItem.swift */,
+				2698CF001D8B8FC400E6174A /* RoutesCollectionViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -264,6 +269,7 @@
 				264782551C2C6F67009D9AD0 /* StartListViewController.swift */,
 				26A8D6011D484944000434F9 /* ArrivalsTableViewController.swift */,
 				26AE681B1D601D0B0031E534 /* RouteViewController.swift */,
+				2698CF021D8B904C00E6174A /* RoutesCollectionViewController.swift */,
 				26AE681D1D612B810031E534 /* RouteTableViewController.swift */,
 			);
 			path = Controllers;
@@ -749,6 +755,8 @@
 				26A4B7B31D33503600264F0D /* MutableVehicle.swift in Sources */,
 				266BAE661D2B7159001C9EC8 /* StartListViewController.swift in Sources */,
 				267525521D6D3B4F00F6C33F /* Decoded.swift in Sources */,
+				2698CF011D8B8FC400E6174A /* RoutesCollectionViewCell.swift in Sources */,
+				2698CF031D8B904C00E6174A /* RoutesCollectionViewController.swift in Sources */,
 				26D3E2221D28DFE800F85712 /* Route.swift in Sources */,
 				26A4B7AF1D32251100264F0D /* MutableStation.swift in Sources */,
 				26AE68201D622CCD0031E534 /* CanonicalRoute.swift in Sources */,
@@ -947,6 +955,7 @@
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				INFOPLIST_FILE = "$(SRCROOT)/Proper/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = us.transio.Proper;
@@ -961,6 +970,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = "$(SRCROOT)/Proper/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = us.transio.Proper;
 				PRODUCT_NAME = Proper;

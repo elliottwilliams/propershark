@@ -11,7 +11,7 @@ import ReactiveCocoa
 import Result
 import Argo
 
-class MutableRoute: MutableModel {
+class MutableRoute: MutableModel, Comparable {
     typealias FromModel = Route
     typealias StationType = MutableStation
     typealias VehicleType = MutableVehicle
@@ -124,4 +124,8 @@ class MutableRoute: MutableModel {
             return mutable
         }
     }
+}
+
+func < (a: MutableRoute, b: MutableRoute) -> Bool {
+    return a.identifier < b.identifier
 }

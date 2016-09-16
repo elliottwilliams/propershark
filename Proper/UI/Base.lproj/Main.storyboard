@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Fna-Cf-eji">
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Segues with Peek and Pop" minToolsVersion="7.1"/>
     </dependencies>
     <scenes>
         <!--Reasonably Competant List-->
@@ -137,8 +139,17 @@
                                             </mask>
                                         </variation>
                                     </mapView>
+                                    <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Lah-b8-7eJ">
+                                        <rect key="frame" x="0.0" y="200" width="600" height="70"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="70" id="hjD-ku-sAG"/>
+                                        </constraints>
+                                        <connections>
+                                            <segue destination="gcy-6Q-xxr" kind="embed" identifier="embedRoutesCollection" id="bxq-UZ-7Pp"/>
+                                        </connections>
+                                    </containerView>
                                     <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dDU-R0-9bV">
-                                        <rect key="frame" x="0.0" y="200" width="600" height="318"/>
+                                        <rect key="frame" x="0.0" y="270" width="600" height="248"/>
                                         <connections>
                                             <segue destination="ttT-Ab-P4b" kind="embed" identifier="embedArrivalsTable" id="4yp-wM-eU4"/>
                                         </connections>
@@ -159,6 +170,14 @@
                                         </constraints>
                                     </view>
                                 </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="Lah-b8-7eJ" secondAttribute="bottom" constant="298" id="ohm-lB-Z2b"/>
+                                </constraints>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="ohm-lB-Z2b"/>
+                                    </mask>
+                                </variation>
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -180,14 +199,67 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1588" y="931"/>
+            <point key="canvasLocation" x="1996" y="921"/>
+        </scene>
+        <!--Routes Collection View Controller-->
+        <scene sceneID="WCR-FL-2zn">
+            <objects>
+                <collectionViewController id="gcy-6Q-xxr" customClass="RoutesCollectionViewController" customModule="Proper" customModuleProvider="target" sceneMemberID="viewController">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" alwaysBounceHorizontal="YES" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="13b-Ev-qDD">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="70"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="V3Y-YS-k0P">
+                            <size key="itemSize" width="50" height="50"/>
+                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <inset key="sectionInset" minX="0.0" minY="10" maxX="0.0" maxY="10"/>
+                        </collectionViewFlowLayout>
+                        <cells>
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="BadgeCell" id="TN3-7Z-O5l" customClass="RoutesCollectionViewCell" customModule="Proper" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="10" width="50" height="50"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fbd-bn-usu" customClass="RouteBadge" customModule="Proper" customModuleProvider="target">
+                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        </view>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </view>
+                                <constraints>
+                                    <constraint firstAttribute="trailingMargin" secondItem="fbd-bn-usu" secondAttribute="trailing" constant="-8" id="4Vb-Sj-Swu"/>
+                                    <constraint firstItem="fbd-bn-usu" firstAttribute="leading" secondItem="TN3-7Z-O5l" secondAttribute="leadingMargin" constant="-8" id="eEh-aA-6fJ"/>
+                                    <constraint firstAttribute="bottomMargin" secondItem="fbd-bn-usu" secondAttribute="bottom" constant="-8" id="j6I-zy-6qJ"/>
+                                    <constraint firstItem="fbd-bn-usu" firstAttribute="top" secondItem="TN3-7Z-O5l" secondAttribute="topMargin" constant="-8" id="n4M-A5-3N5"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="badge" destination="fbd-bn-usu" id="nZL-fX-IeB"/>
+                                    <segue destination="k24-c9-Z01" kind="show" identifier="showRoute" id="rRc-Dk-gU7">
+                                        <segue key="commit" inheritsFrom="parent" id="GrU-7t-AYF"/>
+                                        <segue key="preview" inheritsFrom="commit" id="u4F-rW-EOc"/>
+                                    </segue>
+                                </connections>
+                            </collectionViewCell>
+                        </cells>
+                        <connections>
+                            <outlet property="dataSource" destination="gcy-6Q-xxr" id="5QC-EL-TjS"/>
+                            <outlet property="delegate" destination="gcy-6Q-xxr" id="8Vp-04-1RB"/>
+                        </connections>
+                    </collectionView>
+                </collectionViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="U1D-IJ-1ti" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1260" y="819"/>
         </scene>
         <!--Arrivals Table View Controller-->
         <scene sceneID="4Sb-s7-PcK">
             <objects>
                 <tableViewController id="ttT-Ab-P4b" customClass="ArrivalsTableViewController" customModule="Proper" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="T3J-fn-QLf">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="318"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="248"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
@@ -279,7 +351,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="otd-xO-6N6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2437" y="920"/>
+            <point key="canvasLocation" x="2817" y="1200"/>
         </scene>
         <!--Vehicle View-->
         <scene sceneID="2Pi-5w-WqZ">
@@ -640,6 +712,10 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Route" id="zm8-Ec-pp1" customClass="TransitNavigationItem" customModule="Proper" customModuleProvider="target"/>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="600" height="600"/>
                     <connections>
                         <outlet property="badge" destination="fdR-Mr-Tao" id="H65-0d-eRb"/>
                         <outlet property="nav" destination="zm8-Ec-pp1" id="ARH-c1-iLy"/>
@@ -777,5 +853,6 @@
     <inferredMetricsTieBreakers>
         <segue reference="mwx-A8-Xb3"/>
         <segue reference="BLG-Pk-v7F"/>
+        <segue reference="rRc-Dk-gU7"/>
     </inferredMetricsTieBreakers>
 </document>
