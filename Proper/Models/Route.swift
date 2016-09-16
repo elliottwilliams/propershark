@@ -46,7 +46,7 @@ struct Route: Model {
         self.itinerary = itinerary
     }
 
-    init(id shortName: String) {
+    convenience init(id shortName: String) {
         self.init(shortName: shortName)
     }
 }
