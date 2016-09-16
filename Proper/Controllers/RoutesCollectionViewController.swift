@@ -88,4 +88,14 @@ class RoutesCollectionViewController: UICollectionViewController, ProperViewCont
 
         return cell
     }
+
+    override func collectionView(collectionView: UICollectionView, didHighlightItemAtIndexPath indexPath: NSIndexPath) {
+        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! RoutesCollectionViewCell
+        cell.badge.highlighted = true
+    }
+
+    override func collectionView(collectionView: UICollectionView, didUnhighlightItemAtIndexPath indexPath: NSIndexPath) {
+        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! RoutesCollectionViewCell
+        cell.badge.highlighted = false
+    }
 }

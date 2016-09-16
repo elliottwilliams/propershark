@@ -15,30 +15,32 @@ class RouteBadge: UIView {
     var capacity = 0.0 {
         didSet { updateCapacity() }
     }
-    var outerStrokeWidth = 5.0 {
+    var outerStrokeWidth = 0.0 {
         didSet { updateStroke() }
     }
-    var outerStrokeGap = 5.0 {
+    var outerStrokeGap = 0.0 {
         didSet { updateStroke() }
     }
     var routeNumber: String? {
         didSet { updateRouteNumber() }
     }
-    var color: UIColor = UIColor.redColor() {
+    var color: UIColor = UIColor.lightGrayColor() {
         didSet { updateColor() }
     }
-    
-    let _colorSpace = CGColorSpaceCreateDeviceRGB()
-    let _outerBadge = CAShapeLayer()
-    let _innerBadge = CAShapeLayer()
-    let _filledInnerBadge = CAShapeLayer()
-    let _capacityCoverMask = CAShapeLayer()
-    var _label: UILabel?
-    var _lightColor = UIColor(red: 1, green: 188/255, blue: 188/255, alpha: 1)
-    var _strokeColor = UIColor.lightTextColor()
+    var highlighted: Bool = false {
+        didSet { highlightChanged(from: oldValue, to: highlighted) }
+    }
 
     // MARK: Private properties
     
+    private let outerBadge = CAShapeLayer()
+    private let innerBadge = CAShapeLayer()
+    private let filledInnerBadge = CAShapeLayer()
+    private let capacityCoverMask = CAShapeLayer()
+    private var label: UILabel?
+    private var lightColor = UIColor(red: 1, green: 188/255, blue: 188/255, alpha: 1)
+    private var strokeColor = UIColor.lightTextColor()
+
     private var width: CGFloat!
     private var outerRadius: CGFloat!
     private var innerWidth: CGFloat!
@@ -72,23 +74,23 @@ class RouteBadge: UIView {
     // MARK: Property-setting calculations
     
     func setColors() {
-        self.backgroundColor = UIColor.clearColor()
-        _lightColor = self.color.lightenedColor(0.8)
-        _strokeColor = UIColor.snowColor()
+        backgroundColor = UIColor.clearColor()
+        lightColor = color.lightenedColor(0.8)
+        strokeColor = UIColor.snowColor()
         
-        _label?.textColor = _strokeColor
+        label?.textColor = strokeColor
     }
     
     func calculateDrawingMeasurements() {
-        self.width = self.bounds.width
+        width = bounds.width
         
-        self.innerWidth = CGFloat(width - 2 * CGFloat(outerStrokeWidth + outerStrokeGap))
-        self.innerRadius = (innerWidth / 2) - CGFloat(outerStrokeWidth/2)
-        self.centerX = width / 2
-        self.centerY = centerX
+        innerWidth = CGFloat(width - 2 * CGFloat(outerStrokeWidth + outerStrokeGap))
+        innerRadius = (innerWidth / 2) - CGFloat(outerStrokeWidth/2)
+        centerX = width / 2
+        centerY = centerX
         
-        self.outerRadius = (width / 2) - CGFloat(outerStrokeWidth)
-        self.capacityCover = innerWidth * CGFloat(1 - capacity)
+        outerRadius = (width / 2) - CGFloat(outerStrokeWidth)
+        capacityCover = innerWidth * CGFloat(1 - capacity)
     }
     
     // MARK: Idempotent calculations
@@ -116,9 +118,9 @@ class RouteBadge: UIView {
     // MARK: Setup draw code
     
     func insertLayers() {
-        self.layer.addSublayer(_outerBadge)
-        self.layer.addSublayer(_filledInnerBadge)
-        self.layer.addSublayer(_innerBadge)
+        layer.addSublayer(outerBadge)
+        layer.addSublayer(filledInnerBadge)
+        layer.addSublayer(innerBadge)
     }
     
     func insertLabel() {
@@ -127,9 +129,9 @@ class RouteBadge: UIView {
         label.font = UIFont.systemFontOfSize(fontSize, weight: UIFontWeightSemibold)
         label.textColor = UIColor.whiteColor()
         label.textAlignment = NSTextAlignment.Center
-        label.text = self.routeNumber
-        self.addSubview(label)
-        _label = label
+        label.text = routeNumber
+        addSubview(label)
+        self.label = label
     }
     
     // MARK: Reusable draw code
@@ -137,51 +139,57 @@ class RouteBadge: UIView {
     func drawBadge() {
         calculateDrawingMeasurements()
         
-        _outerBadge.path = outerPath()
-        _outerBadge.strokeColor = self.color.CGColor
-        _outerBadge.fillColor = _strokeColor.CGColor
-        _outerBadge.lineWidth = CGFloat(outerStrokeWidth)
+        outerBadge.path = outerPath()
+        outerBadge.strokeColor = color.CGColor
+        outerBadge.fillColor = strokeColor.CGColor
+        outerBadge.lineWidth = CGFloat(outerStrokeWidth)
         
-        _capacityCoverMask.path = capacityCoverPath(self.capacityCover)
-        _capacityCoverMask.fillColor = UIColor.blackColor().CGColor
+        capacityCoverMask.path = capacityCoverPath(capacityCover)
+        capacityCoverMask.fillColor = UIColor.blackColor().CGColor
         
-        _innerBadge.path = innerPath()
-        _innerBadge.fillColor = self.color.CGColor
-        _innerBadge.mask = _capacityCoverMask
+        innerBadge.path = innerPath()
+        innerBadge.fillColor = color.CGColor
+        innerBadge.mask = capacityCoverMask
         
-        _filledInnerBadge.path = innerPath()
-        _filledInnerBadge.fillColor = _lightColor.CGColor
+        filledInnerBadge.path = innerPath()
+        filledInnerBadge.fillColor = lightColor.CGColor
     }
     
     func updateCapacity() {
         calculateDrawingMeasurements()
         let anim = CABasicAnimation(keyPath: "path")
-        let path = self.capacityCoverPath(self.capacityCover)
-        anim.fromValue = _capacityCoverMask.path
+        let path = capacityCoverPath(capacityCover)
+        anim.fromValue = capacityCoverMask.path
         anim.toValue = path
         anim.duration = 0.25
-        _capacityCoverMask.addAnimation(anim, forKey: "path")
-        _capacityCoverMask.path = path
+        capacityCoverMask.addAnimation(anim, forKey: "path")
+        capacityCoverMask.path = path
     }
     
     func updateStroke() {
         drawBadge()
         // Label font size is dependent on inner width
         let fontSize = labelMeasurements().fontSize
-        _label?.font = _label?.font.fontWithSize(fontSize)
+        label?.font = label?.font.fontWithSize(fontSize)
     }
     
     func updateRouteNumber() {
-        self._label?.text = self.routeNumber
+        label?.text = routeNumber
     }
     
     func updateColor() {
         setColors()
-        _outerBadge.strokeColor = self.color.CGColor
-        _outerBadge.fillColor = _strokeColor.CGColor
-        _innerBadge.fillColor = self.color.CGColor
-        _filledInnerBadge.fillColor = self.color.CGColor
+        outerBadge.strokeColor = color.CGColor
+        outerBadge.fillColor = strokeColor.CGColor
+        innerBadge.fillColor = color.CGColor
+        filledInnerBadge.fillColor = color.CGColor
     }
-    
+
+    func highlightChanged(from wasHighlighted: Bool, to highlighted: Bool) {
+        guard wasHighlighted != highlighted else { return }
+        UIView.animateWithDuration(0) {
+            self.color = highlighted ? self.color.darkenedColor(2/5) : self.color.lightenedColor(2/3)
+        }
+    }
    
 }
