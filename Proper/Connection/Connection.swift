@@ -155,6 +155,7 @@ extension MDWamp {
         return SignalProducer<MDWampEvent, ProperError> { observer, disposable in
             self.subscribe(
                 topic,
+                options: nil,
                 onEvent: { event in observer.sendNext(event) },
                 result: { error in
                     NSLog("Subscribed to \(topic)")

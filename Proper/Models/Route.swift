@@ -6,6 +6,7 @@
 //  Copyright © 2016 Elliott Williams. All rights reserved.
 //
 
+import UIKit
 import Foundation
 import Argo
 import Curry
@@ -46,7 +47,7 @@ struct Route: Model {
         self.itinerary = itinerary
     }
 
-    convenience init(id shortName: String) {
+    init(id shortName: String) {
         self.init(shortName: shortName)
     }
 }
