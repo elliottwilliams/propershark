@@ -12,7 +12,7 @@
 	url = https://github.com/elliottwilliams/Dwifft.git
 [submodule "Carthage/Checkouts/GHODictionary"]
 	path = Carthage/Checkouts/GHODictionary
-	url = https://github.com/mogui/GHODictionary.git
+	url = https://github.com/elliottwilliams/GHODictionary.git
 [submodule "Carthage/Checkouts/MPMessagePack"]
 	path = Carthage/Checkouts/MPMessagePack
 	url = https://github.com/elliottwilliams/MPMessagePack.git
