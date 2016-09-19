@@ -78,6 +78,10 @@
 		26E038591D8DE9ED0006B265 /* ReactiveCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038531D8DE9ED0006B265 /* ReactiveCocoa.framework */; };
 		26E0385A1D8DE9ED0006B265 /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038541D8DE9ED0006B265 /* Result.framework */; };
 		26E038821D8F94030006B265 /* Colours.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E038811D8F94030006B265 /* Colours.swift */; };
+		26E038881D8F95E30006B265 /* CocoaAsyncSocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038841D8F95E20006B265 /* CocoaAsyncSocket.framework */; };
+		26E038891D8F95E30006B265 /* GHODictionary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038851D8F95E20006B265 /* GHODictionary.framework */; };
+		26E0388A1D8F95E30006B265 /* MPMessagePack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038861D8F95E20006B265 /* MPMessagePack.framework */; };
+		26E0388B1D8F95E30006B265 /* SocketRocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038871D8F95E30006B265 /* SocketRocket.framework */; };
 		26E3E2CF1D3C7DF90018EF3F /* ProperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E3E2CE1D3C7DF90018EF3F /* ProperViewController.swift */; };
 		26E3E2D01D3C810B0018EF3F /* StationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424B51BD2C1320035754F /* StationViewController.swift */; };
 		26E964F41D56382300F83797 /* MutableStationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964F31D56382300F83797 /* MutableStationTests.swift */; };
@@ -186,6 +190,10 @@
 		26E038531D8DE9ED0006B265 /* ReactiveCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReactiveCocoa.framework; path = Carthage/Build/iOS/ReactiveCocoa.framework; sourceTree = "<group>"; };
 		26E038541D8DE9ED0006B265 /* Result.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Result.framework; path = Carthage/Build/iOS/Result.framework; sourceTree = "<group>"; };
 		26E038811D8F94030006B265 /* Colours.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Colours.swift; path = Colours/Colours.swift; sourceTree = SOURCE_ROOT; };
+		26E038841D8F95E20006B265 /* CocoaAsyncSocket.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaAsyncSocket.framework; path = Carthage/Build/iOS/CocoaAsyncSocket.framework; sourceTree = "<group>"; };
+		26E038851D8F95E20006B265 /* GHODictionary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GHODictionary.framework; path = Carthage/Build/iOS/GHODictionary.framework; sourceTree = "<group>"; };
+		26E038861D8F95E20006B265 /* MPMessagePack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MPMessagePack.framework; path = Carthage/Build/iOS/MPMessagePack.framework; sourceTree = "<group>"; };
+		26E038871D8F95E30006B265 /* SocketRocket.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SocketRocket.framework; path = Carthage/Build/iOS/SocketRocket.framework; sourceTree = "<group>"; };
 		26E3E2CE1D3C7DF90018EF3F /* ProperViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProperViewController.swift; sourceTree = "<group>"; };
 		26E964F31D56382300F83797 /* MutableStationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableStationTests.swift; sourceTree = "<group>"; };
 		26E964F51D56386000F83797 /* MutableRouteTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableRouteTests.swift; sourceTree = "<group>"; };
@@ -209,6 +217,10 @@
 				26E038581D8DE9ED0006B265 /* MDWamp.framework in Frameworks */,
 				26E038591D8DE9ED0006B265 /* ReactiveCocoa.framework in Frameworks */,
 				26E0385A1D8DE9ED0006B265 /* Result.framework in Frameworks */,
+				26E038881D8F95E30006B265 /* CocoaAsyncSocket.framework in Frameworks */,
+				26E038891D8F95E30006B265 /* GHODictionary.framework in Frameworks */,
+				26E0388A1D8F95E30006B265 /* MPMessagePack.framework in Frameworks */,
+				26E0388B1D8F95E30006B265 /* SocketRocket.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -464,6 +476,10 @@
 		E4C42E7C67138C2FBA725195 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				26E038841D8F95E20006B265 /* CocoaAsyncSocket.framework */,
+				26E038851D8F95E20006B265 /* GHODictionary.framework */,
+				26E038861D8F95E20006B265 /* MPMessagePack.framework */,
+				26E038871D8F95E30006B265 /* SocketRocket.framework */,
 				26E0384F1D8DE9ED0006B265 /* Argo.framework */,
 				26E038501D8DE9ED0006B265 /* Curry.framework */,
 				26E038511D8DE9ED0006B265 /* Dwifft.framework */,
@@ -635,6 +651,10 @@
 				"$(SRCROOT)/Carthage/Build/iOS/MDWamp.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/ReactiveCocoa.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Result.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/CocoaAsyncSocket.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/GHODictionary.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/MPMessagePack.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/SocketRocket.framework",
 			);
 			name = "Carthage: Copy Frameworks";
 			outputPaths = (
