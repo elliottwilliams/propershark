@@ -1,4 +1,5 @@
 github "thoughtbot/Argo" "v3.1.0"
+github "ViccAlexander/Chameleon" "2.2.0"
 github "robbiehanson/CocoaAsyncSocket" "f3cf8a6fb27de57bd70b40cf4173d695d4a17b22"
 github "thoughtbot/Curry" "v2.3.3"
 github "elliottwilliams/Dwifft" "599a58d53221e1828ca6e9bc2fd7c4a5edc89a1a"
