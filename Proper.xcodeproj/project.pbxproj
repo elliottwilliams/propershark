@@ -77,7 +77,6 @@
 		26E038581D8DE9ED0006B265 /* MDWamp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038521D8DE9ED0006B265 /* MDWamp.framework */; };
 		26E038591D8DE9ED0006B265 /* ReactiveCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038531D8DE9ED0006B265 /* ReactiveCocoa.framework */; };
 		26E0385A1D8DE9ED0006B265 /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038541D8DE9ED0006B265 /* Result.framework */; };
-		26E038801D8F91130006B265 /* Chameleon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E0387F1D8F91130006B265 /* Chameleon.framework */; };
 		26E3E2CF1D3C7DF90018EF3F /* ProperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E3E2CE1D3C7DF90018EF3F /* ProperViewController.swift */; };
 		26E3E2D01D3C810B0018EF3F /* StationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424B51BD2C1320035754F /* StationViewController.swift */; };
 		26E964F41D56382300F83797 /* MutableStationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964F31D56382300F83797 /* MutableStationTests.swift */; };
@@ -185,7 +184,6 @@
 		26E038521D8DE9ED0006B265 /* MDWamp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MDWamp.framework; path = Carthage/Build/iOS/MDWamp.framework; sourceTree = "<group>"; };
 		26E038531D8DE9ED0006B265 /* ReactiveCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReactiveCocoa.framework; path = Carthage/Build/iOS/ReactiveCocoa.framework; sourceTree = "<group>"; };
 		26E038541D8DE9ED0006B265 /* Result.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Result.framework; path = Carthage/Build/iOS/Result.framework; sourceTree = "<group>"; };
-		26E0387F1D8F91130006B265 /* Chameleon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Chameleon.framework; path = Carthage/Build/iOS/Chameleon.framework; sourceTree = "<group>"; };
 		26E3E2CE1D3C7DF90018EF3F /* ProperViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProperViewController.swift; sourceTree = "<group>"; };
 		26E964F31D56382300F83797 /* MutableStationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableStationTests.swift; sourceTree = "<group>"; };
 		26E964F51D56386000F83797 /* MutableRouteTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableRouteTests.swift; sourceTree = "<group>"; };
@@ -209,7 +207,6 @@
 				26E038581D8DE9ED0006B265 /* MDWamp.framework in Frameworks */,
 				26E038591D8DE9ED0006B265 /* ReactiveCocoa.framework in Frameworks */,
 				26E0385A1D8DE9ED0006B265 /* Result.framework in Frameworks */,
-				26E038801D8F91130006B265 /* Chameleon.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -456,7 +453,6 @@
 		E4C42E7C67138C2FBA725195 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				26E0387F1D8F91130006B265 /* Chameleon.framework */,
 				26E0384F1D8DE9ED0006B265 /* Argo.framework */,
 				26E038501D8DE9ED0006B265 /* Curry.framework */,
 				26E038511D8DE9ED0006B265 /* Dwifft.framework */,
@@ -628,7 +624,6 @@
 				"$(SRCROOT)/Carthage/Build/iOS/MDWamp.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/ReactiveCocoa.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Result.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/Chameleon.framework",
 			);
 			name = "Carthage: Copy Frameworks";
 			outputPaths = (
