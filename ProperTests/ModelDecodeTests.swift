@@ -8,7 +8,6 @@
 
 import XCTest
 import Argo
-import Colours
 import ReactiveCocoa
 @testable import Proper
 

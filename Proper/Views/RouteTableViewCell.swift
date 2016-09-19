@@ -18,7 +18,7 @@ class RouteTableViewCell: UITableViewCell {
         super.init(coder: aDecoder)
         // The UIView for this cell is kept outside of the storyboard, for reusability. Load it here, populating `view`.
         // this view.
-        let view = NSBundle.mainBundle().loadNibNamed("RouteTableViewCell", owner: self, options: nil)[0] as! UIView
+        let view = NSBundle.mainBundle().loadNibNamed("RouteTableViewCell", owner: self, options: nil)![0] as! UIView
         self.addSubview(view)
     }
 

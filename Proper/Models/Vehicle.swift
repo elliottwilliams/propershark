@@ -9,7 +9,6 @@
 import Foundation
 import Argo
 import Curry
-import Runes
 
 struct Vehicle: Model {
     typealias Identifier = String
