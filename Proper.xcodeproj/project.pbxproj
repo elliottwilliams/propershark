@@ -77,6 +77,7 @@
 		26E038581D8DE9ED0006B265 /* MDWamp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038521D8DE9ED0006B265 /* MDWamp.framework */; };
 		26E038591D8DE9ED0006B265 /* ReactiveCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038531D8DE9ED0006B265 /* ReactiveCocoa.framework */; };
 		26E0385A1D8DE9ED0006B265 /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038541D8DE9ED0006B265 /* Result.framework */; };
+		26E038821D8F94030006B265 /* Colours.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E038811D8F94030006B265 /* Colours.swift */; };
 		26E3E2CF1D3C7DF90018EF3F /* ProperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E3E2CE1D3C7DF90018EF3F /* ProperViewController.swift */; };
 		26E3E2D01D3C810B0018EF3F /* StationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424B51BD2C1320035754F /* StationViewController.swift */; };
 		26E964F41D56382300F83797 /* MutableStationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964F31D56382300F83797 /* MutableStationTests.swift */; };
@@ -184,6 +185,7 @@
 		26E038521D8DE9ED0006B265 /* MDWamp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MDWamp.framework; path = Carthage/Build/iOS/MDWamp.framework; sourceTree = "<group>"; };
 		26E038531D8DE9ED0006B265 /* ReactiveCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReactiveCocoa.framework; path = Carthage/Build/iOS/ReactiveCocoa.framework; sourceTree = "<group>"; };
 		26E038541D8DE9ED0006B265 /* Result.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Result.framework; path = Carthage/Build/iOS/Result.framework; sourceTree = "<group>"; };
+		26E038811D8F94030006B265 /* Colours.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Colours.swift; path = Colours/Colours.swift; sourceTree = SOURCE_ROOT; };
 		26E3E2CE1D3C7DF90018EF3F /* ProperViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProperViewController.swift; sourceTree = "<group>"; };
 		26E964F31D56382300F83797 /* MutableStationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableStationTests.swift; sourceTree = "<group>"; };
 		26E964F51D56386000F83797 /* MutableRouteTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableRouteTests.swift; sourceTree = "<group>"; };
@@ -347,6 +349,7 @@
 				26A424C71BD2C1320035754F /* ProperTests */,
 				26A424D21BD2C1320035754F /* ProperUITests */,
 				26A424B11BD2C1320035754F /* Products */,
+				26E038831D8F940F0006B265 /* Includes */,
 				E4C42E7C67138C2FBA725195 /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -440,6 +443,14 @@
 				26AE68231D62BDF90031E534 /* RouteStop.swift */,
 			);
 			name = Support;
+			sourceTree = "<group>";
+		};
+		26E038831D8F940F0006B265 /* Includes */ = {
+			isa = PBXGroup;
+			children = (
+				26E038811D8F94030006B265 /* Colours.swift */,
+			);
+			name = Includes;
 			sourceTree = "<group>";
 		};
 		26E964FB1D58DFBC00F83797 /* Specs */ = {
@@ -730,6 +741,7 @@
 				26AE68201D622CCD0031E534 /* CanonicalRoute.swift in Sources */,
 				26A4B7B11D32CEC800264F0D /* MutableRoute.swift in Sources */,
 				26AE681E1D612B810031E534 /* RouteTableViewController.swift in Sources */,
+				26E038821D8F94030006B265 /* Colours.swift in Sources */,
 				26A424E51BD2D3F20035754F /* ArrivalTableViewCell.swift in Sources */,
 				26D3E22B1D28E25200F85712 /* Vehicle.swift in Sources */,
 				26AE681C1D601D0B0031E534 /* RouteViewController.swift in Sources */,

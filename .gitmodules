@@ -28,3 +28,6 @@
 [submodule "Carthage/Checkouts/MDWamp"]
 	path = Carthage/Checkouts/MDWamp
 	url = https://github.com/elliottwilliams/MDWamp.git
+[submodule "Colours"]
+	path = Colours
+	url = https://github.com/bennyguitar/Colours.git
