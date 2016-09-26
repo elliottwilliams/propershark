@@ -30,6 +30,8 @@
 		267019581C3F5BB50057FD11 /* RailVehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267019571C3F5BB50057FD11 /* RailVehicle.swift */; };
 		2675254F1D66638C00F6C33F /* RouteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2675254E1D66638C00F6C33F /* RouteTableViewCell.swift */; };
 		267525521D6D3B4F00F6C33F /* Decoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267525511D6D3B4F00F6C33F /* Decoded.swift */; };
+		2675E0B61D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2675E0B51D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift */; };
+		2675E0B81D96101E00C2FB32 /* RoutesCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2675E0B71D96101E00C2FB32 /* RoutesCollectionViewModel.swift */; };
 		268632811C319B0D00839A22 /* SceneMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268632801C319B0D00839A22 /* SceneMediator.swift */; };
 		268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72261BF9938800E981D4 /* TransitLabel.swift */; };
 		268E72291BF9938800E981D4 /* TransitNavigationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72271BF9938800E981D4 /* TransitNavigationItem.swift */; };
@@ -82,6 +84,7 @@
 		26E038891D8F95E30006B265 /* GHODictionary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038851D8F95E20006B265 /* GHODictionary.framework */; };
 		26E0388A1D8F95E30006B265 /* MPMessagePack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038861D8F95E20006B265 /* MPMessagePack.framework */; };
 		26E0388B1D8F95E30006B265 /* SocketRocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038871D8F95E30006B265 /* SocketRocket.framework */; };
+		26E0388D1D94C0140006B265 /* RoutesCollectionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26E0388C1D94C0140006B265 /* RoutesCollectionView.xib */; };
 		26E3E2CF1D3C7DF90018EF3F /* ProperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E3E2CE1D3C7DF90018EF3F /* ProperViewController.swift */; };
 		26E3E2D01D3C810B0018EF3F /* StationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424B51BD2C1320035754F /* StationViewController.swift */; };
 		26E964F41D56382300F83797 /* MutableStationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964F31D56382300F83797 /* MutableStationTests.swift */; };
@@ -135,6 +138,8 @@
 		267019571C3F5BB50057FD11 /* RailVehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RailVehicle.swift; sourceTree = "<group>"; };
 		2675254E1D66638C00F6C33F /* RouteTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableViewCell.swift; sourceTree = "<group>"; };
 		267525511D6D3B4F00F6C33F /* Decoded.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Decoded.swift; sourceTree = "<group>"; };
+		2675E0B51D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrivalTableRouteCollectionCell.swift; sourceTree = "<group>"; };
+		2675E0B71D96101E00C2FB32 /* RoutesCollectionViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RoutesCollectionViewModel.swift; path = "Proper/View Models/RoutesCollectionViewModel.swift"; sourceTree = "<group>"; };
 		268632801C319B0D00839A22 /* SceneMediator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SceneMediator.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		268E72261BF9938800E981D4 /* TransitLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabel.swift; sourceTree = "<group>"; };
 		268E72271BF9938800E981D4 /* TransitNavigationItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitNavigationItem.swift; sourceTree = "<group>"; };
@@ -194,6 +199,7 @@
 		26E038851D8F95E20006B265 /* GHODictionary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GHODictionary.framework; path = Carthage/Build/iOS/GHODictionary.framework; sourceTree = "<group>"; };
 		26E038861D8F95E20006B265 /* MPMessagePack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MPMessagePack.framework; path = Carthage/Build/iOS/MPMessagePack.framework; sourceTree = "<group>"; };
 		26E038871D8F95E30006B265 /* SocketRocket.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SocketRocket.framework; path = Carthage/Build/iOS/SocketRocket.framework; sourceTree = "<group>"; };
+		26E0388C1D94C0140006B265 /* RoutesCollectionView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RoutesCollectionView.xib; sourceTree = "<group>"; };
 		26E3E2CE1D3C7DF90018EF3F /* ProperViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProperViewController.swift; sourceTree = "<group>"; };
 		26E964F31D56382300F83797 /* MutableStationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableStationTests.swift; sourceTree = "<group>"; };
 		26E964F51D56386000F83797 /* MutableRouteTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableRouteTests.swift; sourceTree = "<group>"; };
@@ -264,6 +270,7 @@
 			isa = PBXGroup;
 			children = (
 				26A424E31BD2D3F20035754F /* ArrivalTableViewCell.swift */,
+				2675E0B51D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift */,
 				267019571C3F5BB50057FD11 /* RailVehicle.swift */,
 				26C598BB1C250D1E00BC9FE1 /* RouteBadge.swift */,
 				261DD1621C3424E1001336D4 /* RouteBadgeLabel.swift */,
@@ -295,6 +302,7 @@
 		264782641C309FAB009D9AD0 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				26E0388C1D94C0140006B265 /* RoutesCollectionView.xib */,
 				26DFB67B1C35DFA5006A8AE0 /* RouteTableViewCell.xib */,
 				26A424E41BD2D3F20035754F /* ArrivalTableViewCell.xib */,
 				26A424BC1BD2C1320035754F /* LaunchScreen.storyboard */,
@@ -353,6 +361,7 @@
 		26A424A71BD2C1320035754F = {
 			isa = PBXGroup;
 			children = (
+				2675E0B71D96101E00C2FB32 /* RoutesCollectionViewModel.swift */,
 				2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */,
 				26AC8BB51BD3503300AA0001 /* QuartzCore.framework */,
 				26AC8BB11BD345F100AA0001 /* Media.xcassets */,
@@ -611,6 +620,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				26AC8BB21BD345F100AA0001 /* Media.xcassets in Resources */,
+				26E0388D1D94C0140006B265 /* RoutesCollectionView.xib in Resources */,
 				26A424BE1BD2C1320035754F /* LaunchScreen.storyboard in Resources */,
 				26A424BB1BD2C1320035754F /* Assets.xcassets in Resources */,
 				26A424E61BD2D3F20035754F /* ArrivalTableViewCell.xib in Resources */,
@@ -775,6 +785,7 @@
 				26D3E2241D28E07100F85712 /* Model.swift in Sources */,
 				2635DB721C3CBF4700EB58F5 /* RouteTableView.swift in Sources */,
 				266BAE651D2B676F001C9EC8 /* UIColor.swift in Sources */,
+				2675E0B61D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift in Sources */,
 				26C598BC1C250D1E00BC9FE1 /* RouteBadge.swift in Sources */,
 				26B3DC561D170BAE001E29AA /* Connection.swift in Sources */,
 				2650EDA01C41CFCC006CCD42 /* Array.swift in Sources */,
@@ -784,6 +795,7 @@
 				26D3E2291D28E24B00F85712 /* Station.swift in Sources */,
 				268E72291BF9938800E981D4 /* TransitNavigationItem.swift in Sources */,
 				26A424B41BD2C1320035754F /* AppDelegate.swift in Sources */,
+				2675E0B81D96101E00C2FB32 /* RoutesCollectionViewModel.swift in Sources */,
 				26AE68241D62BDF90031E534 /* RouteStop.swift in Sources */,
 				26DBCF491D3FF59A00B22562 /* EventLog.swift in Sources */,
 				2650D28E1D176B65003758BF /* Configuration.swift in Sources */,

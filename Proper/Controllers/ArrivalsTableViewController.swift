@@ -22,6 +22,9 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
     internal var disposable = CompositeDisposable()
     internal var routeDisposables = [MutableRoute: Disposable]()
 
+    internal weak var routesCollectionView: UICollectionView?
+    internal var routesCollectionModel: RoutesCollectionViewModel!
+
     // MARK: Signalled properties
     lazy var vehicles: AnyProperty<Set<MutableVehicle>> = {
         // Given a signal emitting the list of MutableRoutes for this station...
@@ -63,10 +66,11 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
     override func viewDidLoad() {
         // Initialize the diff calculator for the table, which starts using any routes already on `station`.
-        self.diffCalculator = TableViewDiffCalculator(tableView: self.tableView, initialRows: vehicles.value.sort())
+        diffCalculator = TableViewDiffCalculator(tableView: self.tableView, initialRows: vehicles.value.sort())
+        diffCalculator.sectionIndex = 1
 
-        // Use our table cell UI. If the nib specified doesn't exist, `tableView(_:cellForRowAtIndexPath:)` will crash.
-        self.tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil), forCellReuseIdentifier: "ArrivalTableViewCell")
+        // Create a controller to manage the routes collection view within the table.
+        routesCollectionModel = RoutesCollectionViewModel(routes: AnyProperty(station.routes))
     }
 
     override func viewDidAppear(animated: Bool) {
@@ -99,15 +103,9 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
         super.viewWillDisappear(animated)
     }
 
-
-    // MARK: Delegate Methods
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int { return 1 }
-    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? { return "Arrivals" }
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int { return diffCalculator.rows.count }
-
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        // ArrivalTableViewCell comes from the xib, and is registered upon the creation of this table
-        let cell = tableView.dequeueReusableCellWithIdentifier("PrototypeCell", forIndexPath: indexPath) as! ArrivalTableViewCell
+    // Bind vehicle attributes to a given cell
+    func arrivalCell(for indexPath: NSIndexPath) -> ArrivalTableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("Arrival", forIndexPath: indexPath) as! ArrivalTableViewCell
         let vehicle = diffCalculator.rows[indexPath.row]
 
         // Bind vehicle attributes
@@ -129,6 +127,54 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
         }
 
         return cell
+    }
+
+    // Get a cell for displaying the routes collection, and connect it to the routes collection controller instantiated
+    // at start. Since there is only one routes collection cell (its `numbersOfRows` call always returns 1), the
+    // assignment onto `routesCollection` won't overwrite some other cell.
+    func routesCollectionCell(for indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("RoutesCollection", forIndexPath: indexPath) as! ArrivalTableRouteCollectionCell
+        cell.bind(routesCollectionModel)
+        // Store a weak reference to the cell's collection view so that we can examine its state without needing a
+        // a reference to this particular table view cell.
+        routesCollectionView = cell.collectionView
+        return cell
+    }
+
+    // MARK: Table View Delegate Methods
+    override func numberOfSectionsInTableView(tableView: UITableView) -> Int { return 2 }
+    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return ["Routes Served", "Arrivals"][section]
+    }
+    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return [1, diffCalculator.rows.count][section]
+    }
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        // The routes collection cell has a custom height, while other cells go off of the table view's default. 
+        return [70, tableView.rowHeight][indexPath.section]
+    }
+
+    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        switch indexPath.section {
+        case 0:
+            return routesCollectionCell(for: indexPath)
+        case 1:
+            return arrivalCell(for: indexPath)
+        default:
+            fatalError("Bad ArrivalsTable section number (\(indexPath.section))")
+        }
+    }
+
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        switch segue.identifier ?? "" {
+        case "showRoute":
+            let dest = segue.destinationViewController as! RouteViewController
+            let index = routesCollectionView!.indexPathsForSelectedItems()!.first!
+            let route = routesCollectionModel.routes.value[index.row]
+            dest.route = route
+        default:
+            return
+        }
     }
 }
 
