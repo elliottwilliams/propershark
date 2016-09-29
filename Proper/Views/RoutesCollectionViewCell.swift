@@ -16,8 +16,6 @@ class RoutesCollectionViewCell: UICollectionViewCell {
     override func awakeFromNib() {
         badge.frame = self.bounds
         setNeedsLayout()
-        NSLog("RoutesCollectionViewCell  bounds: \(self.bounds)")
-        NSLog("  Badge: bounds: \(badge.bounds)")
     }
 
     override func prepareForReuse() {

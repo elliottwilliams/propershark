@@ -110,7 +110,7 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
         // Bind vehicle attributes
         cell.vehicleName.text = "(Bus #\(vehicle.name))"
-        vehicle.saturation.map { cell.badge.capacity = $0 ?? 1 }
+        vehicle.saturation.producer.ignoreNil().startWithNext { cell.badge.capacity = CGFloat($0) }
         vehicle.scheduleDelta.map { cell.routeTimer.text = "∆\($0) min" }
 
         guard let route = vehicle.route.value else {

@@ -25,12 +25,27 @@ class RoutesCollectionViewModel: NSObject, UICollectionViewDataSource, UICollect
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("BadgeCell", forIndexPath: indexPath) as! RoutesCollectionViewCell
         let route = routes.value[indexPath.row]
 
+        // Disable animations on the badge for any attributes that are going to be applied synchronously.
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+
         // Bind to route attributes.
         cell.disposable += route.color.producer.startWithNext { color in
             _ = color.flatMap { cell.badge.color = $0 }
         }
         cell.badge.routeNumber = route.shortName
 
+        CATransaction.commit()
         return cell
+    }
+
+    func collectionView(collectionView: UICollectionView, didHighlightItemAtIndexPath indexPath: NSIndexPath) {
+        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! RoutesCollectionViewCell?
+        cell?.badge.highlighted = true
+    }
+
+    func collectionView(collectionView: UICollectionView, didUnhighlightItemAtIndexPath indexPath: NSIndexPath) {
+        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! RoutesCollectionViewCell?
+        cell?.badge.highlighted = false
     }
 }

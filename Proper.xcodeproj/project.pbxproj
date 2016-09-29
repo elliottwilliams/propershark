@@ -32,11 +32,11 @@
 		267525521D6D3B4F00F6C33F /* Decoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267525511D6D3B4F00F6C33F /* Decoded.swift */; };
 		2675E0B61D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2675E0B51D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift */; };
 		2675E0B81D96101E00C2FB32 /* RoutesCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2675E0B71D96101E00C2FB32 /* RoutesCollectionViewModel.swift */; };
+		2675E0BC1D98BFCA00C2FB32 /* RouteBadge.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2675E0BB1D98BFCA00C2FB32 /* RouteBadge.xib */; };
 		268632811C319B0D00839A22 /* SceneMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268632801C319B0D00839A22 /* SceneMediator.swift */; };
 		268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72261BF9938800E981D4 /* TransitLabel.swift */; };
 		268E72291BF9938800E981D4 /* TransitNavigationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72271BF9938800E981D4 /* TransitNavigationItem.swift */; };
 		2698CF011D8B8FC400E6174A /* RoutesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2698CF001D8B8FC400E6174A /* RoutesCollectionViewCell.swift */; };
-		2698CF031D8B904C00E6174A /* RoutesCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2698CF021D8B904C00E6174A /* RoutesCollectionViewController.swift */; };
 		26A424B41BD2C1320035754F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424B31BD2C1320035754F /* AppDelegate.swift */; };
 		26A424B91BD2C1320035754F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 26A424B71BD2C1320035754F /* Main.storyboard */; };
 		26A424BB1BD2C1320035754F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26A424BA1BD2C1320035754F /* Assets.xcassets */; };
@@ -140,11 +140,11 @@
 		267525511D6D3B4F00F6C33F /* Decoded.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Decoded.swift; sourceTree = "<group>"; };
 		2675E0B51D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrivalTableRouteCollectionCell.swift; sourceTree = "<group>"; };
 		2675E0B71D96101E00C2FB32 /* RoutesCollectionViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RoutesCollectionViewModel.swift; path = "Proper/View Models/RoutesCollectionViewModel.swift"; sourceTree = "<group>"; };
+		2675E0BB1D98BFCA00C2FB32 /* RouteBadge.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RouteBadge.xib; sourceTree = "<group>"; };
 		268632801C319B0D00839A22 /* SceneMediator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SceneMediator.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		268E72261BF9938800E981D4 /* TransitLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabel.swift; sourceTree = "<group>"; };
 		268E72271BF9938800E981D4 /* TransitNavigationItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitNavigationItem.swift; sourceTree = "<group>"; };
 		2698CF001D8B8FC400E6174A /* RoutesCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoutesCollectionViewCell.swift; sourceTree = "<group>"; };
-		2698CF021D8B904C00E6174A /* RoutesCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoutesCollectionViewController.swift; sourceTree = "<group>"; };
 		26A424B01BD2C1320035754F /* Proper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Proper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		26A424B31BD2C1320035754F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AppDelegate.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26A424B51BD2C1320035754F /* StationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = StationViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -293,7 +293,6 @@
 				264782551C2C6F67009D9AD0 /* StartListViewController.swift */,
 				26A8D6011D484944000434F9 /* ArrivalsTableViewController.swift */,
 				26AE681B1D601D0B0031E534 /* RouteViewController.swift */,
-				2698CF021D8B904C00E6174A /* RoutesCollectionViewController.swift */,
 				26AE681D1D612B810031E534 /* RouteTableViewController.swift */,
 			);
 			path = Controllers;
@@ -302,6 +301,7 @@
 		264782641C309FAB009D9AD0 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				2675E0BB1D98BFCA00C2FB32 /* RouteBadge.xib */,
 				26E0388C1D94C0140006B265 /* RoutesCollectionView.xib */,
 				26DFB67B1C35DFA5006A8AE0 /* RouteTableViewCell.xib */,
 				26A424E41BD2D3F20035754F /* ArrivalTableViewCell.xib */,
@@ -620,6 +620,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				26AC8BB21BD345F100AA0001 /* Media.xcassets in Resources */,
+				2675E0BC1D98BFCA00C2FB32 /* RouteBadge.xib in Resources */,
 				26E0388D1D94C0140006B265 /* RoutesCollectionView.xib in Resources */,
 				26A424BE1BD2C1320035754F /* LaunchScreen.storyboard in Resources */,
 				26A424BB1BD2C1320035754F /* Assets.xcassets in Resources */,
@@ -765,7 +766,6 @@
 				266BAE661D2B7159001C9EC8 /* StartListViewController.swift in Sources */,
 				267525521D6D3B4F00F6C33F /* Decoded.swift in Sources */,
 				2698CF011D8B8FC400E6174A /* RoutesCollectionViewCell.swift in Sources */,
-				2698CF031D8B904C00E6174A /* RoutesCollectionViewController.swift in Sources */,
 				26D3E2221D28DFE800F85712 /* Route.swift in Sources */,
 				26A4B7AF1D32251100264F0D /* MutableStation.swift in Sources */,
 				26AE68201D622CCD0031E534 /* CanonicalRoute.swift in Sources */,
