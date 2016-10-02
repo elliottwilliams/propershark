@@ -15,7 +15,8 @@ class RouteViewController: UIViewController, ProperViewController, MutableModelD
 
     // MARK: UI references
     @IBOutlet weak var badge: RouteBadge!
-    @IBOutlet weak var nav: UINavigationItem!
+    @IBOutlet weak var infoContainer: UIView!
+    @IBOutlet weak var navItem: TransitNavigationItem!
 
     // MARK: Internal properties
     internal var connection: ConnectionType = Connection.sharedInstance
@@ -24,15 +25,38 @@ class RouteViewController: UIViewController, ProperViewController, MutableModelD
     // MARK: Methods
     override func viewDidLoad() {
         // Bind route data
-        disposable += route.producer.startWithFailed(self.displayError)
         badge.routeNumber = route.shortName
-        route.color.map { self.badge.color = $0 ?? Config.ui.defaultBadgeColor }
-        route.name.map { self.nav.title = $0 }
+        disposable += route.producer.startWithFailed(self.displayError)
+        disposable += route.color.producer.ignoreNil().startWithNext { color in
+            let contrasting = color.blackOrWhiteContrastingColor()
+            self.badge.color = color
+            self.badge.strokeColor = contrasting
+
+            // Store the current navigation bar style and adjust color to match route color.
+            self.colorNavigationBar(color)
+            self.infoContainer.backgroundColor = color
+        }
+        disposable += route.name.producer.ignoreNil().startWithNext { name in
+            self.navItem.title = name
+        }
 
         // Configure the route badge
         badge.outerStrokeGap = 5.0
-        badge.outerStrokeWidth = 5.0
-        badge.capacity = 0.0
+        badge.outerStrokeWidth = 1.0
+    }
+
+    func colorNavigationBar(color: UIColor) {
+        let contrasting = color.blackOrWhiteContrastingColor()
+        navigationController?.navigationBar.tintColor = contrasting
+        navigationController?.navigationBar.barTintColor = color
+        navigationController?.navigationBar.shadowImage = nil
+        navigationController?.navigationBar.barStyle = contrasting == UIColor.whiteColor() ? .Black : .Default
+    }
+
+    override func viewWillAppear(animated: Bool) {
+        if let color = route.color.value {
+            colorNavigationBar(color)
+        }
     }
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

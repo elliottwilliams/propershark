@@ -33,4 +33,15 @@ extension ProperViewController where Self: UIViewController {
         self.presentViewController(alert, animated: true, completion: nil)
         NSLog("[ProperViewController.displayError] \(error)")
     }
+
+    func resetNavigationBar() {
+        let reference = UINavigationBar()
+        guard let bar = self.navigationController?.navigationBar else {
+            return
+        }
+        bar.tintColor = reference.tintColor
+        bar.barTintColor = reference.barTintColor
+        bar.shadowImage = reference.shadowImage
+        bar.barStyle = reference.barStyle
+    }
 }

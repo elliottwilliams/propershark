@@ -84,6 +84,7 @@ class StartListViewController: UITableViewController, ProperViewController {
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        resetNavigationBar()
 
         // Start signals to populate the list
         self.routeSignal.start()
