@@ -10,6 +10,7 @@ import Foundation
 import Argo
 import Curry
 import CoreLocation
+import MapKit
 
 struct Point: Equatable {
     let lat: Double
@@ -56,5 +57,11 @@ extension CLLocation {
 extension CLLocationCoordinate2D {
     init(point: Point) {
         self.init(latitude: point.lat, longitude: point.long)
+    }
+}
+
+extension MKMapPoint {
+    init(point: Point) {
+        self.init(x: point.lat, y: point.long)
     }
 }

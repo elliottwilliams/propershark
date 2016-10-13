@@ -84,6 +84,7 @@
 		26E0388B1D8F95E30006B265 /* SocketRocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038871D8F95E30006B265 /* SocketRocket.framework */; };
 		26E3E2CF1D3C7DF90018EF3F /* ProperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E3E2CE1D3C7DF90018EF3F /* ProperViewController.swift */; };
 		26E3E2D01D3C810B0018EF3F /* StationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424B51BD2C1320035754F /* StationViewController.swift */; };
+		26E7B5451DAFC0AD00AE50E1 /* POIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E7B5441DAFC0AD00AE50E1 /* POIViewController.swift */; };
 		26E964F41D56382300F83797 /* MutableStationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964F31D56382300F83797 /* MutableStationTests.swift */; };
 		26E964F61D56386000F83797 /* MutableRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964F51D56386000F83797 /* MutableRouteTests.swift */; };
 		26E964F81D56388800F83797 /* MutableVehicleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964F71D56388800F83797 /* MutableVehicleTests.swift */; };
@@ -95,6 +96,7 @@
 		26ED26F11E117969007FB0F8 /* StationUpcomingTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26ED26F01E117969007FB0F8 /* StationUpcomingTableViewCell.xib */; };
 		26ED26F31E117988007FB0F8 /* StationUpcomingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ED26F21E117988007FB0F8 /* StationUpcomingTableViewCell.swift */; };
 		26ED26F51E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26ED26F41E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib */; };
+		26FF24871DAFC83E002A4141 /* NearbyStationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FF24861DAFC83E002A4141 /* NearbyStationsViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -140,7 +142,11 @@
 		2675254E1D66638C00F6C33F /* StationTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StationTableViewCell.swift; sourceTree = "<group>"; };
 		267525511D6D3B4F00F6C33F /* Decoded.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Decoded.swift; sourceTree = "<group>"; };
 		2675E0B51D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrivalTableRouteCollectionCell.swift; sourceTree = "<group>"; };
+<<<<<<< HEAD
 		2675E0B71D96101E00C2FB32 /* RoutesCollectionViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RoutesCollectionViewModel.swift; path = "View Models/RoutesCollectionViewModel.swift"; sourceTree = "<group>"; };
+=======
+		2675E0B71D96101E00C2FB32 /* RoutesCollectionViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoutesCollectionViewModel.swift; sourceTree = "<group>"; };
+>>>>>>> 435e81f... [WIP] Created POIViewController and its backing data store, NearbyStationsViewModel
 		2675E0BB1D98BFCA00C2FB32 /* RouteBadge.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RouteBadge.xib; sourceTree = "<group>"; };
 		268E72261BF9938800E981D4 /* TransitLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabel.swift; sourceTree = "<group>"; };
 		268E72271BF9938800E981D4 /* TransitNavigationItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitNavigationItem.swift; sourceTree = "<group>"; };
@@ -200,17 +206,22 @@
 		26E038861D8F95E20006B265 /* MPMessagePack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MPMessagePack.framework; path = Carthage/Build/iOS/MPMessagePack.framework; sourceTree = "<group>"; };
 		26E038871D8F95E30006B265 /* SocketRocket.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SocketRocket.framework; path = Carthage/Build/iOS/SocketRocket.framework; sourceTree = "<group>"; };
 		26E3E2CE1D3C7DF90018EF3F /* ProperViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProperViewController.swift; sourceTree = "<group>"; };
+		26E7B5441DAFC0AD00AE50E1 /* POIViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = POIViewController.swift; sourceTree = "<group>"; };
 		26E964F31D56382300F83797 /* MutableStationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableStationTests.swift; sourceTree = "<group>"; };
 		26E964F51D56386000F83797 /* MutableRouteTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableRouteTests.swift; sourceTree = "<group>"; };
 		26E964F71D56388800F83797 /* MutableVehicleTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableVehicleTests.swift; sourceTree = "<group>"; };
 		26E964F91D56396F00F83797 /* MutableModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableModelTests.swift; sourceTree = "<group>"; };
 		26E964FC1D58E00600F83797 /* MutableModelDelegateMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableModelDelegateMock.swift; sourceTree = "<group>"; };
 		26EBAB381D7B12DC00342D0C /* LastEventCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LastEventCache.swift; sourceTree = "<group>"; };
+<<<<<<< HEAD
 		26ED26EC1E11763C007FB0F8 /* CachedConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CachedConnection.swift; sourceTree = "<group>"; };
 		26ED26ED1E11763C007FB0F8 /* ConnectionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionType.swift; sourceTree = "<group>"; };
 		26ED26F01E117969007FB0F8 /* StationUpcomingTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StationUpcomingTableViewCell.xib; sourceTree = "<group>"; };
 		26ED26F21E117988007FB0F8 /* StationUpcomingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StationUpcomingTableViewCell.swift; sourceTree = "<group>"; };
 		26ED26F41E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RoutesCollectionBadgeCell.xib; sourceTree = "<group>"; };
+=======
+		26FF24861DAFC83E002A4141 /* NearbyStationsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NearbyStationsViewModel.swift; sourceTree = "<group>"; };
+>>>>>>> 435e81f... [WIP] Created POIViewController and its backing data store, NearbyStationsViewModel
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -292,6 +303,7 @@
 		264782621C309F7A009D9AD0 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				26E7B5441DAFC0AD00AE50E1 /* POIViewController.swift */,
 				2612B5251D4EDB0500BF671D /* Disabled */,
 				26A424B51BD2C1320035754F /* StationViewController.swift */,
 				264782551C2C6F67009D9AD0 /* StartListViewController.swift */,
@@ -399,7 +411,11 @@
 				26A424BF1BD2C1320035754F /* Info.plist */,
 				26D3E2201D28DF9900F85712 /* Models */,
 				264782641C309FAB009D9AD0 /* UI */,
+<<<<<<< HEAD
 				26ED26F61E132157007FB0F8 /* View Models */,
+=======
+				26FF24851DAFC801002A4141 /* View Models */,
+>>>>>>> 435e81f... [WIP] Created POIViewController and its backing data store, NearbyStationsViewModel
 				264782611C309F4C009D9AD0 /* Views */,
 			);
 			path = Proper;
@@ -488,12 +504,22 @@
 			path = Specs;
 			sourceTree = "<group>";
 		};
+<<<<<<< HEAD
 		26ED26F61E132157007FB0F8 /* View Models */ = {
 			isa = PBXGroup;
 			children = (
 				2675E0B71D96101E00C2FB32 /* RoutesCollectionViewModel.swift */,
 			);
 			name = "View Models";
+=======
+		26FF24851DAFC801002A4141 /* View Models */ = {
+			isa = PBXGroup;
+			children = (
+				2675E0B71D96101E00C2FB32 /* RoutesCollectionViewModel.swift */,
+				26FF24861DAFC83E002A4141 /* NearbyStationsViewModel.swift */,
+			);
+			path = "View Models";
+>>>>>>> 435e81f... [WIP] Created POIViewController and its backing data store, NearbyStationsViewModel
 			sourceTree = "<group>";
 		};
 		E4C42E7C67138C2FBA725195 /* Frameworks */ = {
@@ -702,6 +728,7 @@
 				266BAE661D2B7159001C9EC8 /* StartListViewController.swift in Sources */,
 				267525521D6D3B4F00F6C33F /* Decoded.swift in Sources */,
 				2698CF011D8B8FC400E6174A /* RoutesCollectionViewCell.swift in Sources */,
+				26FF24871DAFC83E002A4141 /* NearbyStationsViewModel.swift in Sources */,
 				26D3E2221D28DFE800F85712 /* Route.swift in Sources */,
 				26A4B7AF1D32251100264F0D /* MutableStation.swift in Sources */,
 				26AE68201D622CCD0031E534 /* CanonicalRoute.swift in Sources */,
@@ -722,6 +749,7 @@
 				264A13C71D26157400B44D47 /* ProperError.swift in Sources */,
 				26D3E2241D28E07100F85712 /* Model.swift in Sources */,
 				266BAE651D2B676F001C9EC8 /* UIColor.swift in Sources */,
+				26E7B5451DAFC0AD00AE50E1 /* POIViewController.swift in Sources */,
 				2675E0B61D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift in Sources */,
 				26C598BC1C250D1E00BC9FE1 /* RouteBadge.swift in Sources */,
 				26B3DC561D170BAE001E29AA /* Connection.swift in Sources */,
