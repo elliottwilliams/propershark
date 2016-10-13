@@ -34,11 +34,17 @@ extension ProperViewController where Self: UIViewController {
         NSLog("[ProperViewController.displayError] \(error)")
     }
 
-    func resetNavigationBar() {
-        let reference = UINavigationBar()
+    func resetParentNavigationBar() {
         guard let bar = self.navigationController?.navigationBar else {
             return
         }
+        Self.resetNavigationBar(bar)
+    }
+}
+
+extension ProperViewController {
+    static func resetNavigationBar(bar: UINavigationBar) {
+        let reference = UINavigationBar()
         bar.tintColor = reference.tintColor
         bar.barTintColor = reference.barTintColor
         bar.shadowImage = reference.shadowImage

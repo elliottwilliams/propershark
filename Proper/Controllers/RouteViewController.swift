@@ -45,18 +45,35 @@ class RouteViewController: UIViewController, ProperViewController, MutableModelD
         badge.outerStrokeWidth = 1.0
     }
 
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        if let color = route.color.value {
+            colorNavigationBar(color)
+        }
+    }
+
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        // After transitioning, reset the navigation bar to its default style.
+        transitionCoordinator()?.animateAlongsideTransition(nil, completion: { context in
+            UIView.animateWithDuration(animated ? 0.2 : 0.0) {
+                let vc = context.viewControllerForKey(UITransitionContextToViewControllerKey)
+                if let bar = vc?.navigationController?.navigationBar {
+                    RouteViewController.resetNavigationBar(bar)
+                    bar.layoutIfNeeded()
+                }
+            }
+        })
+
+    }
+
     func colorNavigationBar(color: UIColor) {
         let contrasting = color.blackOrWhiteContrastingColor()
         navigationController?.navigationBar.tintColor = contrasting
         navigationController?.navigationBar.barTintColor = color
         navigationController?.navigationBar.shadowImage = nil
         navigationController?.navigationBar.barStyle = contrasting == UIColor.whiteColor() ? .Black : .Default
-    }
-
-    override func viewWillAppear(animated: Bool) {
-        if let color = route.color.value {
-            colorNavigationBar(color)
-        }
     }
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
