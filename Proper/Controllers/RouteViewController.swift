@@ -24,9 +24,14 @@ class RouteViewController: UIViewController, ProperViewController, MutableModelD
 
     // MARK: Methods
     override func viewDidLoad() {
-        // Bind route data
+        // Configure the route badge.
+        badge.outerStrokeGap = 5.0
+        badge.outerStrokeWidth = 1.0
+    }
+
+    override func viewWillAppear(animated: Bool) {
+        // Bind route data.
         badge.routeNumber = route.shortName
-        disposable += route.producer.startWithFailed(self.displayError)
         disposable += route.color.producer.ignoreNil().startWithNext { color in
             let contrasting = color.blackOrWhiteContrastingColor()
             self.badge.color = color
@@ -40,9 +45,10 @@ class RouteViewController: UIViewController, ProperViewController, MutableModelD
             self.navItem.title = name
         }
 
-        // Configure the route badge
-        badge.outerStrokeGap = 5.0
-        badge.outerStrokeWidth = 1.0
+        // Begin requesting route data.
+        disposable += route.producer.startWithFailed(self.displayError)
+
+        super.viewWillAppear(animated)
     }
 
     override func viewDidAppear(animated: Bool) {
@@ -65,7 +71,11 @@ class RouteViewController: UIViewController, ProperViewController, MutableModelD
                 }
             }
         })
+    }
 
+    override func viewDidDisappear(animated: Bool) {
+        disposable.dispose()
+        super.viewDidDisappear(animated)
     }
 
     func colorNavigationBar(color: UIColor) {
