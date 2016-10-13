@@ -176,7 +176,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" bounces="NO" alwaysBounceHorizontal="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="FVK-IK-1bX">
-                                            <frame key="frameInset" minX="-1" minY="-2" maxX="1" maxY="0.5"/>
+                                            <frame key="frameInset" minX="-2" maxX="3"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
                                             <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Rg4-c7-kxS">
@@ -187,7 +187,7 @@
                                             </collectionViewFlowLayout>
                                             <cells>
                                                 <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="BadgeCell" id="jyn-5b-bxh" customClass="RoutesCollectionViewCell" customModule="Proper" customModuleProvider="target">
-                                                    <rect key="frame" x="10" y="10.5" width="50" height="50"/>
+                                                    <rect key="frame" x="10" y="9.5" width="50" height="50"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                                         <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
@@ -505,6 +505,11 @@
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="29b-hJ-7Nz">
                                 <subviews>
+                                    <navigationBar contentMode="scaleToFill" verticalCompressionResistancePriority="1000" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sgb-Dh-Sw7">
+                                        <connections>
+                                            <outlet property="delegate" destination="k24-c9-Z01" id="TSs-ys-EOC"/>
+                                        </connections>
+                                    </navigationBar>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vkg-7S-k3h" userLabel="Route Info Container">
                                         <subviews>
                                             <stackView opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alignment="center" spacing="60" translatesAutoresizingMaskIntoConstraints="NO" id="vZc-oy-47u" userLabel="Route Info">
@@ -558,10 +563,12 @@
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="7ch-GO-ufe" secondAttribute="trailing" id="1KP-XE-b59"/>
                                     <constraint firstAttribute="trailing" secondItem="wzf-im-AzC" secondAttribute="trailing" id="Htg-iY-DiV"/>
+                                    <constraint firstAttribute="trailing" secondItem="sgb-Dh-Sw7" secondAttribute="trailing" id="Hy9-t2-bC4"/>
                                     <constraint firstItem="wzf-im-AzC" firstAttribute="leading" secondItem="29b-hJ-7Nz" secondAttribute="leading" id="T8A-TF-1mD"/>
                                     <constraint firstItem="7ch-GO-ufe" firstAttribute="leading" secondItem="29b-hJ-7Nz" secondAttribute="leading" id="WDf-K9-dV5"/>
                                     <constraint firstAttribute="trailing" secondItem="vkg-7S-k3h" secondAttribute="trailing" id="WKz-RU-CzU"/>
                                     <constraint firstItem="vkg-7S-k3h" firstAttribute="leading" secondItem="29b-hJ-7Nz" secondAttribute="leading" id="bgc-ji-qy5"/>
+                                    <constraint firstItem="sgb-Dh-Sw7" firstAttribute="leading" secondItem="29b-hJ-7Nz" secondAttribute="leading" id="p17-TQ-Iva"/>
                                 </constraints>
                             </stackView>
                         </subviews>
@@ -573,15 +580,16 @@
                             <constraint firstItem="29b-hJ-7Nz" firstAttribute="leading" secondItem="JqB-J5-Hi0" secondAttribute="leadingMargin" constant="-20" id="QZ2-Yx-4TP"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Title" id="lFw-0E-b18" userLabel="Nav" customClass="TransitNavigationItem" customModule="Proper" customModuleProvider="target"/>
+                    <toolbarItems/>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="600" height="600"/>
                     <connections>
                         <outlet property="badge" destination="fdR-Mr-Tao" id="H65-0d-eRb"/>
                         <outlet property="infoContainer" destination="vkg-7S-k3h" id="CXE-xM-Bdf"/>
-                        <outlet property="navItem" destination="lFw-0E-b18" id="yuy-4R-CWN"/>
+                        <outlet property="navBar" destination="sgb-Dh-Sw7" id="tr8-z9-djH"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uSK-yd-Xdh" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -593,7 +601,7 @@
             <objects>
                 <tableViewController id="vAO-8U-l2g" customClass="RouteTableViewController" customModule="Proper" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="w9n-GE-zWC">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="326"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="282"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <prototypes>
@@ -631,7 +639,7 @@
                                         <rect key="frame" x="0.0" y="35" width="502" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="35N-hG-RU1" id="Rea-gS-WmW">
-                                            <frame key="frameInset" width="502" height="43.5"/>
+                                            <frame key="frameInset" width="502" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Pi8-y5-Pra">
@@ -648,7 +656,7 @@
                                         <rect key="frame" x="0.0" y="79" width="502" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="v5K-9x-Uwg" id="I5q-j2-dWo">
-                                            <frame key="frameInset" width="502" height="43.5"/>
+                                            <frame key="frameInset" width="502" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ixl-dy-YMR">
@@ -665,7 +673,7 @@
                                         <rect key="frame" x="0.0" y="123" width="502" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="YI7-PO-zuN" id="RJF-kU-7jq">
-                                            <frame key="frameInset" width="502" height="43.5"/>
+                                            <frame key="frameInset" width="502" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Bds-6f-Q5x">
