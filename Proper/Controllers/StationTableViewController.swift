@@ -27,7 +27,7 @@ class StationTableViewController: UITableViewController, ProperViewController {
     // MARK: Methods
     override func viewDidLoad() {
         diffCalculator = TableViewDiffCalculator(tableView: tableView, initialRows: stops.value)
-//        tableView.registerNib(UINib(nibName: "StationTableViewCell", bundle: nil), forCellReuseIdentifier: "StationTableViewCell")
+        tableView.registerNib(UINib(nibName: "StationTableViewCell", bundle: nil), forCellReuseIdentifier: "stationCell")
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -51,7 +51,7 @@ class StationTableViewController: UITableViewController, ProperViewController {
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int { return stops.value.count }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("PrototypeCell", forIndexPath: indexPath) as! StationTableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("stationCell", forIndexPath: indexPath) as! StationTableViewCell
         let stop = stops.value[indexPath.row]
 
         cell.disposable += stop.station.name.producer.startWithNext { cell.title.text = $0 }
