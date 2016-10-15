@@ -88,8 +88,8 @@ class RouteViewController: UIViewController, ProperViewController, MutableModelD
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         switch segue.identifier ?? "" {
-        case "embedRouteTable":
-            let table = segue.destinationViewController as! RouteTableViewController
+        case "embedStationTable":
+            let table = segue.destinationViewController as! StationTableViewController
             table.route = route
         default:
             return

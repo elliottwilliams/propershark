@@ -12,8 +12,7 @@
 		2612B52D1D50513600BF671D /* stations.BUS100W.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B52A1D50513600BF671D /* stations.BUS100W.json */; };
 		261DD1631C3424E1001336D4 /* RouteBadgeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 261DD1621C3424E1001336D4 /* RouteBadgeLabel.swift */; };
 		2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */; };
-		2635DB721C3CBF4700EB58F5 /* RouteTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB711C3CBF4700EB58F5 /* RouteTableView.swift */; };
-		2635DB781C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB771C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift */; };
+		2635DB781C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB771C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift */; };
 		264754901D551411000F0831 /* ArrivalsTableViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */; };
 		2647825E1C2F7B34009D9AD0 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */; };
 		264782601C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647825F1C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift */; };
@@ -28,12 +27,11 @@
 		266BAE661D2B7159001C9EC8 /* StartListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264782551C2C6F67009D9AD0 /* StartListViewController.swift */; };
 		266CC4D81D826FC70022D064 /* vehicles.1801.json in Resources */ = {isa = PBXBuildFile; fileRef = 266CC4D71D826FC70022D064 /* vehicles.1801.json */; };
 		267019581C3F5BB50057FD11 /* RailVehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267019571C3F5BB50057FD11 /* RailVehicle.swift */; };
-		2675254F1D66638C00F6C33F /* RouteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2675254E1D66638C00F6C33F /* RouteTableViewCell.swift */; };
+		2675254F1D66638C00F6C33F /* StationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2675254E1D66638C00F6C33F /* StationTableViewCell.swift */; };
 		267525521D6D3B4F00F6C33F /* Decoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267525511D6D3B4F00F6C33F /* Decoded.swift */; };
 		2675E0B61D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2675E0B51D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift */; };
 		2675E0B81D96101E00C2FB32 /* RoutesCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2675E0B71D96101E00C2FB32 /* RoutesCollectionViewModel.swift */; };
 		2675E0BC1D98BFCA00C2FB32 /* RouteBadge.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2675E0BB1D98BFCA00C2FB32 /* RouteBadge.xib */; };
-		268632811C319B0D00839A22 /* SceneMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268632801C319B0D00839A22 /* SceneMediator.swift */; };
 		268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72261BF9938800E981D4 /* TransitLabel.swift */; };
 		268E72291BF9938800E981D4 /* TransitNavigationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72271BF9938800E981D4 /* TransitNavigationItem.swift */; };
 		2698CF011D8B8FC400E6174A /* RoutesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2698CF001D8B8FC400E6174A /* RoutesCollectionViewCell.swift */; };
@@ -51,7 +49,7 @@
 		26AC8BB21BD345F100AA0001 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26AC8BB11BD345F100AA0001 /* Media.xcassets */; };
 		26AC8BB61BD3503300AA0001 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26AC8BB51BD3503300AA0001 /* QuartzCore.framework */; };
 		26AE681C1D601D0B0031E534 /* RouteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE681B1D601D0B0031E534 /* RouteViewController.swift */; };
-		26AE681E1D612B810031E534 /* RouteTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE681D1D612B810031E534 /* RouteTableViewController.swift */; };
+		26AE681E1D612B810031E534 /* StationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE681D1D612B810031E534 /* StationTableViewController.swift */; };
 		26AE68201D622CCD0031E534 /* CanonicalRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE681F1D622CCD0031E534 /* CanonicalRoute.swift */; };
 		26AE68221D62AD250031E534 /* CanonicalRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE68211D62AD250031E534 /* CanonicalRouteTests.swift */; };
 		26AE68241D62BDF90031E534 /* RouteStop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE68231D62BDF90031E534 /* RouteStop.swift */; };
@@ -72,7 +70,7 @@
 		26D3E22F1D29BBA700F85712 /* MutableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E22E1D29BBA700F85712 /* MutableModel.swift */; };
 		26DBCF491D3FF59A00B22562 /* EventLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DBCF481D3FF59A00B22562 /* EventLog.swift */; };
 		26DFB6761C35A7F7006A8AE0 /* ScheduleRail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DFB6751C35A7F7006A8AE0 /* ScheduleRail.swift */; };
-		26DFB67C1C35DFA5006A8AE0 /* RouteTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26DFB67B1C35DFA5006A8AE0 /* RouteTableViewCell.xib */; };
+		26DFB67C1C35DFA5006A8AE0 /* StationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26DFB67B1C35DFA5006A8AE0 /* StationTableViewCell.xib */; };
 		26E038551D8DE9ED0006B265 /* Argo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E0384F1D8DE9ED0006B265 /* Argo.framework */; };
 		26E038561D8DE9ED0006B265 /* Curry.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038501D8DE9ED0006B265 /* Curry.framework */; };
 		26E038571D8DE9ED0006B265 /* Dwifft.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038511D8DE9ED0006B265 /* Dwifft.framework */; };
@@ -120,8 +118,7 @@
 		261DD1621C3424E1001336D4 /* RouteBadgeLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteBadgeLabel.swift; sourceTree = "<group>"; };
 		261DD1681C345AAC001336D4 /* RouteBadgeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteBadgeController.swift; sourceTree = "<group>"; };
 		2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabelTests.swift; sourceTree = "<group>"; };
-		2635DB711C3CBF4700EB58F5 /* RouteTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableView.swift; sourceTree = "<group>"; };
-		2635DB771C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableViewHeaderFooterView.swift; sourceTree = "<group>"; };
+		2635DB771C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StationTableViewHeaderFooterView.swift; sourceTree = "<group>"; };
 		2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrivalsTableViewControllerTests.swift; sourceTree = "<group>"; };
 		264782551C2C6F67009D9AD0 /* StartListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = StartListViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -136,12 +133,11 @@
 		266BAE641D2B676F001C9EC8 /* UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		266CC4D71D826FC70022D064 /* vehicles.1801.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = vehicles.1801.json; sourceTree = "<group>"; };
 		267019571C3F5BB50057FD11 /* RailVehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RailVehicle.swift; sourceTree = "<group>"; };
-		2675254E1D66638C00F6C33F /* RouteTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableViewCell.swift; sourceTree = "<group>"; };
+		2675254E1D66638C00F6C33F /* StationTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StationTableViewCell.swift; sourceTree = "<group>"; };
 		267525511D6D3B4F00F6C33F /* Decoded.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Decoded.swift; sourceTree = "<group>"; };
 		2675E0B51D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrivalTableRouteCollectionCell.swift; sourceTree = "<group>"; };
 		2675E0B71D96101E00C2FB32 /* RoutesCollectionViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RoutesCollectionViewModel.swift; path = "Proper/View Models/RoutesCollectionViewModel.swift"; sourceTree = "<group>"; };
 		2675E0BB1D98BFCA00C2FB32 /* RouteBadge.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RouteBadge.xib; sourceTree = "<group>"; };
-		268632801C319B0D00839A22 /* SceneMediator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SceneMediator.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		268E72261BF9938800E981D4 /* TransitLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabel.swift; sourceTree = "<group>"; };
 		268E72271BF9938800E981D4 /* TransitNavigationItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitNavigationItem.swift; sourceTree = "<group>"; };
 		2698CF001D8B8FC400E6174A /* RoutesCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoutesCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -167,7 +163,7 @@
 		26AC8BB31BD34BA700AA0001 /* VehicleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VehicleViewController.swift; sourceTree = "<group>"; };
 		26AC8BB51BD3503300AA0001 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		26AE681B1D601D0B0031E534 /* RouteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteViewController.swift; sourceTree = "<group>"; };
-		26AE681D1D612B810031E534 /* RouteTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RouteTableViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		26AE681D1D612B810031E534 /* StationTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = StationTableViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26AE681F1D622CCD0031E534 /* CanonicalRoute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CanonicalRoute.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26AE68211D62AD250031E534 /* CanonicalRouteTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanonicalRouteTests.swift; sourceTree = "<group>"; };
 		26AE68231D62BDF90031E534 /* RouteStop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteStop.swift; sourceTree = "<group>"; };
@@ -187,7 +183,7 @@
 		26D3E22E1D29BBA700F85712 /* MutableModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = MutableModel.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26DBCF481D3FF59A00B22562 /* EventLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventLog.swift; sourceTree = "<group>"; };
 		26DFB6751C35A7F7006A8AE0 /* ScheduleRail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleRail.swift; sourceTree = "<group>"; };
-		26DFB67B1C35DFA5006A8AE0 /* RouteTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RouteTableViewCell.xib; sourceTree = "<group>"; };
+		26DFB67B1C35DFA5006A8AE0 /* StationTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StationTableViewCell.xib; sourceTree = "<group>"; };
 		26E0384F1D8DE9ED0006B265 /* Argo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Argo.framework; path = Carthage/Build/iOS/Argo.framework; sourceTree = "<group>"; };
 		26E038501D8DE9ED0006B265 /* Curry.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Curry.framework; path = Carthage/Build/iOS/Curry.framework; sourceTree = "<group>"; };
 		26E038511D8DE9ED0006B265 /* Dwifft.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Dwifft.framework; path = Carthage/Build/iOS/Dwifft.framework; sourceTree = "<group>"; };
@@ -274,9 +270,8 @@
 				267019571C3F5BB50057FD11 /* RailVehicle.swift */,
 				26C598BB1C250D1E00BC9FE1 /* RouteBadge.swift */,
 				261DD1621C3424E1001336D4 /* RouteBadgeLabel.swift */,
-				2635DB711C3CBF4700EB58F5 /* RouteTableView.swift */,
-				2675254E1D66638C00F6C33F /* RouteTableViewCell.swift */,
-				2635DB771C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift */,
+				2675254E1D66638C00F6C33F /* StationTableViewCell.swift */,
+				2635DB771C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift */,
 				26DFB6751C35A7F7006A8AE0 /* ScheduleRail.swift */,
 				268E72261BF9938800E981D4 /* TransitLabel.swift */,
 				268E72271BF9938800E981D4 /* TransitNavigationItem.swift */,
@@ -293,7 +288,7 @@
 				264782551C2C6F67009D9AD0 /* StartListViewController.swift */,
 				26A8D6011D484944000434F9 /* ArrivalsTableViewController.swift */,
 				26AE681B1D601D0B0031E534 /* RouteViewController.swift */,
-				26AE681D1D612B810031E534 /* RouteTableViewController.swift */,
+				26AE681D1D612B810031E534 /* StationTableViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -303,7 +298,7 @@
 			children = (
 				2675E0BB1D98BFCA00C2FB32 /* RouteBadge.xib */,
 				26E0388C1D94C0140006B265 /* RoutesCollectionView.xib */,
-				26DFB67B1C35DFA5006A8AE0 /* RouteTableViewCell.xib */,
+				26DFB67B1C35DFA5006A8AE0 /* StationTableViewCell.xib */,
 				26A424E41BD2D3F20035754F /* ArrivalTableViewCell.xib */,
 				26A424BC1BD2C1320035754F /* LaunchScreen.storyboard */,
 				26A424B71BD2C1320035754F /* Main.storyboard */,
@@ -321,7 +316,6 @@
 				26E3E2CE1D3C7DF90018EF3F /* ProperViewController.swift */,
 				264A13C61D26157400B44D47 /* ProperError.swift */,
 				2647825F1C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift */,
-				268632801C319B0D00839A22 /* SceneMediator.swift */,
 				26CDF9581D7B344200E53F82 /* Box.swift */,
 			);
 			path = Helpers;
@@ -626,7 +620,7 @@
 				26A424BB1BD2C1320035754F /* Assets.xcassets in Resources */,
 				26A424E61BD2D3F20035754F /* ArrivalTableViewCell.xib in Resources */,
 				26A424B91BD2C1320035754F /* Main.storyboard in Resources */,
-				26DFB67C1C35DFA5006A8AE0 /* RouteTableViewCell.xib in Resources */,
+				26DFB67C1C35DFA5006A8AE0 /* StationTableViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -761,7 +755,7 @@
 				26E3E2D01D3C810B0018EF3F /* StationViewController.swift in Sources */,
 				264782601C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift in Sources */,
 				26D3E21F1D2776AB00F85712 /* Matchers.swift in Sources */,
-				2635DB781C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift in Sources */,
+				2635DB781C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift in Sources */,
 				261DD1631C3424E1001336D4 /* RouteBadgeLabel.swift in Sources */,
 				26A4B7B31D33503600264F0D /* MutableVehicle.swift in Sources */,
 				266BAE661D2B7159001C9EC8 /* StartListViewController.swift in Sources */,
@@ -771,12 +765,12 @@
 				26A4B7AF1D32251100264F0D /* MutableStation.swift in Sources */,
 				26AE68201D622CCD0031E534 /* CanonicalRoute.swift in Sources */,
 				26A4B7B11D32CEC800264F0D /* MutableRoute.swift in Sources */,
-				26AE681E1D612B810031E534 /* RouteTableViewController.swift in Sources */,
+				26AE681E1D612B810031E534 /* StationTableViewController.swift in Sources */,
 				26E038821D8F94030006B265 /* Colours.swift in Sources */,
 				26A424E51BD2D3F20035754F /* ArrivalTableViewCell.swift in Sources */,
 				26D3E22B1D28E25200F85712 /* Vehicle.swift in Sources */,
 				26AE681C1D601D0B0031E534 /* RouteViewController.swift in Sources */,
-				2675254F1D66638C00F6C33F /* RouteTableViewCell.swift in Sources */,
+				2675254F1D66638C00F6C33F /* StationTableViewCell.swift in Sources */,
 				268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */,
 				26B9E1D31D35E0C500794EB6 /* SignalType.swift in Sources */,
 				26A8D6021D484944000434F9 /* ArrivalsTableViewController.swift in Sources */,
@@ -784,7 +778,6 @@
 				26CDF9591D7B344200E53F82 /* Box.swift in Sources */,
 				264A13C71D26157400B44D47 /* ProperError.swift in Sources */,
 				26D3E2241D28E07100F85712 /* Model.swift in Sources */,
-				2635DB721C3CBF4700EB58F5 /* RouteTableView.swift in Sources */,
 				266BAE651D2B676F001C9EC8 /* UIColor.swift in Sources */,
 				2675E0B61D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift in Sources */,
 				26C598BC1C250D1E00BC9FE1 /* RouteBadge.swift in Sources */,
@@ -792,7 +785,6 @@
 				2650EDA01C41CFCC006CCD42 /* Array.swift in Sources */,
 				26D3E22F1D29BBA700F85712 /* MutableModel.swift in Sources */,
 				267019581C3F5BB50057FD11 /* RailVehicle.swift in Sources */,
-				268632811C319B0D00839A22 /* SceneMediator.swift in Sources */,
 				26D3E2291D28E24B00F85712 /* Station.swift in Sources */,
 				268E72291BF9938800E981D4 /* TransitNavigationItem.swift in Sources */,
 				26A424B41BD2C1320035754F /* AppDelegate.swift in Sources */,

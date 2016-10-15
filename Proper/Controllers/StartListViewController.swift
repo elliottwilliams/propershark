@@ -18,7 +18,6 @@ class StartListViewController: UITableViewController, ProperViewController {
     var stations: [Station] = []
     var vehicles: [Vehicle] = []
 
-    internal lazy var sceneMediator = SceneMediator.sharedInstance
     internal lazy var connection: ConnectionType = Connection.sharedInstance
     internal let disposable = CompositeDisposable()
     private var routeDisposable: Disposable?

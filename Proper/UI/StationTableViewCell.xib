@@ -8,7 +8,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RouteTableViewCell" customModule="Proper" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="StationTableViewCell" customModule="Proper" customModuleProvider="target">
             <connections>
                 <outlet property="rail" destination="Hlb-mq-vjM" id="UuK-wY-7j9"/>
                 <outlet property="subtitle" destination="HMq-fn-T3I" id="uCj-vr-MsV"/>
@@ -76,12 +76,12 @@
                 </constraints>
                 <variation key="default">
                     <mask key="constraints">
+                        <exclude reference="F65-Ku-83O"/>
+                        <exclude reference="FgK-Dz-DkF"/>
                         <exclude reference="Esk-Fj-aL3"/>
                         <exclude reference="LvR-Wz-tBE"/>
                         <exclude reference="7D5-iw-CdD"/>
                         <exclude reference="K8w-8E-FHS"/>
-                        <exclude reference="F65-Ku-83O"/>
-                        <exclude reference="FgK-Dz-DkF"/>
                     </mask>
                 </variation>
             </tableViewCellContentView>

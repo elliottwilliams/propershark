@@ -1,5 +1,5 @@
 //
-//  RouteTableViewHeaderFooterView.swift
+//  StationTableViewHeaderFooterView.swift
 //  Proper
 //
 //  Created by Elliott Williams on 1/6/16.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class RouteTableViewHeaderFooterView: UITableViewHeaderFooterView {
+class StationTableViewHeaderFooterView: UITableViewHeaderFooterView {
 
     var rail: ScheduleRail?
     

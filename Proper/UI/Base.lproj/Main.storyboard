@@ -536,7 +536,7 @@
                                     </view>
                                     <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wzf-im-AzC">
                                         <connections>
-                                            <segue destination="vAO-8U-l2g" kind="embed" identifier="embedRouteTable" id="35N-y2-3Bx"/>
+                                            <segue destination="vAO-8U-l2g" kind="embed" identifier="embedStationTable" id="Wmw-Bp-57L"/>
                                         </connections>
                                     </containerView>
                                     <view contentMode="scaleToFill" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="7ch-GO-ufe">
@@ -593,16 +593,16 @@
             </objects>
             <point key="canvasLocation" x="-21" y="818"/>
         </scene>
-        <!--Route Table View Controller-->
+        <!--Station Table View Controller-->
         <scene sceneID="VUs-mh-rL8">
             <objects>
-                <tableViewController id="vAO-8U-l2g" customClass="RouteTableViewController" customModule="Proper" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="vAO-8U-l2g" customClass="StationTableViewController" customModule="Proper" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="w9n-GE-zWC">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="326"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="PrototypeCell" id="R3W-xM-qSd" customClass="RouteTableViewCell" customModule="Proper">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="PrototypeCell" id="R3W-xM-qSd" customClass="StationTableViewCell" customModule="Proper">
                                 <rect key="frame" x="0.0" y="28" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="R3W-xM-qSd" id="S6R-TP-w6g">
