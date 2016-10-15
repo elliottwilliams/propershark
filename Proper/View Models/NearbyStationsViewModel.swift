@@ -115,6 +115,6 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
     }
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        <#code#>
+        fatalError("not implemented")
     }
 }

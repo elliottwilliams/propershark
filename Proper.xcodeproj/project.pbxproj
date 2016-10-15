@@ -13,8 +13,6 @@
 		261DD1631C3424E1001336D4 /* RouteBadgeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 261DD1621C3424E1001336D4 /* RouteBadgeLabel.swift */; };
 		2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */; };
 		2635DB781C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB771C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift */; };
-		2635DB721C3CBF4700EB58F5 /* RouteTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB711C3CBF4700EB58F5 /* RouteTableView.swift */; };
-		2635DB781C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB771C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift */; };
 		263D36371DB2784700FC7FF5 /* POITableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263D36361DB2784700FC7FF5 /* POITableViewController.swift */; };
 		264754901D551411000F0831 /* ArrivalsTableViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */; };
 		2647825E1C2F7B34009D9AD0 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */; };
@@ -128,8 +126,6 @@
 		261DD1681C345AAC001336D4 /* RouteBadgeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteBadgeController.swift; sourceTree = "<group>"; };
 		2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabelTests.swift; sourceTree = "<group>"; };
 		2635DB771C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StationTableViewHeaderFooterView.swift; sourceTree = "<group>"; };
-		2635DB711C3CBF4700EB58F5 /* RouteTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableView.swift; sourceTree = "<group>"; };
-		2635DB771C3DDE0D00EB58F5 /* RouteTableViewHeaderFooterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteTableViewHeaderFooterView.swift; sourceTree = "<group>"; };
 		263D36361DB2784700FC7FF5 /* POITableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = POITableViewController.swift; sourceTree = "<group>"; };
 		2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrivalsTableViewControllerTests.swift; sourceTree = "<group>"; };
 		264782551C2C6F67009D9AD0 /* StartListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = StartListViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -320,6 +316,7 @@
 				26ED26F01E117969007FB0F8 /* StationUpcomingTableViewCell.xib */,
 				2675E0BB1D98BFCA00C2FB32 /* RouteBadge.xib */,
 				26ED26F41E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib */,
+				26E0388C1D94C0140006B265 /* RoutesCollectionView.xib */,
 				26DFB67B1C35DFA5006A8AE0 /* StationTableViewCell.xib */,
 				26A424E41BD2D3F20035754F /* ArrivalTableViewCell.xib */,
 				26A424BC1BD2C1320035754F /* LaunchScreen.storyboard */,

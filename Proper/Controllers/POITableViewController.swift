@@ -22,10 +22,10 @@ class POITableViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        <#code#>
+        fatalError("not implemented")
     }
 
     override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        <#code#>
+        fatalError("not implemented")
     }
 }
