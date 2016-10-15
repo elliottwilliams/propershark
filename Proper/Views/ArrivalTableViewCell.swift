@@ -10,14 +10,13 @@ import UIKit
 import ReactiveCocoa
 
 class ArrivalTableViewCell: UITableViewCell {
-    
-    // MARK: Properties
     @IBOutlet weak var routeTimer: UILabel!
     @IBOutlet weak var routeTitle: UILabel!
     @IBOutlet weak var ornament: UIView!
     @IBOutlet weak var vehicleName: UILabel!
     
     var badge: RouteBadge!
+    var disposable = CompositeDisposable()
 
     override func awakeFromNib() {
         // Clear ornament background, which is set in IB to make the ornament visible
@@ -31,5 +30,8 @@ class ArrivalTableViewCell: UITableViewCell {
         self.ornament.addSubview(badge)
         self.badge = badge
     }
-    
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+    }
 }

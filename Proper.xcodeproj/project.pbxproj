@@ -666,6 +666,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/GHODictionary.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/MPMessagePack.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SocketRocket.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Runes.framework",
 			);
 			name = "Carthage: Copy Frameworks";
 			outputPaths = (

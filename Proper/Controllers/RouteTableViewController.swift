@@ -52,9 +52,17 @@ class RouteTableViewController: UITableViewController, ProperViewController {
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("PrototypeCell", forIndexPath: indexPath) as! RouteTableViewCell
-        let station = stops.value[indexPath.row]
+        let stop = stops.value[indexPath.row]
 
-        cell.presenting = station
+        cell.disposable += stop.station.name.producer.startWithNext { cell.title.text = $0 }
+        cell.subtitle.text = stop.station.stopCode
+        switch stop {
+        case .constant(_):
+            cell.rail.shape = .NorthSouth
+        case .conditional(_):
+            cell.rail.shape = .NorthSouth
+        }
+
         return cell
     }
 }

@@ -1,9 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RouteTableViewCell" customModule="Proper" customModuleProvider="target">
@@ -18,11 +20,10 @@
             <rect key="frame" x="0.0" y="0.0" width="633" height="43"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="bGC-Yq-6fh" id="OsT-TJ-dTv">
-                <rect key="frame" x="0.0" y="0.0" width="600" height="42"/>
+                <frame key="frameInset" width="600" height="42"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hlb-mq-vjM" userLabel="Rail" customClass="ScheduleRail" customModule="Proper" customModuleProvider="target">
-                        <rect key="frame" x="16" y="0.0" width="44" height="44"/>
                         <constraints>
                             <constraint firstAttribute="width" secondItem="Hlb-mq-vjM" secondAttribute="height" multiplier="1:1" id="6MY-fN-nmb"/>
                             <constraint firstAttribute="height" constant="44" placeholder="YES" id="8jS-hO-2di"/>
@@ -38,13 +39,12 @@
                         </variation>
                     </view>
                     <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a2X-BG-wmO" userLabel="Title" customClass="TransitLabel" customModule="Proper" customModuleProvider="target">
-                        <rect key="frame" x="68" y="5" width="32" height="20"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="442" id="6jm-bt-77T"/>
                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="90" id="vP9-1q-N76"/>
                         </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                         <variation key="default">
                             <mask key="constraints">
@@ -54,9 +54,8 @@
                         </variation>
                     </label>
                     <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HMq-fn-T3I" customClass="TransitLabel" customModule="Proper" customModuleProvider="target">
-                        <rect key="frame" x="68" y="25" width="41" height="14"/>
                         <fontDescription key="fontDescription" type="system" pointSize="11"/>
-                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
