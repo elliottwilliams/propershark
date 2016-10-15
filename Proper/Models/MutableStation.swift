@@ -11,7 +11,7 @@ import ReactiveCocoa
 import Result
 import Argo
 
-class MutableStation: MutableModel {
+class MutableStation: MutableModel, Comparable {
     typealias FromModel = Station
     typealias RouteType = MutableRoute
     typealias VehicleType = MutableVehicle
@@ -106,6 +106,26 @@ class MutableStation: MutableModel {
             station.name.map { self.title = $0 }
             station.description.map { self.subtitle = $0 }
         }
+    }
+}
+
+func < (a: MutableStation, b: MutableStation) -> Bool {
+    return a.identifier < b.identifier
+}
+
+extension CollectionType where Generator.Element: MutableStation {
+    /// Order by geographic distance from `point`, ascending. Stations in the collection without a defined position will
+    /// appear at the end of the ordering.
+    func sortDistanceTo(point: Point) -> [Generator.Element] {
+        return self.sort({ a, b in
+            // Stations with undefined positions should float to the end.
+            guard let aPosition = a.position.value else { return false }
+            guard let bPosition = b.position.value else { return true }
+
+            let loc = CLLocation(point: point)
+            return loc.distanceFromLocation(CLLocation(point: aPosition)) <
+                loc.distanceFromLocation(CLLocation(point: bPosition))
+        })
     }
 }
 
