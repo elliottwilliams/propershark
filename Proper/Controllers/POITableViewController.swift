@@ -10,10 +10,12 @@ import UIKit
 
 class POITableViewController: UITableViewController {
 
+    var viewModel: NearbyStationsViewModel!
+
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        tableView.dataSource = viewModel
+        tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil), forCellReuseIdentifier: "arrivalCell")
     }
 
     override func didReceiveMemoryWarning() {
@@ -22,10 +24,9 @@ class POITableViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        fatalError("not implemented")
+        return nil
     }
 
-    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        fatalError("not implemented")
-    }
+//    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+//    }
 }

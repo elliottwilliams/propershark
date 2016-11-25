@@ -49,8 +49,8 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         return AnyProperty(initialValue: [], producer: producer)
     }()
 
-    init(point: AnyProperty<Point>, connection: ConnectionType = Connection.sharedInstance) {
-        self.point = point
+    init<P: PropertyType where P.Value == Point>(point: P, connection: ConnectionType = Connection.sharedInstance) {
+        self.point = AnyProperty(initialValue: point.value, signal: point.signal)
         self.connection = connection
     }
 
@@ -114,7 +114,22 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         return stations.value[section].vehicles.value.count
     }
 
+    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return stations.value[section].name.value
+    }
+
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        fatalError("not implemented")
+        let cell = tableView.dequeueReusableCellWithIdentifier("arrivalCell") as! ArrivalTableViewCell
+        // TODO: Ensure vehicles are sorted by arrival time.
+        let station = stations.value[indexPath.section]
+        let vehicle = station.vehicles.value.sort()[indexPath.row]
+
+        cell.apply(vehicle)
+        if let route = vehicle.route.value {
+            // TODO: Vehicles here should have a route (since we got them by traversing along a route). If not available,
+            // consider displaying a loading indicator.
+            cell.apply(route)
+        }
+        return cell
     }
 }
