@@ -9,8 +9,14 @@
 import Foundation
 
 /// `NSCache`-backed storage for looking up responses to `meta.last_event`.
-struct LastEventCache {
+class LastEventCache: NSObject {
     let cache = NSCache()
+
+    struct VoidState {
+        var topics = Set<String>()
+        var queued = false
+    }
+    var voidState = VoidState()
 
     /// Create a cache which retains around `numEvents` events (default 100).
     init (numEvents: Int = 100) {
@@ -47,6 +53,9 @@ struct LastEventCache {
             return false
         }
 
+        // If `topic` was slated to be voided from the cache, remove it from the void topics list.
+        voidState.topics.remove(topic)
+
         // If there is already a listing for this topic, add this event to it; otherwise create a dictionary
         // representing the topic. Update the cost to represent the number of messages cached for a channel.
         if var channel = cache.objectForKey(topic) as? [String: Box<TopicEvent>] {
@@ -60,9 +69,20 @@ struct LastEventCache {
         return true
     }
 
-    /// Remove `topic` from the cache, clearing any events sent on that topic.
+    /// Request `topic` to be removed from the cache at the end of the main loop.
     func void(topic: String) {
-        cache.removeObjectForKey(topic)
+        voidState.topics.insert(topic)
+        if !voidState.queued {
+            NSOperationQueue.mainQueue().addOperationWithBlock(processVoids)
+            voidState.queued = true
+        }
+    }
+
+    private func processVoids() {
+        while let topic = voidState.topics.popFirst() {
+            cache.removeObjectForKey(topic)
+        }
+        voidState.queued = false
     }
 
     private static func eventParams(proc: String, _ args: WampArgs) -> (metaTopic: String, originator: String)? {
