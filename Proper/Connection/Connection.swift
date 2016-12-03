@@ -11,16 +11,6 @@ import MDWamp
 import ReactiveCocoa
 import Result
 
-typealias WampArgs = [AnyObject]
-typealias WampKwargs = [NSObject: AnyObject]
-typealias EventProducer = SignalProducer<TopicEvent, ProperError>
-
-// All connections conform to this protocol, which allows ConnectionMock to be injected.
-protocol ConnectionType {
-    func call(procedure: String, args: WampArgs, kwargs: WampKwargs) -> EventProducer
-    func subscribe(topic: String) -> EventProducer
-}
-
 extension ConnectionType {
     // Convenience method to call a procedure while omitting args and/or kwargs
     func call(procedure: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> EventProducer {
@@ -39,8 +29,7 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
     private var observer: Observer<MDWamp, ProperError>?
     
     var wamp = MutableProperty<MDWamp?>(nil)
-    var cache = LastEventCache()
-    
+
     // MARK: Startup
     
     // Lazy evaluator for self.producer
@@ -76,39 +65,19 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
             .map { TopicEvent.parseFromTopic(topic, event: $0) }
             .unwrapOrSendFailure(ProperError.eventParseFailure)
             .logEvents(identifier: "Connection.subscribe", logger: logSignalEvent)
-
-            // Include side effects to update the last event cache.
-            .on(next: { [weak self] in self?.cache.store(topic, event: $0) },
-                terminated: { [weak self] in self?.cache.void(topic) })
     }
 
     /// Call `proc` and forward the result. Disposing the signal created will cancel the RPC call.
     func call(proc: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> EventProducer {
-        // A producer that checks the cache, then completes.
-        let cached = EventProducer { observer, disposable in
-            self.cache.lookup(rpc: proc, args).apply(observer.sendNext)
-            observer.sendCompleted()
-        }.logEvents(identifier: "Connection.call (cache)", logger: logSignalEvent)
-
-
-        // A producer that performs the RPC.
-        let called = self.producer.map { wamp in
+        return self.producer.map({ wamp in
             wamp.callWithSignal(proc, args, kwargs, [:])
                 .timeoutWithError(.timeout, afterInterval: 10.0, onScheduler: QueueScheduler.mainQueueScheduler)
-            }
+            })
             .flatten(.Latest)
             .map { TopicEvent.parseFromRPC(proc, args, kwargs, $0) }
             .unwrapOrSendFailure(ProperError.eventParseFailure)
-            .logEvents(identifier: "Connection.call (server)", logger: logSignalEvent)
-
-            // Include side effects to update the last event cache.
-            .on(next: { [weak self] in self?.cache.store(rpc: proc, args: args, event: $0) })
-
-        // Return a producer that will start the cache producer first, then start the call producer. The call producer
-        // which hits the network will only be called if the cache producer doesn't emit a result.
-        return SignalProducer<EventProducer, ProperError>(values: [cached, called]).flatten(.Concat).take(1)
     }
-    
+
     // MARK: MDWamp Delegate
     func mdwamp(wamp: MDWamp!, sessionEstablished info: [NSObject: AnyObject]!) {
         NSLog("session established")
