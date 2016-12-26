@@ -9,7 +9,6 @@
 import UIKit
 import ReactiveCocoa
 import Result
-import Runes
 
 class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDelegate {
 
@@ -34,22 +33,30 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
      need to perform array diffs on the values emitted.
      */
     lazy var stations: AnyProperty<[MutableStation]> = { [unowned self] in
-        // TODO: Consider adding a threshold to `point`s value, so that only significant changes in point reload the
-        // stations.
-        let producer = self.point.producer.flatMap(.Latest, transform: { point in
-            // Compose: a search region for `point`, with a producer of static stations in that region, with a set of
-            // MutableStations corresponding
-            (NearbyStationsViewModel.searchRect(for: point) >>- self.produceStations >>- self.produceMutables)!
-                // Sort the set by distance to `point`.
-                .map({ $0.sortDistanceTo(point) })
-        }).flatMapError({ error in
+        let producer = self.producer.flatMapError({ error in
             // TODO: Delegate errors to a view controller. Upon error, this producer will need to be restarted.
             return SignalProducer<[MutableStation], NoError>(value: [])
-        })
+        }).logEvents(identifier: "NearbyStationsViewModel.stations", logger: logSignalEvent)
         return AnyProperty(initialValue: [], producer: producer)
     }()
 
-    init<P: PropertyType where P.Value == Point>(point: P, connection: ConnectionType = Connection.sharedInstance) {
+    lazy var subscription: SignalProducer<TopicEvent, ProperError> = { [unowned self] in
+        return self.combinedEventProducer(self.producer)
+    }()
+
+    lazy private var producer: SignalProducer<[MutableStation], ProperError> = { [unowned self] in
+        // TODO: Consider adding a threshold to `point`s value, so that only significant changes in point reload the
+        // stations.
+        return self.point.producer.flatMap(.Latest, transform: { point -> SignalProducer<[MutableStation], ProperError> in
+            // Compose: a search region for `point`, with a producer of static stations in that region, with a set of
+            // MutableStations corresponding
+            let stations = NearbyStationsViewModel.searchRect(for: point) |> self.produceStations |> self.produceMutables
+            // Sort the set by distance to `point`.
+            return stations.map({ $0.sortDistanceTo(point) })
+        })
+    }()
+
+    init<P: PropertyType where P.Value == Point>(point: P, connection: ConnectionType = Connection.cachedInstance) {
         self.point = AnyProperty(initialValue: point.value, signal: point.signal)
         self.connection = connection
     }
@@ -79,19 +86,11 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
      static models.
      */
     func produceMutables(producer: SignalProducer<Set<Station>, ProperError>) -> SignalProducer<Set<MutableStation>, ProperError> {
-        let disposable = CompositeDisposable()
         return producer.attemptMap({ stations -> Result<Set<MutableStation>, ProperError> in
-            // Clear subscriptions to any old models (we simplify things by reloading everything as the set of stations
-            // changes. a smarter implementation would compute set diffs and maintain a pool of mutable models)
-            disposable.dispose()
 
             // Attempt to create MutableStations out of all stations.
             do {
-                let mutables = try stations.map { station -> MutableStation in
-                    let mutable = try MutableStation(from: station, delegate: self, connection: self.connection)
-                    disposable += mutable.producer.start()
-                    return mutable
-                }
+                let mutables = try stations.map({ try MutableStation(from: $0, delegate: self, connection: self.connection) })
                 return .Success(Set(mutables))
             } catch let error as ProperError {
                 return .Failure(error)
@@ -101,8 +100,22 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         })
     }
 
-    static func searchRect(for point: Point) -> MKMapRect {
-        return MKMapRect(origin: MKMapPoint(point: point), size: searchSize)
+    /**
+     Flatten a set of MutableStations into a single producer that, when started, will subscribe to all events in the
+     latest set of stations.
+    */
+    private func combinedEventProducer(producer: SignalProducer<[MutableStation], ProperError>) -> SignalProducer<TopicEvent, ProperError> {
+        return producer.flatMap(.Latest, transform: { stations -> SignalProducer<TopicEvent, ProperError> in
+            return SignalProducer<SignalProducer<TopicEvent, ProperError>, ProperError>(values:
+                stations.map({ $0.producer })).flatten(.Merge)
+        })
+    }
+
+    /**
+     Construct a search rectangle given a Point and a size (defaults to a class constant).
+    */
+    static func searchRect(for point: Point, within size: MKMapSize = searchSize) -> MKMapRect {
+        return MKMapRect(origin: MKMapPoint(point: point), size: size)
     }
 
     // MARK: Table View Data Source

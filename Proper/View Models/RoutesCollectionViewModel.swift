@@ -18,6 +18,10 @@ class RoutesCollectionViewModel: NSObject, UICollectionViewDataSource, UICollect
         self.routes = routes.map { $0.sort() }
     }
 
+    init(station: MutableStation) {
+        self.routes = AnyProperty(initialValue: [], producer: station.routes.producer.map({ $0.sort() }))
+    }
+
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return routes.value.count
     }

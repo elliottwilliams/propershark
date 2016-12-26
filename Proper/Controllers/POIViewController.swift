@@ -16,7 +16,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
     @IBOutlet weak var map: MKMapView!
 
-    internal var connection: ConnectionType = Connection.sharedInstance
+    internal var connection: ConnectionType = Connection.cachedInstance
     internal var disposable = CompositeDisposable()
 
     func configureMap(centerPoint: Point) {
@@ -24,12 +24,14 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         map.centerCoordinate = centerLoc
         map.region = MKCoordinateRegion(center: centerLoc,
                                         span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = CLLocationCoordinate2D(point: centerPoint)
+        map.addAnnotation(annotation)
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        viewModel = NearbyStationsViewModel(point: point, connection: connection)
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -67,7 +69,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         switch segue.identifier ?? "" {
         case "embedPOITable":
             let dest = segue.destinationViewController as! POITableViewController
-            dest.viewModel = viewModel
+            dest.point = AnyProperty(point)
         default:
             return
         }

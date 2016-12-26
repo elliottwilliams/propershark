@@ -22,4 +22,11 @@ class RoutesCollectionViewCell: UICollectionViewCell {
         disposable.dispose()
         super.prepareForReuse()
     }
+
+    func apply(route: MutableRoute) {
+        disposable += route.color.producer.startWithNext { color in
+            _ = color.flatMap { self.badge.color = $0 }
+        }
+        badge.routeNumber = route.shortName
+    }
 }
