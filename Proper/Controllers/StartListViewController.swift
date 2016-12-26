@@ -18,7 +18,7 @@ class StartListViewController: UITableViewController, ProperViewController {
     var stations: [Station] = []
     var vehicles: [Vehicle] = []
 
-    internal lazy var connection: ConnectionType = Connection.sharedInstance
+    internal lazy var connection: ConnectionType = Connection.cachedInstance
     internal let disposable = CompositeDisposable()
     private var routeDisposable: Disposable?
     
@@ -153,13 +153,13 @@ class StartListViewController: UITableViewController, ProperViewController {
                 let index = self.tableView.indexPathForSelectedRow
                 else { break }
             let station = self.pinnedStations.value[index.row]
-            dest.station = try! MutableStation(from: station, delegate: dest, connection: Connection.sharedInstance)
+            dest.station = try! MutableStation(from: station, delegate: dest, connection: Connection.cachedInstance)
         case "ShowStationAfterSelectionFromList":
             guard let dest = segue.destinationViewController as? StationViewController,
                 let index = self.tableView.indexPathForSelectedRow
                 else { break }
             let station = self.stations[index.row]
-            dest.station = try! MutableStation(from: station, delegate: dest, connection: Connection.sharedInstance)
+            dest.station = try! MutableStation(from: station, delegate: dest, connection: Connection.cachedInstance)
         case "ShowRouteAfterSelectionFromList":
             let dest = segue.destinationViewController as! RouteViewController
             let index = self.tableView.indexPathForSelectedRow!

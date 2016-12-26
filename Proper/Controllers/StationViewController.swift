@@ -21,7 +21,7 @@ class StationViewController: UIViewController, ProperViewController, ArrivalsTab
     @IBOutlet weak var nav: UINavigationItem!
 
     // MARK: Internal properties
-    internal lazy var connection: ConnectionType = Connection.sharedInstance
+    internal lazy var connection: ConnectionType = Connection.cachedInstance
     internal let disposable = CompositeDisposable()
 
     override func viewDidLoad() {

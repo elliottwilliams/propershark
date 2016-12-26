@@ -19,7 +19,7 @@ class RouteViewController: UIViewController, ProperViewController, MutableModelD
     @IBOutlet weak var navItem: TransitNavigationItem!
 
     // MARK: Internal properties
-    internal var connection: ConnectionType = Connection.sharedInstance
+    internal var connection: ConnectionType = Connection.cachedInstance
     internal let disposable = CompositeDisposable()
 
     // MARK: Methods

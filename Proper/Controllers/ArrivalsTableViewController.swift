@@ -17,7 +17,7 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
     var delegate: ArrivalsTableViewDelegate!
 
     // MARK: Internal properties
-    internal var connection: ConnectionType = Connection.sharedInstance
+    internal var connection: ConnectionType = Connection.cachedInstance
     internal var diffCalculator: TableViewDiffCalculator<MutableVehicle>!
     internal var disposable = CompositeDisposable()
     internal var routeDisposables = [MutableRoute: Disposable]()
