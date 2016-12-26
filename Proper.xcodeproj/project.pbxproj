@@ -91,6 +91,8 @@
 		26E964FA1D56396F00F83797 /* MutableModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964F91D56396F00F83797 /* MutableModelTests.swift */; };
 		26E964FD1D58E00600F83797 /* MutableModelDelegateMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964FC1D58E00600F83797 /* MutableModelDelegateMock.swift */; };
 		26EBAB391D7B12DC00342D0C /* LastEventCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26EBAB381D7B12DC00342D0C /* LastEventCache.swift */; };
+		26ED26EE1E11763C007FB0F8 /* CachedConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ED26EC1E11763C007FB0F8 /* CachedConnection.swift */; };
+		26ED26EF1E11763C007FB0F8 /* ConnectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ED26ED1E11763C007FB0F8 /* ConnectionType.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -203,6 +205,8 @@
 		26E964F91D56396F00F83797 /* MutableModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableModelTests.swift; sourceTree = "<group>"; };
 		26E964FC1D58E00600F83797 /* MutableModelDelegateMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableModelDelegateMock.swift; sourceTree = "<group>"; };
 		26EBAB381D7B12DC00342D0C /* LastEventCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LastEventCache.swift; sourceTree = "<group>"; };
+		26ED26EC1E11763C007FB0F8 /* CachedConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CachedConnection.swift; sourceTree = "<group>"; };
+		26ED26ED1E11763C007FB0F8 /* ConnectionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionType.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -427,6 +431,8 @@
 		26B3DC121D164E98001E29AA /* Connection */ = {
 			isa = PBXGroup;
 			children = (
+				26ED26EC1E11763C007FB0F8 /* CachedConnection.swift */,
+				26ED26ED1E11763C007FB0F8 /* ConnectionType.swift */,
 				26B3DC551D170BAE001E29AA /* Connection.swift */,
 				264A13C81D2625CE00B44D47 /* TopicEvent.swift */,
 				26EBAB381D7B12DC00342D0C /* LastEventCache.swift */,
@@ -774,6 +780,7 @@
 				268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */,
 				26B9E1D31D35E0C500794EB6 /* SignalType.swift in Sources */,
 				26A8D6021D484944000434F9 /* ArrivalsTableViewController.swift in Sources */,
+				26ED26EF1E11763C007FB0F8 /* ConnectionType.swift in Sources */,
 				264A13C91D2625CE00B44D47 /* TopicEvent.swift in Sources */,
 				26CDF9591D7B344200E53F82 /* Box.swift in Sources */,
 				264A13C71D26157400B44D47 /* ProperError.swift in Sources */,
@@ -793,6 +800,7 @@
 				26DBCF491D3FF59A00B22562 /* EventLog.swift in Sources */,
 				2650D28E1D176B65003758BF /* Configuration.swift in Sources */,
 				26EBAB391D7B12DC00342D0C /* LastEventCache.swift in Sources */,
+				26ED26EE1E11763C007FB0F8 /* CachedConnection.swift in Sources */,
 				26E3E2CF1D3C7DF90018EF3F /* ProperViewController.swift in Sources */,
 				26DFB6761C35A7F7006A8AE0 /* ScheduleRail.swift in Sources */,
 			);

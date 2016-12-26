@@ -8,6 +8,7 @@
 
 import Foundation
 import ReactiveCocoa
+import Runes
 
 class CachedConnection<C: ConnectionType>: ConnectionType {
     let connection: C
