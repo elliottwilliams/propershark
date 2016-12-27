@@ -60,5 +60,18 @@ class MutableStationTests: XCTestCase, MutableModelTestSpec {
         XCTAssertEqual(mutable.name.value, "Beau Jardin Apts on Yeager (@ Shelter) - BUS100W ",
                        "Station name does not have expected initial value")
     }
+
+    func testAppliesRoutes() {
+        // Given a station with no routes
+        mutable.routes.swap(Set())
+        XCTAssertEqual(mutable.routes.value.count, 0)
+
+        // When routes are applied...
+        XCTAssert(model.routes?.count > 0)
+        XCTAssertNotNil(try? mutable.apply(model))
+
+        // Then the station's routes should be changed
+        XCTAssertGreaterThan(mutable.routes.value.count, 0)
+    }
 }
 

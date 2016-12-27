@@ -72,9 +72,9 @@ class MutableRouteTests: XCTestCase, MutableModelTestSpec {
         // Then its mappedItinerary function should return the itinerary in the same sequence...
         let mapped = try! mutable.mappedItinerary(itinerary)
         XCTAssertEqual(mapped.map { $0.identifier }, itinerary.map { $0.identifier })
-        // ...and each mapped stations should be from the `associatedStations` set.
+        // ...and each mapped station should be in `associatedStations`.
         mapped.forEach { station in
-            XCTAssertTrue(associatedStations.contains(station))
+            XCTAssertFalse(associatedStations.filter({ $0 === station }).isEmpty)
         }
 
     }
