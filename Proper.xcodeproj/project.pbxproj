@@ -140,7 +140,7 @@
 		2675254E1D66638C00F6C33F /* StationTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StationTableViewCell.swift; sourceTree = "<group>"; };
 		267525511D6D3B4F00F6C33F /* Decoded.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Decoded.swift; sourceTree = "<group>"; };
 		2675E0B51D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrivalTableRouteCollectionCell.swift; sourceTree = "<group>"; };
-		2675E0B71D96101E00C2FB32 /* RoutesCollectionViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RoutesCollectionViewModel.swift; path = "Proper/View Models/RoutesCollectionViewModel.swift"; sourceTree = "<group>"; };
+		2675E0B71D96101E00C2FB32 /* RoutesCollectionViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RoutesCollectionViewModel.swift; path = "View Models/RoutesCollectionViewModel.swift"; sourceTree = "<group>"; };
 		2675E0BB1D98BFCA00C2FB32 /* RouteBadge.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RouteBadge.xib; sourceTree = "<group>"; };
 		268E72261BF9938800E981D4 /* TransitLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabel.swift; sourceTree = "<group>"; };
 		268E72271BF9938800E981D4 /* TransitNavigationItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitNavigationItem.swift; sourceTree = "<group>"; };
@@ -365,7 +365,6 @@
 		26A424A71BD2C1320035754F = {
 			isa = PBXGroup;
 			children = (
-				2675E0B71D96101E00C2FB32 /* RoutesCollectionViewModel.swift */,
 				2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */,
 				26AC8BB51BD3503300AA0001 /* QuartzCore.framework */,
 				26AC8BB11BD345F100AA0001 /* Media.xcassets */,
@@ -400,6 +399,7 @@
 				26A424BF1BD2C1320035754F /* Info.plist */,
 				26D3E2201D28DF9900F85712 /* Models */,
 				264782641C309FAB009D9AD0 /* UI */,
+				26ED26F61E132157007FB0F8 /* View Models */,
 				264782611C309F4C009D9AD0 /* Views */,
 			);
 			path = Proper;
@@ -486,6 +486,14 @@
 				266111D71D52EA6100D8F46B /* MutableModelTestSpec.swift */,
 			);
 			path = Specs;
+			sourceTree = "<group>";
+		};
+		26ED26F61E132157007FB0F8 /* View Models */ = {
+			isa = PBXGroup;
+			children = (
+				2675E0B71D96101E00C2FB32 /* RoutesCollectionViewModel.swift */,
+			);
+			name = "View Models";
 			sourceTree = "<group>";
 		};
 		E4C42E7C67138C2FBA725195 /* Frameworks */ = {
