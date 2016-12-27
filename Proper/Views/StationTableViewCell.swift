@@ -19,4 +19,20 @@ class StationTableViewCell: UITableViewCell {
         disposable.dispose()
         super.prepareForReuse()
     }
+
+    func apply(station: MutableStation, withRailShape shape: ScheduleRail.RailShape) {
+        disposable.dispose()
+        subtitle.text = station.stopCode
+        disposable += station.name.producer.startWithNext({ self.title.text = $0 })
+        rail.shape = shape
+    }
+
+    func apply(stop: RouteStop<MutableStation>) {
+        switch stop {
+        case .constant(_):
+            apply(stop.station, withRailShape: .NorthSouth)
+        case .conditional(_):
+            apply(stop.station, withRailShape: .NorthSouth)
+        }
+    }
 }

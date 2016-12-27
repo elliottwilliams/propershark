@@ -51,18 +51,9 @@ class StationTableViewController: UITableViewController, ProperViewController {
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int { return stops.value.count }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("stationCell", forIndexPath: indexPath) as! StationTableViewCell
-        let stop = stops.value[indexPath.row]
-
-        cell.disposable += stop.station.name.producer.startWithNext { cell.title.text = $0 }
-        cell.subtitle.text = stop.station.stopCode
-        switch stop {
-        case .constant(_):
-            cell.rail.shape = .NorthSouth
-        case .conditional(_):
-            cell.rail.shape = .NorthSouth
-        }
-
+        let cell = tableView.dequeueReusableCellWithIdentifier("stationCell", forIndexPath: indexPath)
+            as! StationTableViewCell
+        cell.apply(stops.value[indexPath.row])
         return cell
     }
 }
