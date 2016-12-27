@@ -34,9 +34,7 @@ class RoutesCollectionViewModel: NSObject, UICollectionViewDataSource, UICollect
         CATransaction.setDisableActions(true)
 
         // Bind to route attributes.
-        cell.disposable += route.color.producer.startWithNext { color in
-            _ = color.flatMap { cell.badge.color = $0 }
-        }
+        cell.disposable += route.color.producer.ignoreNil().startWithNext { cell.badge.color = $0 }
         cell.badge.routeNumber = route.shortName
 
         CATransaction.commit()

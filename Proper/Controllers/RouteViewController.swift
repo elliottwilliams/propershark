@@ -8,6 +8,7 @@
 
 import UIKit
 import ReactiveCocoa
+import Result
 
 class RouteViewController: UIViewController, ProperViewController, MutableModelDelegate {
 
@@ -27,9 +28,7 @@ class RouteViewController: UIViewController, ProperViewController, MutableModelD
         // Configure the route badge.
         badge.outerStrokeGap = 5.0
         badge.outerStrokeWidth = 1.0
-    }
 
-    override func viewWillAppear(animated: Bool) {
         // Bind route data.
         badge.routeNumber = route.shortName
         disposable += route.color.producer.ignoreNil().startWithNext { color in
@@ -44,14 +43,12 @@ class RouteViewController: UIViewController, ProperViewController, MutableModelD
         disposable += route.name.producer.ignoreNil().startWithNext { name in
             self.navItem.title = name
         }
-
-        // Begin requesting route data.
-        disposable += route.producer.startWithFailed(self.displayError)
-
-        super.viewWillAppear(animated)
     }
 
     override func viewDidAppear(animated: Bool) {
+        // Begin requesting route data.
+        disposable += route.producer.startWithFailed(self.displayError)
+
         super.viewDidAppear(animated)
         if let color = route.color.value {
             colorNavigationBar(color)
