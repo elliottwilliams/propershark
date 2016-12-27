@@ -530,12 +530,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 26A424DB1BD2C1320035754F /* Build configuration list for PBXNativeTarget "ProperTests" */;
 			buildPhases = (
-				FB07530A854ED278E7980A96 /* [CP] Check Pods Manifest.lock */,
 				26A424C01BD2C1320035754F /* Sources */,
 				26A424C11BD2C1320035754F /* Frameworks */,
 				26A424C21BD2C1320035754F /* Resources */,
-				5A64A08EB414B238E8296708 /* [CP] Embed Pods Frameworks */,
-				41F5984A3DA4DA87D3C9A38A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -551,11 +548,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 26A424DE1BD2C1320035754F /* Build configuration list for PBXNativeTarget "ProperUITests" */;
 			buildPhases = (
-				DDF29C5760C805C48C2D4569 /* [CP] Check Pods Manifest.lock */,
 				26A424CB1BD2C1320035754F /* Sources */,
 				26A424CC1BD2C1320035754F /* Frameworks */,
 				26A424CD1BD2C1320035754F /* Resources */,
-				FA47E80873330B3E7D5BF5A8 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -681,81 +676,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/usr/local/bin/carthage copy-frameworks";
-		};
-		41F5984A3DA4DA87D3C9A38A /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ProperTests/Pods-ProperTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		5A64A08EB414B238E8296708 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ProperTests/Pods-ProperTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		DDF29C5760C805C48C2D4569 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		FA47E80873330B3E7D5BF5A8 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ProperUITests/Pods-ProperUITests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		FB07530A854ED278E7980A96 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1016,6 +936,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = ProperTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ms.elliottwillia.ProperTests;
 				PRODUCT_NAME = ProperTests;
@@ -1029,6 +950,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = ProperTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ms.elliottwillia.ProperTests;
 				PRODUCT_NAME = ProperTests;
@@ -1041,6 +963,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				INFOPLIST_FILE = ProperUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ms.elliottwillia.ProperUITests;
 				PRODUCT_NAME = ProperUITests;
@@ -1054,6 +977,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				INFOPLIST_FILE = ProperUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ms.elliottwillia.ProperUITests;
 				PRODUCT_NAME = ProperUITests;
