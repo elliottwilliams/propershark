@@ -13,37 +13,48 @@ class StationUpcomingTableViewCell: UITableViewCell {
     @IBOutlet weak var title: TransitLabel!
     @IBOutlet weak var subtitle: TransitLabel!
     @IBOutlet weak var collectionView: UICollectionView!
-    let disposable = CompositeDisposable()
+
+    var disposable: CompositeDisposable?
+    var viewModel: RoutesCollectionViewModel?
+    let routes = MutableProperty<Set<MutableRoute>>(Set())
+
+    deinit {
+        disposable?.dispose()
+    }
+
+    override func prepareForReuse() {
+        disposable?.dispose()
+    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
         // Declares `badgeCell` as the reusable cell for the collection view. `RoutesCollectionViewModel` dequeues cells
         // with identifier `badgeCell`.
-        collectionView.registerNib(UINib(nibName: "RoutesCollectionBadgeCell", bundle: NSBundle.mainBundle()),
-                                   forCellWithReuseIdentifier: "badgeCell")
-    }
+        collectionView.registerNib(UINib(nibName: "RoutesCollectionBadgeCell", bundle: NSBundle.mainBundle()), forCellWithReuseIdentifier: "badgeCell")
 
-    override func prepareForReuse() {
-        disposable.dispose()
-        super.prepareForReuse()
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+        // Initialize the view model powering the routes collection.
+        viewModel = RoutesCollectionViewModel(routes: AnyProperty(routes))
+        collectionView.dataSource = viewModel
+        collectionView.delegate = viewModel
     }
 
     func apply(station: MutableStation) {
-        disposable.dispose()
+        let disposable = CompositeDisposable()
 
         // Bind station attributes to the UI labels.
         disposable += station.name.producer.startWithNext({ self.title.text = $0 })
         self.subtitle.text = station.stopCode
 
-        let dataSource = RoutesCollectionViewModel(routes: AnyProperty(station.routes))
-        collectionView.dataSource = dataSource
-        collectionView.reloadData()
+        // As routes are discovered, update the collection view.
+        disposable += station.routes.producer.startWithNext({ routes in
+            self.routes.swap(routes)
+            self.collectionView.reloadData()
+        })
+
+        // Subscribe to station events.
+        disposable += station.producer.start()
+        self.disposable = disposable
     }
+
 
 }
