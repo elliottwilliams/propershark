@@ -21,7 +21,6 @@ class POITableViewController: UITableViewController, ProperViewController {
         super.viewDidLoad()
         viewModel = NearbyStationsViewModel(point: point, connection: connection)
         tableView.dataSource = viewModel
-        tableView.delegate = viewModel
         tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil),
                               forCellReuseIdentifier: "arrivalCell")
         tableView.registerNib(UINib(nibName: "StationUpcomingTableViewCell", bundle: nil),
@@ -41,5 +40,23 @@ class POITableViewController: UITableViewController, ProperViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+
+
+    // MARK: Table View Delegate
+    override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return nil
+    }
+
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return indexPath.row == 0 ? NearbyStationsViewModel.stationRowHeight : NearbyStationsViewModel.arrivalRowHeight
+    }
+
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if indexPath.row == 0 {
+            performSegueWithIdentifier("showStation", sender: viewModel.stations.value[indexPath.section].vehicles.value.sort()[indexPath.row-1])
+        } else {
+            // TODO: show vehicle details
+        }
     }
 }

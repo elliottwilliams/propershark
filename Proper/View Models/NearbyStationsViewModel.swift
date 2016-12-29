@@ -10,7 +10,7 @@ import UIKit
 import ReactiveCocoa
 import Result
 
-class NearbyStationsViewModel: NSObject, UITableViewDataSource, UITableViewDelegate, MutableModelDelegate {
+class NearbyStationsViewModel: NSObject, UITableViewDataSource, UITableViewDelegate {
 
     static let searchSize = MKMapSize(width: 0.01, height: 0.01)
     static let arrivalRowHeight = CGFloat(44)
@@ -158,14 +158,5 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, UITableViewDeleg
             cell.apply(route)
         }
         return cell
-    }
-
-    // MARK: Table View Delegate
-    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return nil
-    }
-
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return indexPath.row == 0 ? NearbyStationsViewModel.stationRowHeight : NearbyStationsViewModel.arrivalRowHeight
     }
 }
