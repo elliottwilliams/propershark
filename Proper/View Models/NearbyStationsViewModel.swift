@@ -13,6 +13,8 @@ import Result
 class NearbyStationsViewModel: NSObject, UITableViewDataSource, UITableViewDelegate, MutableModelDelegate {
 
     static let searchSize = MKMapSize(width: 0.01, height: 0.01)
+    static let arrivalRowHeight = CGFloat(44)
+    static let stationRowHeight = CGFloat(90)
 
     /**
      The geographic point to base nearby stations on. Changes to this property flow through the list of nearby stations
@@ -119,16 +121,36 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, UITableViewDeleg
         return stations.value.count
     }
 
+    // The first row in each section is the "sentinel" row, which represents the station itself rather than a particular
+    // arrival at that station.
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return stations.value[section].vehicles.value.count
+        return 1 + stations.value[section].vehicles.value.count
     }
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        if indexPath.row == 0 {
+            return stationCell(tableView, forRowAtIndexPath: indexPath)
+        } else {
+            return arrivalCell(tableView, forRowAtIndexPath: indexPath)
+        }
+    }
+
+    private func stationCell(tableView: UITableView, forRowAtIndexPath indexPath: NSIndexPath) ->
+        StationUpcomingTableViewCell
+    {
+        let cell = tableView.dequeueReusableCellWithIdentifier("stationCell") as! StationUpcomingTableViewCell
+        let station = stations.value[indexPath.section]
+        cell.apply(station)
+        return cell
+    }
+
+    private func arrivalCell(tableView: UITableView, forRowAtIndexPath indexPath: NSIndexPath) -> ArrivalTableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("arrivalCell") as! ArrivalTableViewCell
+        cell.contentView.layoutMargins.left = 40
+
         // TODO: Ensure vehicles are sorted by arrival time.
         let station = stations.value[indexPath.section]
-        let vehicle = station.vehicles.value.sort()[indexPath.row]
-
+        let vehicle = station.vehicles.value.sort()[indexPath.row - 1]
         cell.apply(vehicle)
         if let route = vehicle.route.value {
             // TODO: Vehicles here should have a route (since we got them by traversing along a route). If not available,
@@ -140,14 +162,10 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, UITableViewDeleg
 
     // MARK: Table View Delegate
     func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let header = tableView.dequeueReusableHeaderFooterViewWithIdentifier("stationHeader") as! StationUpcomingHeaderFooterView
-        let station = stations.value[section]
-        header.apply(station)
-        return header
+        return nil
     }
 
-    // TODO: can remove?
-    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return CGFloat(89)
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return indexPath.row == 0 ? NearbyStationsViewModel.stationRowHeight : NearbyStationsViewModel.arrivalRowHeight
     }
 }

@@ -22,8 +22,10 @@ class POITableViewController: UITableViewController, ProperViewController {
         viewModel = NearbyStationsViewModel(point: point, connection: connection)
         tableView.dataSource = viewModel
         tableView.delegate = viewModel
-        tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil), forCellReuseIdentifier: "arrivalCell")
-        tableView.registerClass(StationUpcomingHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: "stationHeader")
+        tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil),
+                              forCellReuseIdentifier: "arrivalCell")
+        tableView.registerNib(UINib(nibName: "StationUpcomingTableViewCell", bundle: nil),
+                              forCellReuseIdentifier: "stationCell")
 
         disposable += viewModel.subscription.startWithFailed(displayError)
         disposable += viewModel.stations.producer.startWithNext({ stations in
