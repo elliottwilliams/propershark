@@ -9,7 +9,7 @@
 import UIKit
 import ReactiveCocoa
 
-class StationUpcomingTableViewCell: UITableViewCell, StationUpcomingCell {
+class StationUpcomingTableViewCell: UITableViewCell {
     @IBOutlet weak var title: TransitLabel!
     @IBOutlet weak var subtitle: TransitLabel!
     @IBOutlet weak var collectionView: UICollectionView!
@@ -17,15 +17,6 @@ class StationUpcomingTableViewCell: UITableViewCell, StationUpcomingCell {
     var disposable: CompositeDisposable?
     var viewModel: RoutesCollectionViewModel?
     let routes = MutableProperty<Set<MutableRoute>>(Set())
-
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        contentView.addSubview(stationUpcomingCellView())
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 
     deinit {
         disposable?.dispose()
@@ -37,6 +28,33 @@ class StationUpcomingTableViewCell: UITableViewCell, StationUpcomingCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        initStationUpcomingCell()
+        // Declares `badgeCell` as the reusable cell for the collection view. `RoutesCollectionViewModel` dequeues cells
+        // with identifier `badgeCell`.
+        collectionView.registerNib(UINib(nibName: "RoutesCollectionBadgeCell", bundle: NSBundle.mainBundle()), forCellWithReuseIdentifier: "badgeCell")
+
+        // Initialize the view model powering the routes collection.
+        viewModel = RoutesCollectionViewModel(routes: AnyProperty(routes))
+        collectionView.dataSource = viewModel
+        collectionView.delegate = viewModel
     }
+
+    func apply(station: MutableStation) {
+        let disposable = CompositeDisposable()
+
+        // Bind station attributes to the UI labels.
+        disposable += station.name.producer.startWithNext({ self.title.text = $0 })
+        self.subtitle.text = station.stopCode
+
+        // As routes are discovered, update the collection view.
+        disposable += station.routes.producer.startWithNext({ routes in
+            self.routes.swap(routes)
+            self.collectionView.reloadData()
+        })
+
+        // Subscribe to station events.
+        disposable += station.producer.start()
+        self.disposable = disposable
+    }
+
+
 }
