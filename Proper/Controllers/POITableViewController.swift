@@ -21,12 +21,11 @@ class POITableViewController: UITableViewController, ProperViewController {
         super.viewDidLoad()
         viewModel = NearbyStationsViewModel(point: point, connection: connection)
         tableView.dataSource = viewModel
+        tableView.delegate = viewModel
         tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil), forCellReuseIdentifier: "arrivalCell")
+        tableView.registerClass(StationUpcomingHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: "stationHeader")
 
-        disposable += viewModel.subscription.startWithResult({ result in
-            NSLog("[viewModel.subscription]: \(result)")
-            self.tableView.reloadData()
-        })
+        disposable += viewModel.subscription.startWithFailed(displayError)
         disposable += viewModel.stations.producer.startWithNext({ stations in
             self.tableView.reloadData()
         })
@@ -41,11 +40,4 @@ class POITableViewController: UITableViewController, ProperViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-    override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return nil
-    }
-
-//    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-//    }
 }

@@ -10,7 +10,7 @@ import UIKit
 import ReactiveCocoa
 import Result
 
-class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDelegate {
+class NearbyStationsViewModel: NSObject, UITableViewDataSource, UITableViewDelegate, MutableModelDelegate {
 
     static let searchSize = MKMapSize(width: 0.01, height: 0.01)
 
@@ -34,14 +34,21 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
      */
     lazy var stations: AnyProperty<[MutableStation]> = { [unowned self] in
         let producer = self.producer.flatMapError({ error in
-            // TODO: Delegate errors to a view controller. Upon error, this producer will need to be restarted.
+            // Errors will be sent along `subscription`. Here, they cause the property to stop updating.
             return SignalProducer<[MutableStation], NoError>(value: [])
         }).logEvents(identifier: "NearbyStationsViewModel.stations", logger: logSignalEvent)
         return AnyProperty(initialValue: [], producer: producer)
     }()
 
+    /**
+     An event producer for each station within a radius of `point` (coming from `producer`), *and* each vehicle for each
+     station. Starting this producer, then, subscribes to all entities needed to populate the view model.
+     */
     lazy var subscription: SignalProducer<TopicEvent, ProperError> = { [unowned self] in
-        return self.combinedEventProducer(self.producer)
+        return self.producer.flatMap(.Latest, transform: { stations -> SignalProducer<TopicEvent, ProperError> in
+            return SignalProducer<SignalProducer<TopicEvent, ProperError>, ProperError>(values:
+                stations.map({ $0.producer })).flatten(.Merge)
+        })
     }()
 
     lazy private var producer: SignalProducer<[MutableStation], ProperError> = { [unowned self] in
@@ -101,17 +108,6 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
     }
 
     /**
-     Flatten a set of MutableStations into a single producer that, when started, will subscribe to all events in the
-     latest set of stations.
-    */
-    private func combinedEventProducer(producer: SignalProducer<[MutableStation], ProperError>) -> SignalProducer<TopicEvent, ProperError> {
-        return producer.flatMap(.Latest, transform: { stations -> SignalProducer<TopicEvent, ProperError> in
-            return SignalProducer<SignalProducer<TopicEvent, ProperError>, ProperError>(values:
-                stations.map({ $0.producer })).flatten(.Merge)
-        })
-    }
-
-    /**
      Construct a search rectangle given a Point and a size (defaults to a class constant).
     */
     static func searchRect(for point: Point, within size: MKMapSize = searchSize) -> MKMapRect {
@@ -127,10 +123,6 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         return stations.value[section].vehicles.value.count
     }
 
-    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return stations.value[section].name.value
-    }
-
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("arrivalCell") as! ArrivalTableViewCell
         // TODO: Ensure vehicles are sorted by arrival time.
@@ -144,5 +136,18 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
             cell.apply(route)
         }
         return cell
+    }
+
+    // MARK: Table View Delegate
+    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let header = tableView.dequeueReusableHeaderFooterViewWithIdentifier("stationHeader") as! StationUpcomingHeaderFooterView
+        let station = stations.value[section]
+        header.apply(station)
+        return header
+    }
+
+    // TODO: can remove?
+    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return CGFloat(89)
     }
 }

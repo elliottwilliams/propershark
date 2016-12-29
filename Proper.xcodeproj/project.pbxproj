@@ -40,6 +40,8 @@
 		2698CF011D8B8FC400E6174A /* RoutesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2698CF001D8B8FC400E6174A /* RoutesCollectionViewCell.swift */; };
 		26A0FF011E149AF200FF265A /* NearbyStationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A0FEFF1E149AF200FF265A /* NearbyStationsViewModel.swift */; };
 		26A0FF021E149AF200FF265A /* RoutesCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A0FF001E149AF200FF265A /* RoutesCollectionViewModel.swift */; };
+		26A0FF091E15AAF500FF265A /* StationUpcomingTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26ED26F01E117969007FB0F8 /* StationUpcomingTableViewCell.xib */; };
+		26A0FF0B1E15AE6B00FF265A /* StationUpcomingHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A0FF0A1E15AE6B00FF265A /* StationUpcomingHeaderFooterView.swift */; };
 		26A424B41BD2C1320035754F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424B31BD2C1320035754F /* AppDelegate.swift */; };
 		26A424B91BD2C1320035754F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 26A424B71BD2C1320035754F /* Main.storyboard */; };
 		26A424BB1BD2C1320035754F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26A424BA1BD2C1320035754F /* Assets.xcassets */; };
@@ -98,7 +100,6 @@
 		26EBAB391D7B12DC00342D0C /* LastEventCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26EBAB381D7B12DC00342D0C /* LastEventCache.swift */; };
 		26ED26EE1E11763C007FB0F8 /* CachedConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ED26EC1E11763C007FB0F8 /* CachedConnection.swift */; };
 		26ED26EF1E11763C007FB0F8 /* ConnectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ED26ED1E11763C007FB0F8 /* ConnectionType.swift */; };
-		26ED26F11E117969007FB0F8 /* StationUpcomingTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26ED26F01E117969007FB0F8 /* StationUpcomingTableViewCell.xib */; };
 		26ED26F31E117988007FB0F8 /* StationUpcomingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ED26F21E117988007FB0F8 /* StationUpcomingTableViewCell.swift */; };
 		26ED26F51E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26ED26F41E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib */; };
 /* End PBXBuildFile section */
@@ -156,6 +157,7 @@
 		2698CF001D8B8FC400E6174A /* RoutesCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoutesCollectionViewCell.swift; sourceTree = "<group>"; };
 		26A0FEFF1E149AF200FF265A /* NearbyStationsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NearbyStationsViewModel.swift; sourceTree = "<group>"; };
 		26A0FF001E149AF200FF265A /* RoutesCollectionViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoutesCollectionViewModel.swift; sourceTree = "<group>"; };
+		26A0FF0A1E15AE6B00FF265A /* StationUpcomingHeaderFooterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StationUpcomingHeaderFooterView.swift; sourceTree = "<group>"; };
 		26A424B01BD2C1320035754F /* Proper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Proper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		26A424B31BD2C1320035754F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AppDelegate.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26A424B51BD2C1320035754F /* StationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = StationViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -285,6 +287,7 @@
 		264782611C309F4C009D9AD0 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				26A0FF0A1E15AE6B00FF265A /* StationUpcomingHeaderFooterView.swift */,
 				26ED26F21E117988007FB0F8 /* StationUpcomingTableViewCell.swift */,
 				26A424E31BD2D3F20035754F /* ArrivalTableViewCell.swift */,
 				2675E0B51D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift */,
@@ -650,9 +653,9 @@
 				26289E271DF3787A00D4CD9C /* POITableViewCell.xib in Resources */,
 				2675E0BC1D98BFCA00C2FB32 /* RouteBadge.xib in Resources */,
 				26A424BE1BD2C1320035754F /* LaunchScreen.storyboard in Resources */,
+				26A0FF091E15AAF500FF265A /* StationUpcomingTableViewCell.xib in Resources */,
 				26A424BB1BD2C1320035754F /* Assets.xcassets in Resources */,
 				26ED26F51E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib in Resources */,
-				26ED26F11E117969007FB0F8 /* StationUpcomingTableViewCell.xib in Resources */,
 				26A424E61BD2D3F20035754F /* ArrivalTableViewCell.xib in Resources */,
 				26A424B91BD2C1320035754F /* Main.storyboard in Resources */,
 				26DFB67C1C35DFA5006A8AE0 /* StationTableViewCell.xib in Resources */,
@@ -746,6 +749,7 @@
 				266BAE651D2B676F001C9EC8 /* UIColor.swift in Sources */,
 				26E7B5451DAFC0AD00AE50E1 /* POIViewController.swift in Sources */,
 				2675E0B61D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift in Sources */,
+				26A0FF0B1E15AE6B00FF265A /* StationUpcomingHeaderFooterView.swift in Sources */,
 				26C598BC1C250D1E00BC9FE1 /* RouteBadge.swift in Sources */,
 				26B3DC561D170BAE001E29AA /* Connection.swift in Sources */,
 				2650EDA01C41CFCC006CCD42 /* Array.swift in Sources */,
