@@ -42,7 +42,6 @@ class POITableViewController: UITableViewController, ProperViewController {
         // Dispose of any resources that can be recreated.
     }
 
-
     // MARK: Table View Delegate
     override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         return nil
@@ -54,10 +53,21 @@ class POITableViewController: UITableViewController, ProperViewController {
 
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if indexPath.row == 0 {
-            performSegueWithIdentifier("showStation", sender: viewModel.stations.value[indexPath.section]
-                .sortedVehicles.value[indexPath.row-1])
+            performSegueWithIdentifier("showStation", sender: viewModel.stations.value[indexPath.section])
         } else {
-            // TODO: show vehicle details
+            // TODO: show vehicle details upon selection
+        }
+    }
+
+    // MARK: Segue management
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        switch segue.identifier ?? "" {
+        case "showStation":
+            let station = sender as! MutableStation
+            let dest = segue.destinationViewController as! StationViewController
+            dest.station = station
+        default:
+            return
         }
     }
 }

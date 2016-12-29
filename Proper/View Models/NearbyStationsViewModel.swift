@@ -10,7 +10,7 @@ import UIKit
 import ReactiveCocoa
 import Result
 
-class NearbyStationsViewModel: NSObject, UITableViewDataSource, UITableViewDelegate {
+class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDelegate {
 
     static let searchSize = MKMapSize(width: 0.01, height: 0.01)
     static let arrivalRowHeight = CGFloat(44)
