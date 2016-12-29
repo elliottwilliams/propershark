@@ -10,6 +10,7 @@ import UIKit
 import ReactiveCocoa
 import Dwifft
 
+/// A data source for a collection view of route badges.
 class RoutesCollectionViewModel: NSObject, UICollectionViewDataSource, UICollectionViewDelegate {
     var routes: AnyProperty<[MutableRoute]>
 
@@ -21,8 +22,11 @@ class RoutesCollectionViewModel: NSObject, UICollectionViewDataSource, UICollect
         return routes.value.count
     }
 
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("BadgeCell", forIndexPath: indexPath) as! RoutesCollectionViewCell
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) ->
+        UICollectionViewCell
+    {
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("badgeCell", forIndexPath: indexPath)
+            as! RoutesCollectionViewCell
         let route = routes.value[indexPath.row]
 
         // Disable animations on the badge for any attributes that are going to be applied synchronously.
@@ -30,9 +34,7 @@ class RoutesCollectionViewModel: NSObject, UICollectionViewDataSource, UICollect
         CATransaction.setDisableActions(true)
 
         // Bind to route attributes.
-        cell.disposable += route.color.producer.startWithNext { color in
-            _ = color.flatMap { cell.badge.color = $0 }
-        }
+        cell.disposable += route.color.producer.ignoreNil().startWithNext { cell.badge.color = $0 }
         cell.badge.routeNumber = route.shortName
 
         CATransaction.commit()

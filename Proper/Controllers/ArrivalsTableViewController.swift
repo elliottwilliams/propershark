@@ -17,7 +17,7 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
     var delegate: ArrivalsTableViewDelegate!
 
     // MARK: Internal properties
-    internal var connection: ConnectionType = Connection.sharedInstance
+    internal var connection: ConnectionType = Connection.cachedInstance
     internal var diffCalculator: TableViewDiffCalculator<MutableVehicle>!
     internal var disposable = CompositeDisposable()
     internal var routeDisposables = [MutableRoute: Disposable]()
@@ -110,8 +110,8 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
         // Bind vehicle attributes
         cell.vehicleName.text = "(Bus #\(vehicle.name))"
-        vehicle.saturation.producer.ignoreNil().startWithNext { cell.badge.capacity = CGFloat($0) }
-        vehicle.scheduleDelta.map { cell.routeTimer.text = "∆\($0) min" }
+        cell.disposable += vehicle.saturation.producer.ignoreNil().startWithNext { cell.badge.capacity = CGFloat($0) }
+        cell.disposable += vehicle.scheduleDelta.producer.startWithNext { cell.routeTimer.text = "∆\($0) min" }
 
         guard let route = vehicle.route.value else {
             // Vehicles here should have a route (since we got them by traversing along a route). If not available,
@@ -121,10 +121,8 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
         // Bind route attributes
         cell.badge.routeNumber = route.shortName
-        route.name.map { cell.routeTitle.text = $0 }
-        route.color.map { color in
-            color.flatMap { cell.badge.color = $0 }
-        }
+        cell.disposable += route.name.producer.startWithNext { cell.routeTitle.text = $0 }
+        cell.disposable += route.color.producer.ignoreNil().startWithNext { cell.badge.color = $0 }
 
         return cell
     }
@@ -135,6 +133,7 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
     func routesCollectionCell(for indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("RoutesCollection", forIndexPath: indexPath) as! ArrivalTableRouteCollectionCell
         cell.bind(routesCollectionModel)
+        
         // Store a weak reference to the cell's collection view so that we can examine its state without needing a
         // a reference to this particular table view cell.
         routesCollectionView = cell.collectionView

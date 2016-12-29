@@ -11,18 +11,9 @@ import MDWamp
 import ReactiveCocoa
 import Result
 
-typealias WampArgs = [AnyObject]
-typealias WampKwargs = [NSObject: AnyObject]
-
-// All connections conform to this protocol, which allows ConnectionMock to be injected.
-protocol ConnectionType {
-    func call(procedure: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, ProperError>
-    func subscribe(topic: String) -> SignalProducer<TopicEvent, ProperError>
-}
-
 extension ConnectionType {
     // Convenience method to call a procedure while omitting args and/or kwargs
-    func call(procedure: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> SignalProducer<TopicEvent, ProperError> {
+    func call(procedure: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> EventProducer {
         return self.call(procedure, args: args, kwargs: kwargs)
     }
 }
@@ -38,8 +29,7 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
     private var observer: Observer<MDWamp, ProperError>?
     
     var wamp = MutableProperty<MDWamp?>(nil)
-    var cache = LastEventCache()
-    
+
     // MARK: Startup
     
     // Lazy evaluator for self.producer
@@ -68,50 +58,26 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
 
     /// Subscribe to `topic` and forward parsed events. Disposing of signals created from this method will unsubscribe
     /// `topic`.
-    func subscribe(topic: String) -> SignalProducer<TopicEvent, ProperError> {
+    func subscribe(topic: String) -> EventProducer {
         return self.producer
             .map { wamp in wamp.subscribeWithSignal(topic) }
             .flatten(.Latest)
             .map { TopicEvent.parseFromTopic(topic, event: $0) }
             .unwrapOrSendFailure(ProperError.eventParseFailure)
             .logEvents(identifier: "Connection.subscribe", logger: logSignalEvent)
-
-            // Include side effects to update the last event cache.
-            .on(next: { [weak self] in self?.cache.store(topic, event: $0) },
-                terminated: { [weak self] in self?.cache.void(topic) })
     }
 
     /// Call `proc` and forward the result. Disposing the signal created will cancel the RPC call.
-    func call(proc: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> SignalProducer<TopicEvent, ProperError> {
-
-        // A producer that checks the cache, then completes.
-        let cached = SignalProducer<TopicEvent?, NoError> { [weak self] observer, disposable in
-            observer.sendNext(self?.cache.lookup(rpc: proc, args))
-            observer.sendCompleted()
-        }.logEvents(identifier: "Connection.call (cache)", logger: logSignalEvent)
-
-
-        // A producer that performs the RPC.
-        let called = self.producer.map { wamp in
+    func call(proc: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> EventProducer {
+        return self.producer.map({ wamp in
             wamp.callWithSignal(proc, args, kwargs, [:])
                 .timeoutWithError(.timeout, afterInterval: 10.0, onScheduler: QueueScheduler.mainQueueScheduler)
-            }
+            })
             .flatten(.Latest)
             .map { TopicEvent.parseFromRPC(proc, args, kwargs, $0) }
             .unwrapOrSendFailure(ProperError.eventParseFailure)
-            .logEvents(identifier: "Connection.call (server)", logger: logSignalEvent)
-
-            // Include side effects to update the last event cache.
-            .on(next: { [weak self] in self?.cache.store(rpc: proc, args: args, event: $0) })
-
-        // Return a producer that will perform the cache lookup, then call the RPC if the cache returns nil. The
-        // transformation below waits until `cached` completes, then either produces the cache hit, or produces
-        // the server call.
-        return cached.flatMap(.Concat) { cacheResult in
-            return cacheResult.map(SignalProducer.init) ?? called
-        }.logEvents(identifier: "Connection.call", logger: logSignalEvent)
     }
-    
+
     // MARK: MDWamp Delegate
     func mdwamp(wamp: MDWamp!, sessionEstablished info: [NSObject: AnyObject]!) {
         NSLog("session established")

@@ -21,24 +21,23 @@ class StationViewController: UIViewController, ProperViewController, ArrivalsTab
     @IBOutlet weak var nav: UINavigationItem!
 
     // MARK: Internal properties
-    internal lazy var connection: ConnectionType = Connection.sharedInstance
+    internal lazy var connection: ConnectionType = Connection.cachedInstance
     internal let disposable = CompositeDisposable()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Set the navigation bar's title to the name of the stop.
-        station.name.map { self.nav.title = $0 }
+        disposable += station.name.producer.startWithNext({ self.nav.title = $0 })
 
         // Configure the map once a point is available.
-        station.position.map { point in
-            guard let point = point else { return }
+        disposable += station.position.producer.ignoreNil().startWithNext({ point in
             self.map.region = MKCoordinateRegion.init(center: CLLocationCoordinate2D(point: point),
                 span: MKCoordinateSpanMake(0.01, 0.01))
-        }
+        })
 
         // As soon as we have a set of coordinates for the station's position, add it to the map.
-        station.position.producer.ignoreNil().take(1).startWithNext { point in
+        disposable += station.position.producer.ignoreNil().take(1).startWithNext { point in
             self.map.addAnnotation(MutableStation.Annotation(from: self.station, at: point))
         }
     }
