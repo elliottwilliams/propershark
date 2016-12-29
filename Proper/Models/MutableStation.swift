@@ -33,6 +33,10 @@ class MutableStation: MutableModel, Comparable {
     var routes: MutableProperty<Set<RouteType>> = .init(Set())
     var vehicles: MutableProperty<Set<VehicleType>> = .init(Set())
 
+    lazy var sortedVehicles: AnyProperty<[VehicleType]> = {
+        return AnyProperty(initialValue: [], producer: self.vehicles.producer.map { $0.sort() })
+    }()
+
     // MARK: Signal Producer
     lazy var producer: SignalProducer<TopicEvent, ProperError> = {
         let now = self.connection.call("meta.last_event", args: [self.topic, self.topic])

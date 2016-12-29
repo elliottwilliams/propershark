@@ -150,7 +150,7 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, UITableViewDeleg
 
         // TODO: Ensure vehicles are sorted by arrival time.
         let station = stations.value[indexPath.section]
-        let vehicle = station.vehicles.value.sort()[indexPath.row - 1]
+        let vehicle = station.sortedVehicles.value[indexPath.row - 1]
         cell.apply(vehicle)
         if let route = vehicle.route.value {
             // TODO: Vehicles here should have a route (since we got them by traversing along a route). If not available,

@@ -54,7 +54,8 @@ class POITableViewController: UITableViewController, ProperViewController {
 
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if indexPath.row == 0 {
-            performSegueWithIdentifier("showStation", sender: viewModel.stations.value[indexPath.section].vehicles.value.sort()[indexPath.row-1])
+            performSegueWithIdentifier("showStation", sender: viewModel.stations.value[indexPath.section]
+                .sortedVehicles.value[indexPath.row-1])
         } else {
             // TODO: show vehicle details
         }
