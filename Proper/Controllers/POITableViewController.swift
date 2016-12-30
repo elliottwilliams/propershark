@@ -26,9 +26,24 @@ class POITableViewController: UITableViewController, ProperViewController {
         tableView.registerNib(UINib(nibName: "StationUpcomingTableViewCell", bundle: nil),
                               forCellReuseIdentifier: "stationCell")
 
-        disposable += viewModel.subscription.startWithFailed(displayError)
-        disposable += viewModel.stations.producer.startWithNext({ stations in
-            self.tableView.reloadData()
+        // From the list of stations coming from the view model, produce topic event subscriptions for each station.
+        // Pass the station's index through, and reload a station's section when a topic event is received for it.
+        disposable += viewModel.producer.map({ $0.enumerate() })
+        .flatMap(.Latest, transform: { stations in
+            // Map an enumerated list of stations to individual station-idx pairs.
+            return SignalProducer<(Int, MutableStation), ProperError>(values: stations)
+        }).flatMap(.Merge, transform: { idx, station -> SignalProducer<(Int, TopicEvent), ProperError> in
+            // Map station-idx pairs to event producer-idx pairs.
+            return SignalProducer(value: idx).combineLatestWith(station.producer)
+        }).startWithResult({ result in
+            switch result {
+            case let .Success(idx, _):
+//                let sections = NSIndexSet(index: idx)
+//                self.tableView.reloadSections(sections, withRowAnimation: .Automatic)
+                self.tableView.reloadData()
+            case let .Failure(error):
+                self.displayError(error)
+            }
         })
     }
 

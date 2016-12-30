@@ -33,17 +33,24 @@ class ArrivalTableViewCell: UITableViewCell {
 
     override func prepareForReuse() {
         super.prepareForReuse()
+        disposable.dispose()
     }
 
-    func apply(route: MutableRoute) {
-        badge.routeNumber = route.shortName
-        disposable += route.name.producer.startWithNext { self.routeTitle.text = $0 }
-        disposable += route.color.producer.ignoreNil().startWithNext { self.badge.color = $0 }
+    deinit {
+        disposable.dispose()
     }
 
     func apply(vehicle: MutableVehicle) {
+        disposable = CompositeDisposable()
         vehicleName.text = "(Bus #\(vehicle.name))"
         disposable += vehicle.saturation.producer.ignoreNil().startWithNext { self.badge.capacity = CGFloat($0) }
         disposable += vehicle.scheduleDelta.producer.startWithNext { self.routeTimer.text = "∆\($0) min" }
+
+        let route = vehicle.route.producer.ignoreNil()
+        disposable += route.startWithNext { self.badge.routeNumber = $0.shortName }
+        disposable += route.flatMap(.Latest, transform: { $0.name.producer })
+            .startWithNext { self.routeTitle.text = $0 }
+        disposable += route.flatMap(.Latest, transform: { $0.color.producer.ignoreNil() })
+            .startWithNext { self.badge.color = $0 }
     }
 }

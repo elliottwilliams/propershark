@@ -112,11 +112,6 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
         let vehicle = diffCalculator.rows[indexPath.row]
 
         cell.apply(vehicle)
-        if let route = vehicle.route.value {
-            // TODO: Vehicles here should have a route (since we got them by traversing along a route). If not available,
-            // consider displaying a loading indicator.
-            cell.apply(route)
-        }
         return cell
     }
 

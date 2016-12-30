@@ -36,24 +36,12 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
      */
     lazy var stations: AnyProperty<[MutableStation]> = { [unowned self] in
         let producer = self.producer.flatMapError({ error in
-            // Errors will be sent along `subscription`. Here, they cause the property to stop updating.
             return SignalProducer<[MutableStation], NoError>(value: [])
         }).logEvents(identifier: "NearbyStationsViewModel.stations", logger: logSignalEvent)
         return AnyProperty(initialValue: [], producer: producer)
     }()
 
-    /**
-     An event producer for each station within a radius of `point` (coming from `producer`), *and* each vehicle for each
-     station. Starting this producer, then, subscribes to all entities needed to populate the view model.
-     */
-    lazy var subscription: SignalProducer<TopicEvent, ProperError> = { [unowned self] in
-        return self.producer.flatMap(.Latest, transform: { stations -> SignalProducer<TopicEvent, ProperError> in
-            return SignalProducer<SignalProducer<TopicEvent, ProperError>, ProperError>(values:
-                stations.map({ $0.producer })).flatten(.Merge)
-        })
-    }()
-
-    lazy private var producer: SignalProducer<[MutableStation], ProperError> = { [unowned self] in
+    lazy var producer: SignalProducer<[MutableStation], ProperError> = { [unowned self] in
         // TODO: Consider adding a threshold to `point`s value, so that only significant changes in point reload the
         // stations.
         return self.point.producer.flatMap(.Latest, transform: { point -> SignalProducer<[MutableStation], ProperError> in
@@ -152,11 +140,6 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         let station = stations.value[indexPath.section]
         let vehicle = station.sortedVehicles.value[indexPath.row - 1]
         cell.apply(vehicle)
-        if let route = vehicle.route.value {
-            // TODO: Vehicles here should have a route (since we got them by traversing along a route). If not available,
-            // consider displaying a loading indicator.
-            cell.apply(route)
-        }
         return cell
     }
 }
