@@ -42,15 +42,20 @@ class ArrivalTableViewCell: UITableViewCell {
 
     func apply(vehicle: MutableVehicle) {
         disposable = CompositeDisposable()
+        // Bind to vehicle attributes.
         vehicleName.text = "(Bus #\(vehicle.name))"
         disposable += vehicle.saturation.producer.ignoreNil().startWithNext { self.badge.capacity = CGFloat($0) }
         disposable += vehicle.scheduleDelta.producer.startWithNext { self.routeTimer.text = "∆\($0) min" }
 
+        // Bind to route attributes.
         let route = vehicle.route.producer.ignoreNil()
         disposable += route.startWithNext { self.badge.routeNumber = $0.shortName }
         disposable += route.flatMap(.Latest, transform: { $0.name.producer })
             .startWithNext { self.routeTitle.text = $0 }
         disposable += route.flatMap(.Latest, transform: { $0.color.producer.ignoreNil() })
             .startWithNext { self.badge.color = $0 }
+
+        // Subscribe to vehicle events.
+        disposable += vehicle.producer.start()
     }
 }

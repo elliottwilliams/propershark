@@ -9,6 +9,7 @@
 import UIKit
 import ReactiveCocoa
 import Result
+import Dwifft
 
 class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDelegate {
 
@@ -34,12 +35,13 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
      Note: When `point` changes, the entire list will be reloaded. To gracefully animate changes to the list, you'll
      need to perform array diffs on the values emitted.
      */
-    lazy var stations: AnyProperty<[MutableStation]> = { [unowned self] in
-        let producer = self.producer.flatMapError({ error in
-            return SignalProducer<[MutableStation], NoError>(value: [])
-        }).logEvents(identifier: "NearbyStationsViewModel.stations", logger: logSignalEvent)
-        return AnyProperty(initialValue: [], producer: producer)
-    }()
+//    lazy var stations: AnyProperty<[MutableStation]> = { [unowned self] in
+//        let producer = self.producer.flatMapError({ error in
+//            return SignalProducer<[MutableStation], NoError>(value: [])
+//        }).logEvents(identifier: "NearbyStationsViewModel.stations", logger: logSignalEvent)
+//        return AnyProperty(initialValue: [], producer: producer)
+//    }()
+    let stations: MutableProperty<[MutableStation]> = .init([])
 
     lazy var producer: SignalProducer<[MutableStation], ProperError> = { [unowned self] in
         // TODO: Consider adding a threshold to `point`s value, so that only significant changes in point reload the

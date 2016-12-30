@@ -8,6 +8,7 @@
 
 import UIKit
 import ReactiveCocoa
+import Dwifft
 
 class POITableViewController: UITableViewController, ProperViewController {
 
@@ -28,23 +29,44 @@ class POITableViewController: UITableViewController, ProperViewController {
 
         // From the list of stations coming from the view model, produce topic event subscriptions for each station.
         // Pass the station's index through, and reload a station's section when a topic event is received for it.
-        disposable += viewModel.producer.map({ $0.enumerate() })
-        .flatMap(.Latest, transform: { stations in
-            // Map an enumerated list of stations to individual station-idx pairs.
-            return SignalProducer<(Int, MutableStation), ProperError>(values: stations)
-        }).flatMap(.Merge, transform: { idx, station -> SignalProducer<(Int, TopicEvent), ProperError> in
-            // Map station-idx pairs to event producer-idx pairs.
-            return SignalProducer(value: idx).combineLatestWith(station.producer)
-        }).startWithResult({ result in
-            switch result {
-            case let .Success(idx, _):
-//                let sections = NSIndexSet(index: idx)
-//                self.tableView.reloadSections(sections, withRowAnimation: .Automatic)
-                self.tableView.reloadData()
-            case let .Failure(error):
-                self.displayError(error)
+        disposable += (viewModel.producer |> sectionSideEffects)
+            .map({ $0.enumerate() })
+            .flatMap(.Latest, transform: { stations in
+                return SignalProducer<(Int, MutableStation), ProperError>(values: stations)
+            })
+
+            .startWithResult({ result in
+                switch result {
+                case let .Success(idx, _):
+                    self.tableView.reloadSections(NSIndexSet(index: idx), withRowAnimation: .Automatic)
+                case let .Failure(error):
+                    self.displayError(error)
+                }
+            })
+    }
+
+    func sectionSideEffects(producer: SignalProducer<[MutableStation], ProperError>) ->
+        SignalProducer<[MutableStation], ProperError>
+    {
+        return producer.combinePrevious([]).on(next: { prev, next in
+            let diff = prev.diff(next)
+            let inserts = NSMutableIndexSet()
+            let deletes = NSMutableIndexSet()
+
+            diff.results.forEach { step in
+                switch step {
+                case let .Insert(idx, _):
+                    inserts.addIndex(idx)
+                case let .Delete(idx, _):
+                    deletes.addIndex(idx)
+                }
             }
-        })
+            self.tableView.beginUpdates()
+            self.viewModel.stations.swap(next)
+            self.tableView.insertSections(inserts, withRowAnimation: .Automatic)
+            self.tableView.deleteSections(deletes, withRowAnimation: .Automatic)
+            self.tableView.endUpdates()
+        }).map({ $1 })
     }
 
     override func viewDidDisappear(animated: Bool) {
