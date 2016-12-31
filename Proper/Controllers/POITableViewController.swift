@@ -11,41 +11,12 @@ import ReactiveCocoa
 import Dwifft
 
 class POITableViewController: UITableViewController, ProperViewController {
-
-    var point: AnyProperty<Point>!
     var viewModel: NearbyStationsViewModel!
 
     internal var connection: ConnectionType = Connection.cachedInstance
     internal var disposable = CompositeDisposable()
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        viewModel = NearbyStationsViewModel(point: point, connection: connection)
-        tableView.dataSource = viewModel
-        tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil),
-                              forCellReuseIdentifier: "arrivalCell")
-        tableView.registerNib(UINib(nibName: "StationUpcomingTableViewCell", bundle: nil),
-                              forCellReuseIdentifier: "stationCell")
-
-        // From the list of stations coming from the view model, produce topic event subscriptions for each station.
-        // Pass the station's index through, and reload a station's section when a topic event is received for it.
-        disposable += (viewModel.producer |> sectionSideEffects)
-            .map({ $0.enumerate() })
-            .flatMap(.Latest, transform: { stations in
-                return SignalProducer<(Int, MutableStation), ProperError>(values: stations)
-            })
-
-            .startWithResult({ result in
-                switch result {
-                case let .Success(idx, _):
-                    self.tableView.reloadSections(NSIndexSet(index: idx), withRowAnimation: .Automatic)
-                case let .Failure(error):
-                    self.displayError(error)
-                }
-            })
-    }
-
-    func sectionSideEffects(producer: SignalProducer<[MutableStation], ProperError>) ->
+    func updateViewModel(producer: SignalProducer<[MutableStation], ProperError>) ->
         SignalProducer<[MutableStation], ProperError>
     {
         return producer.combinePrevious([]).on(next: { prev, next in
@@ -67,6 +38,33 @@ class POITableViewController: UITableViewController, ProperViewController {
             self.tableView.deleteSections(deletes, withRowAnimation: .Automatic)
             self.tableView.endUpdates()
         }).map({ $1 })
+    }
+
+    func reloadChangedSections(producer: SignalProducer<[MutableStation], ProperError>) ->
+        SignalProducer<MutableStation, ProperError>
+    {
+        return producer.map({ $0.enumerate() })
+            .flatMap(.Latest, transform: { stations in
+                return SignalProducer<(Int, MutableStation), ProperError>(values: stations)
+            }).on(next: { idx, _ in
+                self.tableView.reloadSections(NSIndexSet(index: idx), withRowAnimation: .Automatic)
+            }).map({ $1 })
+    }
+
+    // MARK: Lifecycle
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        tableView.dataSource = viewModel
+        tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil),
+                              forCellReuseIdentifier: "arrivalCell")
+        tableView.registerNib(UINib(nibName: "StationUpcomingTableViewCell", bundle: nil),
+                              forCellReuseIdentifier: "stationCell")
+
+        // From the list of stations coming from the view model, produce topic event subscriptions for each station.
+        // Reload a station's section when a topic event is received for it.
+        disposable += (viewModel.producer |> updateViewModel |> reloadChangedSections)
+            .startWithFailed(self.displayError)
     }
 
     override func viewDidDisappear(animated: Bool) {

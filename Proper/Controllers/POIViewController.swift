@@ -32,6 +32,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel = NearbyStationsViewModel(point: point, connection: connection)
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -44,6 +45,8 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
         // Bind changes in the POI point to map movements.
         disposable += point.producer.startWithNext { self.configureMap($0) }
+
+        // TODO: Add map annotations for found stations to the map.
     }
 
     override func viewWillDisappear(animated: Bool) {
@@ -69,7 +72,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         switch segue.identifier ?? "" {
         case "embedPOITable":
             let dest = segue.destinationViewController as! POITableViewController
-            dest.point = AnyProperty(point)
+            dest.viewModel = viewModel
         default:
             return
         }

@@ -29,19 +29,10 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
     internal let connection: ConnectionType
     internal let disposable = CompositeDisposable()
 
-    /**
-     Produces a list of stations based on distance to `point`. The stations are implicitly subscribed to.
-     
-     Note: When `point` changes, the entire list will be reloaded. To gracefully animate changes to the list, you'll
-     need to perform array diffs on the values emitted.
-     */
-//    lazy var stations: AnyProperty<[MutableStation]> = { [unowned self] in
-//        let producer = self.producer.flatMapError({ error in
-//            return SignalProducer<[MutableStation], NoError>(value: [])
-//        }).logEvents(identifier: "NearbyStationsViewModel.stations", logger: logSignalEvent)
-//        return AnyProperty(initialValue: [], producer: producer)
-//    }()
     let stations: MutableProperty<[MutableStation]> = .init([])
+    lazy var letteredStations: AnyProperty<[(String, MutableStation)]> = {
+        return AnyProperty(initialValue: [], producer: self.stations.producer |> self.assignLetterings)
+    }()
 
     lazy var producer: SignalProducer<[MutableStation], ProperError> = { [unowned self] in
         // TODO: Consider adding a threshold to `point`s value, so that only significant changes in point reload the
@@ -50,13 +41,13 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
             // Compose: a search region for `point`, with a producer of static stations in that region, with a set of
             // MutableStations corresponding
             let stations = NearbyStationsViewModel.searchRect(for: point) |> self.produceStations |> self.produceMutables
-            // Sort the set by distance to `point`.
+            // Sort the set by distance to `point` and assign letters to the stations.
             return stations.map({ $0.sortDistanceTo(point) })
         })
     }()
 
     init<P: PropertyType where P.Value == Point>(point: P, connection: ConnectionType = Connection.cachedInstance) {
-        self.point = AnyProperty(initialValue: point.value, signal: point.signal)
+        self.point = AnyProperty(point)
         self.connection = connection
     }
 
@@ -96,6 +87,19 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
             } catch {
                 return .Failure(.unexpected(error: error))
             }
+        })
+    }
+
+    func assignLetterings<Error: ErrorType>(producer: SignalProducer<[MutableStation], Error>) ->
+        SignalProducer<[(String, MutableStation)], Error>
+    {
+        let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".characters
+        let alphabetLength = 26
+        return producer.map({ stations in
+            return stations.enumerate().map({ idx, station in
+                let letter = String(alphabet.startIndex.advancedBy(idx % alphabetLength))
+                return (letter, station)
+            })
         })
     }
 
