@@ -13,6 +13,7 @@ class StationUpcomingTableViewCell: UITableViewCell {
     @IBOutlet weak var title: TransitLabel!
     @IBOutlet weak var subtitle: TransitLabel!
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var badge: RouteBadge!
 
     var disposable: CompositeDisposable?
     var viewModel: RoutesCollectionViewModel?
@@ -38,8 +39,11 @@ class StationUpcomingTableViewCell: UITableViewCell {
         collectionView.delegate = viewModel
     }
 
-    func apply(station: MutableStation) {
+    func apply(station: MutableStation, badgeIdentifier: String) {
         let disposable = CompositeDisposable()
+
+        // Set the badge identifier.
+        badge.label.text = badgeIdentifier
 
         // Bind station attributes to the UI labels.
         disposable += station.name.producer.startWithNext({ self.title.text = $0 })

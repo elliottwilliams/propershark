@@ -9,10 +9,12 @@
 import UIKit
 import ReactiveCocoa
 
-class POIViewController: UIViewController, ProperViewController, UISearchControllerDelegate {
+class POIViewController: UIViewController, ProperViewController, UISearchControllerDelegate, MKMapViewDelegate {
 
     var point: MutableProperty<Point> = .init(Point(lat: 40.4247277, long: -86.9114585)) // PMU
-    var viewModel: NearbyStationsViewModel!
+    lazy var viewModel: NearbyStationsViewModel = {
+        return NearbyStationsViewModel(point: self.point, connection: self.connection)
+    }()
 
     @IBOutlet weak var map: MKMapView!
 
@@ -24,15 +26,24 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         map.centerCoordinate = centerLoc
         map.region = MKCoordinateRegion(center: centerLoc,
                                         span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+        map.delegate = self
 
+
+        // DEBUG - show search area around point
+        let circle = MKCircle(centerCoordinate: centerLoc, radius: NearbyStationsViewModel.searchRadius)
+        map.addOverlay(circle)
+
+
+        // TODO - Only show this point if we're not tracking the user's location.
         let annotation = MKPointAnnotation()
         annotation.coordinate = CLLocationCoordinate2D(point: centerPoint)
         map.addAnnotation(annotation)
     }
 
+    // MARK: Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel = NearbyStationsViewModel(point: point, connection: connection)
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -46,7 +57,12 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         // Bind changes in the POI point to map movements.
         disposable += point.producer.startWithNext { self.configureMap($0) }
 
-        // TODO: Add map annotations for found stations to the map.
+        disposable += viewModel.letteredStations.producer.map { stations in
+            return stations.flatMap({ idx, station in POIStationAnnotation(station: station, annotationKey: idx) })
+        }.combinePrevious([]).startWithNext({ prev, next in
+            self.map.removeAnnotations(prev)
+            self.map.addAnnotations(next)
+        })
     }
 
     override func viewWillDisappear(animated: Bool) {
@@ -77,10 +93,23 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
             return
         }
     }
-}
 
-// TODO: Move to model file
-struct NamedPoint {
-    let point: Point
-    let title: String?
+    // MARK: Map view delegate
+
+//    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+//        if let annotation = annotation as? POIStationAnnotation {
+//            let view = mapView.dequeueReusableAnnotationViewWithIdentifier("stationAnnotation") ??
+//                POIStationAnnotationView(annotation: annotation, reuseIdentifier: "stationAnnotation")
+//            return view
+//        }
+//
+//        // Returning nil causes the map to use a default annotation.
+//        return nil
+//    }
+
+    func mapView(mapView: MKMapView, rendererForOverlay overlay: MKOverlay) -> MKOverlayRenderer {
+        let renderer = MKCircleRenderer(overlay: overlay)
+        renderer.fillColor = UIColor.blueColor().colorWithAlphaComponent(0.3)
+        return renderer
+    }
 }

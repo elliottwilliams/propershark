@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -16,11 +17,38 @@
             <rect key="frame" x="0.0" y="0.0" width="400" height="90"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="g39-MD-gHE" id="Ktx-4F-rJz">
-                <rect key="frame" x="0.0" y="0.0" width="367" height="89"/>
+                <rect key="frame" x="0.0" y="0.0" width="367" height="90"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GiM-iG-owS" customClass="RouteBadge" customModule="Proper" customModuleProvider="target">
+                        <rect key="frame" x="8" y="8" width="38" height="38"/>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="GiM-iG-owS" secondAttribute="height" multiplier="1:1" id="3Ja-a3-1LF"/>
+                            <constraint firstAttribute="height" constant="38" id="se5-vL-S2y"/>
+                        </constraints>
+                    </view>
+                    <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gMX-gL-jnt" customClass="TransitLabel" customModule="Proper" customModuleProvider="target">
+                        <rect key="frame" x="54" y="28" width="41" height="14"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" delaysContentTouches="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="yl3-WI-tGU">
+                        <rect key="frame" x="54" y="50" width="305" height="34"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="34" id="6bp-oT-V4G"/>
+                        </constraints>
+                        <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="tLD-ha-DHg">
+                            <size key="itemSize" width="30" height="30"/>
+                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        </collectionViewFlowLayout>
+                    </collectionView>
                     <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HNo-Xa-pEl" userLabel="Title" customClass="TransitLabel" customModule="Proper" customModuleProvider="target">
-                        <rect key="frame" x="15" y="5" width="32" height="20"/>
+                        <rect key="frame" x="54" y="8" width="32" height="20"/>
                         <constraints>
                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="90" id="378-Mg-EB9"/>
                             <constraint firstAttribute="width" constant="442" id="cjf-oz-tQp"/>
@@ -35,31 +63,19 @@
                             </mask>
                         </variation>
                     </label>
-                    <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gMX-gL-jnt" customClass="TransitLabel" customModule="Proper" customModuleProvider="target">
-                        <rect key="frame" x="15" y="25" width="41" height="14"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
-                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <nil key="highlightedColor"/>
-                    </label>
-                    <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" delaysContentTouches="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="yl3-WI-tGU">
-                        <rect key="frame" x="15" y="47" width="352" height="34"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                        <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="tLD-ha-DHg">
-                            <size key="itemSize" width="30" height="30"/>
-                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                        </collectionViewFlowLayout>
-                    </collectionView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="HNo-Xa-pEl" firstAttribute="leading" secondItem="Ktx-4F-rJz" secondAttribute="leading" constant="15" id="5M8-5X-Ojj"/>
+                    <constraint firstItem="GiM-iG-owS" firstAttribute="leading" secondItem="Ktx-4F-rJz" secondAttribute="leadingMargin" id="CWN-By-Us0"/>
                     <constraint firstItem="HNo-Xa-pEl" firstAttribute="top" secondItem="Ktx-4F-rJz" secondAttribute="topMargin" constant="-3" placeholder="YES" id="F07-cr-o0v"/>
+                    <constraint firstAttribute="trailing" secondItem="yl3-WI-tGU" secondAttribute="trailing" constant="8" id="Idx-n4-rLn"/>
+                    <constraint firstItem="gMX-gL-jnt" firstAttribute="leading" secondItem="GiM-iG-owS" secondAttribute="trailing" constant="8" id="Pom-jD-GMu"/>
+                    <constraint firstItem="yl3-WI-tGU" firstAttribute="top" secondItem="gMX-gL-jnt" secondAttribute="bottom" constant="8" id="SVC-64-bCw"/>
                     <constraint firstItem="gMX-gL-jnt" firstAttribute="top" secondItem="HNo-Xa-pEl" secondAttribute="bottom" placeholder="YES" id="XI0-RZ-kY4"/>
                     <constraint firstItem="gMX-gL-jnt" firstAttribute="top" secondItem="HNo-Xa-pEl" secondAttribute="bottom" id="cMS-Ob-i9R"/>
-                    <constraint firstItem="HNo-Xa-pEl" firstAttribute="top" secondItem="Ktx-4F-rJz" secondAttribute="topMargin" constant="-3" id="vLg-40-10Y"/>
-                    <constraint firstItem="gMX-gL-jnt" firstAttribute="leading" secondItem="Ktx-4F-rJz" secondAttribute="leading" constant="15" id="ytm-04-tMG"/>
+                    <constraint firstItem="HNo-Xa-pEl" firstAttribute="leading" secondItem="GiM-iG-owS" secondAttribute="trailing" constant="8" id="cg3-1x-hxf"/>
+                    <constraint firstItem="GiM-iG-owS" firstAttribute="top" secondItem="Ktx-4F-rJz" secondAttribute="topMargin" id="p13-sQ-DQa"/>
+                    <constraint firstItem="yl3-WI-tGU" firstAttribute="leading" secondItem="Ktx-4F-rJz" secondAttribute="leading" constant="54" id="qC0-bh-L17"/>
+                    <constraint firstItem="HNo-Xa-pEl" firstAttribute="top" secondItem="Ktx-4F-rJz" secondAttribute="topMargin" id="vLg-40-10Y"/>
                 </constraints>
                 <variation key="default">
                     <mask key="constraints">
@@ -69,6 +85,7 @@
                 </variation>
             </tableViewCellContentView>
             <connections>
+                <outlet property="badge" destination="GiM-iG-owS" id="aHh-AV-iDL"/>
                 <outlet property="collectionView" destination="yl3-WI-tGU" id="qz2-Xe-R7c"/>
                 <outlet property="subtitle" destination="gMX-gL-jnt" id="9L6-Wp-yBC"/>
                 <outlet property="title" destination="HNo-Xa-pEl" id="YcC-ri-SLl"/>

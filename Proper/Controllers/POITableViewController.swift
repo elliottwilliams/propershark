@@ -16,7 +16,7 @@ class POITableViewController: UITableViewController, ProperViewController {
     internal var connection: ConnectionType = Connection.cachedInstance
     internal var disposable = CompositeDisposable()
 
-    func updateViewModel(producer: SignalProducer<[MutableStation], ProperError>) ->
+    func followSectionChanges(producer: SignalProducer<[MutableStation], ProperError>) ->
         SignalProducer<[MutableStation], ProperError>
     {
         return producer.combinePrevious([]).on(next: { prev, next in
@@ -40,15 +40,27 @@ class POITableViewController: UITableViewController, ProperViewController {
         }).map({ $1 })
     }
 
-    func reloadChangedSections(producer: SignalProducer<[MutableStation], ProperError>) ->
-        SignalProducer<MutableStation, ProperError>
+    func followRowChanges(producer: SignalProducer<[MutableStation], ProperError>) ->
+        SignalProducer<TopicEvent, ProperError>
     {
-        return producer.map({ $0.enumerate() })
-            .flatMap(.Latest, transform: { stations in
-                return SignalProducer<(Int, MutableStation), ProperError>(values: stations)
-            }).on(next: { idx, _ in
-                self.tableView.reloadSections(NSIndexSet(index: idx), withRowAnimation: .Automatic)
-            }).map({ $1 })
+        return producer.flatMap(.Latest, transform: { stations ->
+            SignalProducer<SignalProducer<(TopicEvent, Int), ProperError>, ProperError> in
+
+            // Produce (station, section idx) pairs...
+            return SignalProducer(values: stations.enumerate().map({ idx, station in
+                // ...then extract the station's event producer. Combine all received events with the section idx.
+                station.producer.combineLatestWith(SignalProducer(value: idx))
+            }))
+        // Flatten the producer of topic event producers to all the topic events for the latest set of stations,
+        // merged together.
+        }).flatten(.Merge).on(next: { event, idx in
+            // Use the section index numbers to reload sections as events are received within them.
+            if case .Station(.update(let station, _)) = event {
+                assert(self.viewModel.stations.value[idx].identifier == station.value?.identifier,
+                    "Event received doesn't belong to the section at index \(idx)")
+            }
+            self.tableView.reloadSections(NSIndexSet(index: idx), withRowAnimation: .Automatic)
+        }).map({ station, _ in station })
     }
 
     // MARK: Lifecycle
@@ -63,7 +75,7 @@ class POITableViewController: UITableViewController, ProperViewController {
 
         // From the list of stations coming from the view model, produce topic event subscriptions for each station.
         // Reload a station's section when a topic event is received for it.
-        disposable += (viewModel.producer |> updateViewModel |> reloadChangedSections)
+        disposable += (viewModel.producer |> followSectionChanges |> followRowChanges)
             .startWithFailed(self.displayError)
     }
 

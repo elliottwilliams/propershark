@@ -13,7 +13,8 @@ import Dwifft
 
 class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDelegate {
 
-    static let searchSize = MKMapSize(width: 0.01, height: 0.01)
+    // TODO - Maybe raise the search radius but cap the number of results returned?
+    static let searchRadius = CLLocationDistance(250) // in meters
     static let arrivalRowHeight = CGFloat(44)
     static let stationRowHeight = CGFloat(90)
 
@@ -40,7 +41,7 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         return self.point.producer.flatMap(.Latest, transform: { point -> SignalProducer<[MutableStation], ProperError> in
             // Compose: a search region for `point`, with a producer of static stations in that region, with a set of
             // MutableStations corresponding
-            let stations = NearbyStationsViewModel.searchRect(for: point) |> self.produceStations |> self.produceMutables
+            let stations = NearbyStationsViewModel.searchArea(for: point) |> self.produceStations |> self.produceMutables
             // Sort the set by distance to `point` and assign letters to the stations.
             return stations.map({ $0.sortDistanceTo(point) })
         })
@@ -57,7 +58,7 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
      Implementation note: The signal producer returned calls `agency.stations`, which returns *all* stations for the
      agency and is thus very slow.
      */
-    func produceStations(within rect: MKMapRect) -> SignalProducer<Set<Station>, ProperError> {
+    func produceStations(within circle: MKCircle) -> SignalProducer<Set<Station>, ProperError> {
         return connection.call("agency.stations").attemptMap({ event -> Result<[AnyObject], ProperError> in
             // Received events should be Agency.stations events, which contain a list of all stations on the agency.
             if case .Agency(.stations(let stations)) = event {
@@ -66,8 +67,8 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
                 return .Failure(ProperError.eventParseFailure)
             }
         }).decodeAnyAs(Station.self).map({ stations in
-            // Filter down to a set of stations which have a defined position that is inside `rect`.
-            Set(stations.filter({ $0.position.map({ MKMapRectContainsPoint(rect, MKMapPoint(point: $0)) }) == true}))
+            // Filter down to a set of stations which have a defined position that is inside `circle`.
+            Set(stations.filter({ $0.position.map({ circle.contains(coordinate: CLLocationCoordinate2D(point: $0)) }) == true }))
         })
     }
 
@@ -97,7 +98,7 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         let alphabetLength = 26
         return producer.map({ stations in
             return stations.enumerate().map({ idx, station in
-                let letter = String(alphabet.startIndex.advancedBy(idx % alphabetLength))
+                let letter = String(alphabet[alphabet.startIndex.advancedBy(idx % alphabetLength)])
                 return (letter, station)
             })
         })
@@ -106,8 +107,8 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
     /**
      Construct a search rectangle given a Point and a size (defaults to a class constant).
     */
-    static func searchRect(for point: Point, within size: MKMapSize = searchSize) -> MKMapRect {
-        return MKMapRect(origin: MKMapPoint(point: point), size: size)
+    static func searchArea(for point: Point, within radius: CLLocationDistance = searchRadius) -> MKCircle {
+        return MKCircle(centerCoordinate: CLLocationCoordinate2D(point: point), radius: radius)
     }
 
     // MARK: Table View Data Source
@@ -133,8 +134,8 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         StationUpcomingTableViewCell
     {
         let cell = tableView.dequeueReusableCellWithIdentifier("stationCell") as! StationUpcomingTableViewCell
-        let station = stations.value[indexPath.section]
-        cell.apply(station)
+        let (id, station) = letteredStations.value[indexPath.section]
+        cell.apply(station, badgeIdentifier: id)
         return cell
     }
 
@@ -147,5 +148,13 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         let vehicle = station.sortedVehicles.value[indexPath.row - 1]
         cell.apply(vehicle)
         return cell
+    }
+}
+
+extension MKCircle {
+    func contains(coordinate other: CLLocationCoordinate2D) -> Bool {
+        let origin = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        let point = CLLocation(latitude: other.latitude, longitude: other.longitude)
+        return origin.distanceFromLocation(point) <= radius
     }
 }
