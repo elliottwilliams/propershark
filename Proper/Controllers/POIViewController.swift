@@ -96,14 +96,14 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
     // MARK: Map view delegate
 
-//    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-//        if let annotation = annotation as? POIStationAnnotation {
-//            let view = mapView.dequeueReusableAnnotationViewWithIdentifier("stationAnnotation") ??
-//                POIStationAnnotationView(annotation: annotation, reuseIdentifier: "stationAnnotation")
-//            return view
-//        }
-//
-//        // Returning nil causes the map to use a default annotation.
-//        return nil
-//    }
+    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+        if let annotation = annotation as? POIStationAnnotation {
+            let view = mapView.dequeueReusableAnnotationViewWithIdentifier("stationAnnotation") ??
+                POIStationAnnotationView(annotation: annotation, reuseIdentifier: "stationAnnotation")
+            return view
+        }
+
+        // Returning nil causes the map to use a default annotation.
+        return nil
+    }
 }
