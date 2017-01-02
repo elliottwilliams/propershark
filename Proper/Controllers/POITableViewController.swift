@@ -16,6 +16,8 @@ class POITableViewController: UITableViewController, ProperViewController {
     internal var connection: ConnectionType = Connection.cachedInstance
     internal var disposable = CompositeDisposable()
 
+    static let headerViewHeight = CGFloat(55)
+
     func followSectionChanges(producer: SignalProducer<[MutableStation], ProperError>) ->
         SignalProducer<[MutableStation], ProperError>
     {
@@ -70,8 +72,8 @@ class POITableViewController: UITableViewController, ProperViewController {
         tableView.dataSource = viewModel
         tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil),
                               forCellReuseIdentifier: "arrivalCell")
-        tableView.registerNib(UINib(nibName: "POIStationTableViewCell", bundle: nil),
-                              forCellReuseIdentifier: "stationCell")
+        tableView.registerNib(UINib(nibName: "POIStationHeaderFooterView", bundle: nil),
+                              forHeaderFooterViewReuseIdentifier: "stationHeader")
 
         // From the list of stations coming from the view model, produce topic event subscriptions for each station.
         // Reload a station's section when a topic event is received for it.
@@ -90,20 +92,26 @@ class POITableViewController: UITableViewController, ProperViewController {
     }
 
     // MARK: Table View Delegate
-    override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return nil
-    }
-
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return indexPath.row == 0 ? NearbyStationsViewModel.stationRowHeight : NearbyStationsViewModel.arrivalRowHeight
+        return NearbyStationsViewModel.arrivalRowHeight
     }
 
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if indexPath.row == 0 {
-            performSegueWithIdentifier("showStation", sender: viewModel.stations.value[indexPath.section])
-        } else {
-            // TODO: show vehicle details upon selection
-        }
+        // TODO - show vehicle details upon selection
+        // In the meantime, segue to the station.
+        performSegueWithIdentifier("showStation", sender: viewModel.stations.value[indexPath.section])
+    }
+
+    override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let header = tableView.dequeueReusableHeaderFooterViewWithIdentifier("stationHeader")
+            as! POIStationHeaderFooterView
+        let (badge, station) = viewModel.badgedStations.value[section]
+        header.apply(station, badge: badge)
+        return header
+    }
+
+    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return POITableViewController.headerViewHeight
     }
 
     // MARK: Segue management

@@ -12,18 +12,18 @@ import MapKit
 class POIStationAnnotation: NSObject, MKAnnotation {
     let station: MutableStation
     let position: Point
-    let annotationKey: String
+    let badge: StationBadge
 
-    init?(station: MutableStation, annotationKey: String) {
+    init?(station: MutableStation, badge: StationBadge) {
         guard let position = station.position.value else {
             return nil
         }
         self.station = station
         self.position = position
-        self.annotationKey = annotationKey
+        self.badge = badge
     }
 
     var coordinate: CLLocationCoordinate2D { return CLLocationCoordinate2D(point: position) }
-    var title: String? { return annotationKey }
+    var title: String? { return badge.name }
     var subtitle: String? { return station.name.value }
 }

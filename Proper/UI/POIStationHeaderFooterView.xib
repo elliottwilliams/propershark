@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" rowHeight="55" id="g39-MD-gHE" customClass="POIStationHeaderFooterView" customModule="Proper" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="400" height="55"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="g39-MD-gHE" id="Ktx-4F-rJz">
+                <rect key="frame" x="0.0" y="0.0" width="367" height="54"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cTF-GI-YVd">
+                        <rect key="frame" x="0.0" y="0.0" width="367" height="54"/>
+                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="8cM-QK-l3c">
+                            <rect key="frame" x="0.0" y="0.0" width="367" height="54"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rgl-lL-6wS" customClass="TransitLabel" customModule="Proper" customModuleProvider="target">
+                                    <rect key="frame" x="54" y="28" width="41" height="14"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jRx-ep-eZF" customClass="RouteBadge" customModule="Proper" customModuleProvider="target">
+                                    <rect key="frame" x="8" y="8" width="38" height="38"/>
+                                    <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" secondItem="jRx-ep-eZF" secondAttribute="height" multiplier="1:1" id="CuP-fN-XnL"/>
+                                        <constraint firstAttribute="height" constant="38" id="H1d-qE-iIe"/>
+                                    </constraints>
+                                </view>
+                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kUP-7f-0rQ" userLabel="Title" customClass="TransitLabel" customModule="Proper" customModuleProvider="target">
+                                    <rect key="frame" x="54" y="8" width="32" height="20"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="90" id="kM9-aj-FQQ"/>
+                                        <constraint firstAttribute="width" constant="442" id="uqf-o3-qwG"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <nil key="highlightedColor"/>
+                                    <variation key="default">
+                                        <mask key="constraints">
+                                            <exclude reference="kM9-aj-FQQ"/>
+                                            <exclude reference="uqf-o3-qwG"/>
+                                        </mask>
+                                    </variation>
+                                </label>
+                            </subviews>
+                            <constraints>
+                                <constraint firstItem="rgl-lL-6wS" firstAttribute="top" secondItem="kUP-7f-0rQ" secondAttribute="bottom" id="HY0-Dw-ClS"/>
+                                <constraint firstItem="jRx-ep-eZF" firstAttribute="width" secondItem="jRx-ep-eZF" secondAttribute="height" multiplier="1:1" id="KG2-dM-dEy"/>
+                                <constraint firstItem="rgl-lL-6wS" firstAttribute="leading" secondItem="jRx-ep-eZF" secondAttribute="trailing" constant="8" id="Q25-GK-dac"/>
+                                <constraint firstItem="jRx-ep-eZF" firstAttribute="top" secondItem="8cM-QK-l3c" secondAttribute="top" constant="8" id="a2q-RT-qMc"/>
+                                <constraint firstItem="jRx-ep-eZF" firstAttribute="leading" secondItem="8cM-QK-l3c" secondAttribute="leading" constant="8" id="bN5-PP-jiv"/>
+                                <constraint firstItem="kUP-7f-0rQ" firstAttribute="top" secondItem="8cM-QK-l3c" secondAttribute="top" constant="8" id="n57-h6-fpl"/>
+                                <constraint firstItem="kUP-7f-0rQ" firstAttribute="leading" secondItem="jRx-ep-eZF" secondAttribute="trailing" constant="8" id="zkI-Py-Dm9"/>
+                            </constraints>
+                        </view>
+                        <blurEffect style="light"/>
+                    </visualEffectView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="cTF-GI-YVd" firstAttribute="leading" secondItem="Ktx-4F-rJz" secondAttribute="leading" id="Daz-mx-yt5"/>
+                    <constraint firstAttribute="trailing" secondItem="cTF-GI-YVd" secondAttribute="trailing" id="JPA-Wj-cCY"/>
+                    <constraint firstAttribute="bottom" secondItem="cTF-GI-YVd" secondAttribute="bottom" id="sms-cw-2DQ"/>
+                    <constraint firstItem="cTF-GI-YVd" firstAttribute="top" secondItem="Ktx-4F-rJz" secondAttribute="top" id="voA-RM-th2"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="badgeView" destination="jRx-ep-eZF" id="iSA-hP-N3Z"/>
+                <outlet property="subtitle" destination="rgl-lL-6wS" id="D8c-7r-WMh"/>
+                <outlet property="title" destination="kUP-7f-0rQ" id="hNd-Jp-GNr"/>
+            </connections>
+            <point key="canvasLocation" x="349" y="346.5"/>
+        </tableViewCell>
+    </objects>
+</document>

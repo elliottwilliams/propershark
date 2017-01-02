@@ -57,8 +57,8 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         // Bind changes in the POI point to map movements.
         disposable += point.producer.startWithNext { self.configureMap($0) }
 
-        disposable += viewModel.letteredStations.producer.map { stations in
-            return stations.flatMap({ idx, station in POIStationAnnotation(station: station, annotationKey: idx) })
+        disposable += viewModel.badgedStations.producer.map { stations in
+            return stations.flatMap({ badge, station in POIStationAnnotation(station: station, badge: badge) })
         }.combinePrevious([]).startWithNext({ prev, next in
             self.map.removeAnnotations(prev)
             self.map.addAnnotations(next)
@@ -96,14 +96,14 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
     // MARK: Map view delegate
 
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-        if let annotation = annotation as? POIStationAnnotation {
-            let view = mapView.dequeueReusableAnnotationViewWithIdentifier("stationAnnotation") ??
-                POIStationAnnotationView(annotation: annotation, reuseIdentifier: "stationAnnotation")
-            return view
-        }
-
-        // Returning nil causes the map to use a default annotation.
-        return nil
-    }
+//    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+//        if let annotation = annotation as? POIStationAnnotation {
+//            let view = mapView.dequeueReusableAnnotationViewWithIdentifier("stationAnnotation") ??
+//                POIStationAnnotationView(annotation: annotation, reuseIdentifier: "stationAnnotation")
+//            return view
+//        }
+//
+//        // Returning nil causes the map to use a default annotation.
+//        return nil
+//    }
 }

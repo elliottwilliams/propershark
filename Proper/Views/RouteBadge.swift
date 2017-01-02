@@ -129,6 +129,8 @@ class RouteBadge: UIView {
     // MARK: Draw code
 
     func redraw() {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
         let edge = min(badge.bounds.width, badge.bounds.height)
         let innerWidth = edge - 2 * (outerStrokeWidth + outerStrokeGap)
         let innerRadius = innerWidth / 2 - outerStrokeWidth / 2
@@ -148,6 +150,7 @@ class RouteBadge: UIView {
         
         filledInnerLayer.path = innerPath(innerRadius)
         filledInnerLayer.fillColor = color.CGColor
+        CATransaction.commit()
     }
 
     // MARK: Animations

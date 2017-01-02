@@ -16,7 +16,6 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
     // TODO - Maybe raise the search radius but cap the number of results returned?
     static let searchRadius = CLLocationDistance(250) // in meters
     static let arrivalRowHeight = CGFloat(44)
-    static let stationRowHeight = CGFloat(55)
 
     /**
      The geographic point to base nearby stations on. Changes to this property flow through the list of nearby stations
@@ -31,8 +30,8 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
     internal let disposable = CompositeDisposable()
 
     let stations: MutableProperty<[MutableStation]> = .init([])
-    lazy var letteredStations: AnyProperty<[(String, MutableStation)]> = {
-        return AnyProperty(initialValue: [], producer: self.stations.producer |> self.assignLetterings)
+    lazy var badgedStations: AnyProperty<[(StationBadge, MutableStation)]> = {
+        return AnyProperty(initialValue: [], producer: self.stations.producer |> self.assignBadges)
     }()
 
     lazy var producer: SignalProducer<[MutableStation], ProperError> = { [unowned self] in
@@ -91,15 +90,16 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         })
     }
 
-    func assignLetterings<Error: ErrorType>(producer: SignalProducer<[MutableStation], Error>) ->
-        SignalProducer<[(String, MutableStation)], Error>
+    func assignBadges<Error: ErrorType>(producer: SignalProducer<[MutableStation], Error>) ->
+        SignalProducer<[(StationBadge, MutableStation)], Error>
     {
         let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".characters
         let alphabetLength = 26
         return producer.map({ stations in
             return stations.enumerate().map({ idx, station in
                 let letter = String(alphabet[alphabet.startIndex.advancedBy(idx % alphabetLength)])
-                return (letter, station)
+                let badge = StationBadge(name: letter)
+                return (badge, station)
             })
         })
     }
@@ -119,33 +119,35 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
     // The first row in each section is the "sentinel" row, which represents the station itself rather than a particular
     // arrival at that station.
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1 + stations.value[section].vehicles.value.count
+        return stations.value[section].vehicles.value.count
     }
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        if indexPath.row == 0 {
-            return stationCell(tableView, forRowAtIndexPath: indexPath)
-        } else {
-            return arrivalCell(tableView, forRowAtIndexPath: indexPath)
-        }
-    }
-
-    private func stationCell(tableView: UITableView, forRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("stationCell") as! POIStationTableViewCell
-        let (id, station) = letteredStations.value[indexPath.section]
-        cell.apply(station, badgeIdentifier: id)
-        return cell
-    }
-
-    private func arrivalCell(tableView: UITableView, forRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("arrivalCell") as! ArrivalTableViewCell
         cell.contentView.layoutMargins.left = 40
 
         // TODO: Ensure vehicles are sorted by arrival time.
         let station = stations.value[indexPath.section]
-        let vehicle = station.sortedVehicles.value[indexPath.row - 1]
+        let vehicle = station.sortedVehicles.value[indexPath.row]
         cell.apply(vehicle)
         return cell
+    }
+}
+
+internal struct StationBadge {
+    let name: String
+    let color: UIColor
+
+    init(name: String, color: UIColor? = nil) {
+        self.name = name
+        self.color = color ?? StationBadge.randomColor()
+    }
+
+    static func randomColor() -> UIColor {
+        let h = CGFloat(arc4random_uniform(256)) / 256.0
+        let s = CGFloat(arc4random_uniform(128)) / 128.0 + 0.5
+        let l = CGFloat(arc4random_uniform(128)) / 128.0 + 0.5
+        return UIColor(hue: h, saturation: s, brightness: l, alpha: CGFloat(1))
     }
 }
 
