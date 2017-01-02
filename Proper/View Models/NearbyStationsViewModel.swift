@@ -10,6 +10,7 @@ import UIKit
 import ReactiveCocoa
 import Result
 import Dwifft
+import GameKit
 
 class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDelegate {
 
@@ -98,7 +99,7 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         return producer.map({ stations in
             return stations.enumerate().map({ idx, station in
                 let letter = String(alphabet[alphabet.startIndex.advancedBy(idx % alphabetLength)])
-                let badge = StationBadge(name: letter)
+                let badge = StationBadge(name: letter, seedForColor: station.identifier)
                 return (badge, station)
             })
         })
@@ -138,15 +139,27 @@ internal struct StationBadge {
     let name: String
     let color: UIColor
 
-    init(name: String, color: UIColor? = nil) {
+    init(name: String, color: UIColor) {
         self.name = name
-        self.color = color ?? StationBadge.randomColor()
+        self.color = color
     }
 
-    static func randomColor() -> UIColor {
-        let h = CGFloat(arc4random_uniform(256)) / 256.0
-        let s = CGFloat(arc4random_uniform(128)) / 128.0 + 0.5
-        let l = CGFloat(arc4random_uniform(128)) / 128.0 + 0.5
+    init<H: Hashable>(name: String, seedForColor seed: H) {
+        self.name = name
+        self.color = StationBadge.randomColor(seed)
+    }
+
+    /**
+     Generate a pseudorandom color given a hashable seed. Using this generator, badges can have a color generated from
+     the station's identifier.
+     */
+    static func randomColor<H: Hashable>(seed: H) -> UIColor {
+        let src = GKMersenneTwisterRandomSource(seed: UInt64(abs(seed.hashValue)))
+        let gen = GKRandomDistribution(randomSource: src, lowestValue: 0, highestValue: 255)
+        let h = CGFloat(gen.nextInt()) / 256.0
+        // Saturation and luminance stay between 0.5 and 1.0 to avoid white and excessively dark colors.
+        let s = CGFloat(gen.nextInt()) / 512.0 + 0.5
+        let l = CGFloat(gen.nextInt()) / 512.0 + 0.5
         return UIColor(hue: h, saturation: s, brightness: l, alpha: CGFloat(1))
     }
 }
