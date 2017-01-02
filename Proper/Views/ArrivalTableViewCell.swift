@@ -15,7 +15,7 @@ class ArrivalTableViewCell: UITableViewCell {
     @IBOutlet weak var ornament: UIView!
     @IBOutlet weak var vehicleName: UILabel!
     
-    var badge: RouteBadge!
+    var badge: BadgeView!
     var disposable = CompositeDisposable()
 
     override func awakeFromNib() {
@@ -23,7 +23,7 @@ class ArrivalTableViewCell: UITableViewCell {
         self.ornament.backgroundColor = UIColor.clearColor()
         
         // Create badge programmatically
-        let badge = RouteBadge(frame: CGRectMake(8, 8, 28, 28))
+        let badge = BadgeView(frame: CGRectMake(8, 8, 28, 28))
         badge.outerStrokeWidth = 0
         badge.outerStrokeGap = 0
         

@@ -1,4 +1,4 @@
-//  RouteBadge.swift
+//  BadgeView.swift
 //  Proper
 //
 //  Created by Elliott Williams on 12/18/15.
@@ -8,14 +8,14 @@
 import UIKit
 import CoreGraphics
 
-class RouteBadge: UIView {
+class BadgeView: UIView {
 
     // The nib loaded in setup() provides three views:
     // - container, which fills the bounds of self
     @IBOutlet var container: UIView!
     // - badge, which maintains a 1:1 aspect ratio and which holds the badge shape layers
     @IBOutlet var badge: UIView!
-    // - label, which floats above badge to display the route number
+    // - label, which displays text on the badge (e.g. route number)
     @IBOutlet var label: UILabel!
     
     // MARK: Properties
@@ -72,7 +72,7 @@ class RouteBadge: UIView {
 
     func setup() {
         // Load, configure, and attach the badge nib.
-        NSBundle.mainBundle().loadNibNamed("RouteBadge", owner: self, options: nil)
+        NSBundle.mainBundle().loadNibNamed("BadgeView", owner: self, options: nil)
         container.frame = self.bounds
         addSubview(container)
 

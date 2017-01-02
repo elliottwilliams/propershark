@@ -10,7 +10,7 @@ import UIKit
 import ReactiveCocoa
 
 class RoutesCollectionViewCell: UICollectionViewCell {
-    @IBOutlet var badge: RouteBadge!
+    @IBOutlet var badge: BadgeView!
     var disposable = CompositeDisposable()
 
     override func awakeFromNib() {

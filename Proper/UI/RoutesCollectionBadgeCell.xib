@@ -18,7 +18,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="U6a-Iz-26L" customClass="RouteBadge" customModule="Proper" customModuleProvider="target">
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="U6a-Iz-26L" customClass="BadgeView" customModule="Proper" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                     </view>
                 </subviews>

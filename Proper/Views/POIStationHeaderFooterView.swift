@@ -12,7 +12,7 @@ import ReactiveCocoa
 class POIStationHeaderFooterView: UITableViewHeaderFooterView {
     @IBOutlet weak var title: TransitLabel!
     @IBOutlet weak var subtitle: TransitLabel!
-    @IBOutlet weak var badgeView: RouteBadge!
+    @IBOutlet weak var badgeView: BadgeView!
 
     var disposable: CompositeDisposable?
 

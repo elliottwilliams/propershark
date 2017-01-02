@@ -15,7 +15,7 @@ class RouteViewController: UIViewController, ProperViewController, MutableModelD
     var route: MutableRoute!
 
     // MARK: UI references
-    @IBOutlet weak var badge: RouteBadge!
+    @IBOutlet weak var badge: BadgeView!
     @IBOutlet weak var infoContainer: UIView!
     @IBOutlet weak var navItem: TransitNavigationItem!
 

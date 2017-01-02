@@ -1,5 +1,5 @@
 //
-//  RouteBadgeViewController.swift
+//  BadgeViewViewController.swift
 //  Proper
 //
 //  Created by Elliott Williams on 12/30/15.
@@ -8,10 +8,10 @@
 
 import UIKit
 
-class RouteBadgeController: UIViewController {
+class BadgeViewController: UIViewController {
 
     override func viewDidLoad() {
-        let badge = self.view as! RouteBadge
+        let badge = self.view as! BadgeView
         if let frame = self.view.superview?.frame {
             badge.frame = frame
         }
