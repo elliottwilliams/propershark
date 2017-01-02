@@ -16,7 +16,7 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
     // TODO - Maybe raise the search radius but cap the number of results returned?
     static let searchRadius = CLLocationDistance(250) // in meters
     static let arrivalRowHeight = CGFloat(44)
-    static let stationRowHeight = CGFloat(90)
+    static let stationRowHeight = CGFloat(55)
 
     /**
      The geographic point to base nearby stations on. Changes to this property flow through the list of nearby stations
@@ -130,16 +130,14 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         }
     }
 
-    private func stationCell(tableView: UITableView, forRowAtIndexPath indexPath: NSIndexPath) ->
-        StationUpcomingTableViewCell
-    {
-        let cell = tableView.dequeueReusableCellWithIdentifier("stationCell") as! StationUpcomingTableViewCell
+    private func stationCell(tableView: UITableView, forRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("stationCell") as! POIStationTableViewCell
         let (id, station) = letteredStations.value[indexPath.section]
         cell.apply(station, badgeIdentifier: id)
         return cell
     }
 
-    private func arrivalCell(tableView: UITableView, forRowAtIndexPath indexPath: NSIndexPath) -> ArrivalTableViewCell {
+    private func arrivalCell(tableView: UITableView, forRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("arrivalCell") as! ArrivalTableViewCell
         cell.contentView.layoutMargins.left = 40
 

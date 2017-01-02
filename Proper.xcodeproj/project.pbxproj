@@ -33,13 +33,15 @@
 		267525521D6D3B4F00F6C33F /* Decoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267525511D6D3B4F00F6C33F /* Decoded.swift */; };
 		2675E0B61D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2675E0B51D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift */; };
 		2675E0BC1D98BFCA00C2FB32 /* RouteBadge.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2675E0BB1D98BFCA00C2FB32 /* RouteBadge.xib */; };
+		267725C41E1AAC6400274042 /* StationUpcomingTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 267725C31E1AAC6400274042 /* StationUpcomingTableViewCell.xib */; };
+		267725C61E1AACF200274042 /* POIStationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267725C51E1AACF200274042 /* POIStationTableViewCell.swift */; };
 		268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72261BF9938800E981D4 /* TransitLabel.swift */; };
 		268E72291BF9938800E981D4 /* TransitNavigationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72271BF9938800E981D4 /* TransitNavigationItem.swift */; };
 		269011491DE9D61C00A3124A /* LastEventCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 269011481DE9D61C00A3124A /* LastEventCacheTests.swift */; };
 		2698CF011D8B8FC400E6174A /* RoutesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2698CF001D8B8FC400E6174A /* RoutesCollectionViewCell.swift */; };
 		26A0FF011E149AF200FF265A /* NearbyStationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A0FEFF1E149AF200FF265A /* NearbyStationsViewModel.swift */; };
 		26A0FF021E149AF200FF265A /* RoutesCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A0FF001E149AF200FF265A /* RoutesCollectionViewModel.swift */; };
-		26A0FF091E15AAF500FF265A /* StationUpcomingTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26ED26F01E117969007FB0F8 /* StationUpcomingTableViewCell.xib */; };
+		26A0FF091E15AAF500FF265A /* POIStationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26ED26F01E117969007FB0F8 /* POIStationTableViewCell.xib */; };
 		26A424B41BD2C1320035754F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424B31BD2C1320035754F /* AppDelegate.swift */; };
 		26A424B91BD2C1320035754F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 26A424B71BD2C1320035754F /* Main.storyboard */; };
 		26A424BB1BD2C1320035754F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26A424BA1BD2C1320035754F /* Assets.xcassets */; };
@@ -150,6 +152,8 @@
 		267525511D6D3B4F00F6C33F /* Decoded.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Decoded.swift; sourceTree = "<group>"; };
 		2675E0B51D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrivalTableRouteCollectionCell.swift; sourceTree = "<group>"; };
 		2675E0BB1D98BFCA00C2FB32 /* RouteBadge.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RouteBadge.xib; sourceTree = "<group>"; };
+		267725C31E1AAC6400274042 /* StationUpcomingTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StationUpcomingTableViewCell.xib; sourceTree = "<group>"; };
+		267725C51E1AACF200274042 /* POIStationTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = POIStationTableViewCell.swift; sourceTree = "<group>"; };
 		268E72261BF9938800E981D4 /* TransitLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabel.swift; sourceTree = "<group>"; };
 		268E72271BF9938800E981D4 /* TransitNavigationItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitNavigationItem.swift; sourceTree = "<group>"; };
 		269011481DE9D61C00A3124A /* LastEventCacheTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LastEventCacheTests.swift; sourceTree = "<group>"; };
@@ -222,7 +226,7 @@
 		26EBAB381D7B12DC00342D0C /* LastEventCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LastEventCache.swift; sourceTree = "<group>"; };
 		26ED26EC1E11763C007FB0F8 /* CachedConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CachedConnection.swift; sourceTree = "<group>"; };
 		26ED26ED1E11763C007FB0F8 /* ConnectionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionType.swift; sourceTree = "<group>"; };
-		26ED26F01E117969007FB0F8 /* StationUpcomingTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StationUpcomingTableViewCell.xib; sourceTree = "<group>"; };
+		26ED26F01E117969007FB0F8 /* POIStationTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = POIStationTableViewCell.xib; sourceTree = "<group>"; };
 		26ED26F21E117988007FB0F8 /* StationUpcomingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StationUpcomingTableViewCell.swift; sourceTree = "<group>"; };
 		26ED26F41E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RoutesCollectionBadgeCell.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -287,6 +291,7 @@
 		264782611C309F4C009D9AD0 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				267725C51E1AACF200274042 /* POIStationTableViewCell.swift */,
 				26ADB0EA1E187151008F49FF /* POIStationAnnotationView.swift */,
 				26ADB0E61E186A9D008F49FF /* POIStationAnnotation.swift */,
 				26ED26F21E117988007FB0F8 /* StationUpcomingTableViewCell.swift */,
@@ -323,13 +328,14 @@
 		264782641C309FAB009D9AD0 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				26ED26F01E117969007FB0F8 /* StationUpcomingTableViewCell.xib */,
-				2675E0BB1D98BFCA00C2FB32 /* RouteBadge.xib */,
-				26ED26F41E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib */,
-				26DFB67B1C35DFA5006A8AE0 /* StationTableViewCell.xib */,
 				26A424E41BD2D3F20035754F /* ArrivalTableViewCell.xib */,
 				26A424BC1BD2C1320035754F /* LaunchScreen.storyboard */,
 				26A424B71BD2C1320035754F /* Main.storyboard */,
+				26ED26F01E117969007FB0F8 /* POIStationTableViewCell.xib */,
+				2675E0BB1D98BFCA00C2FB32 /* RouteBadge.xib */,
+				26ED26F41E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib */,
+				26DFB67B1C35DFA5006A8AE0 /* StationTableViewCell.xib */,
+				267725C31E1AAC6400274042 /* StationUpcomingTableViewCell.xib */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -652,7 +658,8 @@
 				26AC8BB21BD345F100AA0001 /* Media.xcassets in Resources */,
 				2675E0BC1D98BFCA00C2FB32 /* RouteBadge.xib in Resources */,
 				26A424BE1BD2C1320035754F /* LaunchScreen.storyboard in Resources */,
-				26A0FF091E15AAF500FF265A /* StationUpcomingTableViewCell.xib in Resources */,
+				26A0FF091E15AAF500FF265A /* POIStationTableViewCell.xib in Resources */,
+				267725C41E1AAC6400274042 /* StationUpcomingTableViewCell.xib in Resources */,
 				26A424BB1BD2C1320035754F /* Assets.xcassets in Resources */,
 				26ED26F51E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib in Resources */,
 				26A424E61BD2D3F20035754F /* ArrivalTableViewCell.xib in Resources */,
@@ -726,6 +733,7 @@
 				2698CF011D8B8FC400E6174A /* RoutesCollectionViewCell.swift in Sources */,
 				26A0FF011E149AF200FF265A /* NearbyStationsViewModel.swift in Sources */,
 				26D3E2221D28DFE800F85712 /* Route.swift in Sources */,
+				267725C61E1AACF200274042 /* POIStationTableViewCell.swift in Sources */,
 				26A4B7AF1D32251100264F0D /* MutableStation.swift in Sources */,
 				26AE68201D622CCD0031E534 /* CanonicalRoute.swift in Sources */,
 				26ED26F31E117988007FB0F8 /* StationUpcomingTableViewCell.swift in Sources */,

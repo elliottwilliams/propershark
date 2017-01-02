@@ -70,7 +70,7 @@ class POITableViewController: UITableViewController, ProperViewController {
         tableView.dataSource = viewModel
         tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil),
                               forCellReuseIdentifier: "arrivalCell")
-        tableView.registerNib(UINib(nibName: "StationUpcomingTableViewCell", bundle: nil),
+        tableView.registerNib(UINib(nibName: "POIStationTableViewCell", bundle: nil),
                               forCellReuseIdentifier: "stationCell")
 
         // From the list of stations coming from the view model, produce topic event subscriptions for each station.
