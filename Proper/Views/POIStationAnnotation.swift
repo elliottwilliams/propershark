@@ -7,32 +7,26 @@
 //
 
 import UIKit
+import ReactiveCocoa
 import MapKit
 
 class POIStationAnnotation: NSObject, MKAnnotation {
     let station: MutableStation
     let stationPosition: Point
     let badge: StationBadge
-    let point: Point
-    let distanceFormatter = MKDistanceFormatter()
+    let distance: AnyProperty<String?>
 
-    init?(station: MutableStation, badge: StationBadge, fromPoint point: Point) {
+    init?(station: MutableStation, badge: StationBadge, distance: AnyProperty<String?>) {
         guard let position = station.position.value else {
             return nil
         }
         self.station = station
         self.stationPosition = position
         self.badge = badge
-        self.point = point
+        self.distance = distance
     }
 
     var coordinate: CLLocationCoordinate2D { return CLLocationCoordinate2D(point: stationPosition) }
     var title: String? { return station.name.value }
-    var subtitle: String? { return "\(distanceString) away" }
-    var distance: CLLocationDistance {
-        return CLLocation(point: stationPosition).distanceFromLocation(CLLocation(point: point))
-    }
-    var distanceString: String {
-        return distanceFormatter.stringFromDistance(distance)
-    }
+    var subtitle: String? { return distance.value.map({ "\($0) away" }) }
 }

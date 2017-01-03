@@ -58,8 +58,8 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         disposable += point.producer.startWithNext { self.configureMap($0) }
 
         disposable += viewModel.stations.producer.map({ stations in
-            return stations.flatMap({ badge, station in
-                POIStationAnnotation(station: station, badge: badge, fromPoint: point) })
+            stations.flatMap({ POIStationAnnotation(station: $0, badge: self.viewModel.badges[$0]!,
+                distance: self.viewModel.distances[$0]!) })
         }).combinePrevious([]).startWithNext({ prev, next in
             self.map.removeAnnotations(prev)
             self.map.addAnnotations(next)

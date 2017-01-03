@@ -28,16 +28,22 @@ class POIStationHeaderFooterView: UITableViewHeaderFooterView {
         disposable?.dispose()
     }
 
-    func apply(station: MutableStation, badge: StationBadge) {
+    func apply(station: MutableStation, badge: StationBadge, distance: AnyProperty<String?>) {
         let disposable = CompositeDisposable()
 
         // Set the badge identifier.
         badgeView.label.text = badge.name
         badgeView.color = badge.color
 
-        // Bind station attributes to the UI labels.
+        // Bind attributes to the UI labels.
         disposable += station.name.producer.startWithNext({ self.title.text = $0 })
-        self.subtitle.text = station.stopCode
+        disposable += distance.producer.startWithNext({ distance in
+            if let distance = distance {
+                self.subtitle.text = "\(station.stopCode) • \(distance) away"
+            } else {
+                self.subtitle.text = "\(station.stopCode)"
+            }
+        })
 
         self.disposable = disposable
     }

@@ -33,7 +33,7 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
     private let distanceFormatter = MKDistanceFormatter()
 
     let stations: MutableProperty<[MutableStation]> = .init([])
-    var distances = [MutableStation: String]()
+    var distances = [MutableStation: AnyProperty<String?>]()
     var badges = [MutableStation: StationBadge]()
 
     lazy var producer: SignalProducer<[MutableStation], ProperError> = { [unowned self] in
@@ -120,29 +120,20 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         })
     }
 
-    func produceDistances<Error: ErrorType>(stations: SignalProducer<[MutableStation], Error>,
-                          point: SignalProducer<Point, NoError>) -> SignalProducer<(MutableStation, String), Error> {
+    func produceDistances<Error: ErrorType>(stations: SignalProducer<[MutableStation], Error>) ->
+        SignalProducer<(MutableStation, AnyProperty<String?>), Error>
+    {
         return stations.flatMap(.Latest, transform: { stations -> SignalProducer<MutableStation, Error> in
             return SignalProducer(values: stations)
-        }).flatMap(.Merge, transform: { station -> SignalProducer<(MutableStation, String), NoError> in
-            let stationProducer = SignalProducer<MutableStation, NoError>(value: station)
+        }).map({ station in
             let position = station.position.producer.ignoreNil()
-            let distance = position.combineLatestWith(point).map({ to, from in
+            let distance = position.combineLatestWith(self.point.producer).map({ to, from in
                 self.distanceFormatter.stringFromDistance(to.distanceFrom(from))
-            })
+            }).map({ Optional($0) })
+            let property = AnyProperty(initialValue: nil, producer: distance)
 
-            return stationProducer.combineLatestWith(distance)
+            return (station, property)
         })
-    }
-
-//    func producePOIStations<Error: ErrorType>(producer: SignalProducer<[MutableStation], Error>) {
-////        produce
-//    }
-
-    struct POIStation {
-        let station: MutableStation
-        let badge: AnyProperty<StationBadge>
-        let distance: AnyProperty<String>
     }
 
     /**

@@ -107,7 +107,8 @@ class POITableViewController: UITableViewController, ProperViewController {
             as! POIStationHeaderFooterView
         let station = viewModel.stations.value[section]
         let badge = viewModel.badges[station]!
-        header.apply(station, badge: badge)
+        let distance = viewModel.distances[station]!
+        header.apply(station, badge: badge, distance: distance)
         return header
     }
 
