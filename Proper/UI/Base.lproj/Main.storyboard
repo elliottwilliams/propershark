@@ -124,11 +124,11 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="359"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" verticalCompressionResistancePriority="850" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="CSf-iZ-5O3">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="359"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                                 <subviews>
                                     <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" verticalCompressionResistancePriority="850" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="mTc-ty-gnj">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="200"/>
@@ -137,7 +137,7 @@
                                         </constraints>
                                     </mapView>
                                     <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Y2F-tl-O22">
-                                        <rect key="frame" x="0.0" y="200" width="375" height="159"/>
+                                        <rect key="frame" x="0.0" y="200" width="375" height="403"/>
                                         <connections>
                                             <segue destination="ttT-Ab-P4b" kind="embed" identifier="embedArrivalsTable" id="bBH-8A-2is"/>
                                         </connections>
@@ -229,6 +229,7 @@
                     <navigationItem key="navigationItem" title="Notoriously Good List" id="IJI-hC-u9P" customClass="TransitNavigationItem" customModule="Proper" customModuleProvider="target"/>
                     <connections>
                         <outlet property="map" destination="Drx-Mb-q0D" id="KEd-UJ-SMs"/>
+                        <segue destination="BYZ-38-t0r" kind="show" identifier="showStation" id="SMx-yQ-t7g"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="o0u-m0-nfd" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -263,7 +264,7 @@
             <objects>
                 <tableViewController id="ttT-Ab-P4b" customClass="ArrivalsTableViewController" customModule="Proper" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="T3J-fn-QLf">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="159"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="403"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <prototypes>
@@ -719,6 +720,6 @@
         <image name="cb-default" width="64" height="64"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="lR4-DG-6cG"/>
+        <segue reference="SMx-yQ-t7g"/>
     </inferredMetricsTieBreakers>
 </document>

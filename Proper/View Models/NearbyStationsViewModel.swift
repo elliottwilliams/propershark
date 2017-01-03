@@ -10,6 +10,7 @@ import UIKit
 import ReactiveCocoa
 import Result
 import Dwifft
+import MapKit
 import GameKit
 
 class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDelegate {
@@ -29,11 +30,11 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
 
     internal let connection: ConnectionType
     internal let disposable = CompositeDisposable()
+    private let distanceFormatter = MKDistanceFormatter()
 
     let stations: MutableProperty<[MutableStation]> = .init([])
-    lazy var badgedStations: AnyProperty<[(StationBadge, MutableStation)]> = {
-        return AnyProperty(initialValue: [], producer: self.stations.producer |> self.assignBadges)
-    }()
+    var distances = [MutableStation: String]()
+    var badges = [MutableStation: StationBadge]()
 
     lazy var producer: SignalProducer<[MutableStation], ProperError> = { [unowned self] in
         // TODO: Consider adding a threshold to `point`s value, so that only significant changes in point reload the
@@ -50,6 +51,19 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
     init<P: PropertyType where P.Value == Point>(point: P, connection: ConnectionType = Connection.cachedInstance) {
         self.point = AnyProperty(point)
         self.connection = connection
+        super.init()
+
+        disposable += produceBadges(stations.producer).startWithNext({ station, badge in
+            self.badges[station] = badge
+        })
+
+        disposable += produceDistances(stations.producer).startWithNext({ station, distance in
+            self.distances[station] = distance
+        })
+    }
+
+    deinit {
+        disposable.dispose()
     }
 
     /**
@@ -91,18 +105,44 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         })
     }
 
-    func assignBadges<Error: ErrorType>(producer: SignalProducer<[MutableStation], Error>) ->
-        SignalProducer<[(StationBadge, MutableStation)], Error>
+    func produceBadges<Error: ErrorType>(producer: SignalProducer<[MutableStation], Error>) ->
+        SignalProducer<(MutableStation, StationBadge), Error>
     {
         let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".characters
         let alphabetLength = 26
-        return producer.map({ stations in
-            return stations.enumerate().map({ idx, station in
+        return producer.flatMap(.Latest, transform: { stations -> SignalProducer<(MutableStation, StationBadge), Error> in
+            let badges = stations.enumerate().map({ idx, station -> (MutableStation, StationBadge) in
                 let letter = String(alphabet[alphabet.startIndex.advancedBy(idx % alphabetLength)])
                 let badge = StationBadge(name: letter, seedForColor: station.identifier)
-                return (badge, station)
+                return (station, badge)
             })
+            return SignalProducer(values: badges)
         })
+    }
+
+    func produceDistances<Error: ErrorType>(stations: SignalProducer<[MutableStation], Error>,
+                          point: SignalProducer<Point, NoError>) -> SignalProducer<(MutableStation, String), Error> {
+        return stations.flatMap(.Latest, transform: { stations -> SignalProducer<MutableStation, Error> in
+            return SignalProducer(values: stations)
+        }).flatMap(.Merge, transform: { station -> SignalProducer<(MutableStation, String), NoError> in
+            let stationProducer = SignalProducer<MutableStation, NoError>(value: station)
+            let position = station.position.producer.ignoreNil()
+            let distance = position.combineLatestWith(point).map({ to, from in
+                self.distanceFormatter.stringFromDistance(to.distanceFrom(from))
+            })
+
+            return stationProducer.combineLatestWith(distance)
+        })
+    }
+
+//    func producePOIStations<Error: ErrorType>(producer: SignalProducer<[MutableStation], Error>) {
+////        produce
+//    }
+
+    struct POIStation {
+        let station: MutableStation
+        let badge: AnyProperty<StationBadge>
+        let distance: AnyProperty<String>
     }
 
     /**

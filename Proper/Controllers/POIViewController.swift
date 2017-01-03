@@ -57,9 +57,10 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         // Bind changes in the POI point to map movements.
         disposable += point.producer.startWithNext { self.configureMap($0) }
 
-        disposable += viewModel.badgedStations.producer.map { stations in
-            return stations.flatMap({ badge, station in POIStationAnnotation(station: station, badge: badge) })
-        }.combinePrevious([]).startWithNext({ prev, next in
+        disposable += viewModel.stations.producer.map({ stations in
+            return stations.flatMap({ badge, station in
+                POIStationAnnotation(station: station, badge: badge, fromPoint: point) })
+        }).combinePrevious([]).startWithNext({ prev, next in
             self.map.removeAnnotations(prev)
             self.map.addAnnotations(next)
         })
@@ -89,6 +90,10 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         case "embedPOITable":
             let dest = segue.destinationViewController as! POITableViewController
             dest.viewModel = viewModel
+        case "showStation":
+            let station = sender as! MutableStation
+            let dest = segue.destinationViewController as! StationViewController
+            dest.station = station
         default:
             return
         }
@@ -98,12 +103,20 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         if let annotation = annotation as? POIStationAnnotation {
-            let view = mapView.dequeueReusableAnnotationViewWithIdentifier("stationAnnotation") ??
-                POIStationAnnotationView(annotation: annotation, reuseIdentifier: "stationAnnotation")
+            let view =
+                mapView.dequeueReusableAnnotationViewWithIdentifier("stationAnnotation") as? POIStationAnnotationView
+                    ?? POIStationAnnotationView(annotation: annotation, reuseIdentifier: "stationAnnotation")
+            view.apply(annotation)
             return view
         }
 
         // Returning nil causes the map to use a default annotation.
         return nil
+    }
+
+    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        if let station = ((view as? POIStationAnnotationView)?.annotation as? POIStationAnnotation)?.station {
+            performSegueWithIdentifier("showStation", sender: station)
+        }
     }
 }

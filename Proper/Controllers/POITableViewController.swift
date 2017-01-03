@@ -105,7 +105,8 @@ class POITableViewController: UITableViewController, ProperViewController {
     override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = tableView.dequeueReusableHeaderFooterViewWithIdentifier("stationHeader")
             as! POIStationHeaderFooterView
-        let (badge, station) = viewModel.badgedStations.value[section]
+        let station = viewModel.stations.value[section]
+        let badge = viewModel.badges[station]!
         header.apply(station, badge: badge)
         return header
     }

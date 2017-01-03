@@ -25,6 +25,10 @@ struct Point: Equatable {
         self.lat = lat
         self.long = long
     }
+
+    func distanceFrom(point: Point) -> CLLocationDistance {
+        return CLLocation(point: point).distanceFromLocation(CLLocation(point: self))
+    }
 }
 
 func ==(a: Point, b: Point) -> Bool {
