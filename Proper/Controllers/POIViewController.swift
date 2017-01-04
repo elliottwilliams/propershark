@@ -11,33 +11,38 @@ import ReactiveCocoa
 
 class POIViewController: UIViewController, ProperViewController, UISearchControllerDelegate, MKMapViewDelegate {
 
-    var point: MutableProperty<Point> = .init(Point(lat: 40.4247277, long: -86.9114585)) // PMU
+    lazy var point = MutableProperty<Point?>(nil)
     lazy var viewModel: NearbyStationsViewModel = {
         return NearbyStationsViewModel(point: self.point, connection: self.connection)
     }()
+    let location = Location.producer
+    let annotation = MKPointAnnotation()
 
     @IBOutlet weak var map: MKMapView!
 
     internal var connection: ConnectionType = Connection.cachedInstance
     internal var disposable = CompositeDisposable()
 
-    func configureMap(centerPoint: Point) {
-        let centerLoc = CLLocationCoordinate2D(point: centerPoint)
-        map.centerCoordinate = centerLoc
-        map.region = MKCoordinateRegion(center: centerLoc,
-                                        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+    func configureMap(coordinate: CLLocationCoordinate2D, isUserLocation: Bool) {
+        map.setCenterCoordinate(coordinate, animated: true)
         map.delegate = self
 
+        let boundingRegion = MKCoordinateRegionMakeWithDistance(coordinate, NearbyStationsViewModel.searchRadius,
+                                                                NearbyStationsViewModel.searchRadius)
+        map.setRegion(map.regionThatFits(boundingRegion), animated: true)
 
         // DEBUG - show search area around point
-        let circle = MKCircle(centerCoordinate: centerLoc, radius: NearbyStationsViewModel.searchRadius)
+        let circle = MKCircle(centerCoordinate: coordinate, radius: NearbyStationsViewModel.searchRadius)
         map.addOverlay(circle)
 
-
-        // TODO - Only show this point if we're not tracking the user's location.
-        let annotation = MKPointAnnotation()
-        annotation.coordinate = CLLocationCoordinate2D(point: centerPoint)
-        map.addAnnotation(annotation)
+        if isUserLocation {
+            map.showsUserLocation = true
+        } else {
+            // TODO - Move one annotation
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = coordinate
+            map.addAnnotation(annotation)
+        }
     }
 
     // MARK: Lifecycle
@@ -54,8 +59,21 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
             bar.setBackgroundImage(UIImage(), forBarMetrics: UIBarMetrics.Default)
         }
 
+        // Subscribe to and follow location changes.
+        disposable += location.startWithResult { result in
+            switch result {
+            case .Success(let location):
+                let coordinate = location?.coordinate
+                self.point.swap(coordinate.map({ Point(coordinate: $0) }))
+            case .Failure(let error):
+                self.displayError(error)
+            }
+        }
+
         // Bind changes in the POI point to map movements.
-        disposable += point.producer.startWithNext { self.configureMap($0) }
+        disposable += point.producer.ignoreNil().startWithNext {
+            self.configureMap(CLLocationCoordinate2D(point: $0), isUserLocation: true)
+        }
 
         disposable += viewModel.stations.producer.map({ stations in
             stations.flatMap({ POIStationAnnotation(station: $0, badge: self.viewModel.badges[$0]!,

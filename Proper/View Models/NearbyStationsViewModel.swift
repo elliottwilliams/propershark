@@ -26,7 +26,7 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
      Performance note: When `point` changes, the entire list will be reloaded, which causes an expensive RPC to
      `agency.stations`. Because of this, be judicious about modifying `point`.
      */
-    let point: AnyProperty<Point>
+    let point: AnyProperty<Point?>
 
     internal let connection: ConnectionType
     internal let disposable = CompositeDisposable()
@@ -39,7 +39,7 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
     lazy var producer: SignalProducer<[MutableStation], ProperError> = { [unowned self] in
         // TODO: Consider adding a threshold to `point`s value, so that only significant changes in point reload the
         // stations.
-        return self.point.producer.flatMap(.Latest, transform: { point -> SignalProducer<[MutableStation], ProperError> in
+        return self.point.producer.ignoreNil().flatMap(.Latest, transform: { point -> SignalProducer<[MutableStation], ProperError> in
             // Compose: a search region for `point`, with a producer of static stations in that region, with a set of
             // MutableStations corresponding
             let stations = NearbyStationsViewModel.searchArea(for: point) |> self.produceStations |> self.produceMutables
@@ -48,7 +48,7 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         })
     }()
 
-    init<P: PropertyType where P.Value == Point>(point: P, connection: ConnectionType = Connection.cachedInstance) {
+    init<P: PropertyType where P.Value == Point?>(point: P, connection: ConnectionType = Connection.cachedInstance) {
         self.point = AnyProperty(point)
         self.connection = connection
         super.init()
@@ -57,9 +57,10 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
             self.badges[station] = badge
         })
 
-        disposable += produceDistances(stations.producer).startWithNext({ station, distance in
-            self.distances[station] = distance
-        })
+        disposable += produceDistances(stations.producer, point: point.producer.ignoreNil())
+            .startWithNext({ station, distance in
+                self.distances[station] = distance
+            })
     }
 
     deinit {
@@ -120,14 +121,15 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         })
     }
 
-    func produceDistances<Error: ErrorType>(stations: SignalProducer<[MutableStation], Error>) ->
+    func produceDistances<Error: ErrorType>(stations: SignalProducer<[MutableStation], Error>,
+                          point: SignalProducer<Point, NoError>) ->
         SignalProducer<(MutableStation, AnyProperty<String?>), Error>
     {
         return stations.flatMap(.Latest, transform: { stations -> SignalProducer<MutableStation, Error> in
             return SignalProducer(values: stations)
         }).map({ station in
             let position = station.position.producer.ignoreNil()
-            let distance = position.combineLatestWith(self.point.producer).map({ to, from in
+            let distance = position.combineLatestWith(point).map({ to, from in
                 self.distanceFormatter.stringFromDistance(to.distanceFrom(from))
             }).map({ Optional($0) })
             let property = AnyProperty(initialValue: nil, producer: distance)

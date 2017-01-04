@@ -63,6 +63,7 @@
 		26AE68221D62AD250031E534 /* CanonicalRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE68211D62AD250031E534 /* CanonicalRouteTests.swift */; };
 		26AE68241D62BDF90031E534 /* RouteStop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE68231D62BDF90031E534 /* RouteStop.swift */; };
 		26B3DC561D170BAE001E29AA /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B3DC551D170BAE001E29AA /* Connection.swift */; };
+		26B526D21E1C0AA700092705 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B526D11E1C0AA700092705 /* Location.swift */; };
 		26B9E1D31D35E0C500794EB6 /* SignalType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B9E1D21D35E0C500794EB6 /* SignalType.swift */; };
 		26C3C21B1D542ED3008E2A46 /* ConnectionMockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3C21A1D542ED3008E2A46 /* ConnectionMockTests.swift */; };
 		26C3C21C1D543CFF008E2A46 /* MutableModelTestSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111D71D52EA6100D8F46B /* MutableModelTestSpec.swift */; };
@@ -187,6 +188,7 @@
 		26AE68211D62AD250031E534 /* CanonicalRouteTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanonicalRouteTests.swift; sourceTree = "<group>"; };
 		26AE68231D62BDF90031E534 /* RouteStop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteStop.swift; sourceTree = "<group>"; };
 		26B3DC551D170BAE001E29AA /* Connection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Connection.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		26B526D11E1C0AA700092705 /* Location.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		26B9E1D21D35E0C500794EB6 /* SignalType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalType.swift; sourceTree = "<group>"; };
 		26C3C21A1D542ED3008E2A46 /* ConnectionMockTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionMockTests.swift; sourceTree = "<group>"; };
 		26C598BB1C250D1E00BC9FE1 /* BadgeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = BadgeView.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -420,6 +422,7 @@
 				264782651C309FB9009D9AD0 /* Helpers */,
 				26A424BF1BD2C1320035754F /* Info.plist */,
 				26D3E2201D28DF9900F85712 /* Models */,
+				26B526D01E1C0A7800092705 /* Services */,
 				264782641C309FAB009D9AD0 /* UI */,
 				26A0FEFE1E149AF200FF265A /* View Models */,
 				264782611C309F4C009D9AD0 /* Views */,
@@ -467,6 +470,14 @@
 				264A13C81D2625CE00B44D47 /* TopicEvent.swift */,
 			);
 			path = Connection;
+			sourceTree = "<group>";
+		};
+		26B526D01E1C0A7800092705 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				26B526D11E1C0AA700092705 /* Location.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 		26D3E2201D28DF9900F85712 /* Models */ = {
@@ -755,6 +766,7 @@
 				268E72291BF9938800E981D4 /* TransitNavigationItem.swift in Sources */,
 				26A424B41BD2C1320035754F /* AppDelegate.swift in Sources */,
 				26AE68241D62BDF90031E534 /* RouteStop.swift in Sources */,
+				26B526D21E1C0AA700092705 /* Location.swift in Sources */,
 				26289E251DF371B200D4CD9C /* Pipe.swift in Sources */,
 				26DBCF491D3FF59A00B22562 /* EventLog.swift in Sources */,
 				2650D28E1D176B65003758BF /* Configuration.swift in Sources */,

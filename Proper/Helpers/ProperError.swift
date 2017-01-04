@@ -8,6 +8,7 @@
 
 import Foundation
 import Argo
+import CoreLocation
 
 enum ProperError: ErrorType {
     // Connection
@@ -22,6 +23,10 @@ enum ProperError: ErrorType {
     case decodeFailures(errors: [DecodeError])
     case stateInconsistency(description: String, within: Any)
     case applyFailure(from: String, onto: String)
+
+    // Location
+    case locationMonitoringFailed(region: CLRegion?, error: NSError)
+    case locationDisabled
 
     case unexpected(error: ErrorType)
 }
