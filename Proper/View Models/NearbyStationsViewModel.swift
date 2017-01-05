@@ -43,7 +43,7 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
             // Compose: a search region for `point`, with a producer of static stations in that region, with a set of
             // MutableStations corresponding
             let stations = NearbyStationsViewModel.searchArea(for: point) |> self.produceStations |> self.produceMutables
-            // Sort the set by distance to `point` and assign letters to the stations.
+            // Sort the set by distance to `point`.
             return stations.map({ $0.sortDistanceTo(point) })
         })
     }()
@@ -73,7 +73,9 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
      Implementation note: The signal producer returned calls `agency.stations`, which returns *all* stations for the
      agency and is thus very slow.
      */
-    func produceStations(within circle: MKCircle) -> SignalProducer<Set<Station>, ProperError> {
+    func produceStations(within rect: SignalProducer<MKMapRect, ProperError>) ->
+        SignalProducer<[Station], ProperError>
+    {
         return connection.call("agency.stations").attemptMap({ event -> Result<[AnyObject], ProperError> in
             // Received events should be Agency.stations events, which contain a list of all stations on the agency.
             if case .Agency(.stations(let stations)) = event {
@@ -81,9 +83,9 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
             } else {
                 return .Failure(ProperError.eventParseFailure)
             }
-        }).decodeAnyAs(Station.self).map({ stations in
+        }).decodeAnyAs(Station.self).combineLatestWith(rect).map({ stations, rect in
             // Filter down to a set of stations which have a defined position that is inside `circle`.
-            Set(stations.filter({ $0.position.map({ circle.contains(coordinate: CLLocationCoordinate2D(point: $0)) }) == true }))
+            return stations.filter({ $0.position.map({ MKMapRectContainsPoint(rect, MKMapPoint(point: $0)) }) == true })
         })
     }
 
@@ -91,13 +93,14 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
      Given a producer of (static) station models, attaches and maintains MutableStations out of the latest set of
      static models.
      */
-    func produceMutables(producer: SignalProducer<Set<Station>, ProperError>) -> SignalProducer<Set<MutableStation>, ProperError> {
-        return producer.attemptMap({ stations -> Result<Set<MutableStation>, ProperError> in
-
+    func produceMutables(producer: SignalProducer<[Station], ProperError>) ->
+        SignalProducer<[MutableStation], ProperError>
+    {
+        return producer.attemptMap({ stations in
             // Attempt to create MutableStations out of all stations.
             do {
                 let mutables = try stations.map({ try MutableStation(from: $0, delegate: self, connection: self.connection) })
-                return .Success(Set(mutables))
+                return .Success(mutables)
             } catch let error as ProperError {
                 return .Failure(error)
             } catch {
@@ -141,8 +144,11 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
     /**
      Construct a search rectangle given a Point and a size (defaults to a class constant).
     */
-    static func searchArea(for point: Point, within radius: CLLocationDistance = searchRadius) -> MKCircle {
-        return MKCircle(centerCoordinate: CLLocationCoordinate2D(point: point), radius: radius)
+    static func searchArea<Error: ErrorType>(for point: Point, within radius: CLLocationDistance = searchRadius) ->
+        SignalProducer<MKMapRect, Error>
+    {
+        let circle = MKCircle(centerCoordinate: CLLocationCoordinate2D(point: point), radius: radius)
+        return SignalProducer(value: circle.boundingMapRect)
     }
 
     // MARK: Table View Data Source
