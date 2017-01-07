@@ -11,16 +11,22 @@ import CoreLocation
 import ReactiveCocoa
 import Result
 
+/** A delegate class and signal factory for Proper's integration with Core Location. Use `Location.producer` to get a
+ stream of device locations over time.
+ */
 class Location: NSObject, CLLocationManagerDelegate {
-    var observer: Observer<CLLocation?, ProperError>
+    var observer: Observer<CLLocation, ProperError>
 
-    init(observer: Observer<CLLocation?, ProperError>) {
+    init(observer: Observer<CLLocation, ProperError>) {
         self.observer = observer
         super.init()
     }
 
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        observer.sendNext(locations.last)
+        guard let last = locations.last else {
+            return
+        }
+        observer.sendNext(last)
     }
 
     func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
@@ -33,7 +39,7 @@ class Location: NSObject, CLLocationManagerDelegate {
         observer.sendFailed(.locationMonitoringFailed(region: region, error: error))
     }
 
-    static let producer = SignalProducer<CLLocation?, ProperError> { observer, disposable in
+    static let producer = SignalProducer<CLLocation, ProperError> { observer, disposable in
         let status = CLLocationManager.authorizationStatus()
         guard CLLocationManager.locationServicesEnabled() && status != .Restricted && status != .Denied else {
             observer.sendFailed(.locationDisabled)
@@ -55,6 +61,5 @@ class Location: NSObject, CLLocationManagerDelegate {
             manager.stopUpdatingLocation()
             delegate // Keep a strong reference to `delegate` in the closure. (`manager.delegate` is weak)
         }
-
-    }
+    }.logEvents(identifier: "Location.producer", logger: logSignalEvent)
 }

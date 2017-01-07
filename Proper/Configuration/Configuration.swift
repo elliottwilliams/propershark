@@ -8,11 +8,14 @@
 
 import Foundation
 import UIKit
+import MapKit
 
 struct Config {
     struct agency {
         static let key = "citybus"
         static let name = "CityBus"
+        static let region = MKCoordinateRegionMakeWithDistance(
+            CLLocationCoordinate2D(latitude: 40.4206761, longitude: -86.8966437), 4730, 7840)
     }
 
     struct app {

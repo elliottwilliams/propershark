@@ -8,25 +8,54 @@
 
 import UIKit
 import ReactiveCocoa
+import Result
 
 class POIViewController: UIViewController, ProperViewController, UISearchControllerDelegate, MKMapViewDelegate {
-
-    lazy var point = MutableProperty<Point?>(nil)
     lazy var viewModel: NearbyStationsViewModel = {
         return NearbyStationsViewModel(point: self.point, connection: self.connection)
     }()
-    let location = Location.producer
+
+
+    // MARK: Point properties
+    typealias NamedPoint = (point: Point, name: String, isDeviceLocation: Bool)
+
+    /// Map annotation for the point of interest represented by this view. Only used for static locations.
     let annotation = MKPointAnnotation()
 
+    /// The point tracked by the POI view. May be either the user's location or a static point. While the view is
+    /// visible, this point is from `staticLocation` or `deviceLocation`, depending on whether a static location was
+    /// passed.
+    lazy var point = MutableProperty<Point?>(nil)
+
+    /// A producer for the device's location, which adds metadata used by the view into the signal. It is started when
+    /// the view appears, but is interrupted if a static location is passed by `staticLocation`.
+    let deviceLocation = Location.producer.map({
+        NamedPoint(point: Point(coordinate: $0.coordinate), name: "Current Location", isDeviceLocation: true) })
+
+    /// A producer for a "static location" of the view. This static location overrides the device location and makes the
+    /// view represent the latest point passed.
+    var staticLocation = SignalProducer<NamedPoint, ProperError>.never
+
+    /// A producer that merges `deviceLocation` and `staticLocation`. The device location will be used until 
+    /// `staticLocation` emits a `NamedPoint`, at which point the producer is replaced by `staticLocation`.
+    var location: SignalProducer<NamedPoint, ProperError> {
+        return deviceLocation.takeUntilReplacement(staticLocation)
+    }
+
+
+    // MARK: UI properties
     @IBOutlet weak var map: MKMapView!
 
+    // MARK: Conformances
     internal var connection: ConnectionType = Connection.cachedInstance
     internal var disposable = CompositeDisposable()
 
-    func configureMap(coordinate: CLLocationCoordinate2D, isUserLocation: Bool) {
-        map.setCenterCoordinate(coordinate, animated: true)
-        map.delegate = self
 
+    // MARK: UI updates
+
+    func updateMap(point: Point, isUserLocation: Bool) {
+        let coordinate = CLLocationCoordinate2D(point: point)
+        map.setCenterCoordinate(coordinate, animated: true)
         let boundingRegion = MKCoordinateRegionMakeWithDistance(coordinate, NearbyStationsViewModel.searchRadius,
                                                                 NearbyStationsViewModel.searchRadius)
         map.setRegion(map.regionThatFits(boundingRegion), animated: true)
@@ -34,12 +63,10 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         // DEBUG - show search area around point
         let circle = MKCircle(centerCoordinate: coordinate, radius: NearbyStationsViewModel.searchRadius)
         map.addOverlay(circle)
-
+        
         if isUserLocation {
             map.showsUserLocation = true
         } else {
-            // TODO - Move one annotation
-            let annotation = MKPointAnnotation()
             annotation.coordinate = coordinate
             map.addAnnotation(annotation)
         }
@@ -49,6 +76,13 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        map.delegate = self
+
+        // Initially show the default region for the agency.
+        map.region = map.regionThatFits(Config.agency.region)
+
+        // Clear the title until the signals created in `viewWillAppear` set one.
+        navigationItem.title = nil
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -59,20 +93,15 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
             bar.setBackgroundImage(UIImage(), forBarMetrics: UIBarMetrics.Default)
         }
 
-        // Subscribe to and follow location changes.
         disposable += location.startWithResult { result in
             switch result {
-            case .Success(let location):
-                let coordinate = location?.coordinate
-                self.point.swap(coordinate.map({ Point(coordinate: $0) }))
-            case .Failure(let error):
+            case let .Success(point, name, userLocation):
+                self.point.swap(point)
+                self.navigationItem.title = name
+                self.updateMap(point, isUserLocation: userLocation)
+            case let .Failure(error):
                 self.displayError(error)
             }
-        }
-
-        // Bind changes in the POI point to map movements.
-        disposable += point.producer.ignoreNil().startWithNext {
-            self.configureMap(CLLocationCoordinate2D(point: $0), isUserLocation: true)
         }
 
         disposable += viewModel.stations.producer.map({ stations in
@@ -130,6 +159,12 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
         // Returning nil causes the map to use a default annotation.
         return nil
+    }
+
+    func mapView(mapView: MKMapView, rendererForOverlay overlay: MKOverlay) -> MKOverlayRenderer {
+        let renderer = MKCircleRenderer(overlay: overlay)
+        renderer.fillColor = UIColor.skyBlueColor().colorWithAlphaComponent(0.1)
+        return renderer
     }
 
     func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
