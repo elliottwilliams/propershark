@@ -57,6 +57,8 @@ extension Point: Decodable {
     }
 }
 
+// MARK: Type conversion
+
 extension CLLocation {
     convenience init(point: Point) {
         self.init(latitude: point.lat, longitude: point.long)
@@ -71,6 +73,6 @@ extension CLLocationCoordinate2D {
 
 extension MKMapPoint {
     init(point: Point) {
-        self.init(x: point.lat, y: point.long)
+        self = MKMapPointForCoordinate(CLLocationCoordinate2D(point: point))
     }
 }
