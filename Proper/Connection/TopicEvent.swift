@@ -51,6 +51,12 @@ enum TopicEvent: CustomStringConvertible {
         case unknownLastEvent(WampArgs, WampKwargs)
     }
 
+    case Timetable(TimetableMessage)
+    enum TimetableMessage {
+        case arrival(Decoded<Arrival>)
+        case arrivals(Decoded<[Arrival]>)
+    }
+
     /// Get any underlying DecodeError from the event.
     var error: DecodeError? {
         // TODO: In Swift 3, case statements with multiple patterns can contain variables, so the number of cases here can
@@ -69,6 +75,8 @@ enum TopicEvent: CustomStringConvertible {
         case let .Route(.activate(decoded, _)): 	    return decoded.error
         case let .Route(.deactivate(decoded, _)): 	    return decoded.error
         case let .Route(.vehicleUpdate(decoded, _)): 	return decoded.error
+        case let .Timetable(.arrival(decoded)):         return decoded.error
+        case let .Timetable(.arrivals(decoded)):        return decoded.error
         default:                                        return nil
         }
     }
@@ -111,6 +119,10 @@ enum TopicEvent: CustomStringConvertible {
             return "agency.routes (\(list.count) routes)"
         case .Meta(.unknownLastEvent(_, _)):
             return "meta.unknownLastEvent"
+        case let .Timetable(.arrival(arrival)):
+            return "timetable.arrival (\(arrival.value))"
+        case let .Timetable(.arrivals(arrivals)):
+            return "timetable.arrivals (\(arrivals.value))"
         }
     }
 
@@ -234,8 +246,28 @@ enum TopicEvent: CustomStringConvertible {
             } else {
                 return .Meta(.unknownLastEvent(metaArgs, metaKwargs))
             }
+
+        case "timetable.next_visit", "timetable.last_visit":
+            guard let tuple = response.args[safe: 0]
+                else { return nil }
+            return .Timetable(.arrival(decode(tuple)))
+
+        case "timetable.next_visits", "timetable.last_visits":
+            guard let tuples = response.args[safe: 0],
+                let count = request.args[safe: 3] as? Int where
+                tuples.count == count
+                else { return nil }
+            return .Timetable(.arrivals(decodeArray(JSON(tuples))))
+
         default:
             return nil
         }
+    }
+
+    static private func parseTimetableTuple(args: [[AnyObject]]) -> (eta: Decoded<NSDate>, etd: Decoded<NSDate>)? {
+        guard let eta = args[safe: 0] as? AnyObject,
+            let etd = args[safe: 1] as? AnyObject
+            else { return nil }
+        return (eta: decode(eta), etd: decode(etd))
     }
 }
