@@ -34,7 +34,7 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
 
     let stations: MutableProperty<[MutableStation]> = .init([])
     var distances = [MutableStation: AnyProperty<String?>]()
-    var badges = [MutableStation: StationBadge]()
+    var badges = [MutableStation: Badge]()
 
     lazy var producer: SignalProducer<[MutableStation], ProperError> = { [unowned self] in
         // TODO: Consider adding a threshold to `point`s value, so that only significant changes in point reload the
@@ -110,14 +110,14 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
     }
 
     func produceBadges<Error: ErrorType>(producer: SignalProducer<[MutableStation], Error>) ->
-        SignalProducer<(MutableStation, StationBadge), Error>
+        SignalProducer<(MutableStation, Badge), Error>
     {
         let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".characters
         let alphabetLength = 26
-        return producer.flatMap(.Latest, transform: { stations -> SignalProducer<(MutableStation, StationBadge), Error> in
-            let badges = stations.enumerate().map({ idx, station -> (MutableStation, StationBadge) in
+        return producer.flatMap(.Latest, transform: { stations -> SignalProducer<(MutableStation, Badge), Error> in
+            let badges = stations.enumerate().map({ idx, station -> (MutableStation, Badge) in
                 let letter = String(alphabet[alphabet.startIndex.advancedBy(idx % alphabetLength)])
-                let badge = StationBadge(name: letter, seedForColor: station.identifier)
+                let badge = Badge(name: letter, seedForColor: station.identifier)
                 return (station, badge)
             })
             return SignalProducer(values: badges)
@@ -156,8 +156,6 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         return stations.value.count
     }
 
-    // The first row in each section is the "sentinel" row, which represents the station itself rather than a particular
-    // arrival at that station.
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return stations.value[section].vehicles.value.count
     }
@@ -172,34 +170,38 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         cell.apply(vehicle)
         return cell
     }
-}
-
-internal struct StationBadge {
-    let name: String
-    let color: UIColor
-
-    init(name: String, color: UIColor) {
-        self.name = name
-        self.color = color
-    }
-
-    init<H: Hashable>(name: String, seedForColor seed: H) {
-        self.name = name
-        self.color = StationBadge.randomColor(seed)
-    }
 
     /**
-     Generate a pseudorandom color given a hashable seed. Using this generator, badges can have a color generated from
-     the station's identifier.
+     Data representing a station's badge. The badge consists of a name and a color. `Badge` instances are used to create
+     `BadgeView` instances, which render badges in the UI.
      */
-    static func randomColor<H: Hashable>(seed: H) -> UIColor {
-        let src = GKMersenneTwisterRandomSource(seed: UInt64(abs(seed.hashValue)))
-        let gen = GKRandomDistribution(randomSource: src, lowestValue: 0, highestValue: 255)
-        let h = CGFloat(gen.nextInt()) / 256.0
-        // Saturation and luminance stay between 0.5 and 1.0 to avoid white and excessively dark colors.
-        let s = CGFloat(gen.nextInt()) / 512.0 + 0.5
-        let l = CGFloat(gen.nextInt()) / 512.0 + 0.5
-        return UIColor(hue: h, saturation: s, brightness: l, alpha: CGFloat(1))
+    struct Badge {
+        let name: String
+        let color: UIColor
+
+        init(name: String, color: UIColor) {
+            self.name = name
+            self.color = color
+        }
+
+        init<H: Hashable>(name: String, seedForColor seed: H) {
+            self.name = name
+            self.color = Badge.randomColor(seed)
+        }
+
+        /**
+         Generate a pseudorandom color given a hashable seed. Using this generator, badges can have a color generated from
+         the station's identifier.
+         */
+        static func randomColor<H: Hashable>(seed: H) -> UIColor {
+            let src = GKMersenneTwisterRandomSource(seed: UInt64(abs(seed.hashValue)))
+            let gen = GKRandomDistribution(randomSource: src, lowestValue: 0, highestValue: 255)
+            let h = CGFloat(gen.nextInt()) / 256.0
+            // Saturation and luminance stay between 0.5 and 1.0 to avoid white and excessively dark colors.
+            let s = CGFloat(gen.nextInt()) / 512.0 + 0.5
+            let l = CGFloat(gen.nextInt()) / 512.0 + 0.5
+            return UIColor(hue: h, saturation: s, brightness: l, alpha: CGFloat(1))
+        }
     }
 }
 

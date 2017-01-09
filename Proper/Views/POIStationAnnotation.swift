@@ -13,10 +13,10 @@ import MapKit
 class POIStationAnnotation: NSObject, MKAnnotation {
     let station: MutableStation
     let stationPosition: Point
-    let badge: StationBadge
+    let badge: NearbyStationsViewModel.Badge
     let distance: AnyProperty<String?>
 
-    init?(station: MutableStation, badge: StationBadge, distance: AnyProperty<String?>) {
+    init?(station: MutableStation, badge: NearbyStationsViewModel.Badge, distance: AnyProperty<String?>) {
         guard let position = station.position.value else {
             return nil
         }

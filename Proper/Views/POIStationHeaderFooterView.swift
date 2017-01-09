@@ -20,15 +20,11 @@ class POIStationHeaderFooterView: UITableViewHeaderFooterView {
         disposable?.dispose()
     }
 
-//    override func awakeFromNib() {
-//        super.awakeFromNib()
-//    }
-
     override func prepareForReuse() {
         disposable?.dispose()
     }
 
-    func apply(station: MutableStation, badge: StationBadge, distance: AnyProperty<String?>) {
+    func apply(station: MutableStation, badge: NearbyStationsViewModel.Badge, distance: AnyProperty<String?>) {
         let disposable = CompositeDisposable()
 
         // Set the badge identifier.
