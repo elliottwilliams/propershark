@@ -7,23 +7,19 @@
 //
 
 import Foundation
-import Argo
 
-struct Arrival: Decodable {
-    let eta: NSDate
-    let etd: NSDate
+struct Arrival: Comparable {
+    let route: MutableRoute
+    let station: MutableStation
+    let time: ArrivalTime
+}
 
-    init(eta: NSDate, etd: NSDate) {
-        self.eta = eta
-        self.etd = etd
-    }
+func == (a: Arrival, b: Arrival) -> Bool {
+    return a.route == b.route &&
+        a.station == b.station &&
+        a.time == b.time
+}
 
-    init(list: [NSDate]) {
-        self.eta = list[0]
-        self.etd = list[1]
-    }
-
-    static func decode(json: JSON) -> Decoded<Arrival> {
-        return self.init <^> [NSDate].decode(json)
-    }
+func < (a: Arrival, b: Arrival) -> Bool {
+    return a.time.eta.compare(b.time.eta) == .OrderedAscending
 }

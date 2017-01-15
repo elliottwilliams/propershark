@@ -14,10 +14,12 @@ import Argo
 struct Timetable {
     static let defaultVisitLimit = 10
 
+    // TODO - Cache calls to Timetable. All its RPCs are idempotent.
+
     /// Produce the next `limit` arrivals of `route` on `station`, starting from `beginTime`.
     static func visits(for route: MutableRoute, at station: MutableStation, after beginTime: NSDate,
-                       using connection: ConnectionType = Connection.cachedInstance,
-                       limit: Int = defaultVisitLimit) -> SignalProducer<Arrival, ProperError>
+                       using connection: ConnectionType, limit: Int = defaultVisitLimit) ->
+        SignalProducer<Arrival, ProperError>
     {
         return visits(rpc: "timetable.next_visits", for: route, at: station, time: beginTime, using: connection,
                       limit: limit)
@@ -25,8 +27,8 @@ struct Timetable {
 
     /// Produce the last `limit` arrivals of `route` on `station`, looking backwards from `endTime`.
     static func visits(for route: MutableRoute, at station: MutableStation, before endTime: NSDate,
-                       using connection: ConnectionType = Connection.cachedInstance,
-                       limit: Int = defaultVisitLimit) -> SignalProducer<Arrival, ProperError>
+                       using connection: ConnectionType, limit: Int = defaultVisitLimit) ->
+        SignalProducer<Arrival, ProperError>
     {
         return visits(rpc: "timetable.last_visits", for: route, at: station, time: endTime, using: connection,
                       limit: limit)
@@ -37,20 +39,22 @@ struct Timetable {
                                    time: NSDate, using connection: ConnectionType, limit: Int) ->
         SignalProducer<Arrival, ProperError>
     {
-        return connection.call(rpc, args: [station.identifier, route.identifier, timestamp(time),
-            limit]) |> decodeArrivals
+        let arrivalTimes = connection.call(rpc, args: [station.identifier, route.identifier, timestamp(time),
+            limit]) |> decodeArrivalTimes
+
+        return arrivalTimes.map({ Arrival(route: route, station: station, time: $0) })
     }
 
-    private static func decodeArrivals(producer: SignalProducer<TopicEvent, ProperError>) ->
-        SignalProducer<Arrival, ProperError>
+    private static func decodeArrivalTimes(producer: SignalProducer<TopicEvent, ProperError>) ->
+        SignalProducer<ArrivalTime, ProperError>
     {
-        return producer.attemptMap({ event -> Result<Decoded<[Arrival]>, ProperError> in
+        return producer.attemptMap({ event -> Result<Decoded<[ArrivalTime]>, ProperError> in
             if case let TopicEvent.Timetable(.arrivals(arrivals)) = event {
                 return .Success(arrivals)
             } else {
                 return .Failure(ProperError.eventParseFailure)
             }
-        }).attemptMap({ decoded -> Result<[Arrival], ProperError> in
+        }).attemptMap({ decoded -> Result<[ArrivalTime], ProperError> in
             switch decoded {
             case .Success(let arrivals):
                 return .Success(arrivals)
@@ -58,7 +62,7 @@ struct Timetable {
                 return .Failure(ProperError.decodeFailure(error: error))
             }
         }).flatMap(.Latest, transform: { arrivals in
-            return SignalProducer<Arrival, ProperError>(values: arrivals)
+            return SignalProducer<ArrivalTime, ProperError>(values: arrivals)
         })
     }
 
