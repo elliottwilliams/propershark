@@ -12,18 +12,33 @@ import Result
 import Argo
 
 struct Timetable {
-//    typealias Arrival = (eta: NSDate, etd: NSDate)
-    static let nextVisit = SignalProducer<Arrival, ProperError> { observer, disposable in
+    static let defaultVisitLimit = 10
 
+    /// Produce the next `limit` arrivals of `route` on `station`, starting from `beginTime`.
+    static func visits(for route: MutableRoute, at station: MutableStation, after beginTime: NSDate,
+                       using connection: ConnectionType = Connection.cachedInstance,
+                       limit: Int = defaultVisitLimit) -> SignalProducer<Arrival, ProperError>
+    {
+        return visits(rpc: "timetable.next_visits", for: route, at: station, time: beginTime, using: connection,
+                      limit: limit)
     }
 
-    static func nextVisit(for route: MutableRoute, at station: MutableStation, after beginTime: NSDate,
-                              using connection: ConnectionType = Connection.cachedInstance) ->
+    /// Produce the last `limit` arrivals of `route` on `station`, looking backwards from `endTime`.
+    static func visits(for route: MutableRoute, at station: MutableStation, before endTime: NSDate,
+                       using connection: ConnectionType = Connection.cachedInstance,
+                       limit: Int = defaultVisitLimit) -> SignalProducer<Arrival, ProperError>
+    {
+        return visits(rpc: "timetable.last_visits", for: route, at: station, time: endTime, using: connection,
+                      limit: limit)
+    }
+
+    // Internal visit function to call either `next_visits` or `last_visits`.
+    private static func visits(rpc rpc: String, for route: MutableRoute, at station: MutableStation,
+                                   time: NSDate, using connection: ConnectionType, limit: Int) ->
         SignalProducer<Arrival, ProperError>
     {
-        return connection.call("timetable.next_visits",
-                               args: [station.identifier, route.identifier, timestamp(beginTime), 1])
-            |> decodeArrivals
+        return connection.call(rpc, args: [station.identifier, route.identifier, timestamp(time),
+            limit]) |> decodeArrivals
     }
 
     private static func decodeArrivals(producer: SignalProducer<TopicEvent, ProperError>) ->
