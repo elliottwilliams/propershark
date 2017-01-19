@@ -53,8 +53,8 @@ enum TopicEvent: CustomStringConvertible {
 
     case Timetable(TimetableMessage)
     enum TimetableMessage {
-        case arrival(Decoded<Arrival>)
-        case arrivals(Decoded<[Arrival]>)
+        case arrival(Decoded<ArrivalTime>)
+        case arrivals(Decoded<[ArrivalTime]>)
     }
 
     /// Get any underlying DecodeError from the event.
@@ -252,7 +252,7 @@ enum TopicEvent: CustomStringConvertible {
                 else { return nil }
             return .Timetable(.arrival(decode(tuple)))
 
-        case "timetable.next_visits", "timetable.last_visits":
+        case "timetable.visits_before", "timetable.visits_after", "timetable.visits_between":
             guard let tuples = response.args[safe: 0],
                 let count = request.args[safe: 3] as? Int where
                 tuples.count == count

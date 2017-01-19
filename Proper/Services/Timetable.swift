@@ -14,35 +14,41 @@ import Argo
 struct Timetable {
     static let defaultVisitLimit = 10
 
+    static var formatter: NSDateFormatter = {
+        let formatter = NSDateFormatter()
+        formatter.dateFormat = "yyyyMMdd HH:mm:ss"
+        return formatter
+    }()
+
     // TODO - Cache calls to Timetable. All its RPCs are idempotent.
 
-    /// Produce the next `limit` arrivals of `route` on `station`, starting from `beginTime`.
-    static func visits(for route: MutableRoute, at station: MutableStation, after beginTime: NSDate,
-                       using connection: ConnectionType, limit: Int = defaultVisitLimit) ->
-        SignalProducer<Arrival, ProperError>
-    {
-        return visits(rpc: "timetable.next_visits", for: route, at: station, time: beginTime, using: connection,
-                      limit: limit)
+    enum Timing {
+        case before(NSDate)
+        case after(NSDate)
+        case between(from: NSDate, to: NSDate)
     }
 
-    /// Produce the last `limit` arrivals of `route` on `station`, looking backwards from `endTime`.
-    static func visits(for route: MutableRoute, at station: MutableStation, before endTime: NSDate,
-                       using connection: ConnectionType, limit: Int = defaultVisitLimit) ->
+    /// Produce `limit` many arrivals for vehicles on `route` arriving at `station`, starting from `timing`.
+    static func visits(for route: MutableRoute, at station: MutableStation, occurring when: Timing,
+                           using connection: ConnectionType, limit: Int = defaultVisitLimit) ->
         SignalProducer<Arrival, ProperError>
     {
-        return visits(rpc: "timetable.last_visits", for: route, at: station, time: endTime, using: connection,
-                      limit: limit)
-    }
-
-    // Internal visit function to call either `next_visits` or `last_visits`.
-    private static func visits(rpc rpc: String, for route: MutableRoute, at station: MutableStation,
-                                   time: NSDate, using connection: ConnectionType, limit: Int) ->
-        SignalProducer<Arrival, ProperError>
-    {
-        let arrivalTimes = connection.call(rpc, args: [station.identifier, route.identifier, timestamp(time),
-            limit]) |> decodeArrivalTimes
-
+        let arrivalTimes = connection.call(rpc(from: when), args: [station.identifier, route.identifier] + timestamps(when))
+            |> decodeArrivalTimes
         return arrivalTimes.map({ Arrival(route: route, station: station, time: $0) })
+    }
+
+    /// Produce `limit` many arrivals for vehicles of all routes of `station`, starting from `timing`. `station` must
+    /// have its `routes` defined.
+    static func visits(for station: MutableStation, occurring timing: Timing, using connection: ConnectionType,
+                           limit: Int = defaultVisitLimit) -> SignalProducer<Arrival, ProperError>
+    {
+        // TODO - Once timetable#3 is implemented, use the native RPC call to get all arrivals on a station, instead of
+        // calling all routes. <https://github.com/propershark/timetable_cpp/issues/3>
+        let routes = station.routes.producer.flatten(.Latest)
+        return routes.flatMap(.Merge, transform: { routes in
+            visits(for: routes, at: station, occurring: timing, using: connection, limit: limit)
+        })
     }
 
     private static func decodeArrivalTimes(producer: SignalProducer<TopicEvent, ProperError>) ->
@@ -66,13 +72,21 @@ struct Timetable {
         })
     }
 
-    static var formatter: NSDateFormatter = {
-        let formatter = NSDateFormatter()
-        formatter.dateFormat = "yyyyMMdd HH:mm:ss"
-        return formatter
-    }()
+    private static func rpc(from value: Timing) -> String {
+        switch value {
+        case .before(_):    return "timetable.visits_before"
+        case .after(_):     return "timetable.visits_after"
+        case .between(_):   return "timetable.visits_between"
+        }
+    }
 
-    private static func timestamp(date: NSDate) -> String {
-        return formatter.stringFromDate(date)
+    private static func timestamps(value: Timing) -> [String] {
+        let dates: [NSDate]
+        switch value {
+        case let .before(date):         dates = [date]
+        case let .after(date):          dates = [date]
+        case let .between(from, to):    dates = [from, to]
+        }
+        return dates.map(formatter.stringFromDate)
     }
 }
