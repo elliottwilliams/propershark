@@ -8,10 +8,14 @@
 
 import Foundation
 
-struct Arrival: Comparable {
+struct Arrival: Comparable, Hashable {
     let route: MutableRoute
     let station: MutableStation
     let time: ArrivalTime
+
+    var hashValue: Int {
+        return route.hashValue ^ station.hashValue ^ time.hashValue
+    }
 }
 
 func == (a: Arrival, b: Arrival) -> Bool {
@@ -21,5 +25,5 @@ func == (a: Arrival, b: Arrival) -> Bool {
 }
 
 func < (a: Arrival, b: Arrival) -> Bool {
-    return a.time.eta.compare(b.time.eta) == .OrderedAscending
+    return a.time < b.time
 }

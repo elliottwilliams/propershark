@@ -12,7 +12,7 @@ import Result
 
 class POIViewController: UIViewController, ProperViewController, UISearchControllerDelegate, MKMapViewDelegate {
     lazy var viewModel: NearbyStationsViewModel = {
-        return NearbyStationsViewModel(point: self.point, connection: self.connection)
+        return NearbyStationsViewModel(point: self.point, searchRadius: self.zoom, connection: self.connection)
     }()
 
 
@@ -26,6 +26,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
     /// visible, this point is from `staticLocation` or `deviceLocation`, depending on whether a static location was
     /// passed.
     lazy var point = MutableProperty<Point?>(nil)
+    lazy var zoom = MutableProperty<CLLocationDistance>(250) // Default zoom of 250m
 
     /// A producer for the device's location, which adds metadata used by the view into the signal. It is started when
     /// the view appears, but is interrupted if a static location is passed by `staticLocation`.
@@ -42,7 +43,6 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         return deviceLocation.takeUntilReplacement(staticLocation)
     }
 
-
     // MARK: UI properties
     @IBOutlet weak var map: MKMapView!
 
@@ -53,15 +53,16 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
     // MARK: UI updates
 
+    // TODO - when map is zoomed in/out, update `self.zoom`.
+
     func updateMap(point: Point, isUserLocation: Bool) {
         let coordinate = CLLocationCoordinate2D(point: point)
         map.setCenterCoordinate(coordinate, animated: true)
-        let boundingRegion = MKCoordinateRegionMakeWithDistance(coordinate, NearbyStationsViewModel.searchRadius,
-                                                                NearbyStationsViewModel.searchRadius)
+        let boundingRegion = MKCoordinateRegionMakeWithDistance(coordinate, zoom.value, zoom.value)
         map.setRegion(map.regionThatFits(boundingRegion), animated: true)
 
         // DEBUG - show search area around point
-        let circle = MKCircle(centerCoordinate: coordinate, radius: NearbyStationsViewModel.searchRadius)
+        let circle = MKCircle(centerCoordinate: coordinate, radius: zoom.value)
         map.addOverlay(circle)
         
         if isUserLocation {

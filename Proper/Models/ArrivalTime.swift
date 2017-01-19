@@ -9,9 +9,13 @@
 import Foundation
 import Argo
 
-struct ArrivalTime: Decodable, Equatable {
+struct ArrivalTime: Decodable, Comparable, Hashable {
     let eta: NSDate
     let etd: NSDate
+
+    var hashValue: Int {
+        return eta.hashValue ^ etd.hashValue
+    }
 
     init(eta: NSDate, etd: NSDate) {
         self.eta = eta
@@ -30,4 +34,8 @@ struct ArrivalTime: Decodable, Equatable {
 
 func == (a: ArrivalTime, b: ArrivalTime) -> Bool {
     return a.eta == b.eta && a.etd == b.etd
+}
+
+func < (a: ArrivalTime, b: ArrivalTime) -> Bool {
+    return a.eta.compare(b.eta) == .OrderedAscending
 }

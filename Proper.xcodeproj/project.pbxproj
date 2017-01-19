@@ -28,6 +28,7 @@
 		266111D21D51521500D8F46B /* UIColorDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111D11D51521500D8F46B /* UIColorDecodeTests.swift */; };
 		266111DD1D5378B500D8F46B /* NilConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111DC1D5378B500D8F46B /* NilConnection.swift */; };
 		266111DE1D5380D300D8F46B /* ConnectionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2612F9FE1D2CCAE5005103E3 /* ConnectionMock.swift */; };
+		266B987E1E2BD72700F2EAB9 /* ArrivalTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266B987D1E2BD72700F2EAB9 /* ArrivalTime.swift */; };
 		266BAE651D2B676F001C9EC8 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266BAE641D2B676F001C9EC8 /* UIColor.swift */; };
 		266BAE661D2B7159001C9EC8 /* StartListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264782551C2C6F67009D9AD0 /* StartListViewController.swift */; };
 		266CC4D81D826FC70022D064 /* vehicles.1801.json in Resources */ = {isa = PBXBuildFile; fileRef = 266CC4D71D826FC70022D064 /* vehicles.1801.json */; };
@@ -151,6 +152,7 @@
 		266111D11D51521500D8F46B /* UIColorDecodeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColorDecodeTests.swift; sourceTree = "<group>"; };
 		266111D71D52EA6100D8F46B /* MutableModelTestSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableModelTestSpec.swift; sourceTree = "<group>"; };
 		266111DC1D5378B500D8F46B /* NilConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NilConnection.swift; sourceTree = "<group>"; };
+		266B987D1E2BD72700F2EAB9 /* ArrivalTime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrivalTime.swift; sourceTree = "<group>"; };
 		266BAE641D2B676F001C9EC8 /* UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		266CC4D71D826FC70022D064 /* vehicles.1801.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = vehicles.1801.json; sourceTree = "<group>"; };
 		267019571C3F5BB50057FD11 /* RailVehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RailVehicle.swift; sourceTree = "<group>"; };
@@ -504,6 +506,7 @@
 		26D3E2271D28E0D900F85712 /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				266B987D1E2BD72700F2EAB9 /* ArrivalTime.swift */,
 				264B2D2E1E22E0E4007EE6D5 /* Arrival.swift */,
 				26AE681F1D622CCD0031E534 /* CanonicalRoute.swift */,
 				26D3E2231D28E07100F85712 /* Model.swift */,
@@ -747,6 +750,7 @@
 				264B2D2D1E228781007EE6D5 /* Date.swift in Sources */,
 				264B2D2F1E22E0E4007EE6D5 /* Arrival.swift in Sources */,
 				26ED26F31E117988007FB0F8 /* StationUpcomingTableViewCell.swift in Sources */,
+				266B987E1E2BD72700F2EAB9 /* ArrivalTime.swift in Sources */,
 				26A4B7B11D32CEC800264F0D /* MutableRoute.swift in Sources */,
 				26AE681E1D612B810031E534 /* StationTableViewController.swift in Sources */,
 				26ADB0E71E186A9D008F49FF /* POIStationAnnotation.swift in Sources */,

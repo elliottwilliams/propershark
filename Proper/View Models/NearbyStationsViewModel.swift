@@ -16,7 +16,7 @@ import GameKit
 class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDelegate {
 
     // TODO - Maybe raise the search radius but cap the number of results returned?
-    static let searchRadius = CLLocationDistance(250) // in meters
+    static let defaultSearchRadius = CLLocationDistance(250) // in meters
     static let arrivalRowHeight = CGFloat(44)
 
     /**
@@ -27,37 +27,52 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
      `agency.stations`. Because of this, be judicious about modifying `point`.
      */
     let point: AnyProperty<Point?>
+    let searchRadius: AnyProperty<CLLocationDistance>
+
+    /**
+     The station-arrivals data represented by the view model. View controllers update this property as they respond to
+     changes from `producer`.
+     */
+    let model: MutableProperty<[(s: MutableStation, a: [Arrival])]> = .init([])
+
+    /// A convenience mapping of `current` that represents nearby stations. Indexed by position in the table.
+    let stations: AnyProperty<[MutableStation]>
+    /// A convenience mapping of `current` that represents nearby arrivals. Indexed by table section and arrival
+    /// sequence.
+    let arrivals: AnyProperty<[[Arrival]]>
+
+    var distances = [MutableStation: AnyProperty<String?>]()
+    var badges = [MutableStation: Badge]()
 
     internal let connection: ConnectionType
     internal let disposable = CompositeDisposable()
     private let distanceFormatter = MKDistanceFormatter()
 
-    let stations: MutableProperty<[MutableStation]> = .init([])
-    var distances = [MutableStation: AnyProperty<String?>]()
-    var badges = [MutableStation: Badge]()
-
-    lazy var producer: SignalProducer<[MutableStation], ProperError> = { [unowned self] in
-        // TODO: Consider adding a threshold to `point`s value, so that only significant changes in point reload the
-        // stations.
-        return self.point.producer.ignoreNil().flatMap(.Latest, transform: { point -> SignalProducer<[MutableStation], ProperError> in
-            // Compose: a search region for `point`, with a producer of static stations in that region, with a set of
-            // MutableStations corresponding
-            let stations = NearbyStationsViewModel.searchArea(for: point) |> self.produceStations |> self.produceMutables
-            // Sort the set by distance to `point`.
-            return stations.map({ $0.sortDistanceTo(point) })
-        })
+    lazy var producer: SignalProducer<[(s: MutableStation, a: [Arrival])], ProperError> = { [unowned self] in
+        let rect = combineLatest(self.point.producer.ignoreNil(), self.searchRadius.producer)
+            .map({ point, radius -> MKMapRect in
+                let circle = MKCircle(centerCoordinate: CLLocationCoordinate2D(point: point), radius: radius)
+                return circle.boundingMapRect
+            }).promoteErrors(ProperError)
+        return rect |> self.nearbyStations |> self.addArrivals
     }()
 
-    init<P: PropertyType where P.Value == Point?>(point: P, connection: ConnectionType = Connection.cachedInstance) {
+    init<P: PropertyType, Q: PropertyType where P.Value == Point?, Q.Value == CLLocationDistance>
+        (point: P, searchRadius: Q, connection: ConnectionType = Connection.cachedInstance)
+    {
         self.point = AnyProperty(point)
+        self.searchRadius = AnyProperty(searchRadius)
+
+        self.stations = self.model.map({ tuples in tuples.lazy.map({ $0.s }) })
+        self.arrivals = self.model.map({ tuples in tuples.lazy.map({ $0.a }) })
         self.connection = connection
         super.init()
 
-        disposable += produceBadges(stations.producer).startWithNext({ station, badge in
-            self.badges[station] = badge
-        })
-
-        disposable += produceDistances(stations.producer, point: point.producer.ignoreNil())
+        disposable += badges(for: stations.producer)
+            .startWithNext({ station, badge in
+                self.badges[station] = badge
+            })
+        disposable += distances(for: stations.producer, from: point.producer.ignoreNil())
             .startWithNext({ station, distance in
                 self.distances[station] = distance
             })
@@ -68,48 +83,45 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
     }
 
     /**
-     Returns a signal producer that emits stations inside the given MKMapRect.
+     Returns a signal producer that emits stations inside the a given circle defined by the positional `point` and 
+     `radius` parameters inside the signal.
 
      Implementation note: The signal producer returned calls `agency.stations`, which returns *all* stations for the
      agency and is thus very slow.
      */
-    func produceStations(within rect: SignalProducer<MKMapRect, ProperError>) ->
-        SignalProducer<[Station], ProperError>
+    func nearbyStations(rect: SignalProducer<MKMapRect, ProperError>) ->
+        SignalProducer<[MutableStation], ProperError>
     {
-        return connection.call("agency.stations").attemptMap({ event -> Result<[AnyObject], ProperError> in
+        let stations = connection.call("agency.stations").attemptMap({ event -> Result<[AnyObject], ProperError> in
             // Received events should be Agency.stations events, which contain a list of all stations on the agency.
             if case .Agency(.stations(let stations)) = event {
                 return .Success(stations)
             } else {
                 return .Failure(ProperError.eventParseFailure)
             }
-        }).decodeAnyAs(Station.self).combineLatestWith(rect).map({ stations, rect in
-            // Filter down to a set of stations which have a defined position that is inside `circle`.
-            return stations.filter({ $0.position.map({ MKMapRectContainsPoint(rect, MKMapPoint(point: $0)) }) == true })
-        })
-    }
+        }).decodeAnyAs(Station.self)
 
-    /**
-     Given a producer of (static) station models, attaches and maintains MutableStations out of the latest set of
-     static models.
-     */
-    func produceMutables(producer: SignalProducer<[Station], ProperError>) ->
-        SignalProducer<[MutableStation], ProperError>
-    {
-        return producer.attemptMap({ stations in
+        return combineLatest(stations, rect).map({ stations, rect -> ([Station], MKMapRect) in
+            // Filter down to a set of stations which have a defined position that is inside `circle`.
+            let nearby = stations.filter({ $0.position.map({ MKMapRectContainsPoint(rect, MKMapPoint(point: $0)) }) == true })
+            return (nearby, rect)
+        }).attemptMap({ stations, rect -> Result<([MutableStation], MKMapRect), ProperError> in
             // Attempt to create MutableStations out of all stations.
             do {
                 let mutables = try stations.map({ try MutableStation(from: $0, delegate: self, connection: self.connection) })
-                return .Success(mutables)
+                return .Success(mutables, rect)
             } catch let error as ProperError {
                 return .Failure(error)
             } catch {
                 return .Failure(.unexpected(error: error))
             }
+        }).map({ stations, rect -> [MutableStation] in
+            let center = MKCoordinateRegionForMapRect(rect).center
+            return stations.sortDistanceTo(Point(coordinate: center))
         })
     }
 
-    func produceBadges<Error: ErrorType>(producer: SignalProducer<[MutableStation], Error>) ->
+    func badges<Error: ErrorType>(for producer: SignalProducer<[MutableStation], Error>) ->
         SignalProducer<(MutableStation, Badge), Error>
     {
         let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".characters
@@ -124,8 +136,8 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         })
     }
 
-    func produceDistances<Error: ErrorType>(stations: SignalProducer<[MutableStation], Error>,
-                          point: SignalProducer<Point, NoError>) ->
+    func distances<Error: ErrorType>(for stations: SignalProducer<[MutableStation], Error>,
+                   from point: SignalProducer<Point, NoError>) ->
         SignalProducer<(MutableStation, AnyProperty<String?>), Error>
     {
         return stations.flatMap(.Latest, transform: { stations -> SignalProducer<MutableStation, Error> in
@@ -141,32 +153,33 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         })
     }
 
-    /**
-     Construct a search rectangle given a Point and a size (defaults to a class constant).
-    */
-    static func searchArea<Error: ErrorType>(for point: Point, within radius: CLLocationDistance = searchRadius) ->
-        SignalProducer<MKMapRect, Error>
+    func addArrivals(to producer: SignalProducer<[MutableStation], ProperError>) ->
+        SignalProducer<[(s: MutableStation, a: [Arrival])], ProperError>
     {
-        let circle = MKCircle(centerCoordinate: CLLocationCoordinate2D(point: point), radius: radius)
-        return SignalProducer(value: circle.boundingMapRect)
+        let stations = producer.flatMap(.Latest, transform: { SignalProducer<MutableStation, ProperError>(values: $0) })
+        return stations.flatMap(.Latest, transform: { station -> SignalProducer<[(s: MutableStation, a: [Arrival])], ProperError> in
+            let visits = Timetable.visits(for: station, occurring: .after(NSDate()), using: self.connection).collect()
+            return visits.map({ (s: station, a: $0) }).collect()
+        })
     }
-
     // MARK: Table View Data Source
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return stations.value.count
     }
 
+    // Return the number of arrivals for each route on the each station of the section given.
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return stations.value[section].vehicles.value.count
+        return model.value[section].a.count
     }
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("arrivalCell") as! ArrivalTableViewCell
         cell.contentView.layoutMargins.left = 40
 
-        // TODO: Ensure vehicles are sorted by arrival time.
         let station = stations.value[indexPath.section]
         let vehicle = station.sortedVehicles.value[indexPath.row]
+        let arrival = arrivals.value[indexPath.section][indexPath.row]
+        // TODO - Apply route and arrival information to the view
         cell.apply(vehicle)
         return cell
     }
