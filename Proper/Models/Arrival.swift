@@ -9,12 +9,27 @@
 import Foundation
 
 struct Arrival: Comparable, Hashable {
-    let route: MutableRoute
-    let station: MutableStation
+    let route: Route
+    let station: Station
+    let heading: String?
     let time: ArrivalTime
 
     var hashValue: Int {
         return route.hashValue ^ station.hashValue ^ time.hashValue
+    }
+
+    init(route: Route, station: Station, heading: String?, time: ArrivalTime) {
+        self.route = route
+        self.station = station
+        self.heading = heading
+        self.time = time
+    }
+
+    init(station: Station, message: ArrivalMessage) {
+        self.station = station
+        route = message.route
+        heading = message.heading
+        time = message.time
     }
 }
 

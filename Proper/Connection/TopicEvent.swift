@@ -53,8 +53,8 @@ enum TopicEvent: CustomStringConvertible {
 
     case Timetable(TimetableMessage)
     enum TimetableMessage {
-        case arrival(Decoded<ArrivalTime>)
-        case arrivals(Decoded<[ArrivalTime]>)
+        case arrival(Decoded<ArrivalMessage>)
+        case arrivals(Decoded<[ArrivalMessage]>)
     }
 
     /// Get any underlying DecodeError from the event.

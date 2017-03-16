@@ -33,34 +33,31 @@ struct Timetable {
                            using connection: ConnectionType, limit: Int = defaultVisitLimit) ->
         SignalProducer<Arrival, ProperError>
     {
-        let arrivalTimes = connection.call(rpc(from: when), args: [station.identifier, route.identifier] + timestamps(when))
-            |> decodeArrivalTimes
-        return arrivalTimes.map({ Arrival(route: route, station: station, time: $0) })
+        let arrivalTimes = connection.call(rpc(from: when, route: true), args: [station.identifier] +
+            timestamps(when) + [route.identifier, limit]) |> decodeArrivalTimes
+        return arrivalTimes.map({ Arrival(station: station.snapshot(), message: $0) })
     }
 
     /// Produce `limit` many arrivals for vehicles of all routes of `station`, starting from `timing`. `station` must
     /// have its `routes` defined.
-    static func visits(for station: MutableStation, occurring timing: Timing, using connection: ConnectionType,
+    static func visits(for station: MutableStation, occurring when: Timing, using connection: ConnectionType,
                            limit: Int = defaultVisitLimit) -> SignalProducer<Arrival, ProperError>
     {
-        // TODO - Once timetable#3 is implemented, use the native RPC call to get all arrivals on a station, instead of
-        // calling all routes. <https://github.com/propershark/timetable_cpp/issues/3>
-        let routes = station.routes.producer.flatten(.Latest)
-        return routes.flatMap(.Merge, transform: { routes in
-            visits(for: routes, at: station, occurring: timing, using: connection, limit: limit)
-        })
+        let arrivalTimes = connection.call(rpc(from: when, route: false), args: [station.identifier] +
+            timestamps(when) + [limit]) |> decodeArrivalTimes
+        return arrivalTimes.map({ Arrival(station: station.snapshot(), message: $0) })
     }
 
     private static func decodeArrivalTimes(producer: SignalProducer<TopicEvent, ProperError>) ->
-        SignalProducer<ArrivalTime, ProperError>
+        SignalProducer<ArrivalMessage, ProperError>
     {
-        return producer.attemptMap({ event -> Result<Decoded<[ArrivalTime]>, ProperError> in
+        return producer.attemptMap({ event -> Result<Decoded<[ArrivalMessage]>, ProperError> in
             if case let TopicEvent.Timetable(.arrivals(arrivals)) = event {
                 return .Success(arrivals)
             } else {
                 return .Failure(ProperError.eventParseFailure)
             }
-        }).attemptMap({ decoded -> Result<[ArrivalTime], ProperError> in
+        }).attemptMap({ decoded -> Result<[ArrivalMessage], ProperError> in
             switch decoded {
             case .Success(let arrivals):
                 return .Success(arrivals)
@@ -68,15 +65,16 @@ struct Timetable {
                 return .Failure(ProperError.decodeFailure(error: error))
             }
         }).flatMap(.Latest, transform: { arrivals in
-            return SignalProducer<ArrivalTime, ProperError>(values: arrivals)
+            return SignalProducer<ArrivalMessage, ProperError>(values: arrivals)
         })
     }
 
-    private static func rpc(from value: Timing) -> String {
+    private static func rpc(from value: Timing, route: Bool) -> String {
+        let suffix = (route) ? "_on_route" : ""
         switch value {
-        case .before(_):    return "timetable.visits_before"
-        case .after(_):     return "timetable.visits_after"
-        case .between(_):   return "timetable.visits_between"
+        case .before(_):    return "timetable.visits_before\(suffix)"
+        case .after(_):     return "timetable.visits_after\(suffix)"
+        case .between(_):   return "timetable.visits_between\(suffix)"
         }
     }
 
