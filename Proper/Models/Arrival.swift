@@ -11,10 +11,10 @@ import Argo
 import Curry
 
 struct Arrival: Comparable, Hashable {
-    let route: Route
-    let heading: String?
     // TODO - Refactor ArrivalTime into this class, it's no longer used separately.
     let time: ArrivalTime
+    let route: Route
+    let heading: String?
 
     var hashValue: Int {
         return route.hashValue ^ time.hashValue ^ (heading?.hashValue ?? 0)
@@ -28,11 +28,10 @@ extension Arrival: Decodable {
             guard args.count == 4 else {
                 return .Failure(.Custom("Expected an array of size 4"))
             }
-
             return curry(self.init)
-                <^> Route.decode(args[0])
-                <*> Optional<String>.decode(args[1])
-                <*> ArrivalTime.decode(JSON.Array(Array(args.suffixFrom(2))))
+                <^> ArrivalTime.decode(JSON.Array(Array(args.prefixThrough(1))))
+                <*> Route.decode(args[2])
+                <*> Optional<String>.decode(args[3])
         })
     }
 }

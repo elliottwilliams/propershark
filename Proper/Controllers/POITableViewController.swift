@@ -18,12 +18,12 @@ class POITableViewController: UITableViewController, ProperViewController {
 
     static let headerViewHeight = CGFloat(55)
 
-    func updateTable(producer: SignalProducer<[(s: MutableStation, a: [Arrival])], ProperError>) ->
-        SignalProducer<[(s: MutableStation, a: [Arrival])], ProperError>
+    func updateTable(producer: SignalProducer<[(MutableStation, [Arrival])], ProperError>) ->
+        SignalProducer<[(MutableStation, [Arrival])], ProperError>
     {
         return producer.combinePrevious([]).on(next: { prev, next in
-            let prevStations = prev.map({ $0.s })
-            let nextStations = next.map({ $0.s })
+            let prevStations = prev.map({ st, ar in st })
+            let nextStations = next.map({ st, ar in st })
 
             let diff = prevStations.diff(nextStations)
             let inserts = NSMutableIndexSet()

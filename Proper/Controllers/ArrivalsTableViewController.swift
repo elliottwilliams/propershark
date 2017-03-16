@@ -53,7 +53,6 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
         return AnyProperty(initialValue: Set(), producer: producer)
     }()
 
-
     // MARK: Methods
     convenience init(observing station: MutableStation, delegate: ArrivalsTableViewDelegate, style: UITableViewStyle,
                                connection: ConnectionType)
@@ -111,7 +110,7 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
         let cell = tableView.dequeueReusableCellWithIdentifier("arrivalCell", forIndexPath: indexPath) as! ArrivalTableViewCell
         let vehicle = diffCalculator.rows[indexPath.row]
 
-        cell.apply(vehicle)
+//        cell.apply(vehicle)
         return cell
     }
 

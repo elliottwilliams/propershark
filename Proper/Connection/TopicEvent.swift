@@ -253,9 +253,7 @@ enum TopicEvent: CustomStringConvertible {
             return .Timetable(.arrival(decode(tuple)))
 
         case "timetable.visits_before", "timetable.visits_after", "timetable.visits_between":
-            guard let tuples = response.args[safe: 0],
-                let count = request.args[safe: 3] as? Int where
-                tuples.count == count
+            guard let tuples = response.args[safe: 0]
                 else { return nil }
             return .Timetable(.arrivals(decodeArray(JSON(tuples))))
 

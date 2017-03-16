@@ -33,7 +33,7 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
      The station-arrivals data represented by the view model. View controllers update this property as they respond to
      changes from `producer`.
      */
-    let model: MutableProperty<[(s: MutableStation, a: [Arrival])]> = .init([])
+    let model: MutableProperty<[(MutableStation, [Arrival])]> = .init([])
 
     /// A convenience mapping of `current` that represents nearby stations. Indexed by position in the table.
     let stations: AnyProperty<[MutableStation]>
@@ -48,7 +48,7 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
     internal let disposable = CompositeDisposable()
     private let distanceFormatter = MKDistanceFormatter()
 
-    lazy var producer: SignalProducer<[(s: MutableStation, a: [Arrival])], ProperError> = { [unowned self] in
+    lazy var producer: SignalProducer<[(MutableStation, [Arrival])], ProperError> = { [unowned self] in
         let rect = combineLatest(self.point.producer.ignoreNil(), self.searchRadius.producer)
             .map({ point, radius -> MKMapRect in
                 let circle = MKCircle(centerCoordinate: CLLocationCoordinate2D(point: point), radius: radius)
@@ -63,8 +63,8 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         self.point = AnyProperty(point)
         self.searchRadius = AnyProperty(searchRadius)
 
-        self.stations = self.model.map({ tuples in tuples.lazy.map({ $0.s }) })
-        self.arrivals = self.model.map({ tuples in tuples.lazy.map({ $0.a }) })
+        self.stations = self.model.map({ tuples in tuples.lazy.map({ st, ar in st }) })
+        self.arrivals = self.model.map({ tuples in tuples.lazy.map({ st, ar in ar }) })
         self.connection = connection
         super.init()
 
@@ -153,15 +153,24 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         })
     }
 
+    // [Station] -> [(Station, [Arrival])]
     func addArrivals(to producer: SignalProducer<[MutableStation], ProperError>) ->
-        SignalProducer<[(s: MutableStation, a: [Arrival])], ProperError>
+        SignalProducer<[(MutableStation, [Arrival])], ProperError>
     {
-        let stations = producer.flatMap(.Latest, transform: { SignalProducer<MutableStation, ProperError>(values: $0) })
-        return stations.flatMap(.Latest, transform: { station -> SignalProducer<[(s: MutableStation, a: [Arrival])], ProperError> in
-            let visits = Timetable.visits(for: station, occurring: .after(NSDate()), using: self.connection).collect()
-            return visits.map({ (s: station, a: $0) }).collect()
-        })
+        return producer.flatMap(.Latest, transform: { stations -> SignalProducer<[(MutableStation, [Arrival])], ProperError> in
+            let p = SignalProducer<MutableStation, ProperError>(values: stations)
+            return p.flatMap(.Merge, transform: { station in
+                combineLatest(
+                    SignalProducer(value: station),
+                    Timetable.visits(for: station,
+                        occurring: .between(from: NSDate(), to: NSDate(timeIntervalSinceNow: 60*60)),
+                        using: self.connection).collect()
+                )
+            }).collect()
+        }).logEvents(identifier: "NearbyStationsViewModel.addArrivals", logger: logSignalEvent)
     }
+
+
     // MARK: Table View Data Source
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return stations.value.count
@@ -169,18 +178,18 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
 
     // Return the number of arrivals for each route on the each station of the section given.
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return model.value[section].a.count
+        let (_, arrivals) = model.value[section]
+        return arrivals.count
     }
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("arrivalCell") as! ArrivalTableViewCell
         cell.contentView.layoutMargins.left = 40
 
-        let station = stations.value[indexPath.section]
-        let vehicle = station.sortedVehicles.value[indexPath.row]
+        //let station = stations.value[indexPath.section]
         let arrival = arrivals.value[indexPath.section][indexPath.row]
         // TODO - Apply route and arrival information to the view
-        cell.apply(vehicle)
+        cell.apply(arrival)
         return cell
     }
 
