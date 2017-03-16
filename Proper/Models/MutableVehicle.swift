@@ -96,6 +96,14 @@ class MutableVehicle: MutableModel, Comparable {
         try attachOrApply(to: nextStation, from: vehicle.nextStation)
         try attachOrApply(to: route, from: vehicle.route)
     }
+
+    func snapshot() -> FromModel {
+        return Vehicle(name: name, code: code.value, position: position.value, capacity: capacity.value,
+                       onboard: onboard.value, saturation: saturation.value,
+                       lastStation: lastStation.value?.snapshot(), nextStation: nextStation.value?.snapshot(),
+                       route: route.value?.snapshot(), scheduleDelta: scheduleDelta.value, heading: heading.value,
+                       speed: speed.value)
+    }
 }
 
 func < (a: MutableVehicle, b: MutableVehicle) -> Bool {

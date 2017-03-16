@@ -124,6 +124,14 @@ class MutableRoute: MutableModel, Comparable {
             return mutable
         }
     }
+
+    func snapshot() -> FromModel {
+        return Route(shortName: shortName, code: code.value, name: name.value, description: description.value,
+                     color: color.value, path: path.value,
+                     stations: stations.value.map({ $0.snapshot() }),
+                     vehicles: vehicles.value.map({ $0.snapshot() }),
+                     itinerary: itinerary.value?.map({ $0.snapshot() }))
+    }
 }
 
 func < (a: MutableRoute, b: MutableRoute) -> Bool {

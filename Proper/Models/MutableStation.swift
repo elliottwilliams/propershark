@@ -87,6 +87,12 @@ class MutableStation: MutableModel, Comparable {
         try attachOrApplyChanges(to: self.vehicles, from: station.vehicles)
     }
 
+    func snapshot() -> FromModel {
+        return Station(stopCode: stopCode, name: name.value, description: description.value, position: position.value,
+                       routes: routes.value.map({ $0.snapshot() }),
+                       vehicles: vehicles.value.map({ $0.snapshot() }))
+    }
+
 
     // MARK: Nested Types
     class Annotation: NSObject, MKAnnotation {

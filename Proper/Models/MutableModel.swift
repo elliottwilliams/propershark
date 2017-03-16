@@ -36,6 +36,9 @@ protocol MutableModel: class, Hashable, CustomStringConvertible {
     /// Update state to match the model given. Throws ProperError if a consistency check fails.
     func apply(_: FromModel) throws
 
+    /// Decompose the mutable model's current state down to a static model.
+    func snapshot() -> FromModel
+
     var connection: ConnectionType { get }
 
     var hashValue: Int { get }
