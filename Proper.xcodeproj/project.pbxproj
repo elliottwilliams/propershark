@@ -15,7 +15,7 @@
 		2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */; };
 		2635DB781C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB771C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift */; };
 		263D36371DB2784700FC7FF5 /* POITableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263D36361DB2784700FC7FF5 /* POITableViewController.swift */; };
-		264553491E7A5830007F6C2D /* ArrivalMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264553481E7A5830007F6C2D /* ArrivalMessage.swift */; };
+		264553491E7A5830007F6C2D /* Arrival.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264553481E7A5830007F6C2D /* Arrival.swift */; };
 		264754901D551411000F0831 /* ArrivalsTableViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */; };
 		2647825E1C2F7B34009D9AD0 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */; };
 		264782601C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647825F1C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift */; };
@@ -23,7 +23,6 @@
 		264A13C91D2625CE00B44D47 /* TopicEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264A13C81D2625CE00B44D47 /* TopicEvent.swift */; };
 		264B2D2B1E1EF5E4007EE6D5 /* Timetable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264B2D2A1E1EF5E4007EE6D5 /* Timetable.swift */; };
 		264B2D2D1E228781007EE6D5 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264B2D2C1E228781007EE6D5 /* Date.swift */; };
-		264B2D2F1E22E0E4007EE6D5 /* Arrival.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264B2D2E1E22E0E4007EE6D5 /* Arrival.swift */; };
 		2650D28E1D176B65003758BF /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2650D28D1D176B65003758BF /* Configuration.swift */; };
 		2650EDA01C41CFCC006CCD42 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2650ED9F1C41CFCC006CCD42 /* Array.swift */; };
 		266111D21D51521500D8F46B /* UIColorDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111D11D51521500D8F46B /* UIColorDecodeTests.swift */; };
@@ -139,7 +138,7 @@
 		2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabelTests.swift; sourceTree = "<group>"; };
 		2635DB771C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StationTableViewHeaderFooterView.swift; sourceTree = "<group>"; };
 		263D36361DB2784700FC7FF5 /* POITableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = POITableViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		264553481E7A5830007F6C2D /* ArrivalMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrivalMessage.swift; sourceTree = "<group>"; };
+		264553481E7A5830007F6C2D /* Arrival.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Arrival.swift; sourceTree = "<group>"; };
 		2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrivalsTableViewControllerTests.swift; sourceTree = "<group>"; };
 		264782551C2C6F67009D9AD0 /* StartListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = StartListViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -148,7 +147,6 @@
 		264A13C81D2625CE00B44D47 /* TopicEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = TopicEvent.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		264B2D2A1E1EF5E4007EE6D5 /* Timetable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Timetable.swift; sourceTree = "<group>"; };
 		264B2D2C1E228781007EE6D5 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
-		264B2D2E1E22E0E4007EE6D5 /* Arrival.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Arrival.swift; sourceTree = "<group>"; };
 		2650D28D1D176B65003758BF /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		2650ED9F1C41CFCC006CCD42 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		266111D11D51521500D8F46B /* UIColorDecodeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColorDecodeTests.swift; sourceTree = "<group>"; };
@@ -508,9 +506,8 @@
 		26D3E2271D28E0D900F85712 /* Support */ = {
 			isa = PBXGroup;
 			children = (
-				264553481E7A5830007F6C2D /* ArrivalMessage.swift */,
+				264553481E7A5830007F6C2D /* Arrival.swift */,
 				266B987D1E2BD72700F2EAB9 /* ArrivalTime.swift */,
-				264B2D2E1E22E0E4007EE6D5 /* Arrival.swift */,
 				26AE681F1D622CCD0031E534 /* CanonicalRoute.swift */,
 				26D3E2231D28E07100F85712 /* Model.swift */,
 				26D3E22E1D29BBA700F85712 /* MutableModel.swift */,
@@ -751,7 +748,6 @@
 				26A4B7AF1D32251100264F0D /* MutableStation.swift in Sources */,
 				26AE68201D622CCD0031E534 /* CanonicalRoute.swift in Sources */,
 				264B2D2D1E228781007EE6D5 /* Date.swift in Sources */,
-				264B2D2F1E22E0E4007EE6D5 /* Arrival.swift in Sources */,
 				26ED26F31E117988007FB0F8 /* StationUpcomingTableViewCell.swift in Sources */,
 				266B987E1E2BD72700F2EAB9 /* ArrivalTime.swift in Sources */,
 				26A4B7B11D32CEC800264F0D /* MutableRoute.swift in Sources */,
@@ -759,7 +755,7 @@
 				26ADB0E71E186A9D008F49FF /* POIStationAnnotation.swift in Sources */,
 				26E038821D8F94030006B265 /* Colours.swift in Sources */,
 				263D36371DB2784700FC7FF5 /* POITableViewController.swift in Sources */,
-				264553491E7A5830007F6C2D /* ArrivalMessage.swift in Sources */,
+				264553491E7A5830007F6C2D /* Arrival.swift in Sources */,
 				26A0FF021E149AF200FF265A /* RoutesCollectionViewModel.swift in Sources */,
 				26A424E51BD2D3F20035754F /* ArrivalTableViewCell.swift in Sources */,
 				26D3E22B1D28E25200F85712 /* Vehicle.swift in Sources */,

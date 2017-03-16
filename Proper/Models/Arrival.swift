@@ -2,40 +2,44 @@
 //  Arrival.swift
 //  Proper
 //
-//  Created by Elliott Williams on 1/8/17.
+//  Created by Elliott Williams on 3/15/17.
 //  Copyright © 2017 Elliott Williams. All rights reserved.
 //
 
 import Foundation
+import Argo
+import Curry
 
 struct Arrival: Comparable, Hashable {
     let route: Route
-    let station: Station
     let heading: String?
+    // TODO - Refactor ArrivalTime into this class, it's no longer used separately.
     let time: ArrivalTime
 
     var hashValue: Int {
-        return route.hashValue ^ station.hashValue ^ time.hashValue
+        return route.hashValue ^ time.hashValue ^ (heading?.hashValue ?? 0)
     }
+}
 
-    init(route: Route, station: Station, heading: String?, time: ArrivalTime) {
-        self.route = route
-        self.station = station
-        self.heading = heading
-        self.time = time
-    }
+extension Arrival: Decodable {
+    // Decode a 4-tuple message (the format that Timetable uses): [route, heading, eta, etd]s
+    static func decode(json: JSON) -> Decoded<Arrival> {
+        return [JSON].decode(json).flatMap({ args in
+            guard args.count == 4 else {
+                return .Failure(.Custom("Expected an array of size 4"))
+            }
 
-    init(station: Station, message: ArrivalMessage) {
-        self.station = station
-        route = message.route
-        heading = message.heading
-        time = message.time
+            return curry(self.init)
+                <^> Route.decode(args[0])
+                <*> Optional<String>.decode(args[1])
+                <*> ArrivalTime.decode(JSON.Array(Array(args.suffixFrom(2))))
+        })
     }
 }
 
 func == (a: Arrival, b: Arrival) -> Bool {
     return a.route == b.route &&
-        a.station == b.station &&
+        a.heading == b.heading &&
         a.time == b.time
 }
 

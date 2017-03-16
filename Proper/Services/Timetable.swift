@@ -33,9 +33,8 @@ struct Timetable {
                            using connection: ConnectionType, limit: Int = defaultVisitLimit) ->
         SignalProducer<Arrival, ProperError>
     {
-        let arrivalTimes = connection.call(rpc(from: when, route: true), args: [station.identifier] +
+        return connection.call(rpc(from: when, route: true), args: [station.identifier] +
             timestamps(when) + [route.identifier, limit]) |> decodeArrivalTimes
-        return arrivalTimes.map({ Arrival(station: station.snapshot(), message: $0) })
     }
 
     /// Produce `limit` many arrivals for vehicles of all routes of `station`, starting from `timing`. `station` must
@@ -43,21 +42,20 @@ struct Timetable {
     static func visits(for station: MutableStation, occurring when: Timing, using connection: ConnectionType,
                            limit: Int = defaultVisitLimit) -> SignalProducer<Arrival, ProperError>
     {
-        let arrivalTimes = connection.call(rpc(from: when, route: false), args: [station.identifier] +
+        return connection.call(rpc(from: when, route: false), args: [station.identifier] +
             timestamps(when) + [limit]) |> decodeArrivalTimes
-        return arrivalTimes.map({ Arrival(station: station.snapshot(), message: $0) })
     }
 
     private static func decodeArrivalTimes(producer: SignalProducer<TopicEvent, ProperError>) ->
-        SignalProducer<ArrivalMessage, ProperError>
+        SignalProducer<Arrival, ProperError>
     {
-        return producer.attemptMap({ event -> Result<Decoded<[ArrivalMessage]>, ProperError> in
+        return producer.attemptMap({ event -> Result<Decoded<[Arrival]>, ProperError> in
             if case let TopicEvent.Timetable(.arrivals(arrivals)) = event {
                 return .Success(arrivals)
             } else {
                 return .Failure(ProperError.eventParseFailure)
             }
-        }).attemptMap({ decoded -> Result<[ArrivalMessage], ProperError> in
+        }).attemptMap({ decoded -> Result<[Arrival], ProperError> in
             switch decoded {
             case .Success(let arrivals):
                 return .Success(arrivals)
@@ -65,7 +63,7 @@ struct Timetable {
                 return .Failure(ProperError.decodeFailure(error: error))
             }
         }).flatMap(.Latest, transform: { arrivals in
-            return SignalProducer<ArrivalMessage, ProperError>(values: arrivals)
+            return SignalProducer<Arrival, ProperError>(values: arrivals)
         })
     }
 
