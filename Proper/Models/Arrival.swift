@@ -11,13 +11,13 @@ import Argo
 import Curry
 
 struct Arrival: Comparable, Hashable {
-    // TODO - Refactor ArrivalTime into this class, it's no longer used separately.
-    let time: ArrivalTime
+    let eta: NSDate
+    let etd: NSDate
     let route: Route
     let heading: String?
 
     var hashValue: Int {
-        return route.hashValue ^ time.hashValue ^ (heading?.hashValue ?? 0)
+        return eta.hashValue ^ etd.hashValue ^ route.hashValue ^ (heading?.hashValue ?? 0)
     }
 }
 
@@ -29,7 +29,8 @@ extension Arrival: Decodable {
                 return .Failure(.Custom("Expected an array of size 4"))
             }
             return curry(self.init)
-                <^> ArrivalTime.decode(JSON.Array(Array(args.prefixThrough(1))))
+                <^> NSDate.decode(args[0])
+                <*> NSDate.decode(args[1])
                 <*> Route.decode(args[2])
                 <*> Optional<String>.decode(args[3])
         })
@@ -39,9 +40,10 @@ extension Arrival: Decodable {
 func == (a: Arrival, b: Arrival) -> Bool {
     return a.route == b.route &&
         a.heading == b.heading &&
-        a.time == b.time
+        a.eta == b.eta &&
+        a.etd == b.etd
 }
 
 func < (a: Arrival, b: Arrival) -> Bool {
-    return a.time < b.time
+    return a.eta.compare(b.eta) == .OrderedAscending
 }

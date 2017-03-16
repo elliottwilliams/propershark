@@ -51,7 +51,7 @@ class ArrivalTableViewCell: UITableViewCell {
         // Bind to vehicle attributes.
         //disposable += vehicle.saturation.producer.ignoreNil().startWithNext { self.badge.capacity = CGFloat($0) }
 
-        routeTimer.text = ArrivalTableViewCell.formatter.stringFromDate(NSDate(), toDate: arrival.time.eta)
+        routeTimer.text = ArrivalTableViewCell.formatter.stringFromDate(NSDate(), toDate: arrival.eta)
 
         // Bind to route attributes.
         let route = arrival.route
