@@ -19,8 +19,10 @@ class ArrivalTableViewCell: UITableViewCell {
 
     static var formatter: NSDateComponentsFormatter = {
         let fmt = NSDateComponentsFormatter()
-        fmt.unitsStyle = .Short
-        fmt.allowedUnits = [.Minute]
+        //fmt.unitsStyle = .Short
+        fmt.unitsStyle = .Positional
+        //fmt.allowedUnits = [.Minute]
+        fmt.allowedUnits = [.Minute, .Second]
         return fmt
     }()
 
@@ -46,17 +48,29 @@ class ArrivalTableViewCell: UITableViewCell {
         disposable.dispose()
     }
 
+    static func timerLabel(arrival: Arrival, state: Arrival.Lifecycle) -> String {
+        switch state {
+        case .upcoming:
+            return formatter.stringFromDate(NSDate(), toDate: arrival.eta) ?? "Upcoming"
+        case .due:
+            return "Due"
+        case .arrived:
+            return "Arrived"
+        case .departed:
+            return "Departed"
+        }
+    }
+
     func apply(arrival: Arrival) {
         disposable = CompositeDisposable()
-        // Bind to vehicle attributes.
-        //disposable += vehicle.saturation.producer.ignoreNil().startWithNext { self.badge.capacity = CGFloat($0) }
-
-        routeTimer.text = ArrivalTableViewCell.formatter.stringFromDate(NSDate(), toDate: arrival.eta)
-
-        // Bind to route attributes.
+        
         let route = arrival.route
         badge.routeNumber = route.shortName
         badge.color = route.color ?? UIColor.grayColor()
         routeTitle.text = route.name
+
+        disposable += arrival.lifecycle.producer.startWithNext { state in
+            self.routeTimer.text = ArrivalTableViewCell.timerLabel(arrival, state: state)
+        }
     }
 }

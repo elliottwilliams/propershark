@@ -9,6 +9,8 @@
 import Foundation
 import Argo
 import Curry
+import ReactiveCocoa
+import Result
 
 struct Arrival: Comparable, Hashable {
     let eta: NSDate
@@ -18,6 +20,51 @@ struct Arrival: Comparable, Hashable {
 
     var hashValue: Int {
         return eta.hashValue ^ etd.hashValue ^ route.hashValue ^ (heading?.hashValue ?? 0)
+    }
+
+    /// Emits changes to the arrival's state, following the `Arrival.Lifecycle` state machine.
+    var lifecycle: SignalProducer<Lifecycle, NoError> {
+        return SignalProducer(self.emitLifecycle)
+    }
+
+    enum Lifecycle {
+        case upcoming
+        case due
+        case arrived
+        case departed
+
+        static let resolution: NSTimeInterval = Config.agency.timeResolution
+        static let refresh: NSTimeInterval = 1.0
+        //static let dueResolution = resolution / 5.0
+
+        /// Compute the state given an arrival's `eta`, `etd` and `now`. Returns the lifecycle state and an optional date
+        /// to re-compute.
+        static func determine(eta: NSDate, _ etd: NSDate, now: NSDate = NSDate()) -> (Lifecycle, NSDate?) {
+            let tta = eta.timeIntervalSinceDate(now)
+            if tta < (-1 * resolution) {
+                return (.departed, nil)
+            } else if (-1 * resolution)...resolution ~= tta {
+                return (.due, NSDate(timeIntervalSinceNow: refresh))
+                // TODO - once Arrivals track vehicles, we should determine whether a vehicle has actually arrived at its
+                // station, and can emit the `arrived` event accordingly.
+            } else {
+                return (.upcoming, NSDate(timeIntervalSinceNow: refresh))
+            }
+        }
+    }
+
+    /// Determine the current state of the arrival, send it on `observer`, and schedule the next state determination,
+    /// optionally cancellable using `disposable`.
+    private func emitLifecycle(observer: Observer<Lifecycle, NoError>, _ disposable: CompositeDisposable) {
+        let (state, schedule) = Lifecycle.determine(self.eta, self.etd)
+        observer.sendNext(state)
+
+        if let schedule = schedule {
+            disposable += QueueScheduler.mainQueueScheduler
+                .scheduleAfter(schedule, action: { self.emitLifecycle(observer, disposable) })
+        } else {
+            observer.sendCompleted()
+        }
     }
 }
 
