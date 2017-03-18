@@ -18,7 +18,6 @@ class MutableStation: MutableModel, Comparable {
 
     // MARK: Interal Properties
     internal let connection: ConnectionType
-    internal var delegate: MutableModelDelegate
     private static let retryAttempts = 3
 
     // MARK: Station Support
@@ -47,9 +46,8 @@ class MutableStation: MutableModel, Comparable {
             .attempt(self.handleEvent)
     }()
 
-    required init(from station: Station, delegate: MutableModelDelegate, connection: ConnectionType) throws {
+    required init(from station: Station, connection: ConnectionType) throws {
         self.stopCode = station.stopCode
-        self.delegate = delegate
         self.connection = connection
         try apply(station)
     }
@@ -63,8 +61,7 @@ class MutableStation: MutableModel, Comparable {
             switch event {
             case .Station(.update(let station, _)):
                 try self.apply(station.value!)
-            default:
-                self.delegate.mutableModel(self, receivedTopicEvent: event)
+            default: break
             }
         } catch let error as ProperError {
             return .Failure(error)

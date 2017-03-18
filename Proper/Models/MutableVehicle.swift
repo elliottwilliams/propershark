@@ -19,7 +19,6 @@ class MutableVehicle: MutableModel, Comparable {
 
     // MARK: Internal Properties
     internal let connection: ConnectionType
-    internal var delegate: MutableModelDelegate
     private static let retryAttempts = 3
 
     // MARK: Vehicle Support
@@ -51,9 +50,8 @@ class MutableVehicle: MutableModel, Comparable {
     }()
 
     // MARK: Functions
-    required init(from vehicle: Vehicle, delegate: MutableModelDelegate, connection: ConnectionType) throws {
+    required init(from vehicle: Vehicle, connection: ConnectionType) throws {
         self.name = vehicle.name
-        self.delegate = delegate
         self.connection = connection
         try apply(vehicle)
     }
@@ -67,8 +65,7 @@ class MutableVehicle: MutableModel, Comparable {
             switch event {
             case .Vehicle(.update(let vehicle, _)):
                 try self.apply(vehicle.value!)
-            default:
-                self.delegate.mutableModel(self, receivedTopicEvent: event)
+            default: break
             }
         } catch let error as ProperError {
             return .Failure(error)

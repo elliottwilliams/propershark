@@ -10,7 +10,7 @@ import UIKit
 import ReactiveCocoa
 import Result
 
-class RouteViewController: UIViewController, ProperViewController, MutableModelDelegate {
+class RouteViewController: UIViewController, ProperViewController {
 
     var route: MutableRoute!
 

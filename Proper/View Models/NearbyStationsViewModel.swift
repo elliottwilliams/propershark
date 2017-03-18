@@ -13,7 +13,7 @@ import Dwifft
 import MapKit
 import GameKit
 
-class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDelegate {
+class NearbyStationsViewModel: NSObject, UITableViewDataSource {
 
     // TODO - Maybe raise the search radius but cap the number of results returned?
     static let defaultSearchRadius = CLLocationDistance(250) // in meters
@@ -108,7 +108,7 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
         }).attemptMap({ stations, rect -> Result<([MutableStation], MKMapRect), ProperError> in
             // Attempt to create MutableStations out of all stations.
             do {
-                let mutables = try stations.map({ try MutableStation(from: $0, delegate: self, connection: self.connection) })
+                let mutables = try stations.map({ try MutableStation(from: $0, connection: self.connection) })
                 return .Success(mutables, rect)
             } catch let error as ProperError {
                 return .Failure(error)
@@ -169,7 +169,6 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource, MutableModelDele
             }).collect()
         }).logEvents(identifier: "NearbyStationsViewModel.addArrivals", logger: logSignalEvent)
     }
-
 
     // MARK: Table View Data Source
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {

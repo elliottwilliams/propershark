@@ -13,7 +13,7 @@ import ReactiveCocoa
 import Result
 import Argo
 
-class StationViewController: UIViewController, ProperViewController, ArrivalsTableViewDelegate {
+class StationViewController: UIViewController, ProperViewController {
     
     // MARK: Force-unwrapped properties
     var station: MutableStation!
@@ -59,24 +59,9 @@ class StationViewController: UIViewController, ProperViewController, ArrivalsTab
         case "embedArrivalsTable":
             let table = segue.destinationViewController as! ArrivalsTableViewController
             table.station = station
-            table.delegate = self
         default:
             return
         }
     }
-
-    // MARK: Delegate methods
-    func mutableModel<M: MutableModel>(model: M, receivedError error: ProperError) {
-        self.displayError(error)
-    }
-
-    func arrivalsTable(selectedVehicle vehicle: MutableVehicle, indexPath: NSIndexPath) {
-        // transition to vehicle view
-    }
-
-    func arrivalsTable(receivedError error: ProperError) {
-        self.displayError(error)
-    }
-
 }
 
