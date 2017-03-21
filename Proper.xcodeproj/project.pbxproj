@@ -15,6 +15,9 @@
 		2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */; };
 		2635DB781C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB771C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift */; };
 		263D36371DB2784700FC7FF5 /* POITableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263D36361DB2784700FC7FF5 /* POITableViewController.swift */; };
+		2644B89B1E7F7385008A0A4D /* PMU.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 2644B8991E7F7385008A0A4D /* PMU.gpx */; };
+		2644B89F1E7F74F8008A0A4D /* Riehle.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 2644B89C1E7F74F8008A0A4D /* Riehle.gpx */; };
+		2644B8A11E7F74F8008A0A4D /* Windsor.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 2644B89D1E7F74F8008A0A4D /* Windsor.gpx */; };
 		264553491E7A5830007F6C2D /* Arrival.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264553481E7A5830007F6C2D /* Arrival.swift */; };
 		264754901D551411000F0831 /* ArrivalsTableViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */; };
 		2647825E1C2F7B34009D9AD0 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */; };
@@ -137,6 +140,9 @@
 		2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabelTests.swift; sourceTree = "<group>"; };
 		2635DB771C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StationTableViewHeaderFooterView.swift; sourceTree = "<group>"; };
 		263D36361DB2784700FC7FF5 /* POITableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = POITableViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		2644B8991E7F7385008A0A4D /* PMU.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PMU.gpx; sourceTree = "<group>"; };
+		2644B89C1E7F74F8008A0A4D /* Riehle.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Riehle.gpx; sourceTree = "<group>"; };
+		2644B89D1E7F74F8008A0A4D /* Windsor.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Windsor.gpx; sourceTree = "<group>"; };
 		264553481E7A5830007F6C2D /* Arrival.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Arrival.swift; sourceTree = "<group>"; };
 		2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrivalsTableViewControllerTests.swift; sourceTree = "<group>"; };
 		264782551C2C6F67009D9AD0 /* StartListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = StartListViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -278,6 +284,9 @@
 		2612B5281D504F1D00BF671D /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				2644B8991E7F7385008A0A4D /* PMU.gpx */,
+				2644B89C1E7F74F8008A0A4D /* Riehle.gpx */,
+				2644B89D1E7F74F8008A0A4D /* Windsor.gpx */,
 				2612B5291D50513600BF671D /* routes.4B.json */,
 				2612B52A1D50513600BF671D /* stations.BUS100W.json */,
 				266CC4D71D826FC70022D064 /* vehicles.1801.json */,
@@ -680,8 +689,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2644B89B1E7F7385008A0A4D /* PMU.gpx in Resources */,
 				2612B52D1D50513600BF671D /* stations.BUS100W.json in Resources */,
+				2644B8A11E7F74F8008A0A4D /* Windsor.gpx in Resources */,
 				266CC4D81D826FC70022D064 /* vehicles.1801.json in Resources */,
+				2644B89F1E7F74F8008A0A4D /* Riehle.gpx in Resources */,
 				2612B52C1D50513600BF671D /* routes.4B.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
