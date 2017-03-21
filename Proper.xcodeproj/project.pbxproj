@@ -44,8 +44,14 @@
 		268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72261BF9938800E981D4 /* TransitLabel.swift */; };
 		268E72291BF9938800E981D4 /* TransitNavigationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72271BF9938800E981D4 /* TransitNavigationItem.swift */; };
 		269011491DE9D61C00A3124A /* LastEventCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 269011481DE9D61C00A3124A /* LastEventCacheTests.swift */; };
+		2696D7F91E7DF78300ABD701 /* ArrivalsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D7F81E7DF78300ABD701 /* ArrivalsViewModel.swift */; };
+		2696D7FD1E7DFAC200ABD701 /* SignalChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D7FC1E7DFAC200ABD701 /* SignalChain.swift */; };
+		2696D7FF1E7DFB7E00ABD701 /* NearbyStationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D7FE1E7DFB7E00ABD701 /* NearbyStationsViewModel.swift */; };
+		2696D8011E7E3B1D00ABD701 /* Badge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D8001E7E3B1D00ABD701 /* Badge.swift */; };
+		2696D8031E7ED45A00ABD701 /* POITableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D8021E7ED45A00ABD701 /* POITableDataSource.swift */; };
+		2696D8061E7ED64D00ABD701 /* MKCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D8051E7ED64D00ABD701 /* MKCircle.swift */; };
 		2698CF011D8B8FC400E6174A /* RoutesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2698CF001D8B8FC400E6174A /* RoutesCollectionViewCell.swift */; };
-		26A0FF011E149AF200FF265A /* NearbyStationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A0FEFF1E149AF200FF265A /* NearbyStationsViewModel.swift */; };
+		26A0FF011E149AF200FF265A /* POIViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A0FEFF1E149AF200FF265A /* POIViewModel.swift */; };
 		26A0FF021E149AF200FF265A /* RoutesCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A0FF001E149AF200FF265A /* RoutesCollectionViewModel.swift */; };
 		26A0FF091E15AAF500FF265A /* POIStationHeaderFooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26ED26F01E117969007FB0F8 /* POIStationHeaderFooterView.xib */; };
 		26A424B41BD2C1320035754F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424B31BD2C1320035754F /* AppDelegate.swift */; };
@@ -169,8 +175,14 @@
 		268E72261BF9938800E981D4 /* TransitLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabel.swift; sourceTree = "<group>"; };
 		268E72271BF9938800E981D4 /* TransitNavigationItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitNavigationItem.swift; sourceTree = "<group>"; };
 		269011481DE9D61C00A3124A /* LastEventCacheTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LastEventCacheTests.swift; sourceTree = "<group>"; };
+		2696D7F81E7DF78300ABD701 /* ArrivalsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrivalsViewModel.swift; sourceTree = "<group>"; };
+		2696D7FC1E7DFAC200ABD701 /* SignalChain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalChain.swift; sourceTree = "<group>"; };
+		2696D7FE1E7DFB7E00ABD701 /* NearbyStationsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NearbyStationsViewModel.swift; sourceTree = "<group>"; };
+		2696D8001E7E3B1D00ABD701 /* Badge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Badge.swift; sourceTree = "<group>"; };
+		2696D8021E7ED45A00ABD701 /* POITableDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = POITableDataSource.swift; sourceTree = "<group>"; };
+		2696D8051E7ED64D00ABD701 /* MKCircle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MKCircle.swift; sourceTree = "<group>"; };
 		2698CF001D8B8FC400E6174A /* RoutesCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RoutesCollectionViewCell.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		26A0FEFF1E149AF200FF265A /* NearbyStationsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NearbyStationsViewModel.swift; sourceTree = "<group>"; };
+		26A0FEFF1E149AF200FF265A /* POIViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = POIViewModel.swift; sourceTree = "<group>"; };
 		26A0FF001E149AF200FF265A /* RoutesCollectionViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoutesCollectionViewModel.swift; sourceTree = "<group>"; };
 		26A424B01BD2C1320035754F /* Proper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Proper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		26A424B31BD2C1320035754F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AppDelegate.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -297,6 +309,7 @@
 		264782611C309F4C009D9AD0 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				2696D8001E7E3B1D00ABD701 /* Badge.swift */,
 				267725C51E1AACF200274042 /* POIStationHeaderFooterView.swift */,
 				26ADB0EA1E187151008F49FF /* POIStationAnnotationView.swift */,
 				26ADB0E61E186A9D008F49FF /* POIStationAnnotation.swift */,
@@ -376,6 +389,7 @@
 				26B9E1D21D35E0C500794EB6 /* SignalType.swift */,
 				266BAE641D2B676F001C9EC8 /* UIColor.swift */,
 				267525511D6D3B4F00F6C33F /* Decoded.swift */,
+				2696D8051E7ED64D00ABD701 /* MKCircle.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -392,10 +406,21 @@
 			path = Fixtures;
 			sourceTree = "<group>";
 		};
+		2696D8041E7ED45F00ABD701 /* Data Sources */ = {
+			isa = PBXGroup;
+			children = (
+				2696D8021E7ED45A00ABD701 /* POITableDataSource.swift */,
+			);
+			path = "Data Sources";
+			sourceTree = "<group>";
+		};
 		26A0FEFE1E149AF200FF265A /* View Models */ = {
 			isa = PBXGroup;
 			children = (
-				26A0FEFF1E149AF200FF265A /* NearbyStationsViewModel.swift */,
+				2696D7F81E7DF78300ABD701 /* ArrivalsViewModel.swift */,
+				2696D7FC1E7DFAC200ABD701 /* SignalChain.swift */,
+				2696D7FE1E7DFB7E00ABD701 /* NearbyStationsViewModel.swift */,
+				26A0FEFF1E149AF200FF265A /* POIViewModel.swift */,
 				26A0FF001E149AF200FF265A /* RoutesCollectionViewModel.swift */,
 			);
 			path = "View Models";
@@ -434,6 +459,7 @@
 				2650D2911D1A4C45003758BF /* Configuration */,
 				26B3DC121D164E98001E29AA /* Connection */,
 				264782621C309F7A009D9AD0 /* Controllers */,
+				2696D8041E7ED45F00ABD701 /* Data Sources */,
 				264782651C309FB9009D9AD0 /* Helpers */,
 				26A424BF1BD2C1320035754F /* Info.plist */,
 				26D3E2201D28DF9900F85712 /* Models */,
@@ -747,11 +773,12 @@
 				26D3E21F1D2776AB00F85712 /* Matchers.swift in Sources */,
 				2635DB781C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift in Sources */,
 				261DD1631C3424E1001336D4 /* BadgeViewLabel.swift in Sources */,
+				2696D8011E7E3B1D00ABD701 /* Badge.swift in Sources */,
 				26A4B7B31D33503600264F0D /* MutableVehicle.swift in Sources */,
 				266BAE661D2B7159001C9EC8 /* StartListViewController.swift in Sources */,
 				267525521D6D3B4F00F6C33F /* Decoded.swift in Sources */,
 				2698CF011D8B8FC400E6174A /* RoutesCollectionViewCell.swift in Sources */,
-				26A0FF011E149AF200FF265A /* NearbyStationsViewModel.swift in Sources */,
+				26A0FF011E149AF200FF265A /* POIViewModel.swift in Sources */,
 				26D3E2221D28DFE800F85712 /* Route.swift in Sources */,
 				267725C61E1AACF200274042 /* POIStationHeaderFooterView.swift in Sources */,
 				26A4B7AF1D32251100264F0D /* MutableStation.swift in Sources */,
@@ -761,6 +788,7 @@
 				26A4B7B11D32CEC800264F0D /* MutableRoute.swift in Sources */,
 				26AE681E1D612B810031E534 /* StationTableViewController.swift in Sources */,
 				26ADB0E71E186A9D008F49FF /* POIStationAnnotation.swift in Sources */,
+				2696D7FD1E7DFAC200ABD701 /* SignalChain.swift in Sources */,
 				26E038821D8F94030006B265 /* Colours.swift in Sources */,
 				263D36371DB2784700FC7FF5 /* POITableViewController.swift in Sources */,
 				264553491E7A5830007F6C2D /* Arrival.swift in Sources */,
@@ -771,9 +799,12 @@
 				2675254F1D66638C00F6C33F /* StationTableViewCell.swift in Sources */,
 				268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */,
 				26B9E1D31D35E0C500794EB6 /* SignalType.swift in Sources */,
+				2696D7FF1E7DFB7E00ABD701 /* NearbyStationsViewModel.swift in Sources */,
 				26A8D6021D484944000434F9 /* ArrivalsTableViewController.swift in Sources */,
 				26ED26EF1E11763C007FB0F8 /* ConnectionType.swift in Sources */,
 				264A13C91D2625CE00B44D47 /* TopicEvent.swift in Sources */,
+				2696D8061E7ED64D00ABD701 /* MKCircle.swift in Sources */,
+				2696D7F91E7DF78300ABD701 /* ArrivalsViewModel.swift in Sources */,
 				26CDF9591D7B344200E53F82 /* Box.swift in Sources */,
 				264A13C71D26157400B44D47 /* ProperError.swift in Sources */,
 				26D3E2241D28E07100F85712 /* Model.swift in Sources */,
@@ -781,6 +812,7 @@
 				26E7B5451DAFC0AD00AE50E1 /* POIViewController.swift in Sources */,
 				2675E0B61D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift in Sources */,
 				26C598BC1C250D1E00BC9FE1 /* BadgeView.swift in Sources */,
+				2696D8031E7ED45A00ABD701 /* POITableDataSource.swift in Sources */,
 				26B3DC561D170BAE001E29AA /* Connection.swift in Sources */,
 				2650EDA01C41CFCC006CCD42 /* Array.swift in Sources */,
 				264B2D2B1E1EF5E4007EE6D5 /* Timetable.swift in Sources */,

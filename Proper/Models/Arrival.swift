@@ -24,22 +24,22 @@ struct Arrival: Comparable, Hashable {
 
     /// Emits changes to the arrival's state, following the `Arrival.Lifecycle` state machine.
     var lifecycle: SignalProducer<Lifecycle, NoError> {
-        return SignalProducer(self.emitLifecycle)
+        return SignalProducer(value: Lifecycle.new).concat(SignalProducer(emitLifecycle))
     }
 
     enum Lifecycle {
+        case new
         case upcoming
         case due
         case arrived
         case departed
 
         static let resolution: NSTimeInterval = Config.agency.timeResolution
-        static let refresh: NSTimeInterval = 1.0
+        static let refresh: NSTimeInterval = resolution / 2
         //static let dueResolution = resolution / 5.0
 
-        /// Compute the state given an arrival's `eta`, `etd` and `now`. Returns the lifecycle state and an optional date
-        /// to re-compute.
-        static func determine(eta: NSDate, _ etd: NSDate, now: NSDate = NSDate()) -> (Lifecycle, NSDate?) {
+        /// Returns the state of this arrival, and a date to re-determine if its life is not terminated.
+        static func determine(eta: NSDate, _ etd: NSDate, now: NSDate = NSDate()) -> (Lifecycle, refreshAt: NSDate?) {
             let tta = eta.timeIntervalSinceDate(now)
             if tta < (-1 * resolution) {
                 return (.departed, nil)
@@ -56,12 +56,12 @@ struct Arrival: Comparable, Hashable {
     /// Determine the current state of the arrival, send it on `observer`, and schedule the next state determination,
     /// optionally cancellable using `disposable`.
     private func emitLifecycle(observer: Observer<Lifecycle, NoError>, _ disposable: CompositeDisposable) {
-        let (state, schedule) = Lifecycle.determine(self.eta, self.etd)
+        let (state, refresh) = Lifecycle.determine(eta, etd)
         observer.sendNext(state)
 
-        if let schedule = schedule {
+        if let refresh = refresh {
             disposable += QueueScheduler.mainQueueScheduler
-                .scheduleAfter(schedule, action: { self.emitLifecycle(observer, disposable) })
+                .scheduleAfter(refresh, action: { self.emitLifecycle(observer, disposable) })
         } else {
             observer.sendCompleted()
         }

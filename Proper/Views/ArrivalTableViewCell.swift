@@ -50,7 +50,7 @@ class ArrivalTableViewCell: UITableViewCell {
 
     static func timerLabel(arrival: Arrival, state: Arrival.Lifecycle) -> String {
         switch state {
-        case .upcoming:
+        case .new, .upcoming:
             return formatter.stringFromDate(NSDate(), toDate: arrival.eta) ?? "Upcoming"
         case .due:
             return "Due"

@@ -2,97 +2,36 @@
 //  NearbyStationsViewModel.swift
 //  Proper
 //
-//  Created by Elliott Williams on 10/13/16.
-//  Copyright © 2016 Elliott Williams. All rights reserved.
+//  Created by Elliott Williams on 3/18/17.
+//  Copyright © 2017 Elliott Williams. All rights reserved.
 //
 
-import UIKit
+import Foundation
 import ReactiveCocoa
 import Result
-import Dwifft
-import MapKit
-import GameKit
+import Curry
 
-class NearbyStationsViewModel: NSObject, UITableViewDataSource {
+struct NearbyStationsViewModel: SignalChain {
+    typealias Input = (Point, SearchRadius)
+    typealias Output = [MutableStation: Distance]
 
-    // TODO - Maybe raise the search radius but cap the number of results returned?
-    static let defaultSearchRadius = CLLocationDistance(250) // in meters
-    static let arrivalRowHeight = CGFloat(44)
+    // TODO - Swift 3 brings generic type aliases, which means we can do something nice like:
+    // typealias SP<U> = SignalProducer<U, ProperError>
+    typealias SearchRadius = CLLocationDistance
+    typealias CenterPoint = CLLocationCoordinate2D
+    typealias Distance = CLLocationDistance
 
-    /**
-     The geographic point to base nearby stations on. Changes to this property flow through the list of nearby stations
-     emitted by `stations`.
-
-     Performance note: When `point` changes, the entire list will be reloaded, which causes an expensive RPC to
-     `agency.stations`. Because of this, be judicious about modifying `point`.
-     */
-    let point: AnyProperty<Point?>
-    let searchRadius: AnyProperty<CLLocationDistance>
-
-    /**
-     The station-arrivals data represented by the view model. View controllers update this property as they respond to
-     changes from `producer`.
-     */
-    let model: MutableProperty<[(MutableStation, [Arrival])]> = .init([])
-
-    /// A convenience mapping of `current` that represents nearby stations. Indexed by position in the table.
-    let stations: AnyProperty<[MutableStation]>
-    /// A convenience mapping of `current` that represents nearby arrivals. Indexed by table section and arrival
-    /// sequence.
-    let arrivals: AnyProperty<[[Arrival]]>
-
-    var distances = [MutableStation: AnyProperty<String?>]()
-    var badges = [MutableStation: Badge]()
-
-    internal let connection: ConnectionType
-    internal let disposable = CompositeDisposable()
-    private let distanceFormatter = MKDistanceFormatter()
-
-    lazy var producer: SignalProducer<[(MutableStation, [Arrival])], ProperError> = { [unowned self] in
-        let rect = combineLatest(self.point.producer.ignoreNil(), self.searchRadius.producer)
-            .map({ point, radius -> MKMapRect in
-                let circle = MKCircle(centerCoordinate: CLLocationCoordinate2D(point: point), radius: radius)
-                return circle.boundingMapRect
-            }).promoteErrors(ProperError)
-        return rect |> self.nearbyStations |> self.addArrivals
-    }()
-
-    init<P: PropertyType, Q: PropertyType where P.Value == Point?, Q.Value == CLLocationDistance>
-        (point: P, searchRadius: Q, connection: ConnectionType = Connection.cachedInstance)
+    static func searchArea(producer: SignalProducer<(Point, SearchRadius), ProperError>) ->
+        SignalProducer<MKMapRect, ProperError>
     {
-        self.point = AnyProperty(point)
-        self.searchRadius = AnyProperty(searchRadius)
-
-        self.stations = self.model.map({ tuples in tuples.lazy.map({ st, ar in st }) })
-        self.arrivals = self.model.map({ tuples in tuples.lazy.map({ st, ar in ar }) })
-        self.connection = connection
-        super.init()
-
-        disposable += badges(for: stations.producer)
-            .startWithNext({ station, badge in
-                self.badges[station] = badge
-            })
-        disposable += distances(for: stations.producer, from: point.producer.ignoreNil())
-            .startWithNext({ station, distance in
-                self.distances[station] = distance
-            })
+        return producer.map({ point, radius -> MKMapRect in
+            let circle = MKCircle(centerCoordinate: CLLocationCoordinate2D(point: point), radius: radius)
+            return circle.boundingMapRect
+        })
     }
 
-    deinit {
-        disposable.dispose()
-    }
-
-    /**
-     Returns a signal producer that emits stations inside the a given circle defined by the positional `point` and 
-     `radius` parameters inside the signal.
-
-     Implementation note: The signal producer returned calls `agency.stations`, which returns *all* stations for the
-     agency and is thus very slow.
-     */
-    func nearbyStations(rect: SignalProducer<MKMapRect, ProperError>) ->
-        SignalProducer<[MutableStation], ProperError>
-    {
-        let stations = connection.call("agency.stations").attemptMap({ event -> Result<[AnyObject], ProperError> in
+    static func getStations(connection: ConnectionType) -> SignalProducer<[Station], ProperError> {
+        return connection.call("agency.stations").attemptMap({ event -> Result<[AnyObject], ProperError> in
             // Received events should be Agency.stations events, which contain a list of all stations on the agency.
             if case .Agency(.stations(let stations)) = event {
                 return .Success(stations)
@@ -100,136 +39,73 @@ class NearbyStationsViewModel: NSObject, UITableViewDataSource {
                 return .Failure(ProperError.eventParseFailure)
             }
         }).decodeAnyAs(Station.self)
+    }
 
-        return combineLatest(stations, rect).map({ stations, rect -> ([Station], MKMapRect) in
+    static func filterNearby(connection: ConnectionType, producer: SignalProducer<([Station], MKMapRect), ProperError>) ->
+        SignalProducer<[MutableStation: Distance], ProperError>
+    {
+
+        return producer.map({ stations, rect -> ([Station], CenterPoint) in
             // Filter down to a set of stations which have a defined position that is inside `circle`.
             let nearby = stations.filter({ $0.position.map({ MKMapRectContainsPoint(rect, MKMapPoint(point: $0)) }) == true })
-            return (nearby, rect)
-        }).attemptMap({ stations, rect -> Result<([MutableStation], MKMapRect), ProperError> in
-            // Attempt to create MutableStations out of all stations.
-            do {
-                let mutables = try stations.map({ try MutableStation(from: $0, connection: self.connection) })
-                return .Success(mutables, rect)
-            } catch let error as ProperError {
-                return .Failure(error)
-            } catch {
-                return .Failure(.unexpected(error: error))
-            }
-        }).map({ stations, rect -> [MutableStation] in
             let center = MKCoordinateRegionForMapRect(rect).center
-            return stations.sortDistanceTo(Point(coordinate: center))
-        })
-    }
+            return (nearby, center)
+        }).attemptMap({ stations, center -> Result<[MutableStation: Distance], ProperError> in
+            // Attempt to create MutableStations out of all stations.
+            let mutables = stations.map({ MutableStation.create($0, connection: connection) })
+            if let error = mutables.filter({ $0.error != nil }).first?.error {
+                return .Failure(error)
+            }
 
-    func badges<Error: ErrorType>(for producer: SignalProducer<[MutableStation], Error>) ->
-        SignalProducer<(MutableStation, Badge), Error>
-    {
-        let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".characters
-        let alphabetLength = 26
-        return producer.flatMap(.Latest, transform: { stations -> SignalProducer<(MutableStation, Badge), Error> in
-            let badges = stations.enumerate().map({ idx, station -> (MutableStation, Badge) in
-                let letter = String(alphabet[alphabet.startIndex.advancedBy(idx % alphabetLength)])
-                let badge = Badge(name: letter, seedForColor: station.identifier)
-                return (station, badge)
+            // Filter out stations without a known position.
+            let m: [(MutableStation, Point)] = mutables.flatMap({ $0.value }).flatMap({ station in
+                if let position = station.position.value {
+                    return (station, position)
+                } else {
+                    return nil
+                }
             })
-            return SignalProducer(values: badges)
+
+            // Compute each station's distance from location, and send.
+            let location = CLLocation(latitude: center.latitude, longitude: center.longitude)
+            var distances = [MutableStation: Distance]()
+
+            for (station, position) in m {
+                let distance = location.distanceFromLocation(CLLocation(point: position))
+                distances[station] = distance
+            }
+            
+            return .Success(distances)
         })
     }
 
-    func distances<Error: ErrorType>(for stations: SignalProducer<[MutableStation], Error>,
-                   from point: SignalProducer<Point, NoError>) ->
-        SignalProducer<(MutableStation, AnyProperty<String?>), Error>
+    static func orderedList(producer: SignalProducer<[MutableStation: Distance], ProperError>) ->
+        SignalProducer<[(MutableStation, Distance)], ProperError>
     {
-        return stations.flatMap(.Latest, transform: { stations -> SignalProducer<MutableStation, Error> in
-            return SignalProducer(values: stations)
-        }).map({ station in
-            let position = station.position.producer.ignoreNil()
-            let distance = position.combineLatestWith(point).map({ to, from in
-                self.distanceFormatter.stringFromDistance(to.distanceFrom(from))
-            }).map({ Optional($0) })
-            let property = AnyProperty(initialValue: nil, producer: distance)
-
-            return (station, property)
+        return producer.map({ dict in
+            dict.sort({ a, b in
+                let (_, ad) = a, (_, bd) = b
+                return ad < bd
+            })
         })
     }
 
-    // [Station] -> [(Station, [Arrival])]
-    func addArrivals(to producer: SignalProducer<[MutableStation], ProperError>) ->
-        SignalProducer<[(MutableStation, [Arrival])], ProperError>
+    static func chain(connection: ConnectionType, producer: SignalProducer<(Point, SearchRadius), ProperError>) ->
+        SignalProducer<[MutableStation: CLLocationDistance], ProperError>
     {
-        return producer.flatMap(.Latest, transform: { stations -> SignalProducer<[(MutableStation, [Arrival])], ProperError> in
-            let p = SignalProducer<MutableStation, ProperError>(values: stations)
-            return p.flatMap(.Merge, transform: { station in
-                combineLatest(
-                    SignalProducer(value: station),
-                    Timetable.visits(for: station,
-                        occurring: .between(from: NSDate(), to: NSDate(timeIntervalSinceNow: 60*60)),
-                        using: self.connection).collect()
-                )
-            }).collect()
-        }).logEvents(identifier: "NearbyStationsViewModel.addArrivals", logger: logSignalEvent)
-    }
-
-    // MARK: Table View Data Source
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return stations.value.count
-    }
-
-    // Return the number of arrivals for each route on the each station of the section given.
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let (_, arrivals) = model.value[section]
-        return arrivals.count
-    }
-
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("arrivalCell") as! ArrivalTableViewCell
-        cell.contentView.layoutMargins.left = 40
-
-        //let station = stations.value[indexPath.section]
-        let arrival = arrivals.value[indexPath.section][indexPath.row]
-        // TODO - Apply route and arrival information to the view
-        cell.apply(arrival)
-        return cell
-    }
-
-    /**
-     Data representing a station's badge. The badge consists of a name and a color. `Badge` instances are used to create
-     `BadgeView` instances, which render badges in the UI.
-     */
-    struct Badge {
-        let name: String
-        let color: UIColor
-
-        init(name: String, color: UIColor) {
-            self.name = name
-            self.color = color
-        }
-
-        init<H: Hashable>(name: String, seedForColor seed: H) {
-            self.name = name
-            self.color = Badge.randomColor(seed)
-        }
-
-        /**
-         Generate a pseudorandom color given a hashable seed. Using this generator, badges can have a color generated from
-         the station's identifier.
-         */
-        static func randomColor<H: Hashable>(seed: H) -> UIColor {
-            let src = GKMersenneTwisterRandomSource(seed: UInt64(abs(seed.hashValue)))
-            let gen = GKRandomDistribution(randomSource: src, lowestValue: 0, highestValue: 255)
-            let h = CGFloat(gen.nextInt()) / 256.0
-            // Saturation and luminance stay between 0.5 and 1.0 to avoid white and excessively dark colors.
-            let s = CGFloat(gen.nextInt()) / 512.0 + 0.5
-            let l = CGFloat(gen.nextInt()) / 512.0 + 0.5
-            return UIColor(hue: h, saturation: s, brightness: l, alpha: CGFloat(1))
-        }
+        let producer = combineLatest(getStations(connection), producer |> searchArea) |> curry(filterNearby)(connection)
+        return producer.logEvents(identifier: "NearbyStationsViewModel.chain", logger: logSignalEvent)
     }
 }
 
-extension MKCircle {
-    func contains(coordinate other: CLLocationCoordinate2D) -> Bool {
-        let origin = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-        let point = CLLocation(latitude: other.latitude, longitude: other.longitude)
-        return origin.distanceFromLocation(point) <= radius
-    }
+
+/// Returns the station-distance pair of smaller distance.
+func < (a: (MutableStation, CLLocationDistance), b: (MutableStation, CLLocationDistance)) -> Bool {
+    let ((_, ad), (_, bd)) = (a, b)
+    return ad < bd
+}
+
+func == (a: (MutableStation, CLLocationDistance), b: (MutableStation, CLLocationDistance)) -> Bool {
+    let ((ast, adi), (bst, bdi)) = (a, b)
+    return ast == bst && adi == bdi
 }

@@ -8,48 +8,63 @@
 
 import UIKit
 import ReactiveCocoa
-import Dwifft
+import Result
+import Curry
 
 class POITableViewController: UITableViewController, ProperViewController {
-    var viewModel: NearbyStationsViewModel!
+    typealias Distance = CLLocationDistance
+
+    var stations: SignalProducer<[MutableStation: Distance], NoError>!
+    var mapPoint: SignalProducer<Point, NoError>!
+    let dataSource = POITableDataSource()
 
     internal var connection: ConnectionType = Connection.cachedInstance
     internal var disposable = CompositeDisposable()
 
     static let headerViewHeight = CGFloat(55)
 
-    func updateTable(producer: SignalProducer<[(MutableStation, [Arrival])], ProperError>) ->
-        SignalProducer<[(MutableStation, [Arrival])], ProperError>
+    /// Returns a producer of Ops with side effects added to manipulate the table and data source with changes
+    /// described by the table operations. The point where this view's signal chain becomes Very Imperative.
+    func modifyTable(producer: SignalProducer<POIViewModel.Op, ProperError>) ->
+        SignalProducer<POIViewModel.Op, ProperError>
     {
-        return producer.combinePrevious([]).on(next: { prev, next in
-            let prevStations = prev.map({ st, ar in st })
-            let nextStations = next.map({ st, ar in st })
+        return producer.on(next: { op in
+            self.tableView.beginUpdates()
+            switch op {
+            case let .addStation(station, index: idx):
+                let badge = Badge(alphabetIndex: idx, seedForColor: station)
+                self.dataSource.insert((station, badge, []), atIndex: idx)
+                self.tableView.insertSections(NSIndexSet(index: idx), withRowAnimation: .Automatic)
 
-            let diff = prevStations.diff(nextStations)
-            let inserts = NSMutableIndexSet()
-            let deletes = NSMutableIndexSet()
+            case let .addArrival(arrival, to: station):
+                let path = self.dataSource.indexPathForInserting(arrival, onto: station)
+                self.tableView.insertRowsAtIndexPaths([path], withRowAnimation: .Automatic)
 
-            diff.results.forEach { step in
-                switch step {
-                case let .Insert(idx, _):
-                    inserts.addIndex(idx)
-                case let .Delete(idx, _):
-                    deletes.addIndex(idx)
+            case let .deleteArrival(arrival, from: station):
+                let path = self.dataSource.indexPathForDeleting(arrival, from: station)
+                self.tableView.deleteRowsAtIndexPaths([path], withRowAnimation: .Automatic)
+
+            case let .deleteStation(station):
+                let idx = self.dataSource.indexForRemoving(station)
+                self.tableView.deleteSections(NSIndexSet(index: idx), withRowAnimation: .Automatic)
+
+            case let .reorderStation(station, index: idx):
+                let si = self.dataSource.indexOf(station)
+                self.tableView.moveSection(si, toSection: idx)
+                self.dataSource.updateIndices(from: si)
+                if idx < si {
+                    self.dataSource.updateIndices(at: idx)
                 }
             }
-            self.tableView.beginUpdates()
-            self.viewModel.model.swap(next)
-            self.tableView.insertSections(inserts, withRowAnimation: .Automatic)
-            self.tableView.deleteSections(deletes, withRowAnimation: .Automatic)
             self.tableView.endUpdates()
-        }).map({ $1 })
+        })
     }
 
     // MARK: Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.dataSource = viewModel
+        tableView.dataSource = dataSource
         tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil),
                               forCellReuseIdentifier: "arrivalCell")
         tableView.registerNib(UINib(nibName: "POIStationHeaderFooterView", bundle: nil),
@@ -61,7 +76,7 @@ class POITableViewController: UITableViewController, ProperViewController {
 
         // From the list of stations coming from the view model, produce topic event subscriptions for each station.
         // Reload a station's section when a topic event is received for it.
-        disposable += (viewModel.producer |> updateTable)
+        disposable += (stations |> curry(POIViewModel.chain)(connection) |> modifyTable)
             .startWithFailed(self.displayError)
     }
 
@@ -77,21 +92,21 @@ class POITableViewController: UITableViewController, ProperViewController {
 
     // MARK: Table View Delegate
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return NearbyStationsViewModel.arrivalRowHeight
+        return POIViewModel.arrivalRowHeight
     }
 
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         // TODO - show vehicle details upon selection
         // In the meantime, segue to the station.
-        performSegueWithIdentifier("showStation", sender: viewModel.stations.value[indexPath.section])
+        performSegueWithIdentifier("showStation", sender: dataSource.stations[indexPath.section])
     }
 
     override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = tableView.dequeueReusableHeaderFooterViewWithIdentifier("stationHeader")
             as! POIStationHeaderFooterView
-        let station = viewModel.stations.value[section]
-        let badge = viewModel.badges[station]!
-        let distance = viewModel.distances[station]!
+        let (station, badge, _) = dataSource.table[section]
+        let distance = POIViewModel.distanceString(combineLatest(mapPoint, station.position.producer.ignoreNil()))
+
         header.apply(station, badge: badge, distance: distance)
         return header
     }

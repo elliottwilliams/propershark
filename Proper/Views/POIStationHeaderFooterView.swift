@@ -8,6 +8,7 @@
 
 import UIKit
 import ReactiveCocoa
+import Result
 
 class POIStationHeaderFooterView: UITableViewHeaderFooterView {
     @IBOutlet weak var title: TransitLabel!
@@ -24,21 +25,19 @@ class POIStationHeaderFooterView: UITableViewHeaderFooterView {
         disposable?.dispose()
     }
 
-    func apply(station: MutableStation, badge: NearbyStationsViewModel.Badge, distance: AnyProperty<String?>) {
+    func apply(station: MutableStation, badge: Badge, distance: SignalProducer<String, NoError>) {
+        self.disposable?.dispose()
         let disposable = CompositeDisposable()
 
-        // Set the badge identifier.
-        badgeView.label.text = badge.name
-        badgeView.color = badge.color
-
-        // Bind attributes to the UI labels.
+        // Bind station attributes...
         disposable += station.name.producer.startWithNext({ self.title.text = $0 })
+        self.subtitle.text = "\(station.stopCode)"
+        // ...badges...
+        disposable += badge.name.producer.startWithNext({ self.badgeView.label.text = $0 })
+        disposable += badge.color.producer.startWithNext({ self.badgeView.color = $0 })
+        // ...and distance string.
         disposable += distance.producer.startWithNext({ distance in
-            if let distance = distance {
-                self.subtitle.text = "\(station.stopCode) • \(distance) away"
-            } else {
-                self.subtitle.text = "\(station.stopCode)"
-            }
+            self.subtitle.text = "\(station.stopCode) • \(distance) away"
         })
 
         self.disposable = disposable

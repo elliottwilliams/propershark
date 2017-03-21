@@ -11,3 +11,14 @@ extension Array {
         return indices ~= index ? self[index] : nil
     }
 }
+
+extension Array where Element: Hashable {
+    func indexMap() -> [Element: Index] {
+        return self.enumerate().reduce([:], combine: { acc, pair in
+            var dict = acc
+            let (i, v) = pair
+            dict[v] = i
+            return dict
+        })
+    }
+}

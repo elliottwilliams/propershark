@@ -105,6 +105,17 @@ extension MutableModel {
 
     var description: String { return String(Self) + "(\(self.identifier))" }
     var hashValue: Int { return self.identifier.hashValue }
+
+    static func create(from: FromModel, connection: ConnectionType) -> Result<Self, ProperError> {
+        do {
+            let model = try Self(from: from, connection: connection)
+            return .Success(model)
+        } catch let error as ProperError {
+            return .Failure(error)
+        } catch {
+            return .Failure(.unexpected(error: error))
+        }
+    }
 }
 
 func ==<M: MutableModel>(a: M, b: M) -> Bool {

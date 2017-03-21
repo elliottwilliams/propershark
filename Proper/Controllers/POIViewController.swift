@@ -11,11 +11,6 @@ import ReactiveCocoa
 import Result
 
 class POIViewController: UIViewController, ProperViewController, UISearchControllerDelegate, MKMapViewDelegate {
-    lazy var viewModel: NearbyStationsViewModel = {
-        return NearbyStationsViewModel(point: self.point, searchRadius: self.zoom, connection: self.connection)
-    }()
-
-
     // MARK: Point properties
     typealias NamedPoint = (point: Point, name: String, isDeviceLocation: Bool)
 
@@ -27,6 +22,12 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
     /// passed.
     lazy var point = MutableProperty<Point?>(nil)
     lazy var zoom = MutableProperty<CLLocationDistance>(250) // Default zoom of 250m
+
+    // Stations found within the map area. This producer is passed to the POITableViewController and is a basis for its
+    // view model.
+    lazy var stations: MutableProperty<[MutableStation: CLLocationDistance]> = {
+        return .init([:])
+    }()
 
     /// A producer for the device's location, which adds metadata used by the view into the signal. It is started when
     /// the view appears, but is interrupted if a static location is passed by `staticLocation`.
@@ -50,7 +51,6 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
     internal var connection: ConnectionType = Connection.cachedInstance
     internal var disposable = CompositeDisposable()
 
-
     // MARK: UI updates
 
     // TODO - when map is zoomed in/out, update `self.zoom`.
@@ -73,6 +73,40 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         }
     }
 
+    // MARK: Map annotations
+
+    func annotations(for station: MutableStation) -> [POIStationAnnotation] {
+        return self.map.annotations.flatMap({ $0 as? POIStationAnnotation })
+            .filter({ $0.station == station })
+    }
+    func annotations(for station: MutableStation) -> [MKAnnotation] {
+        let pois: [POIStationAnnotation] = annotations(for: station)
+        return pois.map({ $0 as MKAnnotation })
+    }
+
+    func addAnnotation(for station: MutableStation, at index: Int) {
+        guard let position = station.position.value else {
+            return
+        }
+        let distanceString = POIViewModel.distanceString(self.point.producer.ignoreNil()
+            .map({ ($0, position) }))
+        let badge = Badge(alphabetIndex: index, seedForColor: station)
+        let annotation = POIStationAnnotation(station: station, located: position, badge: badge,
+                                              distance: distanceString)
+        self.map.addAnnotation(annotation)
+    }
+
+    func deleteAnnotations(for station: MutableStation) {
+        map.removeAnnotations(annotations(for: station))
+    }
+
+    func rebadge(station: MutableStation, index: Int) {
+        annotations(for: station).forEach { (annotation: POIStationAnnotation) in
+            annotation.badge.name.swap(Badge.letterForIndex(index))
+        }
+    }
+
+
     // MARK: Lifecycle
 
     override func viewDidLoad() {
@@ -94,6 +128,17 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
             bar.setBackgroundImage(UIImage(), forBarMetrics: UIBarMetrics.Default)
         }
 
+        // Search for nearby stations.
+        disposable += NearbyStationsViewModel.chain(connection, producer:
+            combineLatest(point.producer.ignoreNil(), zoom.producer))
+            .startWithResult({ result in
+                switch result {
+                case let .Success(stations):    self.stations.swap(stations)
+                case let .Failure(error):       self.displayError(error)
+                }
+            })
+
+        // Using location, update the map.
         disposable += location.startWithResult { result in
             switch result {
             case let .Success(point, name, userLocation):
@@ -105,12 +150,19 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
             }
         }
 
-        disposable += viewModel.stations.producer.map({ stations in
-            stations.flatMap({ POIStationAnnotation(station: $0, badge: self.viewModel.badges[$0]!,
-                distance: self.viewModel.distances[$0]!) })
-        }).combinePrevious([]).startWithNext({ prev, next in
-            self.map.removeAnnotations(prev)
-            self.map.addAnnotations(next)
+        // Show nearby stations on the map.
+        disposable += POIViewModel.chain(connection, producer: stations.producer).startWithResult({ result in
+            switch result {
+            case let .Failure(error):
+                self.displayError(error)
+            case let .Success(.addStation(station, index: idx)):
+                self.addAnnotation(for: station, at: idx)
+            case let .Success(.deleteStation(station)):
+                self.deleteAnnotations(for: station)
+            case let .Success(.reorderStation(station, index: idx)):
+                self.rebadge(station, index: idx)
+            default: break
+            }
         })
     }
 
@@ -137,7 +189,8 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         switch segue.identifier ?? "" {
         case "embedPOITable":
             let dest = segue.destinationViewController as! POITableViewController
-            dest.viewModel = viewModel
+            dest.stations = stations.producer
+            dest.mapPoint = point.producer.ignoreNil()
         case "showStation":
             let station = sender as! MutableStation
             let dest = segue.destinationViewController as! StationViewController

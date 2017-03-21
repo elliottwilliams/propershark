@@ -12,6 +12,7 @@ import ReactiveCocoa
 
 class POIStationAnnotationView: MKAnnotationView {
     let badge: BadgeView
+    private var disposable: CompositeDisposable?
 
     override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
         badge = BadgeView()
@@ -32,9 +33,20 @@ class POIStationAnnotationView: MKAnnotationView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    deinit {
+        disposable?.dispose()
+    }
+
+    override func prepareForReuse() {
+        self.disposable?.dispose()
+    }
+
     func apply(annotation: POIStationAnnotation) {
+        self.disposable?.dispose()
+        let disposable = CompositeDisposable()
         self.annotation = annotation
-        badge.label.text = annotation.badge.name
-        badge.color = annotation.badge.color
+        disposable += annotation.badge.name.producer.startWithNext({ self.badge.label.text = $0 })
+        disposable += annotation.badge.color.producer.startWithNext({ self.badge.color = $0 })
+        self.disposable = disposable
     }
 }
