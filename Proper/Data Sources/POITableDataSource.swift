@@ -28,7 +28,7 @@ class POITableDataSource: NSObject, UITableViewDataSource {
         return table.lazy.map({ _, bd, _ in bd })
     }
 
-    func indexOf(station: MutableStation) -> Int {
+    func index(of station: MutableStation) -> Int {
         return indices[station]!
     }
 
@@ -44,6 +44,7 @@ class POITableDataSource: NSObject, UITableViewDataSource {
     func updateIndices(at idx: Int) {
         updateIndices(at: idx, entry: table[idx])
     }
+
     private func updateIndices(at idx: Int, entry: Tuple) {
         let (station, badge, _) = entry
         indices[station] = idx
@@ -57,29 +58,29 @@ class POITableDataSource: NSObject, UITableViewDataSource {
         updateIndices(from: idx+1)
     }
 
-    func indexPathForInserting(arrival: Arrival, onto station: MutableStation) -> NSIndexPath {
-        let si = indexOf(station)
+    func indexPathByInserting(arrival: Arrival, onto station: MutableStation) -> NSIndexPath {
+        let si = index(of: station)
         let ri = arrivals[si].indexOf({ arrival < $0 }) ?? arrivals[si].endIndex
         table[si].arrivals.insert(arrival, atIndex: ri)
         return NSIndexPath(forRow: ri, inSection: si)
     }
 
-    func indexPathForDeleting(arrival: Arrival, from station: MutableStation) -> NSIndexPath {
-        let si = indexOf(station)
+    func indexPathByDeleting(arrival: Arrival, from station: MutableStation) -> NSIndexPath {
+        let si = index(of: station)
         let ri = arrivals[si].indexOf(arrival)!
         table[si].arrivals.removeAtIndex(ri)
         return NSIndexPath(forRow: ri, inSection: si)
     }
 
-    func removeAtIndex(idx: Int) {
+    func remove(at idx: Int) {
         indices[stations[idx]] = nil
         table.removeAtIndex(idx)
         updateIndices(from: idx)
     }
 
-    func indexForRemoving(station: MutableStation) -> Int {
-        let idx = indexOf(station)
-        removeAtIndex(idx)
+    func indexByRemoving(station: MutableStation) -> Int {
+        let idx = index(of: station)
+        remove(at: idx)
         return idx
     }
 

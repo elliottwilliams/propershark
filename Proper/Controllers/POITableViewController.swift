@@ -37,19 +37,19 @@ class POITableViewController: UITableViewController, ProperViewController {
                 self.tableView.insertSections(NSIndexSet(index: idx), withRowAnimation: .Automatic)
 
             case let .addArrival(arrival, to: station):
-                let path = self.dataSource.indexPathForInserting(arrival, onto: station)
-                self.tableView.insertRowsAtIndexPaths([path], withRowAnimation: .Automatic)
+                let path = self.dataSource.indexPathByInserting(arrival, onto: station)
+                self.tableView.insertRowsAtIndexPaths([path], withRowAnimation: .Bottom)
 
             case let .deleteArrival(arrival, from: station):
-                let path = self.dataSource.indexPathForDeleting(arrival, from: station)
-                self.tableView.deleteRowsAtIndexPaths([path], withRowAnimation: .Automatic)
+                let path = self.dataSource.indexPathByDeleting(arrival, from: station)
+                self.tableView.deleteRowsAtIndexPaths([path], withRowAnimation: .Top)
 
             case let .deleteStation(station):
-                let idx = self.dataSource.indexForRemoving(station)
+                let idx = self.dataSource.indexByRemoving(station)
                 self.tableView.deleteSections(NSIndexSet(index: idx), withRowAnimation: .Automatic)
 
             case let .reorderStation(station, index: idx):
-                let si = self.dataSource.indexOf(station)
+                let si = self.dataSource.index(of: station)
                 self.tableView.moveSection(si, toSection: idx)
                 self.dataSource.updateIndices(from: si)
                 if idx < si {
