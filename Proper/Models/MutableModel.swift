@@ -107,14 +107,7 @@ extension MutableModel {
     var hashValue: Int { return self.identifier.hashValue }
 
     static func create(from: FromModel, connection: ConnectionType) -> Result<Self, ProperError> {
-        do {
-            let model = try Self(from: from, connection: connection)
-            return .Success(model)
-        } catch let error as ProperError {
-            return .Failure(error)
-        } catch {
-            return .Failure(.unexpected(error: error))
-        }
+        return ProperError.capture({ try Self(from: from, connection: connection) })
     }
 }
 

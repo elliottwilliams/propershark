@@ -54,21 +54,16 @@ class MutableStation: MutableModel, Comparable {
 
     func handleEvent(event: TopicEvent) -> Result<(), ProperError> {
         if let error = event.error {
-            return .Failure(.decodeFailure(error: error))
+            return .Failure(.decodeFailure(error))
         }
 
-        do {
+        return ProperError.capture({
             switch event {
             case .Station(.update(let station, _)):
                 try self.apply(station.value!)
             default: break
             }
-        } catch let error as ProperError {
-            return .Failure(error)
-        } catch {
-            return .Failure(.unexpected(error: error))
-        }
-        return .Success()
+        })
     }
 
     func apply(station: Station) throws {

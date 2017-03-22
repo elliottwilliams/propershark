@@ -61,10 +61,10 @@ class MutableRoute: MutableModel, Comparable {
 
     func handleEvent(event: TopicEvent) -> Result<(), ProperError> {
         if let error = event.error {
-            return .Failure(.decodeFailure(error: error))
+            return .Failure(.decodeFailure(error))
         }
 
-        do {
+        return ProperError.capture({
             switch event {
             case .Route(.update(let route, _)):
                 try self.apply(route.value!)
@@ -73,12 +73,7 @@ class MutableRoute: MutableModel, Comparable {
                 try self.vehicles.value.filter { $0 == vehicle.value! }.forEach { try $0.apply(vehicle.value!) }
             default: break
             }
-        } catch let error as ProperError {
-            return .Failure(error)
-        } catch {
-            return .Failure(.unexpected(error: error))
-        }
-        return .Success()
+        })
     }
 
     func apply(route: Route) throws {

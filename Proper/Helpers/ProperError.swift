@@ -9,6 +9,7 @@
 import Foundation
 import Argo
 import CoreLocation
+import Result
 
 enum ProperError: ErrorType {
     // Connection
@@ -19,7 +20,7 @@ enum ProperError: ErrorType {
     case timeout
 
     // Model
-    case decodeFailure(error: DecodeError)
+    case decodeFailure(DecodeError)
     case decodeFailures(errors: [DecodeError])
     case stateInconsistency(description: String, within: Any)
     case applyFailure(from: String, onto: String)
@@ -28,5 +29,25 @@ enum ProperError: ErrorType {
     case locationMonitoringFailed(region: CLRegion?, error: NSError)
     case locationDisabled
 
-    case unexpected(error: ErrorType)
+    case unexpected(ErrorType)
+
+    /// Returns the result of calling `fn`, wrapping any error as a ProperError.
+    static func capture<U>(fn: () throws -> U) -> Result<U, ProperError> {
+        do {
+            return try .Success(fn())
+        } catch let error as ProperError {
+            return .Failure(error)
+        } catch {
+            return .Failure(.unexpected(error))
+        }
+    }
+
+    static func fromDecoded<U>(decoded: Decoded<U>) -> Result<U, ProperError> {
+        switch decoded {
+        case .Success(let v):
+            return .Success(v)
+        case .Failure(let e):
+            return .Failure(.decodeFailure(e))
+        }
+    }
 }
