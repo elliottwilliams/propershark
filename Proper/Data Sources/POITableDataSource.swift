@@ -72,8 +72,8 @@ class POITableDataSource: NSObject, UITableViewDataSource {
     }
 
     func removeAtIndex(idx: Int) {
-        table.removeAtIndex(idx)
         indices[stations[idx]] = nil
+        table.removeAtIndex(idx)
         updateIndices(from: idx)
     }
 
