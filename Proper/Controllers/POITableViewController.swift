@@ -14,7 +14,7 @@ import Curry
 class POITableViewController: UITableViewController, ProperViewController {
     typealias Distance = CLLocationDistance
 
-    var stations: SignalProducer<[MutableStation: Distance], NoError>!
+    var stations: SignalProducer<[MutableStation], NoError>!
     var mapPoint: SignalProducer<Point, NoError>!
     let dataSource = POITableDataSource()
 

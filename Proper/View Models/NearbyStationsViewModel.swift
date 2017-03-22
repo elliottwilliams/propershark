@@ -13,7 +13,7 @@ import Curry
 
 struct NearbyStationsViewModel: SignalChain {
     typealias Input = (Point, SearchRadius)
-    typealias Output = [MutableStation: Distance]
+    typealias Output = [MutableStation]
 
     // TODO - Swift 3 brings generic type aliases, which means we can do something nice like:
     // typealias SP<U> = SignalProducer<U, ProperError>
@@ -42,7 +42,7 @@ struct NearbyStationsViewModel: SignalChain {
     }
 
     static func filterNearby(connection: ConnectionType, producer: SignalProducer<([Station], MKMapRect), ProperError>) ->
-        SignalProducer<[MutableStation: Distance], ProperError>
+        SignalProducer<[MutableStation], ProperError>
     {
 
         return producer.map({ stations, rect -> ([Station], CenterPoint) in
@@ -50,32 +50,22 @@ struct NearbyStationsViewModel: SignalChain {
             let nearby = stations.filter({ $0.position.map({ MKMapRectContainsPoint(rect, MKMapPoint(point: $0)) }) == true })
             let center = MKCoordinateRegionForMapRect(rect).center
             return (nearby, center)
-        }).attemptMap({ stations, center -> Result<[MutableStation: Distance], ProperError> in
+        }).attemptMap({ stations, center -> Result<[MutableStation], ProperError> in
             // Attempt to create MutableStations out of all stations.
             let mutables = stations.map({ MutableStation.create($0, connection: connection) })
             if let error = mutables.filter({ $0.error != nil }).first?.error {
                 return .Failure(error)
             }
 
-            // Filter out stations without a known position.
-            let m: [(MutableStation, Point)] = mutables.flatMap({ $0.value }).flatMap({ station in
-                if let position = station.position.value {
-                    return (station, position)
-                } else {
-                    return nil
-                }
-            })
-
-            // Compute each station's distance from location, and send.
-            let location = CLLocation(latitude: center.latitude, longitude: center.longitude)
-            var distances = [MutableStation: Distance]()
-
-            for (station, position) in m {
-                let distance = location.distanceFromLocation(CLLocation(point: position))
-                distances[station] = distance
-            }
-            
-            return .Success(distances)
+            let centerPoint = Point(coordinate: center)
+            let sorted = mutables.flatMap({ result in
+                // Ignore stations without a known position.
+                result.value.map({ st in st.position.value.map({ pos in (st, pos) }) }) ?? nil
+            }).sort({ a, b in
+                let ((_, apos), (_, bpos)) = (a, b)
+                return apos.distanceFrom(centerPoint) < bpos.distanceFrom(centerPoint)
+            }).map({ st, pos in st })
+            return .Success(sorted)
         })
     }
 
@@ -91,7 +81,7 @@ struct NearbyStationsViewModel: SignalChain {
     }
 
     static func chain(connection: ConnectionType, producer: SignalProducer<(Point, SearchRadius), ProperError>) ->
-        SignalProducer<[MutableStation: CLLocationDistance], ProperError>
+        SignalProducer<[MutableStation], ProperError>
     {
         let producer = combineLatest(getStations(connection), producer |> searchArea) |> curry(filterNearby)(connection)
         return producer.logEvents(identifier: "NearbyStationsViewModel.chain", logger: logSignalEvent)

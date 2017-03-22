@@ -25,9 +25,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
     // Stations found within the map area. This producer is passed to the POITableViewController and is a basis for its
     // view model.
-    lazy var stations: MutableProperty<[MutableStation: CLLocationDistance]> = {
-        return .init([:])
-    }()
+    lazy var stations = MutableProperty<[MutableStation]>([])
 
     /// A producer for the device's location, which adds metadata used by the view into the signal. It is started when
     /// the view appears, but is interrupted if a static location is passed by `staticLocation`.
@@ -136,13 +134,14 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
         // Search for nearby stations.
         disposable += NearbyStationsViewModel.chain(connection, producer:
-            combineLatest(point.producer.ignoreNil(), zoom.producer))
-            .startWithResult({ result in
+            combineLatest(point.producer.ignoreNil(), zoom.producer)
+            .logEvents(identifier: "NearbyStationsViewModel.chain input", logger: logSignalEvent))
+            .startWithResult() { result in
                 switch result {
                 case let .Success(stations):    self.stations.swap(stations)
                 case let .Failure(error):       self.displayError(error)
                 }
-            })
+            }
 
         // Using location, update the map.
         disposable += location.startWithResult { result in

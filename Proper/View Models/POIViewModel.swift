@@ -13,7 +13,7 @@ import Result
 import Dwifft
 
 class POIViewModel: SignalChain {
-    typealias Input = [MutableStation: Distance]
+    typealias Input = [MutableStation]
     typealias Output = Op
 
     typealias Distance = CLLocationDistance
@@ -32,21 +32,19 @@ class POIViewModel: SignalChain {
     static let distanceFormatter = MKDistanceFormatter()
 
     static func chain(connection: ConnectionType,
-                      producer stations: SignalProducer<[MutableStation: Distance], ProperError>) ->
+                      producer stations: SignalProducer<[MutableStation], ProperError>) ->
         SignalProducer<Op, ProperError>
     {
-        let arrivals = stations.map({ $0.keys }) |> curry(ArrivalsViewModel.chain)(connection)
+        let arrivals = stations |> curry(ArrivalsViewModel.chain)(connection)
         let logged = arrivals.logEvents(identifier: "POIViewModel.chain arrivals", logger: logSignalEvent)
         return SignalProducer<SignalProducer<Op, ProperError>, ProperError>(values:
             [stations |> stationOps, logged |> arrivalOps]).flatten(.Merge)
     }
 
-    static func stationOps(producer: SignalProducer<[MutableStation: Distance], ProperError>) ->
+    static func stationOps(producer: SignalProducer<[MutableStation], ProperError>) ->
         SignalProducer<Op, ProperError>
     {
-        return producer.combinePrevious([:]).flatMap(.Latest, transform: { prevDict, nextDict -> SignalProducer<Op, ProperError> in
-            let prev = prevDict.sort(<).map({ s, _ in s })
-            let next = nextDict.sort(<).map({ s, _ in s })
+        return producer.combinePrevious([]).flatMap(.Latest, transform: { prev, next -> SignalProducer<Op, ProperError> in
             let pi = prev.indexMap()
             let ni = next.indexMap()
             let diff = prev.diff(next)
