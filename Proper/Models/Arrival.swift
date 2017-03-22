@@ -34,21 +34,21 @@ struct Arrival: Comparable, Hashable {
         case arrived
         case departed
 
-        static let resolution: NSTimeInterval = Config.agency.timeResolution
-        static let refresh: NSTimeInterval = resolution / 2
-        //static let dueResolution = resolution / 5.0
+        static let pres: NSTimeInterval = Config.agency.timeResolution
+        static let nres = -1 * pres
 
         /// Returns the state of this arrival, and a date to re-determine if its life is not terminated.
         static func determine(eta: NSDate, _ etd: NSDate, now: NSDate = NSDate()) -> (Lifecycle, refreshAt: NSDate?) {
-            let tta = eta.timeIntervalSinceDate(now)
-            if tta < (-1 * resolution) {
+            // TODO - once Arrivals can track vehicles, we should determine whether a vehicle has actually arrived at
+            // its station, and can emit the `arrived` event accordingly.
+            switch (eta.timeIntervalSinceNow, etd.timeIntervalSinceNow) {
+            case (_, -1*Double.infinity...nres):
                 return (.departed, nil)
-            } else if (-1 * resolution)...resolution ~= tta {
-                return (.due, NSDate(timeIntervalSinceNow: refresh))
-                // TODO - once Arrivals track vehicles, we should determine whether a vehicle has actually arrived at its
-                // station, and can emit the `arrived` event accordingly.
-            } else {
-                return (.upcoming, NSDate(timeIntervalSinceNow: refresh))
+            case (nres...pres, _),
+                 (-1*Double.infinity...nres, nres...Double.infinity):
+                return (.due, etd.dateByAddingTimeInterval(pres))
+            default:
+                return (.upcoming, eta.dateByAddingTimeInterval(nres))
             }
         }
     }

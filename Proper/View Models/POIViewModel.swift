@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MapKit
 import ReactiveCocoa
 import Curry
 import Result
@@ -17,6 +18,7 @@ class POIViewModel: SignalChain {
     typealias Output = Op
 
     typealias Distance = CLLocationDistance
+    typealias NamedPoint = (point: Point, name: String, isDeviceLocation: Bool)
 
     enum Op {
         case addStation(MutableStation, index: Int)
@@ -35,10 +37,18 @@ class POIViewModel: SignalChain {
                       producer stations: SignalProducer<[MutableStation], ProperError>) ->
         SignalProducer<Op, ProperError>
     {
-        let arrivals = stations |> curry(ArrivalsViewModel.chain)(connection)
+        let arrivals = stations |> onlyNewStations |> curry(ArrivalsViewModel.chain)(connection)
         let logged = arrivals.logEvents(identifier: "POIViewModel.chain arrivals", logger: logSignalEvent)
         return SignalProducer<SignalProducer<Op, ProperError>, ProperError>(values:
             [stations |> stationOps, logged |> arrivalOps]).flatten(.Merge)
+    }
+
+    static func onlyNewStations(producer: SignalProducer<[MutableStation], ProperError>) ->
+        SignalProducer<Set<MutableStation>, ProperError>
+    {
+        return producer.combinePrevious([]).map({ prev, next in
+            Set(next).subtract(Set(prev))
+        })
     }
 
     static func stationOps(producer: SignalProducer<[MutableStation], ProperError>) ->
@@ -92,5 +102,17 @@ class POIViewModel: SignalChain {
     {
         return producer.map({ $0.distanceFrom($1) })
             .map({ self.distanceFormatter.stringFromDistance($0) })
+    }
+
+    static func distinctLocations(producer: SignalProducer<CLLocation, ProperError>) ->
+        SignalProducer<NamedPoint, ProperError>
+    {
+        return producer.map({ $0.coordinate })
+            .combinePrevious(kCLLocationCoordinate2DInvalid)
+            .filter({ prev, next in
+                return prev.latitude != next.latitude || prev.longitude != next.longitude })
+            .map({ _, next in
+                NamedPoint(point: Point(coordinate: next), name: "Current Location", isDeviceLocation: true) })
+            .logEvents(identifier: "POIViewController.deviceLocation", logger: logSignalEvent)
     }
 }
