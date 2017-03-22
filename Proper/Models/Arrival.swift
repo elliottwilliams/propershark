@@ -15,7 +15,7 @@ import Result
 struct Arrival: Comparable, Hashable {
     let eta: NSDate
     let etd: NSDate
-    let route: Route
+    let route: MutableRoute
     let heading: String?
 
     var hashValue: Int {
@@ -65,22 +65,6 @@ struct Arrival: Comparable, Hashable {
         } else {
             observer.sendCompleted()
         }
-    }
-}
-
-extension Arrival: Decodable {
-    // Decode a 4-tuple message (the format that Timetable uses): [route, heading, eta, etd]s
-    static func decode(json: JSON) -> Decoded<Arrival> {
-        return [JSON].decode(json).flatMap({ args in
-            guard args.count == 4 else {
-                return .Failure(.Custom("Expected an array of size 4"))
-            }
-            return curry(self.init)
-                <^> NSDate.decode(args[0])
-                <*> NSDate.decode(args[1])
-                <*> Route.decode(args[2])
-                <*> Optional<String>.decode(args[3])
-        })
     }
 }
 

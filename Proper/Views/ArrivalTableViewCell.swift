@@ -43,11 +43,11 @@ class ArrivalTableViewCell: UITableViewCell {
     func apply(arrival: Arrival) {
         self.disposable?.dispose()
         let disposable = CompositeDisposable()
-        
-        let route = arrival.route
-        badge.routeNumber = route.shortName
-        badge.color = route.color ?? UIColor.grayColor()
-        routeTitle.text = route.name
+
+        badge.routeNumber = arrival.route.shortName
+        disposable += arrival.route.name.producer.startWithNext({ self.routeTitle.text = $0 })
+        disposable += arrival.route.color.producer.ignoreNil().startWithNext({ self.badge.color = $0 })
+        disposable += arrival.route.producer.start()
 
         disposable += ArrivalsViewModel.label(for: arrival).startWithNext({ self.routeTimer.text = $0 })
         self.disposable = disposable
