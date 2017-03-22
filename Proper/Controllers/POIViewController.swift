@@ -31,8 +31,14 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
     /// A producer for the device's location, which adds metadata used by the view into the signal. It is started when
     /// the view appears, but is interrupted if a static location is passed by `staticLocation`.
-    let deviceLocation = Location.producer.map({
-        NamedPoint(point: Point(coordinate: $0.coordinate), name: "Current Location", isDeviceLocation: true) })
+    let deviceLocation = Location.producer
+        .map({ $0.coordinate })
+        .combinePrevious(kCLLocationCoordinate2DInvalid)
+        .filter({ prev, next in
+            return prev.latitude != next.latitude || prev.longitude != next.longitude })
+        .map({ _, next in
+            NamedPoint(point: Point(coordinate: next), name: "Current Location", isDeviceLocation: true) })
+        .logEvents(identifier: "POIViewController.deviceLocation", logger: logSignalEvent)
 
     /// A producer for a "static location" of the view. This static location overrides the device location and makes the
     /// view represent the latest point passed.
