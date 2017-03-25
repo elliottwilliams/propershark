@@ -187,7 +187,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         switch segue.identifier ?? "" {
         case "embedPOITable":
             let dest = segue.destinationViewController as! POITableViewController
-            dest.stations = stations.producer
+            dest.stations = AnyProperty(stations)
             dest.mapPoint = point.producer.ignoreNil()
         case "showStation":
             let station = sender as! MutableStation

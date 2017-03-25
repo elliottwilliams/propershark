@@ -33,22 +33,34 @@ class POIViewModel: SignalChain {
     static let arrivalRowHeight = CGFloat(44)
     static let distanceFormatter = MKDistanceFormatter()
 
-    static func chain(connection: ConnectionType,
-                      producer stations: SignalProducer<[MutableStation], ProperError>) ->
+
+    /// Returns a producer that "seeds" the view model with the first value returned from `producer`, and then updates
+    /// table with subsequent values from `producer`. Expected to be used with Property producers, which immediately
+    /// forward their current value upon invocation.
+    static func chain(connection: ConnectionType, producer property: SignalProducer<[MutableStation], ProperError>) ->
         SignalProducer<Op, ProperError>
     {
-        let arrivals = stations |> onlyNewStations |> curry(ArrivalsViewModel.chain)(connection)
-        let logged = arrivals.logEvents(identifier: "POIViewModel.chain arrivals", logger: logSignalEvent)
-        return SignalProducer<SignalProducer<Op, ProperError>, ProperError>(values:
-            [stations |> stationOps, logged |> arrivalOps]).flatten(.Merge)
+        let subsequent = property.skip(1)
+        return property.take(1).flatMap(.Latest, transform: { initial -> SignalProducer<Op, ProperError> in
+            let arrivals = subsequent
+                |> onlyNewStations(given: initial)
+                |> curry(ArrivalsViewModel.chain)(connection)
+            let logged = arrivals.logEvents(identifier: "POIViewModel.chain arrivals", logger: logSignalEvent)
+            return SignalProducer<SignalProducer<Op, ProperError>, ProperError>(values:
+                [subsequent |> stationOps, logged |> arrivalOps]).flatten(.Merge)
+        })
+
     }
 
-    static func onlyNewStations(producer: SignalProducer<[MutableStation], ProperError>) ->
+    static func onlyNewStations(given previous: [MutableStation]) ->
+        (producer: SignalProducer<[MutableStation], ProperError>) ->
         SignalProducer<Set<MutableStation>, ProperError>
     {
-        return producer.combinePrevious([]).map({ prev, next in
-            Set(next).subtract(Set(prev))
-        })
+        return { producer in
+            return producer.map(Set.init).combinePrevious(Set(previous)).map({ prev, next in
+                next.subtract(prev)
+            })
+        }
     }
 
     static func stationOps(producer: SignalProducer<[MutableStation], ProperError>) ->

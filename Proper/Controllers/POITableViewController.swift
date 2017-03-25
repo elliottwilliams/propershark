@@ -14,7 +14,7 @@ import Curry
 class POITableViewController: UITableViewController, ProperViewController {
     typealias Distance = CLLocationDistance
 
-    var stations: SignalProducer<[MutableStation], NoError>!
+    var stations: AnyProperty<[MutableStation]>!
     var mapPoint: SignalProducer<Point, NoError>!
     let dataSource = POITableDataSource()
 
@@ -76,7 +76,7 @@ class POITableViewController: UITableViewController, ProperViewController {
 
         // From the list of stations coming from the view model, produce topic event subscriptions for each station.
         // Reload a station's section when a topic event is received for it.
-        disposable += (stations |> curry(POIViewModel.chain)(connection) |> modifyTable)
+        disposable += (POIViewModel.chain(connection, producer: stations.producer) |> modifyTable)
             .startWithFailed(self.displayError)
     }
 
