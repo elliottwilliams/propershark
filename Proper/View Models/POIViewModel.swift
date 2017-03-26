@@ -25,7 +25,7 @@ class POIViewModel: SignalChain {
         case addArrival(Arrival, to: MutableStation)
         case deleteStation(MutableStation)
         case deleteArrival(Arrival, from: MutableStation)
-        case reorderStation(MutableStation, index: Int)
+        case reorderStation(MutableStation, from: Int, to: Int)
     }
 
     // TODO - Maybe raise the search radius but cap the number of results returned?
@@ -74,9 +74,9 @@ class POIViewModel: SignalChain {
             let ops = diff.results.flatMap({ step -> Op? in
                 switch step {
                 case let .Insert(idx, station):
-                    if let p = pi[station] where p > idx {
+                    if let p = pi[station] {
                         // If `station` had an index in `prev`, it's been moved, not inserted. Produce a reorder op...
-                        return .reorderStation(station, index: idx)
+                        return .reorderStation(station, from: p, to: idx)
                     } else {
                         return .addStation(station, index: idx)
                     }

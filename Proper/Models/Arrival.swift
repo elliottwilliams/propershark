@@ -68,6 +68,13 @@ struct Arrival: Comparable, Hashable {
     }
 }
 
+extension Arrival: CustomStringConvertible {
+    var description: String {
+        let time = eta == etd ? eta.description : "\(eta)-\(etd)"
+        return "Arrival(\(route), \(time))"
+    }
+}
+
 func == (a: Arrival, b: Arrival) -> Bool {
     return a.route == b.route &&
         a.heading == b.heading &&

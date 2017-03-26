@@ -84,6 +84,21 @@ class POITableDataSource: NSObject, UITableViewDataSource {
         return idx
     }
 
+    func moveStation(from fi: Int, to ti: Int) {
+        guard fi != ti else {
+            return
+        }
+
+        let temp = table[fi]
+        let dir = (ti-fi) / abs(ti-fi)
+        fi.stride(to: ti, by: dir).forEach { i in
+            table[i] = table[i+dir]
+            updateIndices(at: i)
+        }
+        table[ti] = temp
+        updateIndices(at: ti)
+    }
+
     // MARK: Table View Data Source
 
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {

@@ -57,10 +57,6 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         map.setCenterCoordinate(coordinate, animated: true)
         let boundingRegion = MKCoordinateRegionMakeWithDistance(coordinate, zoom.value, zoom.value)
         map.setRegion(map.regionThatFits(boundingRegion), animated: true)
-
-        // DEBUG - show search area around point
-        let circle = MKCircle(centerCoordinate: coordinate, radius: zoom.value)
-        map.addOverlay(circle)
         
         if isUserLocation {
             map.showsUserLocation = true
@@ -76,34 +72,53 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         return self.map.annotations.flatMap({ $0 as? POIStationAnnotation })
             .filter({ $0.station == station })
     }
-    func annotations(for station: MutableStation) -> [MKAnnotation] {
-        let pois: [POIStationAnnotation] = annotations(for: station)
-        return pois.map({ $0 as MKAnnotation })
+    func annotations(within range: Range<Int>) -> [POIStationAnnotation] {
+        return map.annotations.flatMap({ ($0 as? POIStationAnnotation) })
+            .filter({ range.contains($0.index) })
+    }
+    func annotations(from idx: Int) -> [POIStationAnnotation] {
+        return map.annotations.flatMap({ ($0 as? POIStationAnnotation) })
+            .filter({ $0.index >= idx })
     }
 
-    func addAnnotation(for station: MutableStation, at index: Int) {
+    func addAnnotation(for station: MutableStation, at idx: Int) {
         guard let position = station.position.value else {
             return
         }
-        let distanceString = POIViewModel.distanceString(self.point.producer.ignoreNil()
-            .map({ ($0, position) }))
-        let badge = Badge(alphabetIndex: index, seedForColor: station)
-        let annotation = POIStationAnnotation(station: station, located: position, badge: badge,
+        let distanceString = POIViewModel.distanceString(self.point.producer.ignoreNil().map({ ($0, position) }))
+        let annotation = POIStationAnnotation(station: station,
+                                              locatedAt: position,
+                                              index: idx,
                                               distance: distanceString)
-        self.map.addAnnotation(annotation)
+        annotations(from: idx).forEach { $0.index += 1 }
+        map.addAnnotation(annotation)
     }
 
     func deleteAnnotations(for station: MutableStation) {
-        map.removeAnnotations(annotations(for: station))
+        let annotations = self.annotations(for: station)
+        let idx = annotations.minElement({ $0.index < $1.index }).map({ $0.index })!
+        map.removeAnnotations(annotations)
+        self.annotations(from: idx+1).forEach { $0.index -= 1 }
     }
 
-    func rebadge(station: MutableStation, index: Int) {
-        annotations(for: station).forEach { (annotation: POIStationAnnotation) in
-            annotation.badge.name.swap(Badge.letterForIndex(index))
+    func reorderAnnotations(withIndex fi: Int, to ti: Int) {
+        if fi < ti {
+            self.annotations(within: fi...ti).forEach { annotation in
+                switch annotation.index {
+                case fi: annotation.index = ti
+                case _:  annotation.index -= 1
+                }
+            }
+        } else {
+            self.annotations(within: ti...fi).forEach { annotation in
+                switch annotation.index {
+                case fi: annotation.index = ti
+                case _:  annotation.index += 1
+                }
+            }
         }
     }
-
-
+    
     // MARK: Lifecycle
 
     override func viewDidLoad() {
@@ -157,8 +172,8 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
                 self.addAnnotation(for: station, at: idx)
             case let .Success(.deleteStation(station)):
                 self.deleteAnnotations(for: station)
-            case let .Success(.reorderStation(station, index: idx)):
-                self.rebadge(station, index: idx)
+            case let .Success(.reorderStation(_, from: fi, to: ti)):
+                self.reorderAnnotations(withIndex: fi, to: ti)
             default: break
             }
         })

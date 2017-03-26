@@ -37,10 +37,15 @@ class POITableViewController: UITableViewController, ProperViewController {
                 self.tableView.insertSections(NSIndexSet(index: idx), withRowAnimation: .Automatic)
 
             case let .addArrival(arrival, to: station):
+                // TODO - Interrupt arrival-finding operations within the view
+                // model for stations that are deleted
+                guard self.dataSource.indices[station] != nil else { break }
                 let path = self.dataSource.indexPathByInserting(arrival, onto: station)
                 self.tableView.insertRowsAtIndexPaths([path], withRowAnimation: .Bottom)
 
             case let .deleteArrival(arrival, from: station):
+                // TODO - see .addArrival
+                guard self.dataSource.indices[station] != nil else { break }
                 let path = self.dataSource.indexPathByDeleting(arrival, from: station)
                 self.tableView.deleteRowsAtIndexPaths([path], withRowAnimation: .Top)
 
@@ -48,13 +53,9 @@ class POITableViewController: UITableViewController, ProperViewController {
                 let idx = self.dataSource.indexByRemoving(station)
                 self.tableView.deleteSections(NSIndexSet(index: idx), withRowAnimation: .Automatic)
 
-            case let .reorderStation(station, index: idx):
-                let si = self.dataSource.index(of: station)
-                self.tableView.moveSection(si, toSection: idx)
-                self.dataSource.updateIndices(from: si)
-                if idx < si {
-                    self.dataSource.updateIndices(at: idx)
-                }
+            case let .reorderStation(_, from: fi, to: ti):
+                self.dataSource.moveStation(from: fi, to: ti)
+                self.tableView.moveSection(fi, toSection: ti)
             }
             self.tableView.endUpdates()
         })
@@ -77,6 +78,7 @@ class POITableViewController: UITableViewController, ProperViewController {
         // From the list of stations coming from the view model, produce topic event subscriptions for each station.
         // Reload a station's section when a topic event is received for it.
         disposable += (POIViewModel.chain(connection, producer: stations.producer) |> modifyTable)
+            .logEvents(identifier: "POITableViewController.viewDidAppear", logger: logSignalEvent)
             .startWithFailed(self.displayError)
     }
 

@@ -17,20 +17,18 @@ class POIStationAnnotation: NSObject, MKAnnotation {
     let badge: Badge
     let distance: AnyProperty<String?>
 
-    init?(station: MutableStation, badge: Badge, distance: SignalProducer<String, NoError>) {
-        guard let position = station.position.value else {
-            return nil
-        }
-        self.station = station
-        self.stationPosition = position
-        self.badge = badge
-        self.distance = AnyProperty(initialValue: nil, producer: distance.map({ Optional($0) }))
+    var index: Int {
+        didSet { badge.setIndex(index) }
     }
 
-    init(station: MutableStation, located position: Point, badge: Badge, distance: SignalProducer<String, NoError>) {
+    init(station: MutableStation, locatedAt position: Point, index: Int,
+         distance: SignalProducer<String, NoError>)
+    {
         self.station = station
         self.stationPosition = position
-        self.badge = badge
+        self.index = index
+
+        self.badge = Badge(alphabetIndex: index, seedForColor: station)
         self.distance = AnyProperty(initialValue: nil, producer: distance.map(Optional.init))
     }
 

@@ -33,7 +33,9 @@ struct Config {
         static let ignoreSignalProducers = Set([
             "MDWamp.subscribeWithSignal",
             "MDWamp.callWithSignal",
-            "Connection.connectionProducer"
+            "Connection.connectionProducer",
+            "Connection.subscribe",
+            "MutableRoute.producer"
         ])
         static let logJSON = false
     }

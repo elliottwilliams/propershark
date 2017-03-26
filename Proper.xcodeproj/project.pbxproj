@@ -150,6 +150,8 @@
 		2644B89C1E7F74F8008A0A4D /* Riehle.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Riehle.gpx; sourceTree = "<group>"; };
 		2644B89D1E7F74F8008A0A4D /* Windsor.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Windsor.gpx; sourceTree = "<group>"; };
 		264553481E7A5830007F6C2D /* Arrival.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Arrival.swift; sourceTree = "<group>"; };
+		264713B61E86EBB90078A2B9 /* Memorial Mall Walk.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Memorial Mall Walk.gpx"; sourceTree = "<group>"; };
+		264713B71E86EBEB0078A2B9 /* Memorial Mall Run.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Memorial Mall Run.gpx"; sourceTree = "<group>"; };
 		2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrivalsTableViewControllerTests.swift; sourceTree = "<group>"; };
 		264782551C2C6F67009D9AD0 /* StartListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = StartListViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -297,6 +299,8 @@
 			isa = PBXGroup;
 			children = (
 				2644B8991E7F7385008A0A4D /* PMU.gpx */,
+				264713B61E86EBB90078A2B9 /* Memorial Mall Walk.gpx */,
+				264713B71E86EBEB0078A2B9 /* Memorial Mall Run.gpx */,
 				2644B89C1E7F74F8008A0A4D /* Riehle.gpx */,
 				2644B89D1E7F74F8008A0A4D /* Windsor.gpx */,
 				2612B5291D50513600BF671D /* routes.4B.json */,
