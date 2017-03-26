@@ -12,7 +12,7 @@ import Result
 import Curry
 
 struct ArrivalsViewModel: SignalChain {
-    typealias Input = Set<MutableStation>
+    typealias Input = SignalProducer<MutableStation, ProperError>
     typealias Output = (MutableStation, Arrival, Arrival.Lifecycle)
 
     // TODO - `formatter` and `preemptionTimer` should be a stored property once Swift supports static stored properties 
@@ -36,42 +36,33 @@ struct ArrivalsViewModel: SignalChain {
         }
     }
 
-    static func chain(connection: ConnectionType, producer: SignalProducer<Set<MutableStation>, ProperError>) ->
+    static func chain(connection: ConnectionType, producer: SignalProducer<SignalProducer<MutableStation, ProperError>, ProperError>) ->
         SignalProducer<(MutableStation, Arrival, Arrival.Lifecycle), ProperError>
     {
         return producer |> curry(timetable)(connection) |> lifecycle
     }
 
-    static func chain(connection: ConnectionType, producer: SignalProducer<[MutableStation], ProperError>) ->
-        SignalProducer<Output, ProperError>
+    // Produces a (station, arrival) tuple for arrivals of `station`, discovering new arrivals indefinitely.
+    static func timetable(connection: ConnectionType, producer: SignalProducer<Input, ProperError>) ->
+        SignalProducer<(MutableStation, Arrival), ProperError>
     {
-        return chain(connection, producer: producer.map(Set.init))
-    }
-
-    // Calls timetable and returns an array of (Station, Arrival) pairs.
-    static func timetable(connection: ConnectionType, producer: SignalProducer<Set<MutableStation>, ProperError>) ->
-        SignalProducer<[(MutableStation, Arrival)], ProperError>
-    {
-        return producer.flatMap(.Latest, transform: { SignalProducer<MutableStation, ProperError>(values: $0) })
-            .flatMap(.Concat, transform: { station in
-                combineLatest(
-                    SignalProducer(value: station),
-                    Timetable.visits(for: station,
-                        occurring: .between(from: NSDate(), to: NSDate(timeIntervalSinceNow: 3600)),
-                        using: connection)
-                    ).collect()
-            })
+        return producer.flatMap(.Merge, transform: { stationProducer in
+            stationProducer.flatMap(.Latest, transform: { station in
+                Timetable.visits(for: station,
+                    occurring: .between(from: NSDate(), to: NSDate(timeIntervalSinceNow: 3600)),
+                    using: connection).map({ (station, $0) })
+            }).logEvents(identifier: "ArrivalsViewModel.timetable", logger: logSignalEvent)
+        })
     }
 
     // Combines a (Station, Arrival) pair with the arrivals lifecycle. Produced values will be sent every time the
     // lifecycle state is refreshed.
-    static func lifecycle(producer: SignalProducer<[(MutableStation, Arrival)], ProperError>) ->
+    static func lifecycle(producer: SignalProducer<(MutableStation, Arrival), ProperError>) ->
         SignalProducer<(MutableStation, Arrival, Arrival.Lifecycle), ProperError>
     {
-        return producer.flatMap(.Latest, transform: { SignalProducer<(MutableStation, Arrival), ProperError>(values: $0) })
-            .flatMap(.Merge, transform: { station, arrival in
-                arrival.lifecycle.map({ (station, arrival, $0) })
-            })
+        return producer.flatMap(.Merge, transform: { station, arrival in
+            arrival.lifecycle.map({ (station, arrival, $0) })
+        })
     }
 
     static func label(for arrival: Arrival) -> SignalProducer<String, NoError> {

@@ -25,38 +25,57 @@ class POITableViewController: UITableViewController, ProperViewController {
 
     /// Returns a producer of Ops with side effects added to manipulate the table and data source with changes
     /// described by the table operations. The point where this view's signal chain becomes Very Imperative.
-    func modifyTable(producer: SignalProducer<POIViewModel.Op, ProperError>) ->
-        SignalProducer<POIViewModel.Op, ProperError>
+    func modifyTable(producer: SignalProducer<[POIViewModel.Op], ProperError>) ->
+        SignalProducer<[POIViewModel.Op], ProperError>
     {
-        return producer.on(next: { op in
+        return producer.on(next: { ops in
+            // Iterate through `ops` and record changes made.
+            let sectionInsertions = NSMutableIndexSet()
+            let sectionDeletions = NSMutableIndexSet()
+            var rowInsertions = [NSIndexPath]()
+            var rowDeletions = [NSIndexPath]()
+
             self.tableView.beginUpdates()
-            switch op {
-            case let .addStation(station, index: idx):
-                let badge = Badge(alphabetIndex: idx, seedForColor: station)
-                self.dataSource.insert((station, badge, []), atIndex: idx)
-                self.tableView.insertSections(NSIndexSet(index: idx), withRowAnimation: .Automatic)
+            // Manipulate the data source for each operation.
+            ops.forEach { op in
+                switch op {
+                case let .addStation(station, index: idx):
+                    let badge = Badge(alphabetIndex: idx, seedForColor: station)
+                    self.dataSource.insert((station, badge, []), atIndex: idx)
+                    sectionInsertions.addIndex(idx)
+                    
+                case let .addArrival(arrival, to: station):
+                    let path = self.dataSource.indexPathByInserting(arrival, onto: station)
+                    rowInsertions.append(path)
+                    
+                case let .deleteArrival(arrival, from: station):
+                    let path = self.dataSource.indexPathByDeleting(arrival, from: station)
+                    rowDeletions.append(path)
 
-            case let .addArrival(arrival, to: station):
-                // TODO - Interrupt arrival-finding operations within the view
-                // model for stations that are deleted
-                guard self.dataSource.indices[station] != nil else { break }
-                let path = self.dataSource.indexPathByInserting(arrival, onto: station)
-                self.tableView.insertRowsAtIndexPaths([path], withRowAnimation: .Bottom)
-
-            case let .deleteArrival(arrival, from: station):
-                // TODO - see .addArrival
-                guard self.dataSource.indices[station] != nil else { break }
-                let path = self.dataSource.indexPathByDeleting(arrival, from: station)
-                self.tableView.deleteRowsAtIndexPaths([path], withRowAnimation: .Top)
-
-            case let .deleteStation(station):
-                let idx = self.dataSource.indexByRemoving(station)
-                self.tableView.deleteSections(NSIndexSet(index: idx), withRowAnimation: .Automatic)
-
-            case let .reorderStation(_, from: fi, to: ti):
-                self.dataSource.moveStation(from: fi, to: ti)
-                self.tableView.moveSection(fi, toSection: ti)
+                case let .deleteStation(station, at: idx):
+                    self.dataSource.remove(station)
+                    sectionDeletions.addIndex(idx)
+                    
+                case let .reorderStation(_, from: fi, to: ti):
+                    self.dataSource.moveStation(from: fi, to: ti)
+                    self.tableView.moveSection(fi, toSection: ti)
+                }
             }
+
+            // TODO - In Swift 3, index sets conform to `SetAlgebra`, so we can do this without intermediate index sets.
+            let deleted = NSMutableIndexSet(indexSet: sectionDeletions)
+            deleted.removeIndexes(sectionInsertions)
+            let inserted = NSMutableIndexSet(indexSet: sectionInsertions)
+            inserted.removeIndexes(sectionDeletions)
+            let reloaded = NSMutableIndexSet(indexSet: sectionDeletions)
+            reloaded.removeIndexes(deleted)
+
+            // Apply changes to the table.
+            self.tableView.deleteRowsAtIndexPaths(rowDeletions, withRowAnimation: .Top)
+            self.tableView.deleteSections(deleted, withRowAnimation: .Automatic)
+            self.tableView.insertSections(inserted, withRowAnimation: .Automatic)
+            self.tableView.reloadSections(reloaded, withRowAnimation: .Automatic)
+            self.tableView.insertRowsAtIndexPaths(rowInsertions, withRowAnimation: .Bottom)
             self.tableView.endUpdates()
         })
     }

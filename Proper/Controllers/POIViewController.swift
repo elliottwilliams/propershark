@@ -118,6 +118,20 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
             }
         }
     }
+
+    func applyOperations(ops: [POIViewModel.Op]) {
+        ops.forEach { op in
+            switch op {
+            case let .addStation(station, index: idx):
+                self.addAnnotation(for: station, at: idx)
+            case let .deleteStation(station, at: _):
+                self.deleteAnnotations(for: station)
+            case let .reorderStation(_, from: fi, to: ti):
+                self.reorderAnnotations(withIndex: fi, to: ti)
+            default: return
+            }
+        }
+    }
     
     // MARK: Lifecycle
 
@@ -168,13 +182,8 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
             switch result {
             case let .Failure(error):
                 self.displayError(error)
-            case let .Success(.addStation(station, index: idx)):
-                self.addAnnotation(for: station, at: idx)
-            case let .Success(.deleteStation(station)):
-                self.deleteAnnotations(for: station)
-            case let .Success(.reorderStation(_, from: fi, to: ti)):
-                self.reorderAnnotations(withIndex: fi, to: ti)
-            default: break
+            case let .Success(ops):
+                self.applyOperations(ops)
             }
         })
     }

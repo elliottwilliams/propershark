@@ -61,7 +61,7 @@ struct Timetable {
         SignalProducer<Arrival, ProperError>
     {
         return connection.call(rpc(from: when, route: true), args: [station.identifier] +
-            timestamps(when) + [route.identifier, limit]) |> decodeArrivalTimes(connection)
+            timestamps(when) + [route.identifier, limit]) |> decodeArrivalTimes(connection) |> log
     }
 
     /// Produce `limit` many arrivals for vehicles of all routes of `station`, starting from `timing`. `station` must
@@ -70,7 +70,7 @@ struct Timetable {
                            limit: Int = defaultVisitLimit) -> SignalProducer<Arrival, ProperError>
     {
         return connection.call(rpc(from: when, route: false), args: [station.identifier] +
-            timestamps(when) + [limit]) |> decodeArrivalTimes(connection)
+            timestamps(when) + [limit]) |> decodeArrivalTimes(connection) |> log
     }
 
     private static func decodeArrivalTimes(connection: ConnectionType) ->
@@ -111,5 +111,9 @@ struct Timetable {
         case let .between(from, to):    dates = [from, to]
         }
         return dates.map(formatter.stringFromDate)
+    }
+
+    private static func log(producer: SignalProducer<Arrival, ProperError>) -> SignalProducer<Arrival, ProperError> {
+        return producer.logEvents(identifier: "Timetable", logger: logSignalEvent)
     }
 }

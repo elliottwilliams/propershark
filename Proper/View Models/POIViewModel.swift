@@ -15,7 +15,7 @@ import Dwifft
 
 class POIViewModel: SignalChain {
     typealias Input = [MutableStation]
-    typealias Output = Op
+    typealias Output = [Op]
 
     typealias Distance = CLLocationDistance
     typealias NamedPoint = (point: Point, name: String, isDeviceLocation: Bool)
@@ -23,7 +23,7 @@ class POIViewModel: SignalChain {
     enum Op {
         case addStation(MutableStation, index: Int)
         case addArrival(Arrival, to: MutableStation)
-        case deleteStation(MutableStation)
+        case deleteStation(MutableStation, at: Int)
         case deleteArrival(Arrival, from: MutableStation)
         case reorderStation(MutableStation, from: Int, to: Int)
     }
@@ -34,39 +34,75 @@ class POIViewModel: SignalChain {
     static let distanceFormatter = MKDistanceFormatter()
 
 
-    /// Returns a producer that "seeds" the view model with the first value returned from `producer`, and then updates
-    /// table with subsequent values from `producer`. Expected to be used with Property producers, which immediately
+    /// Returns a producer that "seeds" the view model with the first value returned from `producer`, and then send table 
+    /// updates based on subsequent values from `producer`. Expected to be used with Property producers, which immediately
     /// forward their current value upon invocation.
-    static func chain(connection: ConnectionType, producer property: SignalProducer<[MutableStation], ProperError>) ->
-        SignalProducer<Op, ProperError>
+    static func chain(connection: ConnectionType, producer stations: SignalProducer<[MutableStation], ProperError>) ->
+        SignalProducer<[Op], ProperError>
     {
-        let subsequent = property.skip(1)
-        return property.take(1).flatMap(.Latest, transform: { initial -> SignalProducer<Op, ProperError> in
-            let arrivals = subsequent
-                |> onlyNewStations(given: initial)
-                |> curry(ArrivalsViewModel.chain)(connection)
-            let logged = arrivals.logEvents(identifier: "POIViewModel.chain arrivals", logger: logSignalEvent)
-            return SignalProducer<SignalProducer<Op, ProperError>, ProperError>(values:
-                [subsequent |> stationOps, logged |> arrivalOps]).flatten(.Merge)
-        })
+        let subsequent = stations.skip(1)
+        return stations.take(1).flatMap(.Latest, transform: { initial -> SignalProducer<[Op], ProperError> in
+            SignalProducer<[Op], ProperError> { observer, disposable in
+                // Chain from station, to station lifetimes, to arrivals, sending table operations to the view along the
+                // way. This chaining is necessary to have station operations emitted _before_ arrival operations for 
+                // that station.
+                let producer = subsequent
+                    |> stationOps
+                    |> { $0.on(next: { _, ops in observer.sendNext(ops) }) }
+                    |> { $0.map({ stations, _ in Set(stations) }) }
+                    |> curry(elementLifetimes)(Set())
+                    |> curry(ArrivalsViewModel.chain)(connection)
+                    |> arrivalOps
+                    |> { $0.on(next: { ops in observer.sendNext(ops) }) }
 
+                // Start, forwarding ops and errors to the outer producer.
+                disposable += producer.startWithFailed(observer.sendFailed)
+            }
+        })
     }
 
-    static func onlyNewStations(given previous: [MutableStation]) ->
-        (producer: SignalProducer<[MutableStation], ProperError>) ->
-        SignalProducer<Set<MutableStation>, ProperError>
+    /// Produces signal producers which correspond to whether particular values in `producer`'s set remain in subsequent
+    /// values of `producer`.
+    /// 
+    /// In `POIViewModel`, this function is used to keep track of the lifetime of particular stations that are
+    /// discovered, binding the discovery arrivals to the lifetime of a particular station's presence in the view.
+    static func elementLifetimes<U: Hashable>(initial: Set<U>, producer: SignalProducer<Set<U>, ProperError>) ->
+        SignalProducer<SignalProducer<U, ProperError>, ProperError>
     {
-        return { producer in
-            return producer.map(Set.init).combinePrevious(Set(previous)).map({ prev, next in
-                next.subtract(prev)
-            })
-        }
+        typealias S = SignalProducer<U, ProperError>
+        typealias O = Observer<U, ProperError>
+
+        return SignalProducer<S, ProperError> { producers, disposable in
+            var observers: [U: O] = [:]
+            disposable += producer.combinePrevious(initial).startWithResult { result in
+                guard let (prev, next) = result.value else {
+                    producers.sendFailed(result.error!)
+                    return
+                }
+
+                // Create producer for new values, and send them.
+                next.subtract(prev).forEach { value in
+                    let producer = S { valueObserver, valueDisposable in
+                        observers[value] = valueObserver
+                        disposable += valueDisposable
+                        valueObserver.sendNext(value)
+                    }
+                    producers.sendNext(producer)
+                }
+
+                // Interrupt any downstream activity once stations change.
+                prev.subtract(next).forEach { value in
+                    observers[value]!.sendInterrupted()
+                    observers[value] = nil
+                }
+            }
+            }.logEvents(identifier: "POIViewModel.elementLifetime", logger: logSignalEvent)
     }
 
     static func stationOps(producer: SignalProducer<[MutableStation], ProperError>) ->
-        SignalProducer<Op, ProperError>
+        SignalProducer<([MutableStation], [Op]), ProperError>
     {
-        return producer.combinePrevious([]).flatMap(.Latest, transform: { prev, next -> SignalProducer<Op, ProperError> in
+        return producer.combinePrevious([]).map({ prev, next in
             let pi = prev.indexMap()
             let ni = next.indexMap()
             let diff = prev.diff(next)
@@ -82,7 +118,7 @@ class POIViewModel: SignalChain {
                     }
                 case let .Delete(_, station):
                     if ni[station] == nil {
-                        return .deleteStation(station)
+                        return .deleteStation(station, at: pi[station]!)
                     } else {
                         // ...and ignore when we get to the corresponding delete step.
                         return nil
@@ -90,23 +126,23 @@ class POIViewModel: SignalChain {
                 }
             })
 
-            return SignalProducer(values: ops)
+            return (next, ops)
         })
     }
 
     static func arrivalOps(producer: SignalProducer<(MutableStation, Arrival, Arrival.Lifecycle), ProperError>) ->
-        SignalProducer<Op, ProperError>
+        SignalProducer<[Op], ProperError>
     {
-        return producer.map({ station, arrival, state -> Op? in
+        return producer.map({ station, arrival, state in
             switch state {
             case .new:
-                return .addArrival(arrival, to: station)
+                return [.addArrival(arrival, to: station)]
             case .departed:
-                return .deleteArrival(arrival, from: station)
+                return [.deleteArrival(arrival, from: station)]
             default:
-                return nil
+                return []
             }
-        }).ignoreNil()
+        }).filter({ !$0.isEmpty })
     }
 
     static func distanceString(producer: SignalProducer<(Point, Point), NoError>) ->

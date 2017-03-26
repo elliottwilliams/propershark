@@ -72,16 +72,11 @@ class POITableDataSource: NSObject, UITableViewDataSource {
         return NSIndexPath(forRow: ri, inSection: si)
     }
 
-    func remove(at idx: Int) {
+    func remove(station: MutableStation) {
+        let idx = index(of: station)
         indices[stations[idx]] = nil
         table.removeAtIndex(idx)
         updateIndices(from: idx)
-    }
-
-    func indexByRemoving(station: MutableStation) -> Int {
-        let idx = index(of: station)
-        remove(at: idx)
-        return idx
     }
 
     func moveStation(from fi: Int, to ti: Int) {
