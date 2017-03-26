@@ -21,6 +21,11 @@ class POIStationHeaderFooterView: UITableViewHeaderFooterView {
         disposable?.dispose()
     }
 
+    override func awakeFromNib() {
+        contentView.backgroundColor = UIColor.clearColor()
+        badgeView.color = UIColor.clearColor()
+    }
+
     override func prepareForReuse() {
         disposable?.dispose()
     }
@@ -34,7 +39,7 @@ class POIStationHeaderFooterView: UITableViewHeaderFooterView {
         self.subtitle.text = "\(station.stopCode)"
         // ...badges...
         disposable += badge.name.producer.startWithNext({ self.badgeView.label.text = $0 })
-        disposable += badge.color.producer.startWithNext({ self.badgeView.color = $0 })
+        disposable += badge.color.producer.startWithNext({ self.contentView.backgroundColor = $0 })
         // ...and distance string.
         disposable += distance.producer.startWithNext({ distance in
             self.subtitle.text = "\(station.stopCode) • \(distance) away"

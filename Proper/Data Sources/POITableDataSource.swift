@@ -109,7 +109,6 @@ class POITableDataSource: NSObject, UITableViewDataSource {
         -> UITableViewCell
     {
         let cell = tableView.dequeueReusableCellWithIdentifier("arrivalCell") as! ArrivalTableViewCell
-        cell.contentView.layoutMargins.left = 40
 
         //let station = stations.value[indexPath.section]
         let arrival = arrivals[indexPath.section][indexPath.row]
