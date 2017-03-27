@@ -10,12 +10,14 @@ import UIKit
 import ReactiveCocoa
 import Result
 
-class POIViewController: UIViewController, ProperViewController, UISearchControllerDelegate, MKMapViewDelegate {
+class POIViewController: UIViewController, ProperViewController, UISearchControllerDelegate {
     // MARK: Point properties
     typealias NamedPoint = POIViewModel.NamedPoint
 
     /// Map annotation for the point of interest represented by this view. Only used for static locations.
     let annotation = MKPointAnnotation()
+
+    var table: POITableViewController?
 
     /// The point tracked by the POI view. May be either the user's location or a static point. While the view is
     /// visible, this point is from `staticLocation` or `deviceLocation`, depending on whether a static location was
@@ -211,6 +213,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         switch segue.identifier ?? "" {
         case "embedPOITable":
             let dest = segue.destinationViewController as! POITableViewController
+            table = dest
             dest.stations = AnyProperty(stations)
             dest.mapPoint = point.producer.ignoreNil()
         case "showStation":
@@ -221,9 +224,11 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
             return
         }
     }
+}
 
-    // MARK: Map view delegate
 
+// MARK: - Map view delegate
+extension POIViewController: MKMapViewDelegate {
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         if let annotation = annotation as? POIStationAnnotation {
             let view =
@@ -245,7 +250,18 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
     func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         if let station = ((view as? POIStationAnnotationView)?.annotation as? POIStationAnnotation)?.station {
-            performSegueWithIdentifier("showStation", sender: station)
+            self.performSegueWithIdentifier("showStation", sender: station)
+        }
+    }
+
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+        if let annotation = (view as? POIStationAnnotationView)?.annotation as? POIStationAnnotation,
+            let table = table
+        {
+            let section = table.dataSource.index(of: annotation.station)
+            let row = (table.dataSource.arrivals[section].isEmpty) ? NSNotFound : 0
+            table.tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: row, inSection: section), atScrollPosition: .Top,
+                                                   animated: true)
         }
     }
 }
