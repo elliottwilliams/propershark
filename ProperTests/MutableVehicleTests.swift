@@ -17,7 +17,6 @@ class MutableVehicleTests: XCTestCase, MutableModelTestSpec {
     var model: Vehicle!
     var mutable: MutableVehicle!
 
-    let delegate = MutableModelDelegateMock()
     let modifiedVehicle = Vehicle(name: "1801", capacity: 9001)
     let mock = ConnectionMock()
 
@@ -27,7 +26,7 @@ class MutableVehicleTests: XCTestCase, MutableModelTestSpec {
         let expectation = expectationWithDescription("fixtures")
         Vehicle.fixture("vehicles.1801").startWithNext { model in
             self.model = model
-            self.mutable = try! MutableVehicle(from: model, delegate: self.delegate, connection: self.mock)
+            self.mutable = try! MutableVehicle(from: model, connection: self.mock)
             expectation.fulfill()
         }
         self.continueAfterFailure = false

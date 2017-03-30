@@ -17,7 +17,6 @@ class MutableStationTests: XCTestCase, MutableModelTestSpec {
     var model: Station!
     var mutable: MutableStation!
 
-    let delegate = MutableModelDelegateMock()
     let modifiedStation = Station(stopCode: "BUS100W", name: "~modified")
     let mock = ConnectionMock()
 
@@ -27,7 +26,7 @@ class MutableStationTests: XCTestCase, MutableModelTestSpec {
         let expectation = expectationWithDescription("fixtures")
         Station.fixture("stations.BUS100W").startWithNext { model in
             self.model = model
-            self.mutable = try! MutableStation(from: model, delegate: self.delegate, connection: self.mock)
+            self.mutable = try! MutableStation(from: model, connection: self.mock)
             expectation.fulfill()
         }
         self.continueAfterFailure = false
