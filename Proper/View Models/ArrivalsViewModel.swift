@@ -49,7 +49,7 @@ struct ArrivalsViewModel: SignalChain {
         return producer.flatMap(.Merge, transform: { stationProducer in
             stationProducer.flatMap(.Latest, transform: { station in
                 Timetable.visits(for: station,
-                    occurring: .between(from: NSDate(), to: NSDate(timeIntervalSinceNow: 3600)),
+                    occurring: .between(NSDate(), NSDate(timeIntervalSinceNow: 3600)),
                     using: connection).map({ (station, $0) })
             }).logEvents(identifier: "ArrivalsViewModel.timetable", logger: logSignalEvent)
         })
@@ -64,7 +64,7 @@ struct ArrivalsViewModel: SignalChain {
             arrival.lifecycle.map({ (station, arrival, $0) })
         })
     }
-
+    
     static func label(for arrival: Arrival) -> SignalProducer<String, NoError> {
         return arrival.lifecycle.combineLatestWith(preemptionTimer).map({ state, time in
             switch state {

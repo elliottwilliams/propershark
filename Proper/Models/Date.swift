@@ -19,3 +19,11 @@ extension NSDate: Decodable {
             >>- Decoded<NSDate>.fromOptional
     }
 }
+
+extension NSDate: Comparable {
+    // Comparison function defined globally below.
+}
+
+public func < (a: NSDate, b: NSDate) -> Bool {
+    return a.compare(b) == .OrderedAscending
+}

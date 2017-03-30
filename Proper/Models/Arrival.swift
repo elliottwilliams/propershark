@@ -27,7 +27,7 @@ struct Arrival: Comparable, Hashable {
         return SignalProducer(value: Lifecycle.new).concat(SignalProducer(emitLifecycle))
     }
 
-    enum Lifecycle {
+    enum Lifecycle: Equatable {
         case new
         case upcoming
         case due
