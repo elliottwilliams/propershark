@@ -39,32 +39,41 @@ struct ArrivalsViewModel: SignalChain {
     static func chain(connection: ConnectionType, producer: SignalProducer<SignalProducer<MutableStation, ProperError>, ProperError>) ->
         SignalProducer<(MutableStation, Arrival, Arrival.Lifecycle), ProperError>
     {
-        return producer |> curry(timetable)(connection) |> lifecycle
+        return producer |> timetable(connection) |> activate
     }
 
-    // Produces a (station, arrival) tuple for arrivals of `station`, discovering new arrivals indefinitely.
-    static func timetable(connection: ConnectionType, producer: SignalProducer<Input, ProperError>) ->
-        SignalProducer<(MutableStation, Arrival), ProperError>
+    /// Produces a (station, arrival) tuple for arrivals of `station`.
+    static func timetable(connection: ConnectionType,
+                          when: Timetable.Timing = .between(NSDate(), NSDate(timeIntervalSinceNow: 3600))) ->
+        (producer: SignalProducer<Input, ProperError>) ->
+        SignalProducer<(MutableStation, Arrival, Timetable.MoreCont), ProperError>
     {
-        return producer.flatMap(.Merge, transform: { stationProducer in
-            stationProducer.flatMap(.Latest, transform: { station in
-                Timetable.visits(for: station,
-                    occurring: .between(NSDate(), NSDate(timeIntervalSinceNow: 3600)),
-                    using: connection).map({ (station, $0) })
-            }).logEvents(identifier: "ArrivalsViewModel.timetable", logger: logSignalEvent)
-        })
+        return { producer in 
+            return producer.flatMap(.Merge, transform: { stationProducer in
+                stationProducer.flatMap(.Latest, transform: { station in
+                    Timetable.visits(
+                        for: station,
+                        occurring: when,
+                        using: connection
+                        ).map({ arrival, more in (station, arrival, more) })
+                }).logEvents(identifier: "ArrivalsViewModel.timetable", logger: logSignalEvent)
+            })
+        }
     }
 
-    // Combines a (Station, Arrival) pair with the arrivals lifecycle. Produced values will be sent every time the
-    // lifecycle state is refreshed.
-    static func lifecycle(producer: SignalProducer<(MutableStation, Arrival), ProperError>) ->
+    /// Returns a producer which tracks and forwards the lifecycle state of each arrival. When an arrival departs, it
+    /// will call the `MoreCont` function provided by Timetable to request an additional arrival.
+    static func activate(producer: SignalProducer<(MutableStation, Arrival, Timetable.MoreCont), ProperError>) ->
         SignalProducer<(MutableStation, Arrival, Arrival.Lifecycle), ProperError>
     {
-        return producer.flatMap(.Merge, transform: { station, arrival in
-            arrival.lifecycle.map({ (station, arrival, $0) })
+        return producer.flatMap(.Merge, transform: { station, arrival, more in
+            arrival.lifecycle.on(next: ({ state in
+                if state == .departed { more() }
+            })).map({ state in (station, arrival, state) })
+            .promoteErrors(ProperError)
         })
     }
-    
+
     static func label(for arrival: Arrival) -> SignalProducer<String, NoError> {
         return arrival.lifecycle.combineLatestWith(preemptionTimer).map({ state, time in
             switch state {
