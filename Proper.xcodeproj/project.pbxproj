@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		261035F61E8DCDA500364D20 /* TimetableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 261035F51E8DCDA500364D20 /* TimetableTests.swift */; };
+		261035F81E8DD3F300364D20 /* timetable.visits_between.BUS215.json in Resources */ = {isa = PBXBuildFile; fileRef = 261035F71E8DD3F300364D20 /* timetable.visits_between.BUS215.json */; };
 		2612B5271D50490500BF671D /* ModelDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2612B5261D50490500BF671D /* ModelDecodeTests.swift */; };
 		2612B52C1D50513600BF671D /* routes.4B.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B5291D50513600BF671D /* routes.4B.json */; };
 		2612B52D1D50513600BF671D /* stations.BUS100W.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B52A1D50513600BF671D /* stations.BUS100W.json */; };
@@ -138,6 +139,7 @@
 
 /* Begin PBXFileReference section */
 		261035F51E8DCDA500364D20 /* TimetableTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimetableTests.swift; sourceTree = "<group>"; };
+		261035F71E8DD3F300364D20 /* timetable.visits_between.BUS215.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = timetable.visits_between.BUS215.json; sourceTree = "<group>"; };
 		2612B5261D50490500BF671D /* ModelDecodeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelDecodeTests.swift; sourceTree = "<group>"; };
 		2612B5291D50513600BF671D /* routes.4B.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = routes.4B.json; sourceTree = "<group>"; };
 		2612B52A1D50513600BF671D /* stations.BUS100W.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = stations.BUS100W.json; sourceTree = "<group>"; };
@@ -306,6 +308,7 @@
 				2612B5291D50513600BF671D /* routes.4B.json */,
 				2612B52A1D50513600BF671D /* stations.BUS100W.json */,
 				266CC4D71D826FC70022D064 /* vehicles.1801.json */,
+				261035F71E8DD3F300364D20 /* timetable.visits_between.BUS215.json */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -720,6 +723,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2644B89B1E7F7385008A0A4D /* PMU.gpx in Resources */,
+				261035F81E8DD3F300364D20 /* timetable.visits_between.BUS215.json in Resources */,
 				2612B52D1D50513600BF671D /* stations.BUS100W.json in Resources */,
 				2644B8A11E7F74F8008A0A4D /* Windsor.gpx in Resources */,
 				266CC4D81D826FC70022D064 /* vehicles.1801.json in Resources */,
