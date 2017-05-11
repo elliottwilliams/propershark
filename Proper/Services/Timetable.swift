@@ -90,6 +90,7 @@ struct Timetable {
                                 initialLimit: Limit) -> ArrivalMoreSP
     {
         let visits = ArrivalListMoreSP { observer, disposable in
+            var exclusiveTiming = timing
             func send(timing: Timing, count: Int) {
                 // Call Timetable and retrieve arrivals.
                 let proc = rpc(from: timing, route: route != nil)
@@ -98,20 +99,30 @@ struct Timetable {
                     + [count]
                 let results = connection.call(proc, args: args)
                     |> decodeArrivalTimes(connection)
-
-                // Set up a continuation function that will forward the next arrival when called.
-                let continuable = results.map({ arrivals -> (arrivals: [Arrival], more: MoreCont) in
-                    let clamped = timing.without(arrivals: arrivals)
-                    let next = { send(clamped, count: 1) }
-                    return (arrivals, next)
-                })
-                disposable += continuable.start(observer)
+                    // TODO - `next` should advance the time interval by the amount passed, not clamp it
+                    |> { $0.on(next: { exclusiveTiming = timing.without(arrivals: $0) }) }
+                    |> { $0.map({ arrivals -> (arrivals: [Arrival], more: MoreCont) in
+                        // Set up a continuation function that will forward the next arrival when called.
+                        let next = { send(exclusiveTiming, count: 1) }
+                        return (arrivals, next)
+                    })}
+                    |> log
+                disposable += results.start { event in
+                    // Keep the signal open by not sending `completed` messages. Future arrivals resulting from a `more` 
+                    // call will be able to flow through the signal.
+                    switch event {
+                    case .Next(let value):      observer.sendNext(value)
+                    case .Completed:            break
+                    case .Failed(let error):    observer.sendFailed(error)
+                    case .Interrupted:          observer.sendInterrupted()
+                    }
+                }
             }
 
             // Get and forward the first set of arrivals for this visit query.
             send(timing, count: initialLimit.count)
         }
-        return visits.flatMap(.Concat, transform: { arrivals, more -> ArrivalMoreSP in
+        return visits.flatMap(.Merge, transform: { arrivals, more -> ArrivalMoreSP in
             return SignalProducer(values: arrivals).map({ ($0, more) })
         })
     }
@@ -153,7 +164,7 @@ struct Timetable {
         return dates.map(formatter.stringFromDate)
     }
 
-    private static func log(producer: ArrivalSP) -> ArrivalSP {
+    private static func log<V, E>(producer: SignalProducer<V, E>) -> SignalProducer<V, E> {
         return producer.logEvents(identifier: "Timetable", logger: logSignalEvent)
     }
 }
