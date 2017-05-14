@@ -37,7 +37,6 @@ class TimetableTests: XCTestCase {
 
     func testGetArrivalsFromMoreContinuation() {
         // Setup: Form two Timetable responses.
-        let limit = Timetable.Limit(window: endDate.timeIntervalSinceDate(startDate), count: 2)
         let responses = [
             response.map({ Array($0[0..<2]) }),
             response.map({ Array($0[2..<3]) })
@@ -47,7 +46,7 @@ class TimetableTests: XCTestCase {
 
         // Given a call to `visits`...
         let producer = Timetable.visits(for: station, occurring: .between(startDate, endDate), using: connection,
-                                        initialLimit: limit).logEvents(identifier: #function, logger: logSignalEvent)
+                                        initialLimit: 2).logEvents(identifier: #function, logger: logSignalEvent)
 
 
         var seen = 0

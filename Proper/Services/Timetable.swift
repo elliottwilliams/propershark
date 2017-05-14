@@ -17,6 +17,7 @@ struct Timetable {
     typealias ArrivalListSP = SignalProducer<[Arrival], ProperError>
     typealias MoreCont = () -> ()
 
+    static let defaultLimit = 5
     static var formatter: NSDateFormatter = {
         let formatter = NSDateFormatter()
         formatter.dateFormat = "yyyyMMdd HH:mm:ss"
@@ -42,7 +43,7 @@ struct Timetable {
     /// At first, `initialLimit.count` many arrivals are sent at once, followed by a new arrival every time
     /// an earlier arrival departs.
     static func visits(for route: MutableRoute, at station: MutableStation, occurring timing: Timing,
-                       using connection: ConnectionType, initialLimit limit: Limit = Limit.defaults) ->
+                       using connection: ConnectionType, initialLimit limit: Int = defaultLimit) ->
         SignalProducer<(arrival: Arrival, more: MoreCont), ProperError>
     {
         return _visits(route: route,
@@ -66,7 +67,7 @@ struct Timetable {
     /// At first, `initialLimit.count` many arrivals are sent at once, followed by a new arrival every time
     /// an earlier arrival departs.
     static func visits(for station: MutableStation, occurring timing: Timing, using connection: ConnectionType,
-                       initialLimit limit: Limit = Limit.defaults) ->
+                       initialLimit limit: Int = defaultLimit) ->
         SignalProducer<(arrival: Arrival, more: MoreCont), ProperError>
     {
         return _visits(route: nil,
@@ -87,7 +88,7 @@ struct Timetable {
                                 station: MutableStation,
                                 timing: Timing,
                                 connection: ConnectionType,
-                                initialLimit: Limit) -> ArrivalMoreSP
+                                initialLimit: Int = defaultLimit) -> ArrivalMoreSP
     {
         let visits = ArrivalListMoreSP { observer, disposable in
             var exclusiveTiming = timing
@@ -99,8 +100,7 @@ struct Timetable {
                     + [count]
                 let results = connection.call(proc, args: args)
                     |> decodeArrivalTimes(connection)
-                    // TODO - `next` should advance the time interval by the amount passed, not clamp it
-                    |> { $0.on(next: { exclusiveTiming = timing.without(arrivals: $0) }) }
+                    |> { $0.on(next: { exclusiveTiming = timing.advancedBy(arrivals: $0) }) }
                     |> { $0.map({ arrivals -> (arrivals: [Arrival], more: MoreCont) in
                         // Set up a continuation function that will forward the next arrival when called.
                         let next = { send(exclusiveTiming, count: 1) }
@@ -120,7 +120,7 @@ struct Timetable {
             }
 
             // Get and forward the first set of arrivals for this visit query.
-            send(timing, count: initialLimit.count)
+            send(timing, count: initialLimit)
         }
         return visits.flatMap(.Merge, transform: { arrivals, more -> ArrivalMoreSP in
             return SignalProducer(values: arrivals).map({ ($0, more) })
@@ -172,6 +172,7 @@ struct Timetable {
 
 // MARK: - Data structures
 extension Timetable {
+    // TODO - Investigate if `Timing` can be replaced with a standard Range of Dates.
     enum Timing {
         case before(NSDate)
         case after(NSDate)
@@ -179,7 +180,7 @@ extension Timetable {
 
         /// Returns a timing range that excludes either the first arrival for chronologically ascending timings, or
         /// excluding the last arrival for chronologically descending timings.
-        func without<Collection: CollectionType where Collection.Generator.Element == Arrival,
+        func advancedBy<Collection: CollectionType where Collection.Generator.Element == Arrival,
             Collection.Index: BidirectionalIndexType>
             (arrivals arrivals: Collection) -> Timing
         {
@@ -191,30 +192,24 @@ extension Timetable {
                 return .before(last.eta.dateByAddingTimeInterval(-1))
             case .after(_):
                 return .after(first.eta.dateByAddingTimeInterval(1))
-            case .between(_, let end):
-                return .between(last.eta.dateByAddingTimeInterval(1), end)
+            case .between(let start, let end):
+                let delta = last.eta.timeIntervalSinceDate(start) + 1
+                return .between(start.dateByAddingTimeInterval(delta), end.dateByAddingTimeInterval(delta))
             }
         }
 
-        func without(arrival: Arrival) -> Timing {
-            switch self {
-            case .before(_):
-                return .before(arrival.eta.dateByAddingTimeInterval(-1))
-            case .after(_):
-                return .after(arrival.eta.dateByAddingTimeInterval(1))
-            case .between(_, let end):
-                return .between(arrival.eta.dateByAddingTimeInterval(1), end)
-            }
+        func advancedBy(arrival: Arrival) -> Timing {
+            return advancedBy(arrivals: [arrival])
         }
 
-        func without(interval ti: NSTimeInterval) -> Timing {
+        func advancedBy(interval ti: NSTimeInterval) -> Timing {
             switch self {
             case let .before(end):
                 return .before(end.dateByAddingTimeInterval(-ti))
             case let .after(start):
                 return .after(start.dateByAddingTimeInterval(ti))
             case let .between(start, end):
-                return .between(start.dateByAddingTimeInterval(ti), end)
+                return .between(start.dateByAddingTimeInterval(ti), end.dateByAddingTimeInterval(ti))
             }
         }
 
@@ -226,24 +221,6 @@ extension Timetable {
                 return date >= start
             case let .between(start, end):
                 return date >= start && date < end
-            }
-        }
-    }
-
-    struct Limit {
-        let window: NSTimeInterval
-        let count: Int
-
-        static let defaults = Limit(window: 3600, count: 5)
-
-        func split(arrivals: [Arrival], timing: Timing) -> (insideLimit: ArraySlice<Arrival>, outside: ArraySlice<Arrival>) {
-            let outside = timing.without(interval: window)
-            // TODO - swift 3 - use first(where:) to not short circuit the filter
-            let idx = arrivals.enumerate().filter({ $0 >= self.count || outside.contains($1.eta) }).first?.index
-            if let idx = idx {
-                return (arrivals.prefixUpTo(idx), arrivals.suffixFrom(idx))
-            } else {
-                return (ArraySlice(arrivals), ArraySlice())
             }
         }
     }
