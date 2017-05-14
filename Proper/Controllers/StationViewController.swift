@@ -42,22 +42,22 @@ class StationViewController: UIViewController, ProperViewController {
         }
     }
 
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         // Subscribe to station updates.
         disposable += station.producer.startWithFailed(self.displayError)
     }
 
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         disposable.dispose()
         super.viewWillDisappear(animated)
     }
 
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier ?? "" {
         case "embedArrivalsTable":
-            let table = segue.destinationViewController as! ArrivalsTableViewController
+            let table = segue.destination as! ArrivalsTableViewController
             table.station = station
         default:
             return

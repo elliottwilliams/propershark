@@ -32,8 +32,8 @@ class POITableViewController: UITableViewController, ProperViewController {
             // Iterate through `ops` and record changes made.
             let sectionInsertions = NSMutableIndexSet()
             let sectionDeletions = NSMutableIndexSet()
-            var rowInsertions = [NSIndexPath]()
-            var rowDeletions = [NSIndexPath]()
+            var rowInsertions = [IndexPath]()
+            var rowDeletions = [IndexPath]()
 
             self.tableView.beginUpdates()
             // Manipulate the data source for each operation.
@@ -42,7 +42,7 @@ class POITableViewController: UITableViewController, ProperViewController {
                 case let .addStation(station, index: idx):
                     let badge = Badge(alphabetIndex: idx, seedForColor: station)
                     self.dataSource.insert((station, badge, []), atIndex: idx)
-                    sectionInsertions.addIndex(idx)
+                    sectionInsertions.add(idx)
                     
                 case let .addArrival(arrival, to: station):
                     let path = self.dataSource.indexPathByInserting(arrival, onto: station)
@@ -54,7 +54,7 @@ class POITableViewController: UITableViewController, ProperViewController {
 
                 case let .deleteStation(station, at: idx):
                     self.dataSource.remove(station)
-                    sectionDeletions.addIndex(idx)
+                    sectionDeletions.add(idx)
                     
                 case let .reorderStation(_, from: fi, to: ti):
                     self.dataSource.moveStation(from: fi, to: ti)
@@ -63,19 +63,19 @@ class POITableViewController: UITableViewController, ProperViewController {
             }
 
             // TODO - In Swift 3, index sets conform to `SetAlgebra`, so we can do this without intermediate index sets.
-            let deleted = NSMutableIndexSet(indexSet: sectionDeletions)
-            deleted.removeIndexes(sectionInsertions)
-            let inserted = NSMutableIndexSet(indexSet: sectionInsertions)
-            inserted.removeIndexes(sectionDeletions)
-            let reloaded = NSMutableIndexSet(indexSet: sectionDeletions)
-            reloaded.removeIndexes(deleted)
+            let deleted = NSMutableIndexSet(sectionDeletions)
+            deleted.remove(sectionInsertions)
+            let inserted = NSMutableIndexSet(sectionInsertions)
+            inserted.remove(sectionDeletions)
+            let reloaded = NSMutableIndexSet(sectionDeletions)
+            reloaded.remove(deleted)
 
             // Apply changes to the table.
-            self.tableView.deleteRowsAtIndexPaths(rowDeletions, withRowAnimation: .Top)
-            self.tableView.deleteSections(deleted, withRowAnimation: .Automatic)
-            self.tableView.insertSections(inserted, withRowAnimation: .Automatic)
-            self.tableView.reloadSections(reloaded, withRowAnimation: .Automatic)
-            self.tableView.insertRowsAtIndexPaths(rowInsertions, withRowAnimation: .Bottom)
+            self.tableView.deleteRows(at: rowDeletions, with: .top)
+            self.tableView.deleteSections(deleted, with: .automatic)
+            self.tableView.insertSections(inserted, with: .automatic)
+            self.tableView.reloadSections(reloaded, with: .automatic)
+            self.tableView.insertRows(at: rowInsertions, with: .bottom)
             self.tableView.endUpdates()
         })
     }
@@ -85,13 +85,13 @@ class POITableViewController: UITableViewController, ProperViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.dataSource = dataSource
-        tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil),
+        tableView.register(UINib(nibName: "ArrivalTableViewCell", bundle: nil),
                               forCellReuseIdentifier: "arrivalCell")
-        tableView.registerNib(UINib(nibName: "POIStationHeaderFooterView", bundle: nil),
+        tableView.register(UINib(nibName: "POIStationHeaderFooterView", bundle: nil),
                               forHeaderFooterViewReuseIdentifier: "stationHeader")
     }
 
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         // From the list of stations coming from the view model, produce topic event subscriptions for each station.
@@ -101,7 +101,7 @@ class POITableViewController: UITableViewController, ProperViewController {
             .startWithFailed(self.displayError)
     }
 
-    override func viewDidDisappear(animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
         disposable.dispose()
         super.viewDidDisappear(animated)
     }
@@ -112,18 +112,18 @@ class POITableViewController: UITableViewController, ProperViewController {
     }
 
     // MARK: Table View Delegate
-    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return POIViewModel.arrivalRowHeight
     }
 
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // TODO - show vehicle details upon selection
         // In the meantime, segue to the station.
-        performSegueWithIdentifier("showStation", sender: dataSource.stations[indexPath.section])
+        performSegue(withIdentifier: "showStation", sender: dataSource.stations[indexPath.section])
     }
 
-    override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let header = tableView.dequeueReusableHeaderFooterViewWithIdentifier("stationHeader")
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "stationHeader")
             as! POIStationHeaderFooterView
         let (station, badge, _) = dataSource.table[section]
         let distance = POIViewModel.distanceString(combineLatest(mapPoint, station.position.producer.ignoreNil()))
@@ -132,16 +132,16 @@ class POITableViewController: UITableViewController, ProperViewController {
         return header
     }
 
-    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return POITableViewController.headerViewHeight
     }
 
     // MARK: Segue management
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier ?? "" {
         case "showStation":
             let station = sender as! MutableStation
-            let dest = segue.destinationViewController as! StationViewController
+            let dest = segue.destination as! StationViewController
             dest.station = station
         default:
             return

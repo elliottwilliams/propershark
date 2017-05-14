@@ -31,8 +31,8 @@ struct Point: Equatable {
         self.long = coordinate.longitude
     }
 
-    func distanceFrom(point: Point) -> CLLocationDistance {
-        return CLLocation(point: point).distanceFromLocation(CLLocation(point: self))
+    func distance(from point: Point) -> CLLocationDistance {
+        return CLLocation(point: point).distance(from: CLLocation(point: self))
     }
 }
 
@@ -41,18 +41,18 @@ func ==(a: Point, b: Point) -> Bool {
 }
 
 extension Point: Decodable {
-    static func decode(json: JSON) -> Decoded<Point> {
+    static func decode(_ json: JSON) -> Decoded<Point> {
         switch json {
-        case .Array(_):
+        case .array(_):
             return curry(Point.init(list:))
                 <^> decodeArray(json)
             
-        case .Object(_):
+        case .object(_):
             return curry(Point.init(lat:long:))
                 <^> json <| "latitude"
                 <*> json <| "longitude"
         default:
-            return .Failure(.TypeMismatch(expected: "array of coordinates or dictionary", actual: "something else"))
+            return .failure(.typeMismatch(expected: "array of coordinates or dictionary", actual: "something else"))
         }
     }
 }

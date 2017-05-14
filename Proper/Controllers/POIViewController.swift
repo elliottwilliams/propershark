@@ -54,9 +54,9 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
     // TODO - when map is zoomed in/out, update `self.zoom`.
 
-    func updateMap(point: Point, isUserLocation: Bool) {
+    func updateMap(center point: Point, isUserLocation: Bool) {
         let coordinate = CLLocationCoordinate2D(point: point)
-        map.setCenterCoordinate(coordinate, animated: true)
+        map.setCenter(coordinate, animated: true)
         let boundingRegion = MKCoordinateRegionMakeWithDistance(coordinate, zoom.value, zoom.value)
         map.setRegion(map.regionThatFits(boundingRegion), animated: true)
         
@@ -98,7 +98,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
     func deleteAnnotations(for station: MutableStation) {
         let annotations = self.annotations(for: station)
-        let idx = annotations.minElement({ $0.index < $1.index }).map({ $0.index })!
+        let idx = annotations.min(by: { $0.index < $1.index }).map({ $0.index })!
         map.removeAnnotations(annotations)
         self.annotations(from: idx+1).forEach { $0.index -= 1 }
     }
@@ -121,7 +121,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         }
     }
 
-    func applyOperations(ops: [POIViewModel.Op]) {
+    func apply(operations ops: [POIViewModel.Op]) {
         ops.forEach { op in
             switch op {
             case let .addStation(station, index: idx):
@@ -148,12 +148,12 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         navigationItem.title = nil
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         // Make the navigation bar fully transparent.
         if let bar = navigationController?.navigationBar {
-            bar.setBackgroundImage(UIImage(), forBarMetrics: UIBarMetrics.Default)
+            bar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         }
 
         // Search for nearby stations.
@@ -162,19 +162,19 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
             .logEvents(identifier: "NearbyStationsViewModel.chain input", logger: logSignalEvent))
             .startWithResult() { result in
                 switch result {
-                case let .Success(stations):    self.stations.swap(stations)
-                case let .Failure(error):       self.displayError(error)
+                case let .success(stations):    self.stations.swap(stations)
+                case let .failure(error):       self.displayError(error)
                 }
             }
 
         // Using location, update the map.
         disposable += location.startWithResult { result in
             switch result {
-            case let .Success(point, name, userLocation):
+            case let .success(point, name, userLocation):
                 self.point.swap(point)
                 self.navigationItem.title = name
-                self.updateMap(point, isUserLocation: userLocation)
-            case let .Failure(error):
+                self.updateMap(center: point, isUserLocation: userLocation)
+            case let .failure(error):
                 self.displayError(error)
             }
         }
@@ -182,24 +182,24 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         // Show nearby stations on the map.
         disposable += POIViewModel.chain(connection, producer: stations.producer).startWithResult({ result in
             switch result {
-            case let .Failure(error):
+            case let .failure(error):
                 self.displayError(error)
-            case let .Success(ops):
-                self.applyOperations(ops)
+            case let .success(ops):
+                self.apply(operations: ops)
             }
         })
     }
 
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
         // Reset the navigation bar.
         if let bar = navigationController?.navigationBar {
-            bar.setBackgroundImage(nil, forBarMetrics: UIBarMetrics.Default)
+            bar.setBackgroundImage(nil, for: UIBarMetrics.default)
         }
     }
 
-    override func viewDidDisappear(animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         disposable.dispose()
     }
@@ -209,16 +209,16 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         // Dispose of any resources that can be recreated.
     }
 
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier ?? "" {
         case "embedPOITable":
-            let dest = segue.destinationViewController as! POITableViewController
+            let dest = segue.destination as! POITableViewController
             table = dest
             dest.stations = AnyProperty(stations)
             dest.mapPoint = point.producer.ignoreNil()
         case "showStation":
             let station = sender as! MutableStation
-            let dest = segue.destinationViewController as! StationViewController
+            let dest = segue.destination as! StationViewController
             dest.station = station
         default:
             return
@@ -229,10 +229,10 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
 // MARK: - Map view delegate
 extension POIViewController: MKMapViewDelegate {
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if let annotation = annotation as? POIStationAnnotation {
             let view =
-                mapView.dequeueReusableAnnotationViewWithIdentifier("stationAnnotation") as? POIStationAnnotationView
+                mapView.dequeueReusableAnnotationView(withIdentifier: "stationAnnotation") as? POIStationAnnotationView
                     ?? POIStationAnnotationView(annotation: annotation, reuseIdentifier: "stationAnnotation")
             view.apply(annotation)
             return view
@@ -242,25 +242,25 @@ extension POIViewController: MKMapViewDelegate {
         return nil
     }
 
-    func mapView(mapView: MKMapView, rendererForOverlay overlay: MKOverlay) -> MKOverlayRenderer {
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         let renderer = MKCircleRenderer(overlay: overlay)
-        renderer.fillColor = UIColor.skyBlueColor().colorWithAlphaComponent(0.1)
+        renderer.fillColor = UIColor.skyBlueColor().withAlphaComponent(0.1)
         return renderer
     }
 
-    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         if let station = ((view as? POIStationAnnotationView)?.annotation as? POIStationAnnotation)?.station {
-            self.performSegueWithIdentifier("showStation", sender: station)
+            self.performSegue(withIdentifier: "showStation", sender: station)
         }
     }
 
-    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         if let annotation = (view as? POIStationAnnotationView)?.annotation as? POIStationAnnotation,
             let table = table
         {
             let section = table.dataSource.index(of: annotation.station)
             let row = (table.dataSource.arrivals[section].isEmpty) ? NSNotFound : 0
-            table.tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: row, inSection: section), atScrollPosition: .Top,
+            table.tableView.scrollToRow(at: IndexPath(row: row, section: section), at: .top,
                                                    animated: true)
         }
     }

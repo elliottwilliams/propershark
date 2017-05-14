@@ -17,12 +17,12 @@ class TransitLabel: UILabel {
     private var _text: String?
     override var text: String? {
         get { return super.text }
-        set(newText) { updateTextTo(newText) }
+        set(newText) { updateText(to: newText) }
     }
     
-    func updateTextTo(newText: String?) {
+    func updateText(to newText: String?) {
         _text = newText
-        super.text = (self.uppercase) ? newText?.uppercaseString : newText
+        super.text = (self.uppercase) ? newText?.uppercased() : newText
     }
 
 }

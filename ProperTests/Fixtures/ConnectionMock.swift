@@ -33,7 +33,7 @@ class ConnectionMock: ConnectionType {
         
         var topics: [String: Topic] = [:]
 
-        func leave(id: String) {
+        func leave(_ id: String) {
             if let topic = find(id) {
                 topic.subscribers -= 1
                 if topic.subscribers < 1 {
@@ -42,11 +42,11 @@ class ConnectionMock: ConnectionType {
             }
         }
 
-        func find(id: String) -> Topic? {
+        func find(_ id: String) -> Topic? {
             return topics[id]
         }
         
-        func findOrCreate(id: String) -> Topic {
+        func findOrCreate(_ id: String) -> Topic {
             if let topic = find(id) {
                 return topic
             } else {
@@ -61,7 +61,7 @@ class ConnectionMock: ConnectionType {
         self.onSubscribe = onSubscribe
     }
     
-    func on(proc: String, send event: TopicEvent) {
+    func on(_ proc: String, send event: TopicEvent) {
         callMap[proc] = event
     }
     
@@ -71,7 +71,7 @@ class ConnectionMock: ConnectionType {
         }
     }
     
-    func call(procedure: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, ProperError> {
+    func call(proc: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, ProperError> {
         return SignalProducer<TopicEvent, ProperError> { observer, _ in
             if let event = self.callMap[procedure] {
                 observer.sendNext(event)
@@ -94,7 +94,7 @@ class ConnectionMock: ConnectionType {
         }.logEvents(identifier: "ConnectionMock.subscribe(\(id))", logger: logSignalEvent)
     }
 
-    func subscribed(topic: String) -> Bool {
+    func subscribed(to topic: String) -> Bool {
         return (server.find(topic)?.subscribers > 0) ?? false
     }
 }

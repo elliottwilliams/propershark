@@ -11,7 +11,7 @@ import UIKit
 class BadgeViewLabel: UILabel {
     override func awakeFromNib() {
         // Configure the label's font size
-        self.font = self.font.fontWithSize(self.bounds.height * 0.55)
+        self.font = self.font.withSize(self.bounds.height * 0.55)
         
         // Position the layer above the badge layers
         self.layer.zPosition = 15.0

@@ -76,9 +76,9 @@ struct Vehicle: Model {
 }
 
 extension Vehicle: Decodable {
-    static func decode(json: JSON) -> Decoded<Vehicle> {
+    static func decode(_ json: JSON) -> Decoded<Vehicle> {
         switch json {
-        case .String(let id):
+        case .string(let id):
             let name = Vehicle.unqualify(namespaced: id)
             return pure(Vehicle(id: name))
         default:

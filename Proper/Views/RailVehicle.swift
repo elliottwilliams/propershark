@@ -11,7 +11,7 @@ import CoreLocation
 
 class RailVehicle: UIView {
     
-    var color: UIColor = UIColor.blueColor()
+    var color: UIColor = UIColor.blue
     var vehicle: Vehicle?
 
     let _vehicleDotRadius = CGFloat(8.0)
@@ -30,19 +30,19 @@ class RailVehicle: UIView {
     }
     
     convenience init(point: CGPoint) {
-        self.init(frame: CGRectMake(point.x, point.y, 0, 0))
+        self.init(frame: CGRect(x: point.x, y: point.y, width: 0, height: 0))
     }
     
     convenience init(frame: CGRect, vehicle: Vehicle, on route: Route) {
         self.init(frame: frame)
         self.vehicle = vehicle
-        self.color = route.color ?? UIColor.blueColor()
+        self.color = route.color ?? UIColor.blue
     }
     
     convenience init(point: CGPoint, vehicle: Vehicle, on route: Route) {
         self.init(point: point)
         self.vehicle = vehicle
-        self.color = route.color ?? UIColor.blueColor()
+        self.color = route.color ?? UIColor.blue
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -51,35 +51,35 @@ class RailVehicle: UIView {
         self.layer.setNeedsDisplay()
     }
     
-    override class func layerClass() -> AnyClass {
+    override class var layerClass: AnyClass {
         return CAShapeLayer.self
     }
     
-    static func frameForPoint(point: CGPoint) -> CGRect {
-        return CGRectMake(point.x-(self.width/2), point.y-(self.height/2), self.width, self.height)
+    static func frame(for point: CGPoint) -> CGRect {
+        return CGRect(x: point.x-(self.width/2), y: point.y-(self.height/2), width: self.width, height: self.height)
     }
     
-    override func displayLayer(layer: CALayer) {
-        drawVehicle(layer as! CAShapeLayer)
+    override func display(_ layer: CALayer) {
+        drawVehicle(onto: layer as! CAShapeLayer)
     }
     
-    func drawVehicle(layer: CAShapeLayer) {
-        layer.path = CGPathCreateWithEllipseInRect(self.bounds, nil)
-        layer.strokeColor = UIColor.snowColor().CGColor
+    func drawVehicle(onto layer: CAShapeLayer) {
+        layer.path = CGPath(ellipseIn: self.bounds, transform: nil)
+        layer.strokeColor = UIColor.snowColor().cgColor
         layer.lineWidth = _vehicleStrokeWidth
-        layer.fillColor = self.color.CGColor
+        layer.fillColor = self.color.cgColor
         layer.shadowOpacity = 0.3
         layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
     }
     
-    func moveTo(coords: CGPoint, completion: ((Bool) -> Void)? = nil) {
-        UIView.animateWithDuration(0.25, animations: {
-            self.frame = RailVehicle.frameForPoint(coords)
+    func moveTo(_ coords: CGPoint, completion: ((Bool) -> Void)? = nil) {
+        UIView.animate(withDuration: 0.25, animations: {
+            self.frame = RailVehicle.frame(for: coords)
         }, completion: completion)
     }
     
     // TODO: this might belong on the vehicle model, since it's quite general purpose
-    func isAtStation(station: Station) -> Bool {
+    func isNear(station: Station) -> Bool {
         // A station may have been created from a stub model, so we need to make sure it has a position.
         guard let vehicle = self.vehicle,
         let vehiclePosition = vehicle.position,
@@ -88,7 +88,7 @@ class RailVehicle: UIView {
 
         let a = CLLocation(point: vehiclePosition)
         let b = CLLocation(point: stationPosition)
-        return a.distanceFromLocation(b) < 10.0
+        return a.distance(from: b) < 10.0
     }
     
 }

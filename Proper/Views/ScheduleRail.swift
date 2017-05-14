@@ -11,36 +11,36 @@ import UIKit
 class ScheduleRail: UIView {
     
     enum RailShape {
-        case WestSouth
-        case NorthWest
-        case NorthSouth
-        case WestEast
+        case southwest
+        case northwest
+        case vertical
+        case horizontal
     }
     
     enum RailPathSegment {
-        case Full
-        case Entrance
-        case Exit
+        case full
+        case entrance
+        case exit
     }
     
     // MARK: Properties
     
     var showStation: Bool {
-        get { return !_stationLayer.hidden }
+        get { return !_stationLayer.isHidden }
         set(newState) { setStationState(newState) }
     }
-    var shape: RailShape = .NorthSouth {
+    var shape: RailShape = .vertical {
         didSet { self.setNeedsDisplay() }
     }
     
-    let _railColor = UIColor.lightGrayColor()
+    let _railColor = UIColor.lightGray
     let _stationLayer = CAShapeLayer()
     let _leftMargin = CGFloat(16.0) // Used to know how far offscreen to draw rails that end to the west
     
     var _width: CGFloat!
     var _height: CGFloat!
     var _hasLayout: Bool = false
-    var _animationCallbacks: [CAAnimation: (anim: CAAnimation, finished: Bool) -> ()] = [:]
+    var _animationCallbacks: [CAAnimation: (_ anim: CAAnimation, _ finished: Bool) -> ()] = [:]
     
     // MARK: - Initializers
     
@@ -55,7 +55,7 @@ class ScheduleRail: UIView {
     }
     
     // Use a shape layer as the base layer of this class
-    override class func layerClass() -> AnyClass {
+    override class var layerClass : AnyClass {
         return CAShapeLayer.self
     }
     
@@ -77,24 +77,24 @@ class ScheduleRail: UIView {
         self.layer.setNeedsDisplay() // Draw everying on initialization
     }
     
-    override func displayLayer(layer: CALayer) {
+    override func display(_ layer: CALayer) {
         if !_hasLayout { // don't display if view hasn't been laid out
             return
         }
-        drawRailOnLayer(layer as! CAShapeLayer) // layerClass() declares CAShapeLayer as this view's layer class, so this should always unwrap
+        drawRail(on: layer as! CAShapeLayer) // layerClass() declares CAShapeLayer as this view's layer class, so this should always unwrap
         drawStationNode()
     }
     
     // MARK: Reusable drawing code
     
-    func drawRailOnLayer(layer: CAShapeLayer) {
-        let path = CGPathCreateMutable()
-        drawRailPath(path, shape: self.shape, segment: .Full, width: _width, height: _height)
+    func drawRail(on layer: CAShapeLayer) {
+        let path = CGMutablePath()
+        drawRailPath(path, shape: self.shape, segment: .full, width: _width, height: _height)
         
         layer.path = path
-        layer.strokeColor = _railColor.CGColor
+        layer.strokeColor = _railColor.cgColor
         layer.lineWidth = 2.0
-        layer.fillColor = UIColor.clearColor().CGColor
+        layer.fillColor = UIColor.clear.cgColor
     }
     
     func stationNodeIntersectionPoint() -> CGPoint {
@@ -106,49 +106,49 @@ class ScheduleRail: UIView {
             return
         }
         
-        let path = CGPathCreateMutable()
+        let path = CGMutablePath()
         CGPathMoveToPoint(path, nil, _width * 0.2, _height/2)
         CGPathAddLineToPoint(path, nil, _width * 0.8, _height/2)
         
         _stationLayer.path = path
-        _stationLayer.strokeColor = _railColor.CGColor
+        _stationLayer.strokeColor = _railColor.cgColor
         _stationLayer.lineWidth = 2.0
     }
     
     // Construct a path to draw the rail along and to send vehicles on based on shape, segment, and dimensions given. If a path is passed to this method, it will be modified with the requested rail path.
-    func drawRailPath(path: CGMutablePathRef, shape: RailShape, segment: RailPathSegment, width: CGFloat, height: CGFloat) {
+    func drawRailPath(_ path: CGMutablePath, shape: RailShape, segment: RailPathSegment, width: CGFloat, height: CGFloat) {
         // Get the current point of the path if it's not empty, which is used to draw relative to whatever's already on the path
-        let c = (CGPathIsEmpty(path)) ? CGPoint(x: 0, y: 0) : CGPathGetCurrentPoint(path)
-        if segment == .Entrance || segment == .Full {
+        let c = (path.isEmpty) ? CGPoint(x: 0, y: 0) : path.currentPoint
+        if segment == .entrance || segment == .full {
             switch (shape) {
-            case .NorthSouth:
+            case .vertical:
                 CGPathMoveToPoint(path, nil, width/2, c.y)
                 CGPathAddLineToPoint(path, nil, width/2, c.y+height/2)
-            case .WestEast:
+            case .horizontal:
                 CGPathMoveToPoint(path, nil, -1*_leftMargin, c.y+height/2)
                 CGPathAddLineToPoint(path, nil, width/2, c.y+height/2)
-            case .NorthWest:
+            case .northwest:
                 CGPathMoveToPoint(path, nil, width/2, c.y)
                 CGPathAddArc(path, nil, 0, c.y, width/2, 0, CGFloat(M_PI/4), false)
-            case .WestSouth:
+            case .southwest:
                 CGPathMoveToPoint(path, nil, -1*_leftMargin, c.y+height/2)
                 CGPathAddLineToPoint(path, nil, 0, c.y+height/2)
                 CGPathAddArc(path, nil, 0, c.y+height, height/2, 0, CGFloat(M_PI/4), false)
             }
         }
-        if segment == .Exit || segment == .Full {
+        if segment == .exit || segment == .full {
             switch(shape) {
-            case .NorthSouth:
+            case .vertical:
                 CGPathMoveToPoint(path, nil, width/2, c.y+height/2)
                 CGPathAddLineToPoint(path, nil, width/2, c.y+height)
-            case .WestEast:
+            case .horizontal:
                 CGPathMoveToPoint(path, nil, width/2, c.y+height/2)
                 CGPathAddLineToPoint(path, nil, width, c.y+height/2)
-            case .NorthWest:
+            case .northwest:
                 // AddArc moves to the proper starting point automatically, so we don't need to mess with MoveToPoint or do any trigonometry
                 CGPathAddArc(path, nil, 0, c.y, width/2, CGFloat(M_PI/4), CGFloat(M_PI/2), false)
                 CGPathAddLineToPoint(path, nil, -1*_leftMargin, c.y+height/2)
-            case .WestSouth:
+            case .southwest:
                 CGPathAddArc(path, nil, 0, c.y+height, height/2, CGFloat(M_PI/4), CGFloat(M_PI/2), false)
             }
         }
@@ -156,20 +156,20 @@ class ScheduleRail: UIView {
 
     func entrancePoint() -> CGPoint {
         switch (self.shape) {
-        case .NorthSouth, .NorthWest:
+        case .vertical, .northwest:
             return CGPoint(x: _width/2, y: 0)
-        case .WestEast, .WestSouth:
+        case .horizontal, .southwest:
             return CGPoint(x: -1*_leftMargin, y: _height/2)
         }
     }
     
     func exitPoint() -> CGPoint {
         switch (self.shape) {
-        case .NorthSouth, .WestSouth:
+        case .vertical, .southwest:
             return CGPoint(x: _width/2, y: _height)
-        case .WestEast:
+        case .horizontal:
             return CGPoint(x: _width, y: _height/2)
-        case .NorthWest:
+        case .northwest:
             return CGPoint(x: -1*_leftMargin, y: _height/2)
         }
     }
@@ -180,8 +180,8 @@ class ScheduleRail: UIView {
     
     // MARK: Setters and updaters
     
-    func setStationState(showStation: Bool) {
-        _stationLayer.hidden = !showStation
+    func setStationState(_ showStation: Bool) {
+        _stationLayer.isHidden = !showStation
     }
     
 

@@ -53,9 +53,9 @@ struct Route: Model {
 }
 
 extension Route: Decodable {
-    static func decode(json: JSON) -> Decoded<Route> {
+    static func decode(_ json: JSON) -> Decoded<Route> {
         switch json {
-        case .String(let id):
+        case .string(let id):
             let shortName = Route.unqualify(namespaced: id)
             return pure(Route(id: shortName))
         default:

@@ -22,14 +22,14 @@ class ArrivalsTableViewControllerTests: XCTestCase {
         mock = ConnectionMock()
         disposable = CompositeDisposable()
 
-        let expectation = expectationWithDescription("fixtures")
+        let expectation = self.expectation(description: "fixtures")
         Station.fixture("stations.BUS100W").startWithNext { model in
             self.station = try! MutableStation(from: model, connection: self.mock)
             self.controller = ArrivalsTableViewController(observing: self.station, style: .Plain, connection: self.mock)
             expectation.fulfill()
         }
         self.continueAfterFailure = false
-        waitForExpectationsWithTimeout(5.0, handler: nil)
+        waitForExpectations(timeout: 5.0, handler: nil)
         self.continueAfterFailure = true
     }
 

@@ -15,21 +15,21 @@ class RoutesCollectionViewModel: NSObject, UICollectionViewDataSource, UICollect
     var routes: AnyProperty<[MutableRoute]>
 
     init(routes: AnyProperty<Set<MutableRoute>>) {
-        self.routes = routes.map { $0.sort() }
+        self.routes = routes.map { $0.sorted() }
     }
 
     init(station: MutableStation) {
-        self.routes = AnyProperty(initialValue: [], producer: station.routes.producer.map({ $0.sort() }))
+        self.routes = AnyProperty(initialValue: [], producer: station.routes.producer.map({ $0.sorted() }))
     }
 
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return routes.value.count
     }
 
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) ->
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) ->
         UICollectionViewCell
     {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("badgeCell", forIndexPath: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "badgeCell", for: indexPath)
             as! RoutesCollectionViewCell
         let route = routes.value[indexPath.row]
 
@@ -45,13 +45,13 @@ class RoutesCollectionViewModel: NSObject, UICollectionViewDataSource, UICollect
         return cell
     }
 
-    func collectionView(collectionView: UICollectionView, didHighlightItemAtIndexPath indexPath: NSIndexPath) {
-        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! RoutesCollectionViewCell?
+    func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
+        let cell = collectionView.cellForItem(at: indexPath) as! RoutesCollectionViewCell?
         cell?.badge.highlighted = true
     }
 
-    func collectionView(collectionView: UICollectionView, didUnhighlightItemAtIndexPath indexPath: NSIndexPath) {
-        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! RoutesCollectionViewCell?
+    func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
+        let cell = collectionView.cellForItem(at: indexPath) as! RoutesCollectionViewCell?
         cell?.badge.highlighted = false
     }
 }

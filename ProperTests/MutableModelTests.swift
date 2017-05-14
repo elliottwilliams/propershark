@@ -23,13 +23,13 @@ class MutableModelTests: XCTestCase {
         mock = ConnectionMock()
         stations = ["BUS403", "BUS922", "BUS162", "BUS161", "BUS897", "BUS375W"]
 
-        let expectation = expectationWithDescription("fixtures")
+        let expectation = self.expectation(description: "fixtures")
         Route.fixture("routes.4B").startWithNext { model in
             self.route = try! MutableRoute(from: model, connection: self.mock)
             expectation.fulfill()
         }
         self.continueAfterFailure = false
-        waitForExpectationsWithTimeout(5.0, handler: nil)
+        waitForExpectations(timeout: 5.0, handler: nil)
         self.continueAfterFailure = true
     }
     
@@ -41,7 +41,7 @@ class MutableModelTests: XCTestCase {
     func testApplyChangesApplies() {
         // Given
         let modifiedStations = stations.map { Station(stopCode: $0, name: "~modified") }
-        let expectation = expectationWithDescription("names applied")
+        let expectation = self.expectation(description: "names applied")
         let nameSignals = route.stations.value.map { $0.name.signal }
 
         // After emitting `modifiedStations.count` route names, invoke this observer.
@@ -57,7 +57,7 @@ class MutableModelTests: XCTestCase {
         XCTAssertNotNil(try? route.attachOrApplyChanges(to: route.stations, from: modifiedStations))
 
         // Then
-        waitForExpectationsWithTimeout(3, handler: nil)
+        waitForExpectations(timeout: 3, handler: nil)
     }
 
     func testApplyChangesRemoves() {

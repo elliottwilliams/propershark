@@ -10,20 +10,20 @@ import Foundation
 import Argo
 import Curry
 
-extension NSDate: Decodable {
-    public static func decode(json: JSON) -> Decoded<NSDate> {
+extension Date: Decodable {
+    public static func decode(_ json: JSON) -> Decoded<Date> {
         // Decode `json` as a string and pass that string to Timetable's date formatter. Wrap the optional Date it
         // returns in a Decoded type.
-        return Timetable.formatter.dateFromString
+        return Timetable.formatter.date(from:)
             <^> String.decode(json)
-            >>- Decoded<NSDate>.fromOptional
+            >>- Decoded<Date>.fromOptional
     }
 }
 
-extension NSDate: Comparable {
+extension Date: Comparable {
     // Comparison function defined globally below.
 }
 
-public func < (a: NSDate, b: NSDate) -> Bool {
-    return a.compare(b) == .OrderedAscending
+public func < (a: Date, b: Date) -> Bool {
+    return a.compare(b) == .orderedAscending
 }

@@ -36,7 +36,7 @@ class POITableDataSource: NSObject, UITableViewDataSource {
 
     /// Update the `indices` map and badge for each station beginning at the `from` position.
     func updateIndices(from start: Int) {
-        let offset = table.suffixFrom(start).enumerate().map({ i, tt in (i+start, tt) })
+        let offset = table.suffix(from: start).enumerated().map({ i, tt in (i+start, tt) })
         offset.forEach(updateIndices)
     }
 
@@ -51,31 +51,31 @@ class POITableDataSource: NSObject, UITableViewDataSource {
         badge.setIndex(idx)
     }
 
-    func insert(entry: Tuple, atIndex idx: Int) {
+    func insert(entry: Tuple, at idx: Int) {
         let (station, badge, arrivals) = entry
-        table.insert((station, badge, arrivals), atIndex: idx)
+        table.insert((station, badge, arrivals), at: idx)
         indices[station] = idx
         updateIndices(from: idx+1)
     }
 
-    func indexPathByInserting(arrival: Arrival, onto station: MutableStation) -> NSIndexPath {
+    func indexPath(inserting arrival: Arrival, onto station: MutableStation) -> IndexPath {
         let si = index(of: station)
-        let ri = arrivals[si].indexOf({ arrival < $0 }) ?? arrivals[si].endIndex
-        table[si].arrivals.insert(arrival, atIndex: ri)
-        return NSIndexPath(forRow: ri, inSection: si)
+        let ri = arrivals[si].index(where: { arrival < $0 }) ?? arrivals[si].endIndex
+        table[si].arrivals.insert(arrival, at: ri)
+        return IndexPath(row: ri, section: si)
     }
 
-    func indexPathByDeleting(arrival: Arrival, from station: MutableStation) -> NSIndexPath {
+    func indexPath(deleting arrival: Arrival, from station: MutableStation) -> IndexPath {
         let si = index(of: station)
-        let ri = arrivals[si].indexOf(arrival)!
-        table[si].arrivals.removeAtIndex(ri)
-        return NSIndexPath(forRow: ri, inSection: si)
+        let ri = arrivals[si].index(of: arrival)!
+        table[si].arrivals.remove(at: ri)
+        return IndexPath(row: ri, section: si)
     }
 
     func remove(station: MutableStation) {
         let idx = index(of: station)
         indices[stations[idx]] = nil
-        table.removeAtIndex(idx)
+        table.remove(at: idx)
         updateIndices(from: idx)
     }
 
@@ -86,7 +86,7 @@ class POITableDataSource: NSObject, UITableViewDataSource {
 
         let temp = table[fi]
         let dir = (ti-fi) / abs(ti-fi)
-        fi.stride(to: ti, by: dir).forEach { i in
+        stride(from: fi, to: ti, by: dir).forEach { i in
             table[i] = table[i+dir]
             updateIndices(at: i)
         }
@@ -96,19 +96,19 @@ class POITableDataSource: NSObject, UITableViewDataSource {
 
     // MARK: Table View Data Source
 
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return stations.count
     }
 
     // Return the number of arrivals for each route on the each station of the section given.
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return arrivals[section].count
     }
 
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath)
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath)
         -> UITableViewCell
     {
-        let cell = tableView.dequeueReusableCellWithIdentifier("arrivalCell") as! ArrivalTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "arrivalCell") as! ArrivalTableViewCell
 
         //let station = stations.value[indexPath.section]
         let arrival = arrivals[indexPath.section][indexPath.row]

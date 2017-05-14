@@ -15,11 +15,11 @@ class ArrivalTableRouteCollectionCell: UITableViewCell {
         super.awakeFromNib()
         // Declares `badgeCell` as the reusable cell for the collection view. `RoutesCollectionViewModel` dequeues cells
         // with identifier `badgeCell`.
-        collectionView.registerNib(UINib(nibName: "RoutesCollectionBadgeCell", bundle: NSBundle.mainBundle()),
+        collectionView.register(UINib(nibName: "RoutesCollectionBadgeCell", bundle: Bundle.main),
                                    forCellWithReuseIdentifier: "badgeCell")
     }
 
-    func bind<D: protocol<UICollectionViewDelegate, UICollectionViewDataSource>>(source: D) {
+    func bind<D: UICollectionViewDelegate & UICollectionViewDataSource>(_ source: D) {
         collectionView.dataSource = source
         collectionView.delegate = source
         collectionView.reloadData()

@@ -13,8 +13,8 @@ import ReactiveCocoa
 import Result
 
 struct Arrival: Comparable, Hashable {
-    let eta: NSDate
-    let etd: NSDate
+    let eta: Date
+    let etd: Date
     let route: MutableRoute
     let heading: String?
 
@@ -37,13 +37,13 @@ struct Arrival: Comparable, Hashable {
         static let res = Config.agency.timeResolution
 
         /// Returns the state of this arrival, and a date to re-determine if its life is not terminated.
-        static func determine(eta: NSDate, _ etd: NSDate, now: NSDate = NSDate()) -> (Lifecycle, refreshAt: NSDate?) {
+        static func determine(_ eta: Date, _ etd: Date, now: Date = Date()) -> (Lifecycle, refreshAt: Date?) {
             // TODO - once Arrivals can track vehicles, we should determine whether a vehicle has actually arrived at
             // its station, and can emit the `arrived` event accordingly.
             if eta.timeIntervalSinceNow > res {
-                return (.upcoming, eta.dateByAddingTimeInterval(-res))
+                return (.upcoming, eta.addingTimeInterval(-res))
             } else if etd.timeIntervalSinceNow > -res {
-                return (.due, etd.dateByAddingTimeInterval(res))
+                return (.due, etd.addingTimeInterval(res))
             } else {
                 return (.departed, nil)
             }
@@ -52,7 +52,7 @@ struct Arrival: Comparable, Hashable {
 
     /// Determine the current state of the arrival, send it on `observer`, and schedule the next state determination,
     /// optionally cancellable using `disposable`.
-    private func emitLifecycle(observer: Observer<Lifecycle, NoError>, _ disposable: CompositeDisposable) {
+    private func emitLifecycle(_ observer: Observer<Lifecycle, NoError>, _ disposable: CompositeDisposable) {
         let (state, refresh) = Lifecycle.determine(eta, etd)
         observer.sendNext(state)
 
@@ -80,5 +80,5 @@ func == (a: Arrival, b: Arrival) -> Bool {
 }
 
 func < (a: Arrival, b: Arrival) -> Bool {
-    return a.eta.compare(b.eta) == .OrderedAscending
+    return a.eta.compare(b.eta) == .orderedAscending
 }

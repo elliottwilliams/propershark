@@ -19,8 +19,8 @@ class TimetableTests: XCTestCase {
 
     var station: MutableStation!
 
-    let startDate = NSDate(timeIntervalSince1970: 1489686630) // Thu, 16 Mar 2017 17:50:30 GMT
-    let endDate = NSDate(timeIntervalSince1970: 1489690230)   // Thu, 16 Mar 2017 18:50:30 GMT
+    let startDate = Date(timeIntervalSince1970: 1489686630) // Thu, 16 Mar 2017 17:50:30 GMT
+    let endDate = Date(timeIntervalSince1970: 1489690230)   // Thu, 16 Mar 2017 18:50:30 GMT
     
     override func setUp() {
         super.setUp()
@@ -42,7 +42,7 @@ class TimetableTests: XCTestCase {
             response.map({ Array($0[2..<3]) })
             ]
         connection.on("timetable.visits_between", send: TopicEvent.Timetable(.arrivals(responses[0])))
-        let completed = expectationWithDescription("got an arrival by calling the continuation")
+        let completed = expectation(description: "got an arrival by calling the continuation")
 
         // Given a call to `visits`...
         let producer = Timetable.visits(for: station, occurring: .between(startDate, endDate), using: connection,
@@ -84,7 +84,7 @@ class TimetableTests: XCTestCase {
             seen += 1
         }
 
-        waitForExpectationsWithTimeout(2, handler: nil)
+        waitForExpectations(timeout: 2, handler: nil)
     }
     
 

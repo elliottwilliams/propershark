@@ -22,8 +22,8 @@ class POIStationHeaderFooterView: UITableViewHeaderFooterView {
     }
 
     override func awakeFromNib() {
-        contentView.backgroundColor = UIColor.clearColor()
-        badgeView.color = UIColor.clearColor()
+        contentView.backgroundColor = UIColor.clear
+        badgeView.color = UIColor.clear
     }
 
     override func prepareForReuse() {

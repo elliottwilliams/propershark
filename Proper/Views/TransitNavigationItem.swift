@@ -15,12 +15,12 @@ class TransitNavigationItem: UINavigationItem {
     override var title: String? {
         get { return super.title }
         set(newTitle) {
-            return super.title = (uppercase) ? newTitle?.uppercaseString : newTitle
+            return super.title = (uppercase) ? newTitle?.uppercased() : newTitle
         }
     }
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        super.title = (uppercase) ? title?.uppercaseString : title
+        super.title = (uppercase) ? title?.uppercased() : title
     }
 }

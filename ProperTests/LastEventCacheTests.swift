@@ -23,7 +23,7 @@ class LastEventCacheTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        let expectation = expectationWithDescription("fixtures")
+        let expectation = self.expectation(description: "fixtures")
         Vehicle.fixture(ID).startWithResult({ result in
             switch result {
             case .Success(let vehicle):
@@ -35,7 +35,7 @@ class LastEventCacheTests: XCTestCase {
             expectation.fulfill()
         })
         continueAfterFailure = false
-        waitForExpectationsWithTimeout(5, handler: nil)
+        waitForExpectations(timeout: 5, handler: nil)
         continueAfterFailure = true
 
         cache = LastEventCache()
@@ -75,12 +75,12 @@ class LastEventCacheTests: XCTestCase {
         // It should not be removed until the next run loop iteration.
         assertEvent(cache.lookup(ID, originator: ID), vehicle: vehicle)
 
-        let expectation = expectationWithDescription("delayed operation")
-        NSOperationQueue.mainQueue().addOperationWithBlock {
+        let expectation = self.expectation(description: "delayed operation")
+        OperationQueue.main.addOperation {
             XCTAssertNil(self.cache.lookup(self.ID, originator: self.ID))
             expectation.fulfill()
         }
-        waitForExpectationsWithTimeout(3, handler: nil)
+        waitForExpectations(timeout: 3, handler: nil)
     }
 
     func testDelayedVoidCancelledByStore() {
@@ -92,15 +92,15 @@ class LastEventCacheTests: XCTestCase {
         cache.store(ID, event: updateEvent)
 
         // Then the event should not be removed on deferral...
-        let expectation = expectationWithDescription("deferred operation")
-        NSOperationQueue.mainQueue().addOperationWithBlock {
+        let expectation = self.expectation(description: "deferred operation")
+        OperationQueue.main.addOperation {
             self.assertEvent(self.cache.lookup(self.ID, originator: self.ID), vehicle: self.vehicle)
             expectation.fulfill()
         }
-        waitForExpectationsWithTimeout(3, handler: nil)
+        waitForExpectations(timeout: 3, handler: nil)
     }
 
-    private func assertEvent(event: TopicEvent?, vehicle: Vehicle) {
+    fileprivate func assertEvent(_ event: TopicEvent?, vehicle: Vehicle) {
         if let event = event, case TopicEvent.Vehicle(.update(let decoded, _)) = event {
             XCTAssertEqual(decoded.value, vehicle)
         } else {

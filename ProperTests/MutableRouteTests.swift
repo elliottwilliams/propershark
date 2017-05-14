@@ -23,14 +23,14 @@ class MutableRouteTests: XCTestCase, MutableModelTestSpec {
     override func setUp() {
         super.setUp()
 
-        let expectation = expectationWithDescription("fixtures")
+        let expectation = self.expectation(description: "fixtures")
         Route.fixture("routes.4B").startWithNext { model in
             self.model = model
             self.mutable = try! MutableRoute(from: model, connection: self.mock)
             expectation.fulfill()
         }
         self.continueAfterFailure = false
-        waitForExpectationsWithTimeout(5.0, handler: nil)
+        waitForExpectations(timeout: 5.0, handler: nil)
         self.continueAfterFailure = true
     }
 

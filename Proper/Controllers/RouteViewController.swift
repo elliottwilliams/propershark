@@ -45,7 +45,7 @@ class RouteViewController: UIViewController, ProperViewController {
         }
     }
 
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         // Begin requesting route data.
         disposable += route.producer.startWithFailed(self.displayError)
 
@@ -55,38 +55,38 @@ class RouteViewController: UIViewController, ProperViewController {
         }
     }
 
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
         // After transitioning, reset the navigation bar to its default style.
-        transitionCoordinator()?.animateAlongsideTransition(nil, completion: { context in
-            UIView.animateWithDuration(animated ? 0.2 : 0.0) {
-                let vc = context.viewControllerForKey(UITransitionContextToViewControllerKey)
+        transitionCoordinator?.animate(alongsideTransition: nil, completion: { context in
+            UIView.animate(withDuration: animated ? 0.2 : 0.0, animations: {
+                let vc = context.viewController(forKey: UITransitionContextViewControllerKey.to)
                 if let bar = vc?.navigationController?.navigationBar {
                     RouteViewController.resetNavigationBar(bar)
                     bar.layoutIfNeeded()
                 }
-            }
+            }) 
         })
     }
 
-    override func viewDidDisappear(animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
         disposable.dispose()
         super.viewDidDisappear(animated)
     }
 
-    func colorNavigationBar(color: UIColor) {
+    func colorNavigationBar(_ color: UIColor) {
         let contrasting = color.blackOrWhiteContrastingColor()
         navigationController?.navigationBar.tintColor = contrasting
         navigationController?.navigationBar.barTintColor = color
         navigationController?.navigationBar.shadowImage = nil
-        navigationController?.navigationBar.barStyle = contrasting == UIColor.whiteColor() ? .Black : .Default
+        navigationController?.navigationBar.barStyle = contrasting == UIColor.white ? .black : .default
     }
 
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier ?? "" {
         case "embedStationTable":
-            let table = segue.destinationViewController as! StationTableViewController
+            let table = segue.destination as! StationTableViewController
             table.route = route
         default:
             return

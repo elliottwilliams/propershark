@@ -25,7 +25,7 @@ struct NearbyStationsViewModel: SignalChain {
         SignalProducer<MKMapRect, ProperError>
     {
         return producer.map({ point, radius -> MKMapRect in
-            let circle = MKCircle(centerCoordinate: CLLocationCoordinate2D(point: point), radius: radius)
+            let circle = MKCircle(center: CLLocationCoordinate2D(point: point), radius: radius)
             return circle.boundingMapRect
         })
     }
@@ -33,10 +33,10 @@ struct NearbyStationsViewModel: SignalChain {
     static func getStations(connection: ConnectionType) -> SignalProducer<[Station], ProperError> {
         return connection.call("agency.stations").attemptMap({ event -> Result<[AnyObject], ProperError> in
             // Received events should be Agency.stations events, which contain a list of all stations on the agency.
-            if case .Agency(.stations(let stations)) = event {
-                return .Success(stations)
+            if case .agency(.stations(let stations)) = event {
+                return .success(stations)
             } else {
-                return .Failure(ProperError.eventParseFailure)
+                return .failure(ProperError.eventParseFailure)
             }
         }).decodeAnyAs(Station.self)
     }
@@ -54,18 +54,18 @@ struct NearbyStationsViewModel: SignalChain {
             // Attempt to create MutableStations out of all stations.
             let mutables = stations.map({ MutableStation.create($0, connection: connection) })
             if let error = mutables.filter({ $0.error != nil }).first?.error {
-                return .Failure(error)
+                return .failure(error)
             }
 
             let centerPoint = Point(coordinate: center)
             let sorted = mutables.flatMap({ result in
                 // Ignore stations without a known position.
                 result.value.map({ st in st.position.value.map({ pos in (st, pos) }) }) ?? nil
-            }).sort({ a, b in
+            }).sorted(by: { a, b in
                 let ((_, apos), (_, bpos)) = (a, b)
                 return apos.distanceFrom(centerPoint) < bpos.distanceFrom(centerPoint)
             }).map({ st, pos in st })
-            return .Success(sorted)
+            return .success(sorted)
         })
     }
 
@@ -73,7 +73,7 @@ struct NearbyStationsViewModel: SignalChain {
         SignalProducer<[(MutableStation, Distance)], ProperError>
     {
         return producer.map({ dict in
-            dict.sort({ a, b in
+            dict.sorted(by: { a, b in
                 let (_, ad) = a, (_, bd) = b
                 return ad < bd
             })

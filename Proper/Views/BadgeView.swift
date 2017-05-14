@@ -24,10 +24,10 @@ class BadgeView: UIView {
     var capacity: CGFloat = 1.0 {
         didSet { animateCapacityMask(from: oldValue, to: capacity) }
     }
-    var color = UIColor.grayColor() {
+    var color = UIColor.gray {
         didSet { redraw() }
     }
-    var strokeColor = UIColor.whiteColor() {
+    var strokeColor = UIColor.white {
         didSet {
             label.textColor = strokeColor
             redraw()
@@ -72,7 +72,7 @@ class BadgeView: UIView {
 
     func setup() {
         // Load, configure, and attach the badge nib.
-        NSBundle.mainBundle().loadNibNamed("BadgeView", owner: self, options: nil)
+        Bundle.main.loadNibNamed("BadgeView", owner: self, options: nil)
         container.frame = self.bounds
         addSubview(container)
 
@@ -89,8 +89,8 @@ class BadgeView: UIView {
         }
 
         // Clear the background placeholder colors.
-        backgroundColor = .clearColor()
-        badge.backgroundColor = .clearColor()
+        backgroundColor = .clear
+        badge.backgroundColor = .clear
 
         // Draw the badge in the next update cycle.
         setNeedsLayout()
@@ -109,13 +109,13 @@ class BadgeView: UIView {
     // MARK: Shape calculations
     
     func outerPath(radius: CGFloat) -> CGMutablePath {
-        let outer = CGPathCreateMutable()
+        let outer = CGMutablePath()
         CGPathAddArc(outer, nil, outerLayer.bounds.midX, outerLayer.bounds.midY, radius, 0, CGFloat(2*M_PI), true)
         return outer
     }
     
     func innerPath(radius: CGFloat) -> CGMutablePath {
-        let inner = CGPathCreateMutable()
+        let inner = CGMutablePath()
         CGPathAddArc(inner, nil, innerLayer.bounds.midX, innerLayer.bounds.midY, radius, 0, CGFloat(2*M_PI), true)
         return inner
     }
@@ -123,7 +123,7 @@ class BadgeView: UIView {
     func capacityRect(amount: CGFloat) -> CGPath {
         let height = (1 - amount) * innerLayer.bounds.height
         let rect = CGRect(x: 0, y: outerStrokeWidth + outerStrokeGap, width: innerLayer.bounds.width, height: height)
-        return CGPathCreateWithRect(rect, nil)
+        return CGPath(rect: rect, transform: nil)
     }
     
     // MARK: Draw code
@@ -136,20 +136,20 @@ class BadgeView: UIView {
         let innerRadius = innerWidth / 2 - outerStrokeWidth / 2
         let outerRadius = edge / 2 - outerStrokeWidth
 
-        outerLayer.path = outerPath(outerRadius)
-        outerLayer.strokeColor = strokeColor.CGColor
-        outerLayer.fillColor = color.CGColor
+        outerLayer.path = outerPath(radius: outerRadius)
+        outerLayer.strokeColor = strokeColor.cgColor
+        outerLayer.fillColor = color.cgColor
         outerLayer.lineWidth = outerStrokeWidth
         
-        capacityCoverMask.path = capacityRect(capacity)
-        capacityCoverMask.fillColor = UIColor.blackColor().CGColor
+        capacityCoverMask.path = capacityRect(amount: capacity)
+        capacityCoverMask.fillColor = UIColor.black.cgColor
         
-        innerLayer.path = innerPath(innerRadius)
-        innerLayer.fillColor = UIColor.blackColor().colorWithAlphaComponent(0.5).CGColor
+        innerLayer.path = innerPath(radius: innerRadius)
+        innerLayer.fillColor = UIColor.black.withAlphaComponent(0.5).cgColor
         innerLayer.mask = capacityCoverMask
         
-        filledInnerLayer.path = innerPath(innerRadius)
-        filledInnerLayer.fillColor = color.CGColor
+        filledInnerLayer.path = innerPath(radius: innerRadius)
+        filledInnerLayer.fillColor = color.cgColor
         CATransaction.commit()
     }
 
@@ -157,10 +157,10 @@ class BadgeView: UIView {
     
     func animateCapacityMask(from oldValue: CGFloat, to value: CGFloat) {
         let anim = CABasicAnimation(keyPath: "path")
-        anim.fromValue = capacityRect(oldValue)
-        anim.toValue = capacityRect(value)
+        anim.fromValue = capacityRect(amount: oldValue)
+        anim.toValue = capacityRect(amount: value)
         anim.duration = 0.25
-        capacityCoverMask.addAnimation(anim, forKey: "path")
+        capacityCoverMask.add(anim, forKey: "path")
 
         redraw()
     }
@@ -177,9 +177,9 @@ class BadgeView: UIView {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         [outerLayer, filledInnerLayer].forEach { layer in
-            layer.fillColor = shouldHighlight ? darkened.CGColor : color.CGColor
+            layer.fillColor = shouldHighlight ? darkened.cgColor : color.cgColor
         }
-        label.textColor = shouldHighlight ? .lightGrayColor() : .whiteColor()
+        label.textColor = shouldHighlight ? .lightGray : .white
         CATransaction.commit()
     }
 

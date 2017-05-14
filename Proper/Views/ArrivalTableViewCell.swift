@@ -20,10 +20,10 @@ class ArrivalTableViewCell: UITableViewCell {
 
     override func awakeFromNib() {
         // Clear ornament background, which is set in IB to make the ornament visible
-        self.ornament.backgroundColor = UIColor.clearColor()
+        self.ornament.backgroundColor = UIColor.clear
         
         // Create badge programmatically
-        let badge = BadgeView(frame: CGRectMake(8, 8, 28, 28))
+        let badge = BadgeView(frame: CGRect(x: 8, y: 8, width: 28, height: 28))
         badge.outerStrokeWidth = 0
         badge.outerStrokeGap = 0
         

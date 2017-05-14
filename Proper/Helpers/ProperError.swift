@@ -11,7 +11,7 @@ import Argo
 import CoreLocation
 import Result
 
-enum ProperError: ErrorType {
+enum ProperError: Error {
     // Connection
     case mdwampError(topic: String, object: NSError)
     case connectionLost(reason: String)
@@ -29,25 +29,25 @@ enum ProperError: ErrorType {
     case locationMonitoringFailed(region: CLRegion?, error: NSError)
     case locationDisabled
 
-    case unexpected(ErrorType)
+    case unexpected(Error)
 
     /// Returns the result of calling `fn`, wrapping any error as a ProperError.
-    static func capture<U>(fn: () throws -> U) -> Result<U, ProperError> {
+    static func capture<U>(_ fn: () throws -> U) -> Result<U, ProperError> {
         do {
-            return try .Success(fn())
+            return try .success(fn())
         } catch let error as ProperError {
-            return .Failure(error)
+            return .failure(error)
         } catch {
-            return .Failure(.unexpected(error))
+            return .failure(.unexpected(error))
         }
     }
 
-    static func fromDecoded<U>(decoded: Decoded<U>) -> Result<U, ProperError> {
+    static func from<U>(decoded: Decoded<U>) -> Result<U, ProperError> {
         switch decoded {
-        case .Success(let v):
-            return .Success(v)
-        case .Failure(let e):
-            return .Failure(.decodeFailure(e))
+        case .success(let v):
+            return .success(v)
+        case .failure(let e):
+            return .failure(.decodeFailure(e))
         }
     }
 }

@@ -30,7 +30,7 @@ class StationUpcomingTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Declares `badgeCell` as the reusable cell for the collection view. `RoutesCollectionViewModel` dequeues cells
         // with identifier `badgeCell`.
-        collectionView.registerNib(UINib(nibName: "RoutesCollectionBadgeCell", bundle: NSBundle.mainBundle()), forCellWithReuseIdentifier: "badgeCell")
+        collectionView.register(UINib(nibName: "RoutesCollectionBadgeCell", bundle: Bundle.main), forCellWithReuseIdentifier: "badgeCell")
 
         // Initialize the view model powering the routes collection.
         viewModel = RoutesCollectionViewModel(routes: AnyProperty(routes))

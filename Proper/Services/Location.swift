@@ -22,33 +22,33 @@ class Location: NSObject, CLLocationManagerDelegate {
         super.init()
     }
 
-    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let last = locations.last else {
             return
         }
         observer.sendNext(last)
     }
 
-    func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-        if status != .AuthorizedAlways && status != .AuthorizedWhenInUse {
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if status != .authorizedAlways && status != .authorizedWhenInUse {
             observer.sendFailed(.locationDisabled)
         }
     }
 
-    func locationManager(manager: CLLocationManager, monitoringDidFailForRegion region: CLRegion?, withError error: NSError) {
+    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
         observer.sendFailed(.locationMonitoringFailed(region: region, error: error))
     }
 
     static let producer = SignalProducer<CLLocation, ProperError> { observer, disposable in
         let status = CLLocationManager.authorizationStatus()
-        guard CLLocationManager.locationServicesEnabled() && status != .Restricted && status != .Denied else {
+        guard CLLocationManager.locationServicesEnabled() && status != .restricted && status != .denied else {
             observer.sendFailed(.locationDisabled)
             return
         }
 
         let manager = CLLocationManager()
         let delegate = Location(observer: observer)
-        if status == .NotDetermined {
+        if status == .notDetermined {
             manager.requestWhenInUseAuthorization()
         }
 

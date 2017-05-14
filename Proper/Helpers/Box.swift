@@ -14,9 +14,9 @@ class Box<T>: CustomStringConvertible {
         self.value = value
     }
 
-    func map<U>(@noescape f: T -> U) -> Box<U> {
+    func map<U>(transform f: T -> U) -> Box<U> {
         return Box<U>(f(value))
     }
 
-    var description: String { return String(value) }
+    var description: String { return String(describing: value) }
 }

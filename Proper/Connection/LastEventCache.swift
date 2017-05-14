@@ -10,7 +10,7 @@ import Foundation
 
 /// `NSCache`-backed storage for looking up responses to `meta.last_event`.
 class LastEventCache: NSObject {
-    let cache = NSCache()
+    let cache = NSCache<String, Box<TopicEvent>>()
 
     struct VoidState {
         var topics = Set<String>()
@@ -33,22 +33,22 @@ class LastEventCache: NSObject {
     }
 
     /// Look up the last message sent by `originator` in `topic`.
-    func lookup(topic: String, originator: String) -> TopicEvent? {
-        let channel = cache.objectForKey(topic) as? [String: Box<TopicEvent>]
+    func lastMessage(from originator: String, sentIn topic: String) -> TopicEvent? {
+        let channel = cache.object(forKey: topic)
         return channel?[originator]?.value
     }
 
     /// Store the `event` returned by a call to `rpc`. Returns `true` if stored.
-    func store(rpc proc: String, args: WampArgs, event: TopicEvent) -> Bool {
+    func store(event: TopicEvent, rpc proc: String, args: WampArgs) -> Bool {
         if let (metaTopic, _) = LastEventCache.eventParams(proc, args) {
-            return store(metaTopic, event: event)
+            return store(event: event, topic: metaTopic)
         } else {
             return false
         }
     }
 
     /// Store `event` in the cache. `event` must have an originator. Returns `true` if stored.
-    func store(topic: String, event: TopicEvent) -> Bool {
+    func store(event: TopicEvent, topic: String) -> Bool {
         guard let originator = event.originator else {
             return false
         }
@@ -58,7 +58,7 @@ class LastEventCache: NSObject {
 
         // If there is already a listing for this topic, add this event to it; otherwise create a dictionary
         // representing the topic. Update the cost to represent the number of messages cached for a channel.
-        if var channel = cache.objectForKey(topic) as? [String: Box<TopicEvent>] {
+        if var channel = cache.object(forKey: topic) as? [String: Box<TopicEvent>] {
             channel[originator] = Box(event)
             cache.setObject(channel, forKey: originator, cost: channel.count)
         } else {
@@ -73,20 +73,20 @@ class LastEventCache: NSObject {
     func void(topic: String) {
         voidState.topics.insert(topic)
         if !voidState.queued {
-            NSOperationQueue.mainQueue().addOperationWithBlock(processVoids)
+            OperationQueue.main.addOperation(processVoids)
             voidState.queued = true
         }
     }
 
     private func processVoids() {
         while let topic = voidState.topics.popFirst() {
-            cache.removeObjectForKey(topic)
+            cache.removeObject(forKey: topic)
         }
         voidState.queued = false
     }
 
-    private static func eventParams(proc: String, _ args: WampArgs) -> (metaTopic: String, originator: String)? {
-        guard let metaTopic = args[safe: 0] as? String, originator = args[safe: 1] as? String where
+    private static func eventParams(_ proc: String, _ args: WampArgs) -> (metaTopic: String, originator: String)? {
+        guard let metaTopic = args[safe: 0] as? String, let originator = args[safe: 1] as? String,
             proc == "meta.last_event" else {
                 return nil
         }

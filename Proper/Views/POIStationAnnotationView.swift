@@ -26,7 +26,7 @@ class POIStationAnnotationView: MKAnnotationView {
 
         // Configure the callout.
         canShowCallout = true
-        rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
+        rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
     }
     
     required init?(coder aDecoder: NSCoder) {

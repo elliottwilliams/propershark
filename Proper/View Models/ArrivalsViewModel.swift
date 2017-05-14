@@ -18,20 +18,20 @@ struct ArrivalsViewModel: SignalChain {
     // TODO - `formatter` and `preemptionTimer` should be a stored property once Swift supports static stored properties 
     // in generic types.
 
-    static var formatter: NSDateComponentsFormatter {
-        let fmt = NSDateComponentsFormatter()
-        fmt.unitsStyle = .Short
-        fmt.allowedUnits = [.Minute]
+    static var formatter: DateComponentsFormatter {
+        let fmt = DateComponentsFormatter()
+        fmt.unitsStyle = .short
+        fmt.allowedUnits = [.minute]
         return fmt
     }
 
     /// Produces a signal that sends the current date immediately and subsequently every second once a second on the main
     /// queue.
-    static var preemptionTimer: SignalProducer<NSDate, NoError> {
+    static var preemptionTimer: SignalProducer<Date, NoError> {
         return SignalProducer() { observer, disposable in
-            observer.sendNext(NSDate())
-            disposable += QueueScheduler.mainQueueScheduler.scheduleAfter(NSDate(timeIntervalSinceNow: 1), repeatingEvery: 1) {
-                observer.sendNext(NSDate())
+            observer.sendNext(Date())
+            disposable += QueueScheduler.mainQueueScheduler.scheduleAfter(Date(timeIntervalSinceNow: 1), repeatingEvery: 1) {
+                observer.sendNext(Date())
             }
         }
     }
@@ -44,13 +44,13 @@ struct ArrivalsViewModel: SignalChain {
 
     /// Produces a (station, arrival) tuple for arrivals of `station`.
     static func timetable(connection: ConnectionType,
-                          when: Timetable.Timing = .between(NSDate(), NSDate(timeIntervalSinceNow: 3600))) ->
-        (producer: SignalProducer<Input, ProperError>) ->
+                          when: Timetable.Timing = .between(Date(), Date(timeIntervalSinceNow: 3600))) ->
+        (_ producer: SignalProducer<Input, ProperError>) ->
         SignalProducer<(MutableStation, Arrival, Timetable.MoreCont), ProperError>
     {
         return { producer in 
-            return producer.flatMap(.Merge, transform: { stationProducer in
-                stationProducer.flatMap(.Latest, transform: { station in
+            return producer.flatMap(.merge, transform: { stationProducer in
+                stationProducer.flatMap(.latest, transform: { station in
                     Timetable.visits(
                         for: station,
                         occurring: when,
@@ -66,7 +66,7 @@ struct ArrivalsViewModel: SignalChain {
     static func activate(producer: SignalProducer<(MutableStation, Arrival, Timetable.MoreCont), ProperError>) ->
         SignalProducer<(MutableStation, Arrival, Arrival.Lifecycle), ProperError>
     {
-        return producer.flatMap(.Merge, transform: { station, arrival, more in
+        return producer.flatMap(.merge, transform: { station, arrival, more in
             arrival.lifecycle.on(next: ({ state in
                 if state == .departed { more() }
             })).map({ state in (station, arrival, state) })
@@ -78,7 +78,7 @@ struct ArrivalsViewModel: SignalChain {
         return arrival.lifecycle.combineLatestWith(preemptionTimer).map({ state, time in
             switch state {
             case .new, .upcoming:
-                return formatter.stringFromDate(time, toDate: arrival.eta) ?? "Upcoming"
+                return formatter.string(from: time, to: arrival.eta) ?? "Upcoming"
             case .due:
                 return "Due"
             case .arrived:

@@ -14,7 +14,7 @@ extension Array {
 
 extension Array where Element: Hashable {
     func indexMap() -> [Element: Index] {
-        return self.enumerate().reduce([:], combine: { acc, pair in
+        return self.enumerated().reduce([:], { acc, pair in
             var dict = acc
             let (i, v) = pair
             dict[v] = i

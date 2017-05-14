@@ -27,7 +27,7 @@ protocol MutableModel: class, Hashable, CustomStringConvertible {
     /// apply updates to the model's properties as they are emitted. Additional signals can be created to receive
     /// failures or inject side effects to topic events.
     var producer: SignalProducer<TopicEvent, ProperError> { get set }
-    func handleEvent(event: TopicEvent) -> Result<(), ProperError>
+    func handle(event: TopicEvent) -> Result<(), ProperError>
     
     /// Initialize all `MutableProperty`s of this `MutableModel` from a corresponding model.
     init(from _: FromModel, connection: ConnectionType) throws
@@ -63,7 +63,7 @@ extension MutableModel {
 
             // For each stored mutable model...
             for model in mutables {
-                if let replacement = new.removeValueForKey(model.identifier) {
+                if let replacement = new.removeValue(forKey: model.identifier) {
                     // ...apply changes from a corresponding static model in `new`...
                     try model.apply(replacement)
                 } else {
@@ -81,8 +81,8 @@ extension MutableModel {
         }
     }
 
-    func attachOrApplyChanges<C: CollectionType, M: MutableModel where C.Generator.Element == M.FromModel>
-        (to mutableSet: MutableProperty<Set<M>>, from new: C?) throws
+    func attachOrApplyChanges<C: Collection, M: MutableModel>
+        (to mutableSet: MutableProperty<Set<M>>, from new: C?) throws where C.Iterator.Element == M.FromModel
     {
         guard let new = new else { return }
         
@@ -103,7 +103,7 @@ extension MutableModel {
         }
     }
 
-    var description: String { return String(Self) + "(\(self.identifier))" }
+    var description: String { return String(describing: Self) + "(\(self.identifier))" }
     var hashValue: Int { return self.identifier.hashValue }
 
     static func create(from: FromModel, connection: ConnectionType) -> Result<Self, ProperError> {
@@ -124,24 +124,24 @@ func ==<M: MutableModel>(a: M.FromModel, b: M) -> Bool {
 }
 
 /// Makes updates from a immutable value to a mutable property containing that value.
-infix operator <- {}
+infix operator <-
 
 /// Makes updates from a immutable array or collection to a mutable property containing that value.
-infix operator <-| {}
+infix operator <-|
 
 /// Modify `mutable` if `source` is non-nil.
 internal func <- <T: Equatable>(mutable: MutableProperty<T?>, source: T?) -> ModifyPropertyResult<T?> {
-    if let value = source where value != mutable.value {
+    if let value = source, value != mutable.value {
         return .modifiedFrom(mutable.swap(value))
     }
     return .unmodified
 }
 
 /// Modify `mutable` if any elements in `source` are different.
-internal func <-| <C: CollectionType, T: Equatable where C.Generator.Element == T>(
-    mutable: MutableProperty<C?>, source: C?) -> ModifyPropertyResult<C?>
+internal func <-| <C: Collection, T: Equatable>(
+    mutable: MutableProperty<C?>, source: C?) -> ModifyPropertyResult<C?> where C.Iterator.Element == T
 {
-    if let source = source where mutable.value == nil || source.elementsEqual(mutable.value!) {
+    if let source = source, mutable.value == nil || source.elementsEqual(mutable.value!) {
         return .modifiedFrom(mutable.swap(source))
     }
     return .unmodified

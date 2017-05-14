@@ -19,7 +19,7 @@ class ModelDecodeTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        let expectation = expectationWithDescription("fixtures")
+        let expectation = self.expectation(description: "fixtures")
         combineLatest(
             Station.rawFixture("stations.BUS100W"),
             Route.rawFixture("routes.4B"),
@@ -31,7 +31,7 @@ class ModelDecodeTests: XCTestCase {
             expectation.fulfill()
         }
         self.continueAfterFailure = false
-        waitForExpectationsWithTimeout(5.0, handler: nil)
+        waitForExpectations(timeout: 5.0, handler: nil)
         self.continueAfterFailure = true
     }
     

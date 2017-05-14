@@ -27,10 +27,10 @@ class StationTableViewController: UITableViewController, ProperViewController {
     // MARK: Methods
     override func viewDidLoad() {
         diffCalculator = TableViewDiffCalculator(tableView: tableView, initialRows: stops.value)
-        tableView.registerNib(UINib(nibName: "StationTableViewCell", bundle: nil), forCellReuseIdentifier: "stationCell")
+        tableView.register(UINib(nibName: "StationTableViewCell", bundle: nil), forCellReuseIdentifier: "stationCell")
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         // Subscribe to route updates.
@@ -40,18 +40,18 @@ class StationTableViewController: UITableViewController, ProperViewController {
         }
     }
 
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         disposable.dispose()
         super.viewWillDisappear(animated)
     }
 
     // MARK: Delegate methods
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int { return 1 }
-    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? { return "Stops" }
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int { return stops.value.count }
+    override func numberOfSections(in tableView: UITableView) -> Int { return 1 }
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? { return "Stops" }
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { return stops.value.count }
 
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("stationCell", forIndexPath: indexPath)
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "stationCell", for: indexPath)
             as! StationTableViewCell
         cell.apply(stops.value[indexPath.row])
         return cell

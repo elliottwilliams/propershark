@@ -13,7 +13,7 @@ func logSignalEvent(identifier: String, event: String, fileName: String, functio
         return
     }
     
-    let maxIdx = event.startIndex.advancedBy(min(250, event.characters.count))
-    let truncated = event.substringToIndex(maxIdx)
+    let maxIdx = event.characters.index(event.startIndex, offsetBy: min(250, event.characters.count))
+    let truncated = event.substring(to: maxIdx)
     NSLog("[\(identifier)] \(truncated)")
 }

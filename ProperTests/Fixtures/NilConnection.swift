@@ -11,7 +11,7 @@ import ReactiveCocoa
 @testable import Proper
 
 class NilConnection: ConnectionType {
-    func call(procedure: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, ProperError> {
+    func call(proc: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, ProperError> {
         // A signal producer that does nothing
         return SignalProducer { _, _ in () }
     }

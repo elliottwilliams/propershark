@@ -32,10 +32,10 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
         
         // Set the instance observer and connect
         self.observer = observer
-        let ws = MDWampTransportWebSocket(server: Config.connection.server,
+        let ws = MDWampTransportWebSocket(server: Config.connection.server as URL!,
                                           protocolVersions: [kMDWampProtocolWamp2msgpack, kMDWampProtocolWamp2json])
         let wamp = MDWamp(transport: ws, realm: Config.connection.realm, delegate: self)
-        wamp.connect()
+        wamp?.connect()
         
         // Return a producer that retries for awhile on in the event of a connection failure...
         return producer
@@ -51,33 +51,33 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
 
     /// Subscribe to `topic` and forward parsed events. Disposing of signals created from this method will unsubscribe
     /// `topic`.
-    func subscribe(topic: String) -> EventProducer {
+    func subscribe(to topic: String) -> EventProducer {
         return self.producer
             .map { wamp in wamp.subscribeWithSignal(topic) }
-            .flatten(.Latest)
+            .flatten(.latest)
             .map { TopicEvent.parseFromTopic(topic, event: $0) }
             .unwrapOrSendFailure(ProperError.eventParseFailure)
             .logEvents(identifier: "Connection.subscribe", logger: logSignalEvent)
     }
 
     /// Call `proc` and forward the result. Disposing the signal created will cancel the RPC call.
-    func call(proc: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> EventProducer {
+    func call(rpc proc: String, with args: WampArgs = [], kwargs: WampKwargs = [:]) -> EventProducer {
         return self.producer.map({ wamp in
             wamp.callWithSignal(proc, args, kwargs, [:])
                 .timeoutWithError(.timeout, afterInterval: 10.0, onScheduler: QueueScheduler.mainQueueScheduler)
             })
-            .flatten(.Latest)
+            .flatten(.latest)
             .map { TopicEvent.parseFromRPC(proc, args, kwargs, $0) }
             .unwrapOrSendFailure(ProperError.eventParseFailure)
     }
 
     // MARK: MDWamp Delegate
-    func mdwamp(wamp: MDWamp!, sessionEstablished info: [NSObject: AnyObject]!) {
+    func mdwamp(_ wamp: MDWamp!, sessionEstablished info: [AnyHashable: Any]!) {
         NSLog("session established")
         self.observer?.sendNext(wamp)
     }
     
-    func mdwamp(wamp: MDWamp!, closedSession code: Int, reason: String!, details: WampKwargs!) {
+    func mdwamp(_ wamp: MDWamp!, closedSession code: Int, reason: String!, details: WampKwargs!) {
         NSLog("session closed, reason: \(reason)")
         
         // MDWamp uses the `explicit_closed` key to indicate a deliberate failure.
@@ -94,7 +94,7 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
 // MARK: MDWamp Extensions
 extension MDWamp {
     /// Follows semantics of `call` but returns a signal producer, rather than taking a result callback.
-    func callWithSignal(procUri: String, _ args: WampArgs, _ argsKw: WampKwargs, _ options: [NSObject: AnyObject])
+    func callWithSignal(_ procUri: String, _ args: WampArgs, _ argsKw: WampKwargs, _ options: [AnyHashable: Any])
         -> SignalProducer<MDWampResult, ProperError>
     {
         return SignalProducer<MDWampResult, ProperError> { observer, _ in
@@ -110,7 +110,7 @@ extension MDWamp {
         }.logEvents(identifier: "MDWamp.callWithSignal", logger: logSignalEvent)
     }
     
-    func subscribeWithSignal(topic: String) -> SignalProducer<MDWampEvent, ProperError> {
+    func subscribeWithSignal(_ topic: String) -> SignalProducer<MDWampEvent, ProperError> {
         return SignalProducer<MDWampEvent, ProperError> { observer, disposable in
             self.subscribe(
                 topic,

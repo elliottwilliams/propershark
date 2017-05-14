@@ -16,7 +16,7 @@ struct Config {
         static let name = "CityBus"
         static let region = MKCoordinateRegionMakeWithDistance(
             CLLocationCoordinate2D(latitude: 40.4206761, longitude: -86.8966437), 4730, 7840)
-        static let timeResolution = NSTimeInterval(30)
+        static let timeResolution = TimeInterval(30)
     }
 
     struct app {
@@ -25,7 +25,7 @@ struct Config {
     }
 
     struct connection {
-        static let server = NSURL(string: "ws://shark-nyc1.transio.us:8080/ws")!
+        static let server = URL(string: "ws://shark-nyc1.transio.us:8080/ws")!
         static let realm = "realm1"
     }
 
@@ -41,6 +41,6 @@ struct Config {
     }
 
     struct ui {
-        static let defaultBadgeColor = UIColor.grayColor()
+        static let defaultBadgeColor = UIColor.gray
     }
 }

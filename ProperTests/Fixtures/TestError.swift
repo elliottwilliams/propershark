@@ -8,6 +8,6 @@
 
 import Foundation
 
-enum TestError: ErrorType {
+enum TestError: Error {
     case modelLoadError
 }

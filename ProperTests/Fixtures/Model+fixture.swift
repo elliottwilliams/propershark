@@ -14,22 +14,22 @@ import Result
 
 extension Decodable where Self.DecodedType == Self {
     /// Look up a decoded model fixture for `identifier`.
-    static func fixture(identifier: String) -> SignalProducer<Self, NoError> {
-        return rawFixture(identifier).map { Argo.decode($0) as Self! }
+    static func fixture(id: String) -> SignalProducer<Self, NoError> {
+        return rawFixture(id).map { Argo.decode($0) as Self! }
     }
 
-    /// Look up a raw model fixture for `identifier`.
+    /// Look up a raw model fixture for `id`.
     /// Returns a SignalProducer that gets the raw (json) form of a module. For now, this searches for
-    /// a `<identifier>.json` file in the test resource bundle, but in the future it could call the server, use a
+    /// a `<id>.json` file in the test resource bundle, but in the future it could call the server, use a
     /// cassette system, etc.
-    static func rawFixture(identifier: String) -> SignalProducer<AnyObject, NoError> {
-        let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+    static func rawFixture(id: String) -> SignalProducer<AnyObject, NoError> {
+        let queue = DispatchQueue.global(DispatchQueue.GlobalQueuePriority.default, 0)
         let scheduler = QueueScheduler(queue: queue, name: "ProperTests.fixtureQueue")
         return SignalProducer { observer, _ in
             dispatch_async(queue) {
                 guard
-                    let bundle = NSBundle(identifier: "ms.elliottwillia.ProperTests"),
-                    let resource = bundle.pathForResource(identifier, ofType: "json"),
+                    let bundle = NSBundle(id: "ms.elliottwillia.ProperTests"),
+                    let resource = bundle.pathForResource(id, ofType: "json"),
                     let data = NSData(contentsOfFile: resource),
                     let json = try? NSJSONSerialization.JSONObjectWithData(data, options: [])
                     else {

@@ -659,7 +659,7 @@
 					26A424AF1BD2C1320035754F = {
 						CreatedOnToolsVersion = 7.0.1;
 						DevelopmentTeam = 9J6UD78U63;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0830;
 						SystemCapabilities = {
 							com.apple.Maps.iOS = {
 								enabled = 1;
@@ -669,7 +669,7 @@
 					26A424C31BD2C1320035754F = {
 						CreatedOnToolsVersion = 7.0.1;
 						DevelopmentTeam = 9J6UD78U63;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0830;
 						TestTargetID = 26A424AF1BD2C1320035754F;
 					};
 					26A424CE1BD2C1320035754F = {
@@ -1018,7 +1018,7 @@
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = us.transio.Proper;
 				PRODUCT_NAME = Proper;
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -1037,7 +1037,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = us.transio.Proper;
 				PRODUCT_NAME = Proper;
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -1050,7 +1050,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ms.elliottwillia.ProperTests;
 				PRODUCT_NAME = ProperTests;
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Proper.app/Proper";
 			};
 			name = Debug;
@@ -1064,7 +1064,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ms.elliottwillia.ProperTests;
 				PRODUCT_NAME = ProperTests;
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Proper.app/Proper";
 			};
 			name = Release;

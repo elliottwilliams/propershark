@@ -11,21 +11,21 @@ import Foundation
 import Argo
 
 extension UIColor: Decodable {
-    public static func decode(json: JSON) -> Decoded<UIColor> {
+    public static func decode(_ json: JSON) -> Decoded<UIColor> {
         switch json {
-        case .String(let hexString):
+        case .string(let hexString):
             return pure(UIColor(hex: hexString))
-        case .Array(let rgbArray):
+        case .array(let rgbArray):
             // Get RGB parameters.
             guard rgbArray.count == 3 || rgbArray.count == 4,
             var r = Double.decode(rgbArray[0]).value,
             var g = Double.decode(rgbArray[1]).value,
             var b = Double.decode(rgbArray[2]).value
             else {
-                return .Failure(.Custom("expected a 3 item RGB array or a 4 item RGBA array containing floats"))
+                return .failure(.custom("expected a 3 item RGB array or a 4 item RGBA array containing floats"))
             }
 
-            var a = Double.decode(rgbArray[safe: 3] ?? .Number(1)).value!
+            var a = Double.decode(rgbArray[safe: 3] ?? .number(1)).value!
 
             // If css-style parameters out of 255 were passed, reduce to a 1.0 scale.
             if max(r, g, b) > 1 {
@@ -35,14 +35,14 @@ extension UIColor: Decodable {
                 a = a/255
             }
 
-            return .Success(UIColor(
+            return .success(UIColor(
                 red: CGFloat(r),
                 green: CGFloat(g),
                 blue: CGFloat(b),
                 alpha: CGFloat(a)
             ))
         default:
-            return .Failure(.TypeMismatch(expected: "string or array", actual: "something else"))
+            return .failure(.typeMismatch(expected: "string or array", actual: "something else"))
         }
     }
 }

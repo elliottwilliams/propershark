@@ -30,9 +30,9 @@ class StationTableViewCell: UITableViewCell {
     func apply(stop: RouteStop<MutableStation>) {
         switch stop {
         case .constant(_):
-            apply(stop.station, withRailShape: .NorthSouth)
+            apply(stop.station, withRailShape: .northSouth)
         case .conditional(_):
-            apply(stop.station, withRailShape: .NorthSouth)
+            apply(stop.station, withRailShape: .northSouth)
         }
     }
 }

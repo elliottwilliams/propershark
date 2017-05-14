@@ -18,8 +18,8 @@ struct Timetable {
     typealias MoreCont = () -> ()
 
     static let defaultLimit = 5
-    static var formatter: NSDateFormatter = {
-        let formatter = NSDateFormatter()
+    static var formatter: DateFormatter = {
+        let formatter = DateFormatter()
         formatter.dateFormat = "yyyyMMdd HH:mm:ss"
         return formatter
     }()
@@ -84,26 +84,26 @@ struct Timetable {
 
     /// RPC-agnostic producer of visits that searches beginning at `timing` and produces arrivals until
     /// interruption or when an outer bound of `timing` is hit.
-    private static func _visits(route route: MutableRoute?,
+    private static func _visits(route: MutableRoute?,
                                 station: MutableStation,
                                 timing: Timing,
                                 connection: ConnectionType,
                                 initialLimit: Int = defaultLimit) -> ArrivalMoreSP
     {
         let visits = ArrivalListMoreSP { observer, disposable in
-            var exclusiveTiming = timing
+            var advanced: Timing
             func send(timing: Timing, count: Int) {
                 // Call Timetable and retrieve arrivals.
                 let proc = rpc(from: timing, route: route != nil)
                 let args: WampArgs = [route?.identifier, station.identifier].flatMap({ $0 })
-                    + timestamps(timing)
+                    + timestamps(for: timing)
                     + [count]
                 let results = connection.call(proc, args: args)
                     |> decodeArrivalTimes(connection)
-                    |> { $0.on(next: { exclusiveTiming = timing.advancedBy(arrivals: $0) }) }
+                    |> { $0.on(next: { advanced = timing.advancedBy(arrivals: $0) }) }
                     |> { $0.map({ arrivals -> (arrivals: [Arrival], more: MoreCont) in
                         // Set up a continuation function that will forward the next arrival when called.
-                        let next = { send(exclusiveTiming, count: 1) }
+                        let next = { send(timing: advanced, count: 1) }
                         return (arrivals, next)
                     })}
                     |> log
@@ -111,31 +111,31 @@ struct Timetable {
                     // Keep the signal open by not sending `completed` messages. Future arrivals resulting from a `more` 
                     // call will be able to flow through the signal.
                     switch event {
-                    case .Next(let value):      observer.sendNext(value)
-                    case .Completed:            break
-                    case .Failed(let error):    observer.sendFailed(error)
-                    case .Interrupted:          observer.sendInterrupted()
+                    case .next(let value):      observer.sendNext(value)
+                    case .completed:            break
+                    case .failed(let error):    observer.sendFailed(error)
+                    case .interrupted:          observer.sendInterrupted()
                     }
                 }
             }
 
             // Get and forward the first set of arrivals for this visit query.
-            send(timing, count: initialLimit)
+            send(timing: timing, count: initialLimit)
         }
-        return visits.flatMap(.Merge, transform: { arrivals, more -> ArrivalMoreSP in
+        return visits.flatMap(.merge, transform: { arrivals, more -> ArrivalMoreSP in
             return SignalProducer(values: arrivals).map({ ($0, more) })
         })
     }
 
     private static func decodeArrivalTimes(connection: ConnectionType) ->
-        (producer: SignalProducer<TopicEvent, ProperError>) -> ArrivalListSP
+        (_ producer: SignalProducer<TopicEvent, ProperError>) -> ArrivalListSP
     {
         return { producer in
             return producer.attemptMap({ event -> Result<Decoded<[Response]>, ProperError> in
-                if case let TopicEvent.Timetable(.arrivals(arrivals)) = event {
-                    return .Success(arrivals)
+                if case let TopicEvent.timetable(.arrivals(arrivals)) = event {
+                    return .success(arrivals)
                 } else {
-                    return .Failure(.eventParseFailure)
+                    return .failure(.eventParseFailure)
                 }
             }).attemptMap({ decoded -> Result<[Response], ProperError> in
                 ProperError.fromDecoded(decoded)
@@ -154,17 +154,17 @@ struct Timetable {
         }
     }
 
-    private static func timestamps(value: Timing) -> [String] {
-        let dates: [NSDate]
+    private static func timestamps(for value: Timing) -> [String] {
+        let dates: [Date]
         switch value {
         case let .before(date):         dates = [date]
         case let .after(date):          dates = [date]
         case let .between(from, to):    dates = [from, to]
         }
-        return dates.map(formatter.stringFromDate)
+        return dates.map(formatter.string(from:))
     }
 
-    private static func log<V, E>(producer: SignalProducer<V, E>) -> SignalProducer<V, E> {
+    private static func log<V, E>(_ producer: SignalProducer<V, E>) -> SignalProducer<V, E> {
         return producer.logEvents(identifier: "Timetable", logger: logSignalEvent)
     }
 }
@@ -174,46 +174,45 @@ struct Timetable {
 extension Timetable {
     // TODO - Investigate if `Timing` can be replaced with a standard Range of Dates.
     enum Timing {
-        case before(NSDate)
-        case after(NSDate)
-        case between(NSDate, NSDate)
+        case before(Date)
+        case after(Date)
+        case between(Date, Date)
 
         /// Returns a timing range that excludes either the first arrival for chronologically ascending timings, or
         /// excluding the last arrival for chronologically descending timings.
-        func advancedBy<Collection: CollectionType where Collection.Generator.Element == Arrival,
-            Collection.Index: BidirectionalIndexType>
-            (arrivals arrivals: Collection) -> Timing
+        func advancedBy<Collection: Swift.Collection>(arrivals: Collection) -> Timing
+            where Collection.Iterator.Element == Arrival, Collection.Index: Comparable
         {
-            guard let first = arrivals.first, last = arrivals.last else {
+            guard let first = arrivals.first, let last = arrivals.last else {
                 return self
             }
             switch self {
             case .before(_):
-                return .before(last.eta.dateByAddingTimeInterval(-1))
+                return .before(last.eta.addingTimeInterval(-1))
             case .after(_):
-                return .after(first.eta.dateByAddingTimeInterval(1))
+                return .after(first.eta.addingTimeInterval(1)) as (Date)
             case .between(let start, let end):
-                let delta = last.eta.timeIntervalSinceDate(start) + 1
-                return .between(start.dateByAddingTimeInterval(delta), end.dateByAddingTimeInterval(delta))
+                let delta = last.eta.timeIntervalSince(start) + 1
+                return .between(start.addingTimeInterval(delta), end.addingTimeInterval(delta))
             }
         }
 
-        func advancedBy(arrival: Arrival) -> Timing {
+        func advancedBy(_ arrival: Arrival) -> Timing {
             return advancedBy(arrivals: [arrival])
         }
 
-        func advancedBy(interval ti: NSTimeInterval) -> Timing {
+        func advancedBy(interval ti: TimeInterval) -> Timing {
             switch self {
             case let .before(end):
-                return .before(end.dateByAddingTimeInterval(-ti))
+                return .before(end.addingTimeInterval(-ti))
             case let .after(start):
-                return .after(start.dateByAddingTimeInterval(ti))
+                return .after(start.addingTimeInterval(ti))
             case let .between(start, end):
-                return .between(start.dateByAddingTimeInterval(ti), end.dateByAddingTimeInterval(ti))
+                return .between(start.addingTimeInterval(ti), end.addingTimeInterval(ti))
             }
         }
 
-        func contains(date: NSDate) -> Bool {
+        func contains(_ date: Date) -> Bool {
             switch self {
             case let .before(end):
                 return date < end
@@ -227,19 +226,19 @@ extension Timetable {
 
     struct Response: Decodable {
         typealias DecodedType = Response
-        let eta: NSDate
-        let etd: NSDate
+        let eta: Date
+        let etd: Date
         let route: Route
         let heading: String?
-        static func decode(json: JSON) -> Decoded<Response> {
+        static func decode(_ json: JSON) -> Decoded<Response> {
             // Decode a 4-tuple: [route, heading, eta, etd]
             return [JSON].decode(json).flatMap({ args in
                 guard args.count == 4 else {
-                    return .Failure(.Custom("Expected an array of size 4"))
+                    return .failure(.custom("Expected an array of size 4"))
                 }
                 return curry(self.init)
-                    <^> NSDate.decode(args[0])
-                    <*> NSDate.decode(args[1])
+                    <^> Date.decode(args[0])
+                    <*> Date.decode(args[1])
                     <*> Route.decode(args[2])
                     <*> Optional<String>.decode(args[3])
             })

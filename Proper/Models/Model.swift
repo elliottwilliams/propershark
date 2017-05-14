@@ -46,28 +46,28 @@ extension Model {
     /// Returns a model ID string without the fully qualified prefix.
     /// Example: `Shark::Vehicle::BUS123 -> BUS123`
     static func unqualify(fullyQualified id: String) -> String {
-        return id.stringByReplacingOccurrencesOfString(Self.fullyQualified + "::", withString: "")
+        return id.replacingOccurrences(of: Self.fullyQualified + "::", with: "")
     }
     /// Returns a model ID string without the namespace.
     /// Example: `routes.1A -> 1A`
     static func unqualify(namespaced id: String) -> String {
-        return id.stringByReplacingOccurrencesOfString(Self.namespace + ".", withString: "")
+        return id.replacingOccurrences(of: Self.namespace + ".", with: "")
     }
 
-    var description: String { return String(Self) + "(\(self.identifier))" }
+    var description: String { return String(describing: Self) + "(\(self.identifier))" }
     var hashValue: Int { return self.identifier.hashValue }
 }
 
 extension Model where Identifier: Decodable, Identifier.DecodedType == Identifier {
     /// Decode an "identifier" key from the given JSON.
-    static func decodeIdentifier(json: JSON) -> Decoded<Identifier> {
+    static func decodeIdentifier(_ json: JSON) -> Decoded<Identifier> {
         return (json <| "identifier")
     }
 }
 
 extension Model where Identifier == String {
     /// Decode an "identifier" key from the given JSON and its namespace prefix.
-    static func decodeNamespacedIdentifier(json: JSON) -> Decoded<Identifier> {
+    static func decodeNamespacedIdentifier(_ json: JSON) -> Decoded<Identifier> {
         return decodeIdentifier(json).map { Self.unqualify(namespaced: $0) }
     }
 }

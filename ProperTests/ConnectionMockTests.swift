@@ -22,13 +22,13 @@ class ConnectionMockTests: XCTestCase {
         super.tearDown()
     }
 
-    func compareEvent(args: WampArgs, _ kwargs: WampKwargs) -> Bool {
+    func compareEvent(_ args: WampArgs, _ kwargs: WampKwargs) -> Bool {
         let hasArgs = (args as? [String])?.contains("foo") ?? false
         let hasKwargs = (kwargs as? [String: String])?["bar"] == "baz"
         return hasArgs && hasKwargs
     }
 
-    func checkEvent(event: TopicEvent) {
+    func checkEvent(_ event: TopicEvent) {
         if case .Meta(.unknownLastEvent(let args, let kwargs)) = event {
             XCTAssertTrue(self.compareEvent(args, kwargs), "Unexpected event")
         } else {
@@ -40,28 +40,28 @@ class ConnectionMockTests: XCTestCase {
         let mock = ConnectionMock()
         mock.on("it", send: event)
 
-        let expectation = expectationWithDescription("callback")
+        let expectation = self.expectation(description: "callback")
         mock.call("it").startWithNext { event in
             self.checkEvent(event)
             expectation.fulfill()
         }
 
-        waitForExpectationsWithTimeout(2, handler: nil)
+        waitForExpectations(timeout: 2, handler: nil)
     }
 
     func testUnexpectedRPC() {
         let mock = ConnectionMock()
 
         mock.call("it").on(event: { event in
-            XCTFail("\(event.dynamicType) was received even though no RPC call was defined")
+            XCTFail("\(type(of: event)) was received even though no RPC call was defined")
         }).start()
     }
 
     func testPubSub() {
         let mock = ConnectionMock()
-        let expectationA = expectationWithDescription("first callback")
+        let expectationA = expectation(description: "first callback")
         var fulfilled = false
-        let expectationB = expectationWithDescription("second callback")
+        let expectationB = expectation(description: "second callback")
         mock.subscribe("it").startWithNext { event in
             self.checkEvent(event)
             if !fulfilled {
@@ -78,7 +78,7 @@ class ConnectionMockTests: XCTestCase {
         // but not on another topic
         mock.publish(to: "not_it", event: event)
 
-        waitForExpectationsWithTimeout(2, handler: nil)
+        waitForExpectations(timeout: 2, handler: nil)
     }
 
     func testUnsubscribe() {
@@ -92,13 +92,13 @@ class ConnectionMockTests: XCTestCase {
     }
 
     func testSubscribeCallback() {
-        let expectation = expectationWithDescription("subscribed callback")
+        let expectation = self.expectation(description: "subscribed callback")
         let mock = ConnectionMock(onSubscribe: { topic in
             XCTAssertEqual(topic, "it")
             expectation.fulfill()
         })
         mock.subscribe("it")
-        waitForExpectationsWithTimeout(2, handler: nil)
+        waitForExpectations(timeout: 2, handler: nil)
     }
 
     func testSubscribedQuery() {

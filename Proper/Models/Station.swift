@@ -45,9 +45,9 @@ struct Station: Model {
 }
 
 extension Station: Decodable {
-    static func decode(json: JSON) -> Decoded<Station> {
+    static func decode(_ json: JSON) -> Decoded<Station> {
         switch json {
-        case .String(let id):
+        case .string(let id):
             let stopCode = Station.unqualify(namespaced: id)
             return pure(Station(id: stopCode))
         default:
