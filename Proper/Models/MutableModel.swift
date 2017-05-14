@@ -30,11 +30,13 @@ protocol MutableModel: class, Hashable, CustomStringConvertible {
     func handleEvent(event: TopicEvent) -> Result<(), ProperError>
     
     /// Initialize all `MutableProperty`s of this `MutableModel` from a corresponding model.
-    init(from _: FromModel, delegate: MutableModelDelegate, connection: ConnectionType) throws
-    var delegate: MutableModelDelegate { get }
-    
+    init(from _: FromModel, connection: ConnectionType) throws
+
     /// Update state to match the model given. Throws ProperError if a consistency check fails.
     func apply(_: FromModel) throws
+
+    /// Decompose the mutable model's current state down to a static model.
+    func snapshot() -> FromModel
 
     var connection: ConnectionType { get }
 
@@ -45,7 +47,7 @@ extension MutableModel {
 
     /// Create a MutableModel from a static model and attach it to the calling MutableModel's delegate.
     internal func attachMutable<M: MutableModel>(from model: M.FromModel) throws -> M {
-        return try M(from: model, delegate: self.delegate, connection: self.connection)
+        return try M(from: model, connection: self.connection)
     }
 
     /// Create and insert new MutableModels to a given set, remove old ones, and apply changes from
@@ -103,17 +105,9 @@ extension MutableModel {
 
     var description: String { return String(Self) + "(\(self.identifier))" }
     var hashValue: Int { return self.identifier.hashValue }
-}
 
-protocol MutableModelDelegate {
-    /// Called when a model's producer receives a topic event it does not handle.
-    func mutableModel<M: MutableModel>(model: M, receivedTopicEvent event: TopicEvent)
-}
-
-extension MutableModelDelegate {
-    // Default implementation for `receivedTopicEvent` delegate method
-    func mutableModel<M: MutableModel>(model: M, receivedTopicEvent event: TopicEvent) {
-        // do nothing
+    static func create(from: FromModel, connection: ConnectionType) -> Result<Self, ProperError> {
+        return ProperError.capture({ try Self(from: from, connection: connection) })
     }
 }
 

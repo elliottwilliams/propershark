@@ -9,12 +9,12 @@
 import Foundation
 import Argo
 import ReactiveCocoa
+import Result
 @testable import Proper
 
-extension Model where Self: Decodable, Self.DecodedType == Self {
-
+extension Decodable where Self.DecodedType == Self {
     /// Look up a decoded model fixture for `identifier`.
-    static func fixture(identifier: String) -> SignalProducer<Self, TestError> {
+    static func fixture(identifier: String) -> SignalProducer<Self, NoError> {
         return rawFixture(identifier).map { Argo.decode($0) as Self! }
     }
 
@@ -22,7 +22,7 @@ extension Model where Self: Decodable, Self.DecodedType == Self {
     /// Returns a SignalProducer that gets the raw (json) form of a module. For now, this searches for
     /// a `<identifier>.json` file in the test resource bundle, but in the future it could call the server, use a
     /// cassette system, etc.
-    static func rawFixture(identifier: String) -> SignalProducer<AnyObject, TestError> {
+    static func rawFixture(identifier: String) -> SignalProducer<AnyObject, NoError> {
         let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
         let scheduler = QueueScheduler(queue: queue, name: "ProperTests.fixtureQueue")
         return SignalProducer { observer, _ in
@@ -33,8 +33,7 @@ extension Model where Self: Decodable, Self.DecodedType == Self {
                     let data = NSData(contentsOfFile: resource),
                     let json = try? NSJSONSerialization.JSONObjectWithData(data, options: [])
                     else {
-                        observer.sendFailed(.modelLoadError)
-                        return
+                        fatalError("Model load error")
                 }
                 observer.sendNext(json)
                 observer.sendCompleted()

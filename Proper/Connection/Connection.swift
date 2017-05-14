@@ -11,13 +11,6 @@ import MDWamp
 import ReactiveCocoa
 import Result
 
-extension ConnectionType {
-    // Convenience method to call a procedure while omitting args and/or kwargs
-    func call(procedure: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> EventProducer {
-        return self.call(procedure, args: args, kwargs: kwargs)
-    }
-}
-
 class Connection: NSObject, MDWampClientDelegate, ConnectionType {
     
     static var sharedInstance = Connection.init()

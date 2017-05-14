@@ -17,7 +17,6 @@ class MutableRouteTests: XCTestCase, MutableModelTestSpec {
     var model: Route!
     var mutable: MutableRoute!
 
-    let delegate = MutableModelDelegateMock()
     let modifiedRoute = Route(shortName: "4B", name: "~modified")
     let mock = ConnectionMock()
 
@@ -27,7 +26,7 @@ class MutableRouteTests: XCTestCase, MutableModelTestSpec {
         let expectation = expectationWithDescription("fixtures")
         Route.fixture("routes.4B").startWithNext { model in
             self.model = model
-            self.mutable = try! MutableRoute(from: model, delegate: self.delegate, connection: self.mock)
+            self.mutable = try! MutableRoute(from: model, connection: self.mock)
             expectation.fulfill()
         }
         self.continueAfterFailure = false
@@ -62,7 +61,7 @@ class MutableRouteTests: XCTestCase, MutableModelTestSpec {
     func testMappedItinerary() {
         // Given a set of static stations, an associated mutable station set and an itinerary...
         let stations = [Station(id: "s1"), Station(id: "s2"), Station(id: "s3"), Station(id: "s4")]
-        let associatedStations = Set(stations.map { try! MutableStation(from: $0, delegate: delegate, connection: mock) })
+        let associatedStations = Set(stations.map { try! MutableStation(from: $0, connection: mock) })
         let itinerary = [stations[0], stations[1], stations[2], stations[0], stations[1], stations[2], stations[0],
                          stations[1], stations[2]]
 

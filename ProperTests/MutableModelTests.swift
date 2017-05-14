@@ -15,7 +15,6 @@ class MutableModelTests: XCTestCase {
 
     var route: MutableRoute!
     var mock: ConnectionMock!
-    let defaultDelegate = MutableModelDelegateMock()
 
     var stations: [String]!
 
@@ -26,7 +25,7 @@ class MutableModelTests: XCTestCase {
 
         let expectation = expectationWithDescription("fixtures")
         Route.fixture("routes.4B").startWithNext { model in
-            self.route = try! MutableRoute(from: model, delegate: self.defaultDelegate, connection: self.mock)
+            self.route = try! MutableRoute(from: model, connection: self.mock)
             expectation.fulfill()
         }
         self.continueAfterFailure = false

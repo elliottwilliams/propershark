@@ -19,7 +19,6 @@ class MutableVehicle: MutableModel, Comparable {
 
     // MARK: Internal Properties
     internal let connection: ConnectionType
-    internal var delegate: MutableModelDelegate
     private static let retryAttempts = 3
 
     // MARK: Vehicle Support
@@ -51,31 +50,24 @@ class MutableVehicle: MutableModel, Comparable {
     }()
 
     // MARK: Functions
-    required init(from vehicle: Vehicle, delegate: MutableModelDelegate, connection: ConnectionType) throws {
+    required init(from vehicle: Vehicle, connection: ConnectionType) throws {
         self.name = vehicle.name
-        self.delegate = delegate
         self.connection = connection
         try apply(vehicle)
     }
 
     func handleEvent(event: TopicEvent) -> Result<(), ProperError> {
         if let error = event.error {
-            return .Failure(.decodeFailure(error: error))
+            return .Failure(.decodeFailure(error))
         }
 
-        do {
+        return ProperError.capture({
             switch event {
             case .Vehicle(.update(let vehicle, _)):
                 try self.apply(vehicle.value!)
-            default:
-                self.delegate.mutableModel(self, receivedTopicEvent: event)
+            default: break
             }
-        } catch let error as ProperError {
-            return .Failure(error)
-        } catch {
-            return .Failure(.unexpected(error: error))
-        }
-        return .Success()
+        })
     }
 
     func apply(vehicle: Vehicle) throws {
@@ -95,6 +87,14 @@ class MutableVehicle: MutableModel, Comparable {
         try attachOrApply(to: lastStation, from: vehicle.lastStation)
         try attachOrApply(to: nextStation, from: vehicle.nextStation)
         try attachOrApply(to: route, from: vehicle.route)
+    }
+
+    func snapshot() -> FromModel {
+        return Vehicle(name: name, code: code.value, position: position.value, capacity: capacity.value,
+                       onboard: onboard.value, saturation: saturation.value,
+                       lastStation: lastStation.value?.snapshot(), nextStation: nextStation.value?.snapshot(),
+                       route: route.value?.snapshot(), scheduleDelta: scheduleDelta.value, heading: heading.value,
+                       speed: speed.value)
     }
 }
 

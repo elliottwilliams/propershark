@@ -153,18 +153,18 @@ class StartListViewController: UITableViewController, ProperViewController {
                 let index = self.tableView.indexPathForSelectedRow
                 else { break }
             let station = self.pinnedStations.value[index.row]
-            dest.station = try! MutableStation(from: station, delegate: dest, connection: Connection.cachedInstance)
+            dest.station = try! MutableStation(from: station, connection: Connection.cachedInstance)
         case "ShowStationAfterSelectionFromList":
             guard let dest = segue.destinationViewController as? StationViewController,
                 let index = self.tableView.indexPathForSelectedRow
                 else { break }
             let station = self.stations[index.row]
-            dest.station = try! MutableStation(from: station, delegate: dest, connection: Connection.cachedInstance)
+            dest.station = try! MutableStation(from: station, connection: Connection.cachedInstance)
         case "ShowRouteAfterSelectionFromList":
             let dest = segue.destinationViewController as! RouteViewController
             let index = self.tableView.indexPathForSelectedRow!
             let route = self.routes[index.row]
-            dest.route = try! MutableRoute(from: route, delegate: dest, connection: self.connection)
+            dest.route = try! MutableRoute(from: route, connection: self.connection)
         default:
             break
         }

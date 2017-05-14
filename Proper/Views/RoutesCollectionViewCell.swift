@@ -10,7 +10,7 @@ import UIKit
 import ReactiveCocoa
 
 class RoutesCollectionViewCell: UICollectionViewCell {
-    @IBOutlet var badge: RouteBadge!
+    @IBOutlet var badge: BadgeView!
     var disposable = CompositeDisposable()
 
     override func awakeFromNib() {
@@ -21,5 +21,12 @@ class RoutesCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         disposable.dispose()
         super.prepareForReuse()
+    }
+
+    func apply(route: MutableRoute) {
+        disposable += route.color.producer.startWithNext { color in
+            _ = color.flatMap { self.badge.color = $0 }
+        }
+        badge.routeNumber = route.shortName
     }
 }

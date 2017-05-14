@@ -11,8 +11,7 @@ import ReactiveCocoa
 import Result
 @testable import Proper
 
-class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, MutableModelDelegate {
-
+class ArrivalsTableViewControllerTests: XCTestCase {
     var station: MutableStation!
     var mock: ConnectionMock!
     var controller: ArrivalsTableViewController!
@@ -25,8 +24,8 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
 
         let expectation = expectationWithDescription("fixtures")
         Station.fixture("stations.BUS100W").startWithNext { model in
-            self.station = try! MutableStation(from: model, delegate: MutableModelDelegateMock(), connection: self.mock)
-            self.controller = ArrivalsTableViewController(observing: self.station, delegate: self, style: .Plain, connection: self.mock)
+            self.station = try! MutableStation(from: model, connection: self.mock)
+            self.controller = ArrivalsTableViewController(observing: self.station, style: .Plain, connection: self.mock)
             expectation.fulfill()
         }
         self.continueAfterFailure = false
@@ -135,11 +134,4 @@ class ArrivalsTableViewControllerTests: XCTestCase, ArrivalsTableViewDelegate, M
         // Then the list of vehicles should have values from routeA.
         XCTAssertEqual(controller.vehicles.value.map { $0.identifier }.sort(), ["v1", "v2", "v3"])
     }
-
-
-    // MARK: Delegate Methods
-    func arrivalsTable(selectedVehicle vehicle: MutableVehicle, indexPath: NSIndexPath) { }
-    func arrivalsTable(receivedError error: ProperError) { }
-    func mutableModel<M: MutableModel>(model: M, receivedError error: ProperError) { }
-    func mutableModel<M: MutableModel>(model: M, receivedTopicEvent event: TopicEvent) { }
 }

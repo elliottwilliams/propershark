@@ -16,11 +16,30 @@
             <rect key="frame" x="0.0" y="0.0" width="400" height="90"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="g39-MD-gHE" id="Ktx-4F-rJz">
-                <rect key="frame" x="0.0" y="0.0" width="367" height="89"/>
+                <rect key="frame" x="0.0" y="0.0" width="367" height="90"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
+                    <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gMX-gL-jnt" customClass="TransitLabel" customModule="Proper" customModuleProvider="target">
+                        <rect key="frame" x="8" y="28" width="41" height="14"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" delaysContentTouches="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="yl3-WI-tGU">
+                        <rect key="frame" x="8" y="50" width="351" height="34"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="34" id="6bp-oT-V4G"/>
+                        </constraints>
+                        <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="tLD-ha-DHg">
+                            <size key="itemSize" width="30" height="30"/>
+                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        </collectionViewFlowLayout>
+                    </collectionView>
                     <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HNo-Xa-pEl" userLabel="Title" customClass="TransitLabel" customModule="Proper" customModuleProvider="target">
-                        <rect key="frame" x="15" y="5" width="32" height="20"/>
+                        <rect key="frame" x="8" y="8" width="32" height="20"/>
                         <constraints>
                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="90" id="378-Mg-EB9"/>
                             <constraint firstAttribute="width" constant="442" id="cjf-oz-tQp"/>
@@ -30,36 +49,22 @@
                         <nil key="highlightedColor"/>
                         <variation key="default">
                             <mask key="constraints">
-                                <exclude reference="cjf-oz-tQp"/>
                                 <exclude reference="378-Mg-EB9"/>
+                                <exclude reference="cjf-oz-tQp"/>
                             </mask>
                         </variation>
                     </label>
-                    <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gMX-gL-jnt" customClass="TransitLabel" customModule="Proper" customModuleProvider="target">
-                        <rect key="frame" x="15" y="25" width="41" height="14"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
-                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <nil key="highlightedColor"/>
-                    </label>
-                    <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" delaysContentTouches="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="yl3-WI-tGU">
-                        <rect key="frame" x="15" y="47" width="352" height="34"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="tLD-ha-DHg">
-                            <size key="itemSize" width="30" height="30"/>
-                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                        </collectionViewFlowLayout>
-                    </collectionView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="HNo-Xa-pEl" firstAttribute="leading" secondItem="Ktx-4F-rJz" secondAttribute="leading" constant="15" id="5M8-5X-Ojj"/>
                     <constraint firstItem="HNo-Xa-pEl" firstAttribute="top" secondItem="Ktx-4F-rJz" secondAttribute="topMargin" constant="-3" placeholder="YES" id="F07-cr-o0v"/>
+                    <constraint firstItem="HNo-Xa-pEl" firstAttribute="leading" secondItem="Ktx-4F-rJz" secondAttribute="leadingMargin" id="F17-o3-fId"/>
+                    <constraint firstItem="gMX-gL-jnt" firstAttribute="leading" secondItem="Ktx-4F-rJz" secondAttribute="leadingMargin" id="HlA-Zv-fDl"/>
+                    <constraint firstAttribute="trailing" secondItem="yl3-WI-tGU" secondAttribute="trailing" constant="8" id="Idx-n4-rLn"/>
+                    <constraint firstItem="yl3-WI-tGU" firstAttribute="top" secondItem="gMX-gL-jnt" secondAttribute="bottom" constant="8" id="SVC-64-bCw"/>
                     <constraint firstItem="gMX-gL-jnt" firstAttribute="top" secondItem="HNo-Xa-pEl" secondAttribute="bottom" placeholder="YES" id="XI0-RZ-kY4"/>
                     <constraint firstItem="gMX-gL-jnt" firstAttribute="top" secondItem="HNo-Xa-pEl" secondAttribute="bottom" id="cMS-Ob-i9R"/>
-                    <constraint firstItem="HNo-Xa-pEl" firstAttribute="top" secondItem="Ktx-4F-rJz" secondAttribute="topMargin" constant="-3" id="vLg-40-10Y"/>
-                    <constraint firstItem="gMX-gL-jnt" firstAttribute="leading" secondItem="Ktx-4F-rJz" secondAttribute="leading" constant="15" id="ytm-04-tMG"/>
+                    <constraint firstItem="yl3-WI-tGU" firstAttribute="leading" secondItem="Ktx-4F-rJz" secondAttribute="leadingMargin" id="jLM-8v-h7d"/>
+                    <constraint firstItem="HNo-Xa-pEl" firstAttribute="top" secondItem="Ktx-4F-rJz" secondAttribute="topMargin" id="vLg-40-10Y"/>
                 </constraints>
                 <variation key="default">
                     <mask key="constraints">

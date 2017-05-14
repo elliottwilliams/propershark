@@ -10,6 +10,7 @@ import Foundation
 import Argo
 import Curry
 import CoreLocation
+import MapKit
 
 struct Point: Equatable {
     let lat: Double
@@ -23,6 +24,15 @@ struct Point: Equatable {
     init(lat: Double, long: Double) {
         self.lat = lat
         self.long = long
+    }
+
+    init(coordinate: CLLocationCoordinate2D) {
+        self.lat = coordinate.latitude
+        self.long = coordinate.longitude
+    }
+
+    func distanceFrom(point: Point) -> CLLocationDistance {
+        return CLLocation(point: point).distanceFromLocation(CLLocation(point: self))
     }
 }
 
@@ -47,6 +57,8 @@ extension Point: Decodable {
     }
 }
 
+// MARK: Type conversion
+
 extension CLLocation {
     convenience init(point: Point) {
         self.init(latitude: point.lat, longitude: point.long)
@@ -56,5 +68,11 @@ extension CLLocation {
 extension CLLocationCoordinate2D {
     init(point: Point) {
         self.init(latitude: point.lat, longitude: point.long)
+    }
+}
+
+extension MKMapPoint {
+    init(point: Point) {
+        self = MKMapPointForCoordinate(CLLocationCoordinate2D(point: point))
     }
 }

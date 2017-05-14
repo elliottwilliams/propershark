@@ -19,7 +19,7 @@ extension SignalType where Value: AnyObject, Error == ProperError {
             let decoded = M.decode(JSON(object))
             switch decoded {
             case Decoded.Failure(let error):
-                return .Failure(.decodeFailure(error: error))
+                return .Failure(.decodeFailure(error))
             case Decoded.Success(let model):
                 return .Success(model)
             }

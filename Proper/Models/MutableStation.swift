@@ -11,14 +11,13 @@ import ReactiveCocoa
 import Result
 import Argo
 
-class MutableStation: MutableModel {
+class MutableStation: MutableModel, Comparable {
     typealias FromModel = Station
     typealias RouteType = MutableRoute
     typealias VehicleType = MutableVehicle
 
     // MARK: Interal Properties
     internal let connection: ConnectionType
-    internal var delegate: MutableModelDelegate
     private static let retryAttempts = 3
 
     // MARK: Station Support
@@ -33,6 +32,10 @@ class MutableStation: MutableModel {
     var routes: MutableProperty<Set<RouteType>> = .init(Set())
     var vehicles: MutableProperty<Set<VehicleType>> = .init(Set())
 
+    lazy var sortedVehicles: AnyProperty<[VehicleType]> = {
+        return AnyProperty(initialValue: [], producer: self.vehicles.producer.map { $0.sort() })
+    }()
+
     // MARK: Signal Producer
     lazy var producer: SignalProducer<TopicEvent, ProperError> = {
         let now = self.connection.call("meta.last_event", args: [self.topic, self.topic])
@@ -43,31 +46,24 @@ class MutableStation: MutableModel {
             .attempt(self.handleEvent)
     }()
 
-    required init(from station: Station, delegate: MutableModelDelegate, connection: ConnectionType) throws {
+    required init(from station: Station, connection: ConnectionType) throws {
         self.stopCode = station.stopCode
-        self.delegate = delegate
         self.connection = connection
         try apply(station)
     }
 
     func handleEvent(event: TopicEvent) -> Result<(), ProperError> {
         if let error = event.error {
-            return .Failure(.decodeFailure(error: error))
+            return .Failure(.decodeFailure(error))
         }
 
-        do {
+        return ProperError.capture({
             switch event {
             case .Station(.update(let station, _)):
                 try self.apply(station.value!)
-            default:
-                self.delegate.mutableModel(self, receivedTopicEvent: event)
+            default: break
             }
-        } catch let error as ProperError {
-            return .Failure(error)
-        } catch {
-            return .Failure(.unexpected(error: error))
-        }
-        return .Success()
+        })
     }
 
     func apply(station: Station) throws {
@@ -81,6 +77,12 @@ class MutableStation: MutableModel {
         
         try attachOrApplyChanges(to: self.routes, from: station.routes)
         try attachOrApplyChanges(to: self.vehicles, from: station.vehicles)
+    }
+
+    func snapshot() -> FromModel {
+        return Station(stopCode: stopCode, name: name.value, description: description.value, position: position.value,
+                       routes: routes.value.map({ $0.snapshot() }),
+                       vehicles: vehicles.value.map({ $0.snapshot() }))
     }
 
 
@@ -106,6 +108,26 @@ class MutableStation: MutableModel {
             station.name.map { self.title = $0 }
             station.description.map { self.subtitle = $0 }
         }
+    }
+}
+
+func < (a: MutableStation, b: MutableStation) -> Bool {
+    return a.identifier < b.identifier
+}
+
+extension CollectionType where Generator.Element: MutableStation {
+    /// Order by geographic distance from `point`, ascending. Stations in the collection without a defined position will
+    /// appear at the end of the ordering.
+    func sortDistanceTo(point: Point) -> [Generator.Element] {
+        return self.sort({ a, b in
+            // Stations with undefined positions should float to the end.
+            guard let aPosition = a.position.value else { return false }
+            guard let bPosition = b.position.value else { return true }
+
+            let loc = CLLocation(point: point)
+            return loc.distanceFromLocation(CLLocation(point: aPosition)) <
+                loc.distanceFromLocation(CLLocation(point: bPosition))
+        })
     }
 }
 

@@ -14,7 +14,6 @@ import Result
 class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
     var station: MutableStation!
-    var delegate: ArrivalsTableViewDelegate!
 
     // MARK: Internal properties
     internal var connection: ConnectionType = Connection.cachedInstance
@@ -53,14 +52,11 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
         return AnyProperty(initialValue: Set(), producer: producer)
     }()
 
-
     // MARK: Methods
-    convenience init(observing station: MutableStation, delegate: ArrivalsTableViewDelegate, style: UITableViewStyle,
-                               connection: ConnectionType)
+    convenience init(observing station: MutableStation, style: UITableViewStyle, connection: ConnectionType)
     {
         self.init(style: style)
         self.station = station
-        self.delegate = delegate
         self.connection = connection
     }
 
@@ -71,18 +67,18 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
         // Create a controller to manage the routes collection view within the table.
         routesCollectionModel = RoutesCollectionViewModel(routes: AnyProperty(station.routes))
+
+        // Register the arrival nib for use in the table.
+        tableView.registerNib(UINib(nibName: "ArrivalTableViewCell", bundle: nil), forCellReuseIdentifier: "arrivalCell")
     }
 
     override func viewDidAppear(animated: Bool) {
-        // Follow changes to the station.
-        disposable += station.producer.startWithFailed(self.delegate.arrivalsTable(receivedError:))
-
         // Follow changes to routes on the station. As routes are associated and disassociated, maintain signals on all
         // current routes, so that vehicle information can be obtained. Dispose these signals as routes go away.
         disposable += station.routes.producer.combinePrevious(Set())
             .startWithNext { old, new in
                 new.subtract(old).forEach { route in
-                    self.routeDisposables[route] = route.producer.startWithFailed(self.delegate.arrivalsTable(receivedError:))
+                    self.routeDisposables[route] = route.producer.startWithFailed(self.displayError)
                     self.disposable += self.routeDisposables[route]
                 }
                 old.subtract(new).forEach { route in
@@ -105,25 +101,10 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
     // Bind vehicle attributes to a given cell
     func arrivalCell(for indexPath: NSIndexPath) -> ArrivalTableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("Arrival", forIndexPath: indexPath) as! ArrivalTableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("arrivalCell", forIndexPath: indexPath) as! ArrivalTableViewCell
         let vehicle = diffCalculator.rows[indexPath.row]
 
-        // Bind vehicle attributes
-        cell.vehicleName.text = "(Bus #\(vehicle.name))"
-        cell.disposable += vehicle.saturation.producer.ignoreNil().startWithNext { cell.badge.capacity = CGFloat($0) }
-        cell.disposable += vehicle.scheduleDelta.producer.startWithNext { cell.routeTimer.text = "∆\($0) min" }
-
-        guard let route = vehicle.route.value else {
-            // Vehicles here should have a route (since we got them by traversing along a route). If not available,
-            // consider displaying a loading indicator.
-            return cell
-        }
-
-        // Bind route attributes
-        cell.badge.routeNumber = route.shortName
-        cell.disposable += route.name.producer.startWithNext { cell.routeTitle.text = $0 }
-        cell.disposable += route.color.producer.ignoreNil().startWithNext { cell.badge.color = $0 }
-
+//        cell.apply(vehicle)
         return cell
     }
 
@@ -131,7 +112,7 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
     // at start. Since there is only one routes collection cell (its `numbersOfRows` call always returns 1), the
     // assignment onto `routesCollection` won't overwrite some other cell.
     func routesCollectionCell(for indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("RoutesCollection", forIndexPath: indexPath) as! ArrivalTableRouteCollectionCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("routesCollectionCell", forIndexPath: indexPath) as! ArrivalTableRouteCollectionCell
         cell.bind(routesCollectionModel)
         
         // Store a weak reference to the cell's collection view so that we can examine its state without needing a
@@ -176,12 +157,6 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
         }
     }
 }
-
-protocol ArrivalsTableViewDelegate: MutableModelDelegate {
-    func arrivalsTable(selectedVehicle vehicle: MutableVehicle, indexPath: NSIndexPath)
-    func arrivalsTable(receivedError error: ProperError)
-}
-
 
 
 struct VehicleOnRoute: Equatable {

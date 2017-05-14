@@ -10,12 +10,12 @@ import UIKit
 import ReactiveCocoa
 import Result
 
-class RouteViewController: UIViewController, ProperViewController, MutableModelDelegate {
+class RouteViewController: UIViewController, ProperViewController {
 
     var route: MutableRoute!
 
     // MARK: UI references
-    @IBOutlet weak var badge: RouteBadge!
+    @IBOutlet weak var badge: BadgeView!
     @IBOutlet weak var infoContainer: UIView!
     @IBOutlet weak var navItem: TransitNavigationItem!
 

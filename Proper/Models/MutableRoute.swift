@@ -18,7 +18,6 @@ class MutableRoute: MutableModel, Comparable {
 
     // MARK: Internal Properties
     internal let connection: ConnectionType
-    internal var delegate: MutableModelDelegate
     private static let retryAttempts = 3
 
     // MARK: Route Support
@@ -48,9 +47,8 @@ class MutableRoute: MutableModel, Comparable {
     }()
 
     // MARK: Functions
-    required init(from route: Route, delegate: MutableModelDelegate, connection: ConnectionType) throws {
+    required init(from route: Route, connection: ConnectionType) throws {
         self.shortName = route.shortName
-        self.delegate = delegate
         self.connection = connection
         try apply(route)
 
@@ -63,25 +61,19 @@ class MutableRoute: MutableModel, Comparable {
 
     func handleEvent(event: TopicEvent) -> Result<(), ProperError> {
         if let error = event.error {
-            return .Failure(.decodeFailure(error: error))
+            return .Failure(.decodeFailure(error))
         }
 
-        do {
+        return ProperError.capture({
             switch event {
             case .Route(.update(let route, _)):
                 try self.apply(route.value!)
             case .Route(.vehicleUpdate(let vehicle, _)):
                 // If any vehicles on this route match `vehicle`, update their information to match `vehicle`.
                 try self.vehicles.value.filter { $0 == vehicle.value! }.forEach { try $0.apply(vehicle.value!) }
-            default:
-                self.delegate.mutableModel(self, receivedTopicEvent: event)
+            default: break
             }
-        } catch let error as ProperError {
-            return .Failure(error)
-        } catch {
-            return .Failure(.unexpected(error: error))
-        }
-        return .Success()
+        })
     }
 
     func apply(route: Route) throws {
@@ -123,6 +115,14 @@ class MutableRoute: MutableModel, Comparable {
             }
             return mutable
         }
+    }
+
+    func snapshot() -> FromModel {
+        return Route(shortName: shortName, code: code.value, name: name.value, description: description.value,
+                     color: color.value, path: path.value,
+                     stations: stations.value.map({ $0.snapshot() }),
+                     vehicles: vehicles.value.map({ $0.snapshot() }),
+                     itinerary: itinerary.value?.map({ $0.snapshot() }))
     }
 }
 
