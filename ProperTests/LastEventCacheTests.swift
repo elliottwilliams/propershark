@@ -8,7 +8,7 @@
 
 import XCTest
 import Argo
-import ReactiveCocoa
+import ReactiveSwift
 
 @testable import Proper
 

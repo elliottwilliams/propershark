@@ -7,19 +7,19 @@
 //
 
 import UIKit
-import ReactiveCocoa
+import ReactiveSwift
 import Dwifft
 
 /// A data source for a collection view of route badges.
 class RoutesCollectionViewModel: NSObject, UICollectionViewDataSource, UICollectionViewDelegate {
-    var routes: AnyProperty<[MutableRoute]>
+    var routes: Property<[MutableRoute]>
 
-    init(routes: AnyProperty<Set<MutableRoute>>) {
+    init(routes: Property<Set<MutableRoute>>) {
         self.routes = routes.map { $0.sorted() }
     }
 
     init(station: MutableStation) {
-        self.routes = AnyProperty(initialValue: [], producer: station.routes.producer.map({ $0.sorted() }))
+        self.routes = Property(initial: [], then: station.routes.producer.map({ $0.sorted() }))
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -38,7 +38,7 @@ class RoutesCollectionViewModel: NSObject, UICollectionViewDataSource, UICollect
         CATransaction.setDisableActions(true)
 
         // Bind to route attributes.
-        cell.disposable += route.color.producer.ignoreNil().startWithNext { cell.badge.color = $0 }
+        cell.disposable += route.color.producer.skipNil().startWithValues { cell.badge.color = $0 }
         cell.badge.routeNumber = route.shortName
 
         CATransaction.commit()

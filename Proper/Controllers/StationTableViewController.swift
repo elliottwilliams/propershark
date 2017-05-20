@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import ReactiveCocoa
+import ReactiveSwift
 import Dwifft
 
 class StationTableViewController: UITableViewController, ProperViewController {
@@ -19,9 +19,9 @@ class StationTableViewController: UITableViewController, ProperViewController {
     internal let disposable = CompositeDisposable()
 
     // MARK: Signalled properties
-    lazy var stops: AnyProperty<[RouteStop<MutableRoute.StationType>]> = {
-        let producer = self.route.canonical.producer.ignoreNil().map { $0.stations }
-        return AnyProperty(initialValue: [], producer: producer)
+    lazy var stops: Property<[RouteStop<MutableRoute.StationType>]> = {
+        let producer = self.route.canonical.producer.skipNil().map { $0.stations }
+        return Property(initial: [], then: producer)
     }()
 
     // MARK: Methods
@@ -35,7 +35,7 @@ class StationTableViewController: UITableViewController, ProperViewController {
 
         // Subscribe to route updates.
         disposable += route.producer.startWithFailed(self.displayError)
-        disposable += stops.producer.startWithNext { stops in
+        disposable += stops.producer.startWithValues { stops in
             self.diffCalculator.rows = stops
         }
     }
@@ -53,7 +53,7 @@ class StationTableViewController: UITableViewController, ProperViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "stationCell", for: indexPath)
             as! StationTableViewCell
-        cell.apply(stops.value[indexPath.row])
+        cell.apply(stop: stops.value[indexPath.row])
         return cell
     }
 }

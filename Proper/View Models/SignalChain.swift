@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 
 protocol SignalChain {
@@ -22,6 +22,6 @@ extension SignalChain {
     static func chain(connection: ConnectionType, producer: SignalProducer<Input, NoError>) ->
         SignalProducer<Output, ProperError>
     {
-        return chain(connection, producer: producer.promoteErrors(ProperError))
+        return chain(connection: connection, producer: producer.promoteErrors(ProperError.self))
     }
 }

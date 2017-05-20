@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ReactiveCocoa
+import ReactiveSwift
 @testable import Proper
 
 class NilConnection: ConnectionType {

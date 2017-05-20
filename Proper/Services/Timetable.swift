@@ -7,10 +7,11 @@
 //
 
 import Foundation
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 import Argo
 import Curry
+import Runes
 
 struct Timetable {
     typealias ArrivalSP = SignalProducer<Arrival, ProperError>
@@ -91,16 +92,17 @@ struct Timetable {
                                 initialLimit: Int = defaultLimit) -> ArrivalMoreSP
     {
         let visits = ArrivalListMoreSP { observer, disposable in
-            var advanced: Timing
+            var advanced = timing
+            // TODO: Remove the `timing` parameter and just mutate `advanced`.
             func send(timing: Timing, count: Int) {
                 // Call Timetable and retrieve arrivals.
                 let proc = rpc(from: timing, route: route != nil)
                 let args: WampArgs = [route?.identifier, station.identifier].flatMap({ $0 })
-                    + timestamps(for: timing)
-                    + [count]
-                let results = connection.call(proc, args: args)
-                    |> decodeArrivalTimes(connection)
-                    |> { $0.on(next: { advanced = timing.advancedBy(arrivals: $0) }) }
+                    + timestamps(for: timing) as [Any]
+                    + [count] as [Any]
+                let results = connection.call(proc, with: args)
+                    |> decodeArrivalTimes(connection: connection)
+                    |> { $0.on(value: { advanced = timing.advancedBy(arrivals: $0) }) }
                     |> { $0.map({ arrivals -> (arrivals: [Arrival], more: MoreCont) in
                         // Set up a continuation function that will forward the next arrival when called.
                         let next = { send(timing: advanced, count: 1) }
@@ -111,9 +113,9 @@ struct Timetable {
                     // Keep the signal open by not sending `completed` messages. Future arrivals resulting from a `more` 
                     // call will be able to flow through the signal.
                     switch event {
-                    case .next(let value):      observer.sendNext(value)
+                    case .value(let arrival):   observer.send(value: arrival)
                     case .completed:            break
-                    case .failed(let error):    observer.sendFailed(error)
+                    case .failed(let error):    observer.send(error: error)
                     case .interrupted:          observer.sendInterrupted()
                     }
                 }
@@ -123,7 +125,7 @@ struct Timetable {
             send(timing: timing, count: initialLimit)
         }
         return visits.flatMap(.merge, transform: { arrivals, more -> ArrivalMoreSP in
-            return SignalProducer(values: arrivals).map({ ($0, more) })
+            return SignalProducer(arrivals).map({ ($0, more) })
         })
     }
 
@@ -138,7 +140,7 @@ struct Timetable {
                     return .failure(.eventParseFailure)
                 }
             }).attemptMap({ decoded -> Result<[Response], ProperError> in
-                ProperError.fromDecoded(decoded)
+                ProperError.from(decoded: decoded)
             }).attemptMap({ responses -> Result<[Arrival], ProperError> in
                 ProperError.capture({ try responses.map({ try $0.makeArrival(using: connection) }) })
             })
@@ -180,8 +182,8 @@ extension Timetable {
 
         /// Returns a timing range that excludes either the first arrival for chronologically ascending timings, or
         /// excluding the last arrival for chronologically descending timings.
-        func advancedBy<Collection: Swift.Collection>(arrivals: Collection) -> Timing
-            where Collection.Iterator.Element == Arrival, Collection.Index: Comparable
+        func advancedBy<C: BidirectionalCollection>(arrivals: C) -> Timing
+            where C.Iterator.Element == Arrival, C.Index: Comparable
         {
             guard let first = arrivals.first, let last = arrivals.last else {
                 return self
@@ -190,7 +192,7 @@ extension Timetable {
             case .before(_):
                 return .before(last.eta.addingTimeInterval(-1))
             case .after(_):
-                return .after(first.eta.addingTimeInterval(1)) as (Date)
+                return .after(first.eta.addingTimeInterval(1))
             case .between(let start, let end):
                 let delta = last.eta.timeIntervalSince(start) + 1
                 return .between(start.addingTimeInterval(delta), end.addingTimeInterval(delta))

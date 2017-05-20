@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 import Curry
 
@@ -29,9 +29,10 @@ struct ArrivalsViewModel: SignalChain {
     /// queue.
     static var preemptionTimer: SignalProducer<Date, NoError> {
         return SignalProducer() { observer, disposable in
-            observer.sendNext(Date())
-            disposable += QueueScheduler.mainQueueScheduler.scheduleAfter(Date(timeIntervalSinceNow: 1), repeatingEvery: 1) {
-                observer.sendNext(Date())
+            observer.send(value: Date())
+
+            disposable += QueueScheduler.main.schedule(after: Date.init(timeIntervalSinceNow: 1), interval: .seconds(1)) {
+                observer.send(value: Date())
             }
         }
     }
@@ -39,7 +40,7 @@ struct ArrivalsViewModel: SignalChain {
     static func chain(connection: ConnectionType, producer: SignalProducer<SignalProducer<MutableStation, ProperError>, ProperError>) ->
         SignalProducer<(MutableStation, Arrival, Arrival.Lifecycle), ProperError>
     {
-        return producer |> timetable(connection) |> activate
+        return producer |> timetable(connection: connection) |> activate
     }
 
     /// Produces a (station, arrival) tuple for arrivals of `station`.
@@ -67,15 +68,15 @@ struct ArrivalsViewModel: SignalChain {
         SignalProducer<(MutableStation, Arrival, Arrival.Lifecycle), ProperError>
     {
         return producer.flatMap(.merge, transform: { station, arrival, more in
-            arrival.lifecycle.on(next: ({ state in
+            arrival.lifecycle.on(value: ({ state in
                 if state == .departed { more() }
             })).map({ state in (station, arrival, state) })
-            .promoteErrors(ProperError)
+            .promoteErrors(ProperError.self)
         })
     }
 
     static func label(for arrival: Arrival) -> SignalProducer<String, NoError> {
-        return arrival.lifecycle.combineLatestWith(preemptionTimer).map({ state, time in
+        return arrival.lifecycle.combineLatest(with: preemptionTimer).map({ state, time in
             switch state {
             case .new, .upcoming:
                 return formatter.string(from: time, to: arrival.eta) ?? "Upcoming"

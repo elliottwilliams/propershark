@@ -7,9 +7,11 @@
 //
 
 import Foundation
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 import Curry
+import CoreLocation
+import MapKit
 
 struct NearbyStationsViewModel: SignalChain {
     typealias Input = (Point, SearchRadius)
@@ -52,7 +54,7 @@ struct NearbyStationsViewModel: SignalChain {
             return (nearby, center)
         }).attemptMap({ stations, center -> Result<[MutableStation], ProperError> in
             // Attempt to create MutableStations out of all stations.
-            let mutables = stations.map({ MutableStation.create($0, connection: connection) })
+            let mutables = stations.map({ MutableStation.create(from: $0, connection: connection) })
             if let error = mutables.filter({ $0.error != nil }).first?.error {
                 return .failure(error)
             }
@@ -63,7 +65,7 @@ struct NearbyStationsViewModel: SignalChain {
                 result.value.map({ st in st.position.value.map({ pos in (st, pos) }) }) ?? nil
             }).sorted(by: { a, b in
                 let ((_, apos), (_, bpos)) = (a, b)
-                return apos.distanceFrom(centerPoint) < bpos.distanceFrom(centerPoint)
+                return apos.distance(from: centerPoint) < bpos.distance(from: centerPoint)
             }).map({ st, pos in st })
             return .success(sorted)
         })
@@ -83,7 +85,9 @@ struct NearbyStationsViewModel: SignalChain {
     static func chain(connection: ConnectionType, producer: SignalProducer<(Point, SearchRadius), ProperError>) ->
         SignalProducer<[MutableStation], ProperError>
     {
-        let producer = combineLatest(getStations(connection), producer |> searchArea) |> curry(filterNearby)(connection)
+        let producer = SignalProducer.combineLatest(getStations(connection: connection),
+                                                    producer |> searchArea)
+            |> curry(filterNearby)(connection)
         return producer.logEvents(identifier: "NearbyStationsViewModel.chain", logger: logSignalEvent)
     }
 }

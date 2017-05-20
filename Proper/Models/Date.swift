@@ -9,6 +9,7 @@
 import Foundation
 import Argo
 import Curry
+import Runes
 
 extension Date: Decodable {
     public static func decode(_ json: JSON) -> Decoded<Date> {
@@ -18,12 +19,4 @@ extension Date: Decodable {
             <^> String.decode(json)
             >>- Decoded<Date>.fromOptional
     }
-}
-
-extension Date: Comparable {
-    // Comparison function defined globally below.
-}
-
-public func < (a: Date, b: Date) -> Bool {
-    return a.compare(b) == .orderedAscending
 }

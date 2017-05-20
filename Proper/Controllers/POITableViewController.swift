@@ -7,14 +7,15 @@
 //
 
 import UIKit
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 import Curry
+import CoreLocation
 
 class POITableViewController: UITableViewController, ProperViewController {
     typealias Distance = CLLocationDistance
 
-    var stations: AnyProperty<[MutableStation]>!
+    var stations: Property<[MutableStation]>!
     var mapPoint: SignalProducer<Point, NoError>!
     let dataSource = POITableDataSource()
 
@@ -28,10 +29,10 @@ class POITableViewController: UITableViewController, ProperViewController {
     func modifyTable(producer: SignalProducer<[POIViewModel.Op], ProperError>) ->
         SignalProducer<[POIViewModel.Op], ProperError>
     {
-        return producer.on(next: { ops in
+        return producer.on(value: { ops in
             // Iterate through `ops` and record changes made.
-            let sectionInsertions = NSMutableIndexSet()
-            let sectionDeletions = NSMutableIndexSet()
+            var sectionInsertions = IndexSet()
+            var sectionDeletions = IndexSet()
             var rowInsertions = [IndexPath]()
             var rowDeletions = [IndexPath]()
 
@@ -41,20 +42,20 @@ class POITableViewController: UITableViewController, ProperViewController {
                 switch op {
                 case let .addStation(station, index: idx):
                     let badge = Badge(alphabetIndex: idx, seedForColor: station)
-                    self.dataSource.insert((station, badge, []), atIndex: idx)
-                    sectionInsertions.add(idx)
+                    self.dataSource.insert(entry: (station, badge, []), at: idx)
+                    sectionInsertions.insert(idx)
                     
                 case let .addArrival(arrival, to: station):
-                    let path = self.dataSource.indexPathByInserting(arrival, onto: station)
+                    let path = self.dataSource.indexPath(inserting: arrival, onto: station)
                     rowInsertions.append(path)
                     
                 case let .deleteArrival(arrival, from: station):
-                    let path = self.dataSource.indexPathByDeleting(arrival, from: station)
+                    let path = self.dataSource.indexPath(deleting: arrival, from: station)
                     rowDeletions.append(path)
 
                 case let .deleteStation(station, at: idx):
-                    self.dataSource.remove(station)
-                    sectionDeletions.add(idx)
+                    self.dataSource.remove(station: station)
+                    sectionDeletions.insert(idx)
                     
                 case let .reorderStation(_, from: fi, to: ti):
                     self.dataSource.moveStation(from: fi, to: ti)
@@ -63,12 +64,9 @@ class POITableViewController: UITableViewController, ProperViewController {
             }
 
             // TODO - In Swift 3, index sets conform to `SetAlgebra`, so we can do this without intermediate index sets.
-            let deleted = NSMutableIndexSet(sectionDeletions)
-            deleted.remove(sectionInsertions)
-            let inserted = NSMutableIndexSet(sectionInsertions)
-            inserted.remove(sectionDeletions)
-            let reloaded = NSMutableIndexSet(sectionDeletions)
-            reloaded.remove(deleted)
+            let deleted = sectionDeletions.subtracting(sectionInsertions)
+            let inserted = sectionInsertions.subtracting(sectionDeletions)
+            let reloaded = sectionDeletions.intersection(sectionInsertions)
 
             // Apply changes to the table.
             self.tableView.deleteRows(at: rowDeletions, with: .top)
@@ -96,7 +94,7 @@ class POITableViewController: UITableViewController, ProperViewController {
 
         // From the list of stations coming from the view model, produce topic event subscriptions for each station.
         // Reload a station's section when a topic event is received for it.
-        disposable += (POIViewModel.chain(connection, producer: stations.producer) |> modifyTable)
+        disposable += (POIViewModel.chain(connection: connection, producer: stations.producer) |> modifyTable)
             .logEvents(identifier: "POITableViewController.viewDidAppear", logger: logSignalEvent)
             .startWithFailed(self.displayError)
     }
@@ -126,9 +124,10 @@ class POITableViewController: UITableViewController, ProperViewController {
         let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "stationHeader")
             as! POIStationHeaderFooterView
         let (station, badge, _) = dataSource.table[section]
-        let distance = POIViewModel.distanceString(combineLatest(mapPoint, station.position.producer.ignoreNil()))
+        let distance = POIViewModel.distanceString(SignalProducer.combineLatest(mapPoint,
+                                                                                station.position.producer.skipNil()))
 
-        header.apply(station, badge: badge, distance: distance)
+        header.apply(station: station, badge: badge, distance: distance)
         return header
     }
 

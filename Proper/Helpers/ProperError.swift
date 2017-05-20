@@ -13,7 +13,7 @@ import Result
 
 enum ProperError: Error {
     // Connection
-    case mdwampError(topic: String, object: NSError)
+    case mdwampError(topic: String, object: Error?)
     case connectionLost(reason: String)
     case maxConnectionFailures
     case eventParseFailure
@@ -26,7 +26,7 @@ enum ProperError: Error {
     case applyFailure(from: String, onto: String)
 
     // Location
-    case locationMonitoringFailed(region: CLRegion?, error: NSError)
+    case locationMonitoringFailed(region: CLRegion?, error: Error)
     case locationDisabled
 
     case unexpected(Error)

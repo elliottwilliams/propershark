@@ -82,6 +82,7 @@
 		26C3C21B1D542ED3008E2A46 /* ConnectionMockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3C21A1D542ED3008E2A46 /* ConnectionMockTests.swift */; };
 		26C3C21C1D543CFF008E2A46 /* MutableModelTestSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111D71D52EA6100D8F46B /* MutableModelTestSpec.swift */; };
 		26C598BC1C250D1E00BC9FE1 /* BadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C598BB1C250D1E00BC9FE1 /* BadgeView.swift */; };
+		26C7FAB51ECC03B8006B7101 /* Runes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26C7FAB41ECC03B8006B7101 /* Runes.framework */; };
 		26CDF9591D7B344200E53F82 /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26CDF9581D7B344200E53F82 /* Box.swift */; };
 		26CDF95B1D7E58CD00E53F82 /* TestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26CDF95A1D7E58CD00E53F82 /* TestError.swift */; };
 		26CDF95D1D7E59C700E53F82 /* Model+fixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26CDF95C1D7E59C700E53F82 /* Model+fixture.swift */; };
@@ -95,7 +96,6 @@
 		26DBCF491D3FF59A00B22562 /* EventLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DBCF481D3FF59A00B22562 /* EventLog.swift */; };
 		26DFB6761C35A7F7006A8AE0 /* ScheduleRail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DFB6751C35A7F7006A8AE0 /* ScheduleRail.swift */; };
 		26DFB67C1C35DFA5006A8AE0 /* StationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26DFB67B1C35DFA5006A8AE0 /* StationTableViewCell.xib */; };
-		26E038551D8DE9ED0006B265 /* Argo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E0384F1D8DE9ED0006B265 /* Argo.framework */; };
 		26E038561D8DE9ED0006B265 /* Curry.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038501D8DE9ED0006B265 /* Curry.framework */; };
 		26E038571D8DE9ED0006B265 /* Dwifft.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038511D8DE9ED0006B265 /* Dwifft.framework */; };
 		26E038581D8DE9ED0006B265 /* MDWamp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038521D8DE9ED0006B265 /* MDWamp.framework */; };
@@ -118,6 +118,7 @@
 		26ED26EF1E11763C007FB0F8 /* ConnectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ED26ED1E11763C007FB0F8 /* ConnectionType.swift */; };
 		26ED26F31E117988007FB0F8 /* StationUpcomingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ED26F21E117988007FB0F8 /* StationUpcomingTableViewCell.swift */; };
 		26ED26F51E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26ED26F41E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib */; };
+		26F7ED101EC900910017AEDA /* Argo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E0384F1D8DE9ED0006B265 /* Argo.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -221,6 +222,7 @@
 		26B9E1D21D35E0C500794EB6 /* SignalType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalType.swift; sourceTree = "<group>"; };
 		26C3C21A1D542ED3008E2A46 /* ConnectionMockTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionMockTests.swift; sourceTree = "<group>"; };
 		26C598BB1C250D1E00BC9FE1 /* BadgeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = BadgeView.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		26C7FAB41ECC03B8006B7101 /* Runes.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Runes.framework; path = Carthage/Build/iOS/Runes.framework; sourceTree = "<group>"; };
 		26CDF9581D7B344200E53F82 /* Box.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
 		26CDF95A1D7E58CD00E53F82 /* TestError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestError.swift; sourceTree = "<group>"; };
 		26CDF95C1D7E59C700E53F82 /* Model+fixture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Model+fixture.swift"; sourceTree = "<group>"; };
@@ -267,7 +269,7 @@
 				2647825E1C2F7B34009D9AD0 /* CoreLocation.framework in Frameworks */,
 				26AC8BB61BD3503300AA0001 /* QuartzCore.framework in Frameworks */,
 				26A424E21BD2C7EE0035754F /* MapKit.framework in Frameworks */,
-				26E038551D8DE9ED0006B265 /* Argo.framework in Frameworks */,
+				26F7ED101EC900910017AEDA /* Argo.framework in Frameworks */,
 				26E038561D8DE9ED0006B265 /* Curry.framework in Frameworks */,
 				26E038571D8DE9ED0006B265 /* Dwifft.framework in Frameworks */,
 				26E038581D8DE9ED0006B265 /* MDWamp.framework in Frameworks */,
@@ -277,6 +279,7 @@
 				26E038891D8F95E30006B265 /* GHODictionary.framework in Frameworks */,
 				26E0388A1D8F95E30006B265 /* MPMessagePack.framework in Frameworks */,
 				26E0388B1D8F95E30006B265 /* SocketRocket.framework in Frameworks */,
+				26C7FAB51ECC03B8006B7101 /* Runes.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -576,6 +579,7 @@
 		E4C42E7C67138C2FBA725195 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				26C7FAB41ECC03B8006B7101 /* Runes.framework */,
 				26E038841D8F95E20006B265 /* CocoaAsyncSocket.framework */,
 				26E038851D8F95E20006B265 /* GHODictionary.framework */,
 				26E038861D8F95E20006B265 /* MPMessagePack.framework */,
@@ -1018,6 +1022,7 @@
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = us.transio.Proper;
 				PRODUCT_NAME = Proper;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -1037,6 +1042,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = us.transio.Proper;
 				PRODUCT_NAME = Proper;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;

@@ -8,7 +8,7 @@
 
 import UIKit
 import MapKit
-import ReactiveCocoa
+import ReactiveSwift
 import MDWamp
 import Result
 

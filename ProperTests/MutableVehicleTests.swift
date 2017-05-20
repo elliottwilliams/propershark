@@ -7,7 +7,7 @@
 //
 
 import XCTest
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 import Argo
 @testable import Proper
@@ -24,7 +24,7 @@ class MutableVehicleTests: XCTestCase, MutableModelTestSpec {
         super.setUp()
 
         let expectation = self.expectation(description: "fixtures")
-        Vehicle.fixture("vehicles.1801").startWithNext { model in
+        Vehicle.fixture("vehicles.1801").startWithValues { model in
             self.model = model
             self.mutable = try! MutableVehicle(from: model, connection: self.mock)
             expectation.fulfill()

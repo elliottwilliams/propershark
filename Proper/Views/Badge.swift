@@ -8,7 +8,7 @@
 
 import Foundation
 import GameKit
-import ReactiveCocoa
+import ReactiveSwift
 
 /**
  Data representing a station's badge. The badge consists of a name and a color. `Badge` instances are used to create
@@ -22,13 +22,13 @@ struct Badge {
 
     private static let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".characters
     private static let alphabetLength = 26
-    static func letterForIndex(idx: Int) -> String {
-        let i = alphabet.startIndex.advancedBy(idx % alphabetLength)
+    static func letter(for idx: Int) -> String {
+        let i = alphabet.index(alphabet.startIndex, offsetBy: idx % alphabetLength)
         return String(alphabet[i])
     }
 
     init(alphabetIndex idx: Int, color: UIColor) {
-        self.init(name: Badge.letterForIndex(idx), color: color)
+        self.init(name: Badge.letter(for: idx), color: color)
     }
 
     init(name: String, color: UIColor) {
@@ -37,22 +37,22 @@ struct Badge {
     }
 
     init<H: Hashable>(name: String, seedForColor seed: H) {
-        self.init(name: name, color: Badge.randomColor(seed))
+        self.init(name: name, color: Badge.color(basedOn: seed))
     }
 
     init<H: Hashable>(alphabetIndex idx: Int, seedForColor seed: H) {
-        self.init(name: Badge.letterForIndex(idx), color: Badge.randomColor(seed))
+        self.init(name: Badge.letter(for: idx), color: Badge.color(basedOn: seed))
     }
 
-    func setIndex(idx: Int) {
-        name.swap(Badge.letterForIndex(idx))
+    func set(numericalIndex idx: Int) {
+        name.swap(Badge.letter(for: idx))
     }
 
     /**
      Generate a pseudorandom color given a hashable seed. Using this generator, badges can have a color generated from
      the station's identifier.
      */
-    static func randomColor<H: Hashable>(seed: H) -> UIColor {
+    static func color<H: Hashable>(basedOn seed: H) -> UIColor {
         let src = GKMersenneTwisterRandomSource(seed: UInt64(abs(seed.hashValue)))
         let gen = GKRandomDistribution(randomSource: src, lowestValue: 0, highestValue: 255)
         let h = CGFloat(gen.nextInt()) / 256.0

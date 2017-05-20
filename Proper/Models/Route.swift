@@ -10,6 +10,7 @@ import UIKit
 import Foundation
 import Argo
 import Curry
+import Runes
 
 struct Route: Model {
     typealias Identifier = String
@@ -31,7 +32,7 @@ struct Route: Model {
     static var namespace: String { return "routes" }
     static var fullyQualified: String { return "Shark::Route" }
     var identifier: Identifier { return self.shortName }
-    var topic: String { return Route.topicFor(self.identifier) }
+    var topic: String { return Route.topic(for: self.identifier) }
 
     init(shortName: String, code: Int? = nil, name: String? = nil, description: String? = nil, color: UIColor? = nil,
          path: [Point]? = nil, stations: [Station]? = nil, vehicles: [Vehicle]? = nil, itinerary: [Station]? = nil)

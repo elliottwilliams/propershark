@@ -8,13 +8,18 @@
 
 import Foundation
 
-infix operator |> { associativity left }
-infix operator <| { associativity left }
+precedencegroup PipePrecedence {
+    associativity: left
+    higherThan: AssignmentPrecedence
+}
 
-func |> <A, B> (v: A, fn: A -> B) -> B {
+infix operator |> : PipePrecedence
+infix operator <| : PipePrecedence
+
+func |> <A, B> (v: A, fn: (A) -> B) -> B {
     return fn(v)
 }
 
-func <| <A, B> (fn: A -> B, v: A) -> B {
+func <| <A, B> (fn: (A) -> B, v: A) -> B {
     return fn(v)
 }

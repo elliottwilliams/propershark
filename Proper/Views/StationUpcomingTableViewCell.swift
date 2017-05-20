@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import ReactiveCocoa
+import ReactiveSwift
 
 class StationUpcomingTableViewCell: UITableViewCell {
     @IBOutlet weak var title: TransitLabel!
@@ -33,7 +33,7 @@ class StationUpcomingTableViewCell: UITableViewCell {
         collectionView.register(UINib(nibName: "RoutesCollectionBadgeCell", bundle: Bundle.main), forCellWithReuseIdentifier: "badgeCell")
 
         // Initialize the view model powering the routes collection.
-        viewModel = RoutesCollectionViewModel(routes: AnyProperty(routes))
+        viewModel = RoutesCollectionViewModel(routes: Property(routes))
         collectionView.dataSource = viewModel
         collectionView.delegate = viewModel
     }
@@ -42,11 +42,11 @@ class StationUpcomingTableViewCell: UITableViewCell {
         let disposable = CompositeDisposable()
 
         // Bind station attributes to the UI labels.
-        disposable += station.name.producer.startWithNext({ self.title.text = $0 })
+        disposable += station.name.producer.startWithValues({ self.title.text = $0 })
         self.subtitle.text = station.stopCode
 
         // As routes are discovered, update the collection view.
-        disposable += station.routes.producer.startWithNext({ routes in
+        disposable += station.routes.producer.startWithValues({ routes in
             self.routes.swap(routes)
             self.collectionView.reloadData()
         })

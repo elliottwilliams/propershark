@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import ReactiveCocoa
+import ReactiveSwift
 
 class RoutesCollectionViewCell: UICollectionViewCell {
     @IBOutlet var badge: BadgeView!
@@ -24,7 +24,7 @@ class RoutesCollectionViewCell: UICollectionViewCell {
     }
 
     func apply(route: MutableRoute) {
-        disposable += route.color.producer.startWithNext { color in
+        disposable += route.color.producer.startWithValues { color in
             _ = color.flatMap { self.badge.color = $0 }
         }
         badge.routeNumber = route.shortName

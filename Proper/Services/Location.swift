@@ -8,7 +8,7 @@
 
 import Foundation
 import CoreLocation
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 
 /** A delegate class and signal factory for Proper's integration with Core Location. Use `Location.producer` to get a
@@ -26,28 +26,29 @@ class Location: NSObject, CLLocationManagerDelegate {
         guard let last = locations.last else {
             return
         }
-        observer.sendNext(last)
+        observer.send(value: last)
     }
 
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         if status != .authorizedAlways && status != .authorizedWhenInUse {
-            observer.sendFailed(.locationDisabled)
+            observer.send(error: .locationDisabled)
         }
     }
 
     func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
-        observer.sendFailed(.locationMonitoringFailed(region: region, error: error))
+        observer.send(error: .locationMonitoringFailed(region: region, error: error))
     }
 
     static let producer = SignalProducer<CLLocation, ProperError> { observer, disposable in
         let status = CLLocationManager.authorizationStatus()
         guard CLLocationManager.locationServicesEnabled() && status != .restricted && status != .denied else {
-            observer.sendFailed(.locationDisabled)
+            observer.send(error: .locationDisabled)
             return
         }
 
         let manager = CLLocationManager()
         let delegate = Location(observer: observer)
+        let delegateReference = Unmanaged.passRetained(delegate)
         if status == .notDetermined {
             manager.requestWhenInUseAuthorization()
         }
@@ -57,9 +58,9 @@ class Location: NSObject, CLLocationManagerDelegate {
         manager.distanceFilter = 5.0
         manager.startUpdatingLocation()
 
-        disposable.addDisposable() {
+        disposable.add {
             manager.stopUpdatingLocation()
-            delegate // Keep a strong reference to `delegate` in the closure. (`manager.delegate` is weak)
+            delegateReference.release()
         }
     }.logEvents(identifier: "Location.producer", logger: logSignalEvent)
 }

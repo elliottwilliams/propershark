@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import ReactiveCocoa
+import ReactiveSwift
 
 class StationTableViewCell: UITableViewCell {
     @IBOutlet weak var rail: ScheduleRail!
@@ -23,16 +23,16 @@ class StationTableViewCell: UITableViewCell {
     func apply(station: MutableStation, withRailShape shape: ScheduleRail.RailShape) {
         disposable.dispose()
         subtitle.text = station.stopCode
-        disposable += station.name.producer.startWithNext({ self.title.text = $0 })
+        disposable += station.name.producer.startWithValues({ self.title.text = $0 })
         rail.shape = shape
     }
 
     func apply(stop: RouteStop<MutableStation>) {
         switch stop {
         case .constant(_):
-            apply(stop.station, withRailShape: .northSouth)
+            apply(station: stop.station, withRailShape: .vertical)
         case .conditional(_):
-            apply(stop.station, withRailShape: .northSouth)
+            apply(station: stop.station, withRailShape: .vertical)
         }
     }
 }

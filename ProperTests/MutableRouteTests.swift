@@ -7,7 +7,7 @@
 //
 
 import XCTest
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 @testable import Proper
 
@@ -24,7 +24,7 @@ class MutableRouteTests: XCTestCase, MutableModelTestSpec {
         super.setUp()
 
         let expectation = self.expectation(description: "fixtures")
-        Route.fixture("routes.4B").startWithNext { model in
+        Route.fixture("routes.4B").startWithValues { model in
             self.model = model
             self.mutable = try! MutableRoute(from: model, connection: self.mock)
             expectation.fulfill()

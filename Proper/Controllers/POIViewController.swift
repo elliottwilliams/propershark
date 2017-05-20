@@ -7,8 +7,10 @@
 //
 
 import UIKit
-import ReactiveCocoa
+import ReactiveSwift
 import Result
+import MapKit
+import CoreLocation
 
 class POIViewController: UIViewController, ProperViewController, UISearchControllerDelegate {
     // MARK: Point properties
@@ -40,7 +42,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
     /// A producer that merges `deviceLocation` and `staticLocation`. The device location will be used until 
     /// `staticLocation` emits a `NamedPoint`, at which point the producer is replaced by `staticLocation`.
     var location: SignalProducer<NamedPoint, ProperError> {
-        return deviceLocation.takeUntilReplacement(staticLocation)
+        return deviceLocation.take(untilReplacement: staticLocation)
     }
 
     // MARK: UI properties
@@ -74,7 +76,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         return self.map.annotations.flatMap({ $0 as? POIStationAnnotation })
             .filter({ $0.station == station })
     }
-    func annotations(within range: Range<Int>) -> [POIStationAnnotation] {
+    func annotations(within range: CountableClosedRange<Int>) -> [POIStationAnnotation] {
         return map.annotations.flatMap({ ($0 as? POIStationAnnotation) })
             .filter({ range.contains($0.index) })
     }
@@ -87,7 +89,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         guard let position = station.position.value else {
             return
         }
-        let distanceString = POIViewModel.distanceString(self.point.producer.ignoreNil().map({ ($0, position) }))
+        let distanceString = POIViewModel.distanceString(self.point.producer.skipNil().map({ ($0, position) }))
         let annotation = POIStationAnnotation(station: station,
                                               locatedAt: position,
                                               index: idx,
@@ -157,9 +159,11 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         }
 
         // Search for nearby stations.
-        disposable += NearbyStationsViewModel.chain(connection, producer:
-            combineLatest(point.producer.ignoreNil(), zoom.producer)
-            .logEvents(identifier: "NearbyStationsViewModel.chain input", logger: logSignalEvent))
+        disposable += NearbyStationsViewModel.chain(connection: connection,
+                                                    producer: SignalProducer.combineLatest(point.producer.skipNil(),
+                                                                                           zoom.producer)
+                                                        .logEvents(identifier: "NearbyStationsViewModel.chain input",
+                                                                   logger: logSignalEvent))
             .startWithResult() { result in
                 switch result {
                 case let .success(stations):    self.stations.swap(stations)
@@ -180,7 +184,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         }
 
         // Show nearby stations on the map.
-        disposable += POIViewModel.chain(connection, producer: stations.producer).startWithResult({ result in
+        disposable += POIViewModel.chain(connection: connection, producer: stations.producer).startWithResult({ result in
             switch result {
             case let .failure(error):
                 self.displayError(error)
@@ -214,8 +218,8 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         case "embedPOITable":
             let dest = segue.destination as! POITableViewController
             table = dest
-            dest.stations = AnyProperty(stations)
-            dest.mapPoint = point.producer.ignoreNil()
+            dest.stations = Property(stations)
+            dest.mapPoint = point.producer.skipNil()
         case "showStation":
             let station = sender as! MutableStation
             let dest = segue.destination as! StationViewController
@@ -234,7 +238,7 @@ extension POIViewController: MKMapViewDelegate {
             let view =
                 mapView.dequeueReusableAnnotationView(withIdentifier: "stationAnnotation") as? POIStationAnnotationView
                     ?? POIStationAnnotationView(annotation: annotation, reuseIdentifier: "stationAnnotation")
-            view.apply(annotation)
+            view.apply(annotation: annotation)
             return view
         }
 

@@ -8,7 +8,7 @@
 
 import Foundation
 import MDWamp
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 @testable import Proper
 

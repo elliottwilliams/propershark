@@ -8,7 +8,7 @@
 
 import XCTest
 import Result
-import ReactiveCocoa
+import ReactiveSwift
 @testable import Proper
 
 class MutableModelTests: XCTestCase {
@@ -24,7 +24,7 @@ class MutableModelTests: XCTestCase {
         stations = ["BUS403", "BUS922", "BUS162", "BUS161", "BUS897", "BUS375W"]
 
         let expectation = self.expectation(description: "fixtures")
-        Route.fixture("routes.4B").startWithNext { model in
+        Route.fixture("routes.4B").startWithValues { model in
             self.route = try! MutableRoute(from: model, connection: self.mock)
             expectation.fulfill()
         }
@@ -47,7 +47,7 @@ class MutableModelTests: XCTestCase {
         // After emitting `modifiedStations.count` route names, invoke this observer.
         SignalProducer(values: nameSignals).flatMap(.Merge, transform: { signal in signal })
         .collect(count: modifiedStations.count)
-        .startWithNext { names in
+        .startWithValues { names in
             expectation.fulfill()
             let should = [String](count: modifiedStations.count, repeatedValue: "~modified")
             XCTAssertEqual(names.flatMap { $0 }, should)

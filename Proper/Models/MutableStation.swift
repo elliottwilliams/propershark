@@ -7,9 +7,10 @@
 //
 
 import Foundation
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 import Argo
+import MapKit
 
 class MutableStation: MutableModel, Comparable {
     typealias FromModel = Station
@@ -22,7 +23,7 @@ class MutableStation: MutableModel, Comparable {
 
     // MARK: Station Support
     var identifier: FromModel.Identifier { return self.stopCode }
-    var topic: String { return FromModel.topicFor(self.identifier) }
+    var topic: String { return FromModel.topic(for: self.identifier) }
     
     // MARK: Station Attributes
     let stopCode: FromModel.Identifier
@@ -32,18 +33,18 @@ class MutableStation: MutableModel, Comparable {
     var routes: MutableProperty<Set<RouteType>> = .init(Set())
     var vehicles: MutableProperty<Set<VehicleType>> = .init(Set())
 
-    lazy var sortedVehicles: AnyProperty<[VehicleType]> = {
-        return AnyProperty(initialValue: [], producer: self.vehicles.producer.map { $0.sort() })
+    lazy var sortedVehicles: Property<[VehicleType]> = {
+        return Property(initial: [], then: self.vehicles.producer.map { $0.sorted() })
     }()
 
     // MARK: Signal Producer
     lazy var producer: SignalProducer<TopicEvent, ProperError> = {
-        let now = self.connection.call("meta.last_event", args: [self.topic, self.topic])
-        let future = self.connection.subscribe(self.topic)
-        return SignalProducer<SignalProducer<TopicEvent, ProperError>, ProperError>(values: [now, future])
-            .flatten(.Merge)
+        let now = self.connection.call("meta.last_event", with: [self.topic, self.topic])
+        let future = self.connection.subscribe(to: self.topic)
+        return SignalProducer<SignalProducer<TopicEvent, ProperError>, ProperError>([now, future])
+            .flatten(.merge)
             .logEvents(identifier: "MutableStation.producer", logger: logSignalEvent)
-            .attempt(self.handleEvent)
+            .attempt(operation: self.handle)
     }()
 
     required init(from station: Station, connection: ConnectionType) throws {
@@ -52,21 +53,21 @@ class MutableStation: MutableModel, Comparable {
         try apply(station)
     }
 
-    func handleEvent(event: TopicEvent) -> Result<(), ProperError> {
+    func handle(event: TopicEvent) -> Result<(), ProperError> {
         if let error = event.error {
-            return .Failure(.decodeFailure(error))
+            return .failure(.decodeFailure(error))
         }
 
         return ProperError.capture({
             switch event {
-            case .Station(.update(let station, _)):
+            case .station(.update(let station, _)):
                 try self.apply(station.value!)
             default: break
             }
         })
     }
 
-    func apply(station: Station) throws {
+    func apply(_ station: Station) throws {
         if station.identifier != self.identifier {
             throw ProperError.applyFailure(from: station.identifier, onto: self.identifier)
         }
@@ -92,6 +93,8 @@ class MutableStation: MutableModel, Comparable {
         @objc var title: String?
         @objc var subtitle: String?
 
+        private let disposable = ScopedDisposable(CompositeDisposable())
+
         /// Create an annotation for the given station, at a given point (which is passed independently since we can't
         /// always ensure that a MutableStation has a `position`)
         init(from station: MutableStation, at point: Point) {
@@ -100,13 +103,13 @@ class MutableStation: MutableModel, Comparable {
             super.init()
 
             // Bind current and future values of the station to annotation properties
-            station.position.map { point in
+            disposable.inner += station.position.producer.startWithValues { point in
                 if let point = point {
                     self.coordinate = CLLocationCoordinate2D(point: point)
                 }
             }
-            station.name.map { self.title = $0 }
-            station.description.map { self.subtitle = $0 }
+            disposable.inner += station.name.producer.startWithValues { self.title = $0 }
+            disposable.inner += station.description.producer.startWithValues { self.subtitle = $0 }
         }
     }
 }
@@ -115,18 +118,18 @@ func < (a: MutableStation, b: MutableStation) -> Bool {
     return a.identifier < b.identifier
 }
 
-extension CollectionType where Generator.Element: MutableStation {
+extension Collection where Iterator.Element: MutableStation {
     /// Order by geographic distance from `point`, ascending. Stations in the collection without a defined position will
     /// appear at the end of the ordering.
     func sortDistanceTo(point: Point) -> [Generator.Element] {
-        return self.sort({ a, b in
+        return self.sorted(by: { a, b in
             // Stations with undefined positions should float to the end.
             guard let aPosition = a.position.value else { return false }
             guard let bPosition = b.position.value else { return true }
 
             let loc = CLLocation(point: point)
-            return loc.distanceFromLocation(CLLocation(point: aPosition)) <
-                loc.distanceFromLocation(CLLocation(point: bPosition))
+            return loc.distance(from: CLLocation(point: aPosition)) <
+                loc.distance(from: CLLocation(point: bPosition))
         })
     }
 }

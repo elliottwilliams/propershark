@@ -41,7 +41,7 @@ class ConnectionMockTests: XCTestCase {
         mock.on("it", send: event)
 
         let expectation = self.expectation(description: "callback")
-        mock.call("it").startWithNext { event in
+        mock.call("it").startWithValues { event in
             self.checkEvent(event)
             expectation.fulfill()
         }
@@ -62,7 +62,7 @@ class ConnectionMockTests: XCTestCase {
         let expectationA = expectation(description: "first callback")
         var fulfilled = false
         let expectationB = expectation(description: "second callback")
-        mock.subscribe("it").startWithNext { event in
+        mock.subscribe("it").startWithValues { event in
             self.checkEvent(event)
             if !fulfilled {
                 expectationA.fulfill()
@@ -83,7 +83,7 @@ class ConnectionMockTests: XCTestCase {
 
     func testUnsubscribe() {
         let mock = ConnectionMock()
-        let disposable = mock.subscribe("it").startWithNext { _ in
+        let disposable = mock.subscribe("it").startWithValues { _ in
             XCTFail("Message received when this producer should have been unsubscribed")
         }
         disposable.dispose()

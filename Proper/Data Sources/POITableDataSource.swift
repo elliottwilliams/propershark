@@ -48,7 +48,7 @@ class POITableDataSource: NSObject, UITableViewDataSource {
     private func updateIndices(at idx: Int, entry: Tuple) {
         let (station, badge, _) = entry
         indices[station] = idx
-        badge.setIndex(idx)
+        badge.set(numericalIndex: idx)
     }
 
     func insert(entry: Tuple, at idx: Int) {
@@ -113,7 +113,7 @@ class POITableDataSource: NSObject, UITableViewDataSource {
         //let station = stations.value[indexPath.section]
         let arrival = arrivals[indexPath.section][indexPath.row]
         // TODO - Apply route and arrival information to the view
-        cell.apply(arrival)
+        cell.apply(arrival: arrival)
         return cell
     }
 }

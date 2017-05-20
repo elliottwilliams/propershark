@@ -8,7 +8,7 @@
 
 import UIKit
 import MapKit
-import ReactiveCocoa
+import ReactiveSwift
 import Curry
 import Result
 import Dwifft
@@ -40,23 +40,23 @@ class POIViewModel: SignalChain {
     static func chain(connection: ConnectionType, producer stations: SignalProducer<[MutableStation], ProperError>) ->
         SignalProducer<[Op], ProperError>
     {
-        let subsequent = stations.skip(1)
-        return stations.take(1).flatMap(.latest, transform: { initial -> SignalProducer<[Op], ProperError> in
+        let subsequent = stations.skip(first: 1)
+        return stations.take(first: 1).flatMap(.latest, transform: { initial -> SignalProducer<[Op], ProperError> in
             SignalProducer<[Op], ProperError> { observer, disposable in
                 // Chain from station, to station lifetimes, to arrivals, sending table operations to the view along the
                 // way. This chaining is necessary to have station operations emitted _before_ arrival operations for 
                 // that station.
                 let producer = subsequent
                     |> stationOps
-                    |> { $0.on(next: { _, ops in observer.sendNext(ops) }) }
+                    |> { $0.on(value: { _, ops in observer.send(value: ops) }) }
                     |> { $0.map({ stations, _ in Set(stations) }) }
                     |> curry(elementLifetimes)(Set())
                     |> curry(ArrivalsViewModel.chain)(connection)
                     |> arrivalOps
-                    |> { $0.on(next: { ops in observer.sendNext(ops) }) }
+                    |> { $0.on(value: { ops in observer.send(value: ops) }) }
 
                 // Start, forwarding ops and errors to the outer producer.
-                disposable += producer.startWithFailed(observer.sendFailed)
+                disposable += producer.startWithFailed(observer.send)
             }
         })
     }
@@ -76,7 +76,7 @@ class POIViewModel: SignalChain {
             var observers: [U: O] = [:]
             disposable += producer.combinePrevious(initial).startWithResult { result in
                 guard let (prev, next) = result.value else {
-                    producers.sendFailed(result.error!)
+                    producers.send(error: result.error!)
                     return
                 }
 
@@ -85,9 +85,9 @@ class POIViewModel: SignalChain {
                     let producer = S { valueObserver, valueDisposable in
                         observers[value] = valueObserver
                         disposable += valueDisposable
-                        valueObserver.sendNext(value)
+                        valueObserver.send(value: value)
                     }
-                    producers.sendNext(producer)
+                    producers.send(value: producer)
                 }
 
                 // Interrupt any downstream activity once stations change.
@@ -148,7 +148,7 @@ class POIViewModel: SignalChain {
     static func distanceString(_ producer: SignalProducer<(Point, Point), NoError>) ->
         SignalProducer<String, NoError>
     {
-        return producer.map({ $0.distanceFrom($1) })
+        return producer.map({ $0.distance(from: $1) })
             .map({ self.distanceFormatter.string(fromDistance: $0) })
     }
 

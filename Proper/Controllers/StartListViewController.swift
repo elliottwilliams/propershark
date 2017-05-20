@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 import Argo
 
@@ -28,14 +28,6 @@ class StartListViewController: UITableViewController, ProperViewController {
 
     // MARK: Signals
 
-    @available(*, deprecated, message: "Use #onDisappear")
-    internal lazy var disappear: SignalProducer<(), NoError> = {
-        return self.rac_signal(for: #selector(UIViewController.viewDidDisappear(_:)))
-        .toSignalProducer()
-        .map { _ in () }
-        .assumeNoError()
-    }()
-
     private lazy var routeSignal: SignalProducer<[Route], ProperError> = {
         return self.connection.call("agency.routes")
             .attemptMap { event -> Result<[AnyObject], ProperError> in
@@ -43,8 +35,8 @@ class StartListViewController: UITableViewController, ProperViewController {
                 return .success(routes)
             }
             .decodeAnyAs(Route.self)
-            .on(next: { self.routes = $0; self.tableView.reloadData() },
-                failed: self.displayError)
+            .on(failed: self.displayError,
+                value: { self.routes = $0; self.tableView.reloadData() })
     }()
 
     private lazy var stationSignal: SignalProducer<[Station], ProperError> = {
@@ -54,8 +46,8 @@ class StartListViewController: UITableViewController, ProperViewController {
                 return .success(stations)
             }
             .decodeAnyAs(Station.self)
-            .on(next: { self.stations = $0; self.tableView.reloadData() },
-                failed: self.displayError)
+            .on(failed: self.displayError,
+                value: { self.stations = $0; self.tableView.reloadData() })
     }()
 
     private lazy var vehicleSignal: SignalProducer<[Vehicle], ProperError> = {
@@ -65,18 +57,18 @@ class StartListViewController: UITableViewController, ProperViewController {
                 return .success(vehicles)
             }
             .decodeAnyAs(Vehicle.self)
-            .on(next: { self.vehicles = $0; self.tableView.reloadData() },
-                failed: self.displayError)
+            .on(failed: self.displayError,
+                value: { self.vehicles = $0; self.tableView.reloadData() })
     }()
 
-    lazy var pinnedStations: AnyProperty<[Station]> = {
+    lazy var pinnedStations: Property<[Station]> = {
         let pinned = Set(["BUS313NE"])
         let producer = self.stationSignal.map { stations in
             stations.filter { pinned.contains($0.stopCode) }
         }.flatMapError { error in
             return SignalProducer<[Station], NoError>.empty
         }
-        return AnyProperty(initialValue: [], producer: producer)
+        return Property(initial: [], then: producer)
     }()
 
     // MARK: View events
@@ -89,7 +81,7 @@ class StartListViewController: UITableViewController, ProperViewController {
         self.stationSignal.start()
         self.vehicleSignal.start()
 
-        self.pinnedStations.producer.startWithNext { _ in
+        self.pinnedStations.producer.startWithValues { _ in
             self.tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
         }
     }

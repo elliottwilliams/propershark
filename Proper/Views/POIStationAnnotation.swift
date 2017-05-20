@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 import MapKit
 
@@ -15,10 +15,10 @@ class POIStationAnnotation: NSObject, MKAnnotation {
     let station: MutableStation
     let stationPosition: Point
     let badge: Badge
-    let distance: AnyProperty<String?>
+    let distance: Property<String?>
 
     var index: Int {
-        didSet { badge.setIndex(index) }
+        didSet { badge.set(numericalIndex: index) }
     }
 
     init(station: MutableStation, locatedAt position: Point, index: Int,
@@ -29,7 +29,7 @@ class POIStationAnnotation: NSObject, MKAnnotation {
         self.index = index
 
         self.badge = Badge(alphabetIndex: index, seedForColor: station)
-        self.distance = AnyProperty(initialValue: nil, producer: distance.map(Optional.init))
+        self.distance = Property(initial: nil, then: distance.map(Optional.init))
     }
 
     var coordinate: CLLocationCoordinate2D { return CLLocationCoordinate2D(point: stationPosition) }

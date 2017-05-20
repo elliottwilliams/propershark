@@ -8,7 +8,7 @@
 
 import XCTest
 import Argo
-import ReactiveCocoa
+import ReactiveSwift
 @testable import Proper
 
 class ModelDecodeTests: XCTestCase {
@@ -24,7 +24,7 @@ class ModelDecodeTests: XCTestCase {
             Station.rawFixture("stations.BUS100W"),
             Route.rawFixture("routes.4B"),
             Vehicle.rawFixture("vehicles.1801")
-        ).startWithNext { station, route, vehicle in
+        ).startWithValues { station, route, vehicle in
             self.station = station
             self.route = route
             self.vehicle = vehicle

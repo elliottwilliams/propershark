@@ -9,6 +9,7 @@
 import Foundation
 import Argo
 import Curry
+import Runes
 
 struct Station: Model {
     typealias Identifier = String
@@ -26,7 +27,7 @@ struct Station: Model {
     static var namespace: String { return "stations" }
     static var fullyQualified: String { return "Shark::Station" }
     var identifier: Identifier { return self.stopCode }
-    var topic: String { return Station.topicFor(self.identifier) }
+    var topic: String { return Station.topic(for: self.identifier) }
 
     init(stopCode: String, name: String? = nil, description: String? = nil, position: Point? = nil,
          routes: [Route]? = nil, vehicles: [Vehicle]? = nil)

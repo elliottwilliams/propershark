@@ -23,7 +23,7 @@ class RailVehicle: UIView {
     static let baseZPosition = CGFloat(20)
     
     override init(frame: CGRect) {
-        let centered = RailVehicle.frameForPoint(CGPoint(x: frame.minX, y: frame.minY))
+        let centered = RailVehicle.frame(for: CGPoint(x: frame.minX, y: frame.minY))
         super.init(frame: centered)
         self.layer.zPosition = RailVehicle.baseZPosition
         self.layer.setNeedsDisplay()

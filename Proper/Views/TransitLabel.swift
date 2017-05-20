@@ -11,7 +11,7 @@ import UIKit
 class TransitLabel: UILabel {
 
     var uppercase = false {
-        didSet { updateTextTo(_text) }
+        didSet { updateText(to: _text) }
     }
     
     private var _text: String?

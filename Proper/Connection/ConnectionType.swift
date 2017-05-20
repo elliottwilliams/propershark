@@ -7,21 +7,21 @@
 //
 
 import Foundation
-import ReactiveCocoa
+import ReactiveSwift
 
-typealias WampArgs = [AnyObject]
+typealias WampArgs = [Any]
 typealias WampKwargs = [AnyHashable: Any]
 typealias EventProducer = SignalProducer<TopicEvent, ProperError>
 
 // All connections conform to this protocol, which allows ConnectionMock to be injected.
 protocol ConnectionType {
-    func call(proc: String, args: WampArgs, kwargs: WampKwargs) -> EventProducer
-    func subscribe(topic: String) -> EventProducer
+    func call(_ proc: String, with args: WampArgs, kwargs: WampKwargs) -> EventProducer
+    func subscribe(to topic: String) -> EventProducer
 }
 
 extension ConnectionType {
     // Convenience method to call a procedure while omitting args and/or kwargs
-    func call(proc: String, args: WampArgs = [], kwargs: WampKwargs = [:]) -> EventProducer {
-        return self.call(procedure, args: args, kwargs: kwargs)
+    func call(_ proc: String, with args: WampArgs = [], kwargs: WampKwargs = [:]) -> EventProducer {
+        return self.call(proc, with: args, kwargs: kwargs)
     }
 }

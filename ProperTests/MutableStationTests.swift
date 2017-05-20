@@ -7,7 +7,7 @@
 //
 
 import XCTest
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 @testable import Proper
 
@@ -24,7 +24,7 @@ class MutableStationTests: XCTestCase, MutableModelTestSpec {
         super.setUp()
 
         let expectation = self.expectation(description: "fixtures")
-        Station.fixture("stations.BUS100W").startWithNext { model in
+        Station.fixture("stations.BUS100W").startWithValues { model in
             self.model = model
             self.mutable = try! MutableStation(from: model, connection: self.mock)
             expectation.fulfill()

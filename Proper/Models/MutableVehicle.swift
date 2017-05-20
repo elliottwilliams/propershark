@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ReactiveCocoa
+import ReactiveSwift
 import Curry
 import Result
 import Argo
@@ -23,7 +23,7 @@ class MutableVehicle: MutableModel, Comparable {
 
     // MARK: Vehicle Support
     var identifier: FromModel.Identifier { return self.name }
-    var topic: String { return Vehicle.topicFor(self.identifier) }
+    var topic: String { return Vehicle.topic(for: self.identifier) }
 
     // MARK: Vehicle Attributes
     let name: FromModel.Identifier
@@ -41,12 +41,12 @@ class MutableVehicle: MutableModel, Comparable {
 
     // MARK: Signal Producer
     lazy var producer: SignalProducer<TopicEvent, ProperError> = {
-        let now = self.connection.call("meta.last_event", args: [self.topic, self.topic])
-        let future = self.connection.subscribe(self.topic)
-        return SignalProducer<SignalProducer<TopicEvent, ProperError>, ProperError>(values: [now, future])
-            .flatten(.Merge)
+        let now = self.connection.call("meta.last_event", with: [self.topic, self.topic])
+        let future = self.connection.subscribe(to: self.topic)
+        return SignalProducer<SignalProducer<TopicEvent, ProperError>, ProperError>([now, future])
+            .flatten(.merge)
             .logEvents(identifier: "MutableVehicle.producer", logger: logSignalEvent)
-            .attempt(self.handleEvent)
+            .attempt(operation: self.handle)
     }()
 
     // MARK: Functions
@@ -56,21 +56,21 @@ class MutableVehicle: MutableModel, Comparable {
         try apply(vehicle)
     }
 
-    func handleEvent(event: TopicEvent) -> Result<(), ProperError> {
+    func handle(event: TopicEvent) -> Result<(), ProperError> {
         if let error = event.error {
-            return .Failure(.decodeFailure(error))
+            return .failure(.decodeFailure(error))
         }
 
         return ProperError.capture({
             switch event {
-            case .Vehicle(.update(let vehicle, _)):
+            case .vehicle(.update(let vehicle, _)):
                 try self.apply(vehicle.value!)
             default: break
             }
         })
     }
 
-    func apply(vehicle: Vehicle) throws {
+    func apply(_ vehicle: Vehicle) throws {
         if vehicle.identifier != self.identifier {
             throw ProperError.applyFailure(from: vehicle.identifier, onto: self.identifier)
         }

@@ -110,13 +110,15 @@ class BadgeView: UIView {
     
     func outerPath(radius: CGFloat) -> CGMutablePath {
         let outer = CGMutablePath()
-        CGPathAddArc(outer, nil, outerLayer.bounds.midX, outerLayer.bounds.midY, radius, 0, CGFloat(2*M_PI), true)
+        let point = CGPoint(x: outerLayer.bounds.midX, y: outerLayer.bounds.midY)
+        outer.addArc(center: point, radius: radius, startAngle: 0, endAngle: .pi * 2, clockwise: true)
         return outer
     }
     
     func innerPath(radius: CGFloat) -> CGMutablePath {
         let inner = CGMutablePath()
-        CGPathAddArc(inner, nil, innerLayer.bounds.midX, innerLayer.bounds.midY, radius, 0, CGFloat(2*M_PI), true)
+        let point = CGPoint(x: innerLayer.bounds.midX, y: innerLayer.bounds.midY)
+        inner.addArc(center: point, radius: radius, startAngle: 0, endAngle: .pi * 2, clockwise: true)
         return inner
     }
     

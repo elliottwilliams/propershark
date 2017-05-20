@@ -7,12 +7,12 @@
 //
 
 import Foundation
-import ReactiveCocoa
+import ReactiveSwift
 import Argo
 import Result
 
 // MARK: Value is AnyObject
-extension SignalType where Value: AnyObject, ReactiveCocoa.Error == ProperError {
+extension SignalProtocol where Value: AnyObject, Error == ProperError {
     /// Attempt to decode an `AnyObject` to the model given.
     internal func decode<M: Decodable>(as: M.Type) -> Signal<M.DecodedType, ProperError> {
         return attemptMap { object in
@@ -27,16 +27,16 @@ extension SignalType where Value: AnyObject, ReactiveCocoa.Error == ProperError 
     }
 }
 
-extension SignalProducerType where Value: AnyObject, ReactiveCocoa.Error == ProperError {
+extension SignalProducerProtocol where Value: AnyObject, Error == ProperError {
     /// Attempt to decode an `AnyObject` to the model given.
     internal func decodeAs<M: Decodable>(_: M.Type) -> SignalProducer<M.DecodedType, ProperError> {
-        return lift { $0.decodeAs(M) }
+        return lift { $0.decode(as: M.self) }
     }
 }
 
 
 // MARK: Value is Collection
-extension SignalType where Value: Collection, Value.Iterator.Element: AnyObject, ReactiveCocoa.Error == ProperError {
+extension SignalProtocol where Value: Collection, Value.Iterator.Element: AnyObject, Error == ProperError {
     /// Attempt to decode each member of a list to the `to` type. If *any* decode successfully, an array of successfully
     /// decoded models will be forwarded.
     internal func decodeAnyAs<M: Decodable>(_: M.Type) -> Signal<[M.DecodedType], ProperError> {
@@ -56,19 +56,19 @@ extension SignalType where Value: Collection, Value.Iterator.Element: AnyObject,
     }
 }
 
-extension SignalProducerType where Value: Collection, Value.Iterator.Element: AnyObject, ReactiveCocoa.Error == ProperError {
+extension SignalProducerProtocol where Value: Collection, Value.Iterator.Element: AnyObject, Error == ProperError {
     /// Attempt to decode each member of a list to the `to` type. If *any* decode successfully, an array of successfully
     /// decoded models will be forwarded.
     internal func decodeAnyAs<M: Decodable>(_: M.Type) -> SignalProducer<[M.DecodedType], ProperError> {
-        return lift { $0.decodeAnyAs(M) }
+        return lift { $0.decodeAnyAs(M.self) }
     }
 }
 
 
 // MARK: Value is Optional
-extension SignalType where Value: OptionalType, ReactiveCocoa.Error: ErrorProtocol {
+extension SignalProtocol where Value: OptionalProtocol {
     /// Unwrap the optional value in the signal, or produce an error by calling the closure given.
-    internal func unwrapOrSendFailure(_ error: ReactiveCocoa.Error) -> Signal<Value.Wrapped, ReactiveCocoa.Error> {
+    internal func unwrapOrSendFailure(_ error: Error) -> Signal<Value.Wrapped, Error> {
         return attemptMap { value in
             if let value = value.optional {
                 return .success(value)
@@ -79,16 +79,16 @@ extension SignalType where Value: OptionalType, ReactiveCocoa.Error: ErrorProtoc
     }
 }
 
-extension SignalProducerType where Value: OptionalType, ReactiveCocoa.Error: ErrorProtocol {
-    internal func unwrapOrSendFailure(_ error: ReactiveCocoa.Error) -> SignalProducer<Value.Wrapped, ReactiveCocoa.Error> {
+extension SignalProducerProtocol where Value: OptionalProtocol {
+    internal func unwrapOrSendFailure(_ error: Error) -> SignalProducer<Value.Wrapped, Error> {
         return lift { $0.unwrapOrSendFailure(error) }
     }
 }
 
 
 // MARK: Any signal
-extension SignalType {
-    internal func assumeNoError() -> Signal<Self.Value, NoError> {
+extension SignalProtocol {
+    internal func assumeNoError() -> Signal<Value, NoError> {
         return mapError { error in
             fatalError("Error occured within a signal assumed to never fail: \(error)")
             ()
@@ -96,8 +96,8 @@ extension SignalType {
     }
 }
 
-extension SignalProducerType {
-    internal func assumeNoError() -> SignalProducer<Self.Value, NoError> {
+extension SignalProducerProtocol {
+    internal func assumeNoError() -> SignalProducer<Value, NoError> {
         return lift { $0.assumeNoError() }
     }
 }

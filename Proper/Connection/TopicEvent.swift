@@ -120,9 +120,9 @@ enum TopicEvent: CustomStringConvertible {
         case .meta(.unknownLastEvent(_, _)):
             return "meta.unknownLastEvent"
         case let .timetable(.arrival(arrival)):
-            return "timetable.arrival (\(arrival.value))"
+            return "timetable.arrival (\(String(describing: arrival.value)))"
         case let .timetable(.arrivals(arrivals)):
-            return "timetable.arrivals (\(arrivals.value))"
+            return "timetable.arrivals (\(String(describing: arrivals.value)))"
         }
     }
 
@@ -148,8 +148,8 @@ enum TopicEvent: CustomStringConvertible {
         // Arguments and argumentsKw come implicitly unwrapped (from their dirty dirty objc library), so we need to
         // check them manually.
         return parse(from: topic,
-                     args: event.arguments != nil ?  event.arguments : [],
-                     kwargs: event.argumentsKw != nil ?  event.argumentsKw : [:])
+                     args: event.arguments ?? [],
+                     kwargs: event.argumentsKw ?? [:])
     }
     
     static func parse(from topic: String, args: WampArgs, kwargs: WampKwargs) -> TopicEvent? {
@@ -210,8 +210,8 @@ enum TopicEvent: CustomStringConvertible {
         ))
     }
 
-    static func parseFromRPC(fromRPC proc: String, request: (args: WampArgs, kwargs: WampKwargs),
-                             response: (args: WampArgs, kwargs: WampKwargs)) -> TopicEvent?
+    static func parse(fromRPC proc: String, request: (args: WampArgs, kwargs: WampKwargs),
+                      response: (args: WampArgs, kwargs: WampKwargs)) -> TopicEvent?
     {
         if Config.logging.logJSON {
             NSLog("[TopicEvent.parseFromRPC] \(proc) -> \(response)")
@@ -242,7 +242,7 @@ enum TopicEvent: CustomStringConvertible {
             // If we can determine the topic name sent to meta.last_event, parse the reponse as if it came from that
             // topic directly. Otherwise, return a generic meta event.
             if let metaTopic = request.args[safe: 0] as? String {
-                return parseFromTopic(metaTopic, args: metaArgs, kwargs: metaKwargs)
+                return parse(from: metaTopic, args: metaArgs, kwargs: metaKwargs)
             } else {
                 return .meta(.unknownLastEvent(metaArgs, metaKwargs))
             }
@@ -263,8 +263,8 @@ enum TopicEvent: CustomStringConvertible {
     }
 
     static private func parseTimetableTuple(_ args: [[AnyObject]]) -> (eta: Decoded<Date>, etd: Decoded<Date>)? {
-        guard let eta = args[safe: 0] as? AnyObject,
-            let etd = args[safe: 1] as? AnyObject
+        guard let eta = args[safe: 0],
+            let etd = args[safe: 1]
             else { return nil }
         return (eta: decode(eta), etd: decode(etd))
     }

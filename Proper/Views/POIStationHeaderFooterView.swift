@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 
 class POIStationHeaderFooterView: UITableViewHeaderFooterView {
@@ -35,13 +35,13 @@ class POIStationHeaderFooterView: UITableViewHeaderFooterView {
         let disposable = CompositeDisposable()
 
         // Bind station attributes...
-        disposable += station.name.producer.startWithNext({ self.title.text = $0 })
+        disposable += station.name.producer.startWithValues({ self.title.text = $0 })
         self.subtitle.text = "\(station.stopCode)"
         // ...badges...
-        disposable += badge.name.producer.startWithNext({ self.badgeView.label.text = $0 })
-        disposable += badge.color.producer.startWithNext({ self.contentView.backgroundColor = $0 })
+        disposable += badge.name.producer.startWithValues({ self.badgeView.label.text = $0 })
+        disposable += badge.color.producer.startWithValues({ self.contentView.backgroundColor = $0 })
         // ...and distance string.
-        disposable += distance.producer.startWithNext({ distance in
+        disposable += distance.producer.startWithValues({ distance in
             self.subtitle.text = "\(station.stopCode) • \(distance) away"
         })
 

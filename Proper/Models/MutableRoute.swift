@@ -7,9 +7,10 @@
 //
 
 import Foundation
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 import Argo
+import UIKit
 
 class MutableRoute: MutableModel, Comparable {
     typealias FromModel = Route
@@ -22,7 +23,7 @@ class MutableRoute: MutableModel, Comparable {
 
     // MARK: Route Support
     var identifier: FromModel.Identifier { return self.shortName }
-    var topic: String { return FromModel.topicFor(self.identifier) }
+    var topic: String { return FromModel.topic(for: self.identifier) }
 
     // MARK: Route Attributes
     let shortName: FromModel.Identifier
@@ -38,12 +39,12 @@ class MutableRoute: MutableModel, Comparable {
 
     // MARK: Signal Producer
     lazy var producer: SignalProducer<TopicEvent, ProperError> = {
-        let now = self.connection.call("meta.last_event", args: [self.topic, self.topic])
-        let future = self.connection.subscribe(self.topic)
-        return SignalProducer<SignalProducer<TopicEvent, ProperError>, ProperError>(values: [now, future])
-            .flatten(.Merge)
+        let now = self.connection.call("meta.last_event", with: [self.topic, self.topic])
+        let future = self.connection.subscribe(to: self.topic)
+        return SignalProducer<SignalProducer<TopicEvent, ProperError>, ProperError>([now, future])
+            .flatten(.merge)
             .logEvents(identifier: "MutableRoute.producer", logger: logSignalEvent)
-            .attempt(self.handleEvent)
+            .attempt(operation: self.handle)
     }()
 
     // MARK: Functions
@@ -52,23 +53,24 @@ class MutableRoute: MutableModel, Comparable {
         self.connection = connection
         try apply(route)
 
-        // Create back-references to this MutableRoute on all vehicles associated with the route. 
-        self.vehicles.producer.flatten(.Latest).startWithNext { [weak self] vehicle in
-            vehicle.route.modify { $0 ?? self }
-        }
+        // Create back-references to this MutableRoute on all vehicles associated with the route.
+        // Disabled 2017-05-16 during swift3 migration
+        //self.vehicles.producer.flatten().startWithValues { [weak self] vehicle in
+        //    vehicle.route.modify { $0 ?? self }
+        //}
     }
 
 
-    func handleEvent(event: TopicEvent) -> Result<(), ProperError> {
+    func handle(event: TopicEvent) -> Result<(), ProperError> {
         if let error = event.error {
-            return .Failure(.decodeFailure(error))
+            return .failure(.decodeFailure(error))
         }
 
         return ProperError.capture({
             switch event {
-            case .Route(.update(let route, _)):
+            case .route(.update(let route, _)):
                 try self.apply(route.value!)
-            case .Route(.vehicleUpdate(let vehicle, _)):
+            case .route(.vehicleUpdate(let vehicle, _)):
                 // If any vehicles on this route match `vehicle`, update their information to match `vehicle`.
                 try self.vehicles.value.filter { $0 == vehicle.value! }.forEach { try $0.apply(vehicle.value!) }
             default: break
@@ -76,7 +78,7 @@ class MutableRoute: MutableModel, Comparable {
         })
     }
 
-    func apply(route: Route) throws {
+    func apply(_ route: Route) throws {
         if route.identifier != self.identifier {
             throw ProperError.applyFailure(from: route.identifier, onto: self.identifier)
         }
@@ -92,7 +94,7 @@ class MutableRoute: MutableModel, Comparable {
 
         // Map the station stubs in `route.stations` to mutables in `self.stations`, then update the itinerary property
         // and regenerate the condensed route *iff the stations or their ordering has changed*.
-        if let itinerary = try route.itinerary.map(mappedItinerary) where self.itinerary.value.map({ $0 != itinerary }) ?? true {
+        if let itinerary = try route.itinerary.map(mappedItinerary), self.itinerary.value.map({ $0 != itinerary }) ?? true {
             self.itinerary.value = itinerary
             self.canonical.value = CanonicalRoute(from: itinerary)
         }

@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ReactiveCocoa
+import ReactiveSwift
 import Curry
 import Result
 import Argo
@@ -58,9 +58,23 @@ extension MutableModel {
         // Attempt to unwrap `new` and create a mutable copy of it.
         guard var new = new else { return }
 
-        try mutableSet.modify { mutables in
-            var mutables = mutables
+        try mutableSet.modify({ mutables in
+            // For each stored mutable model...
+            for model in mutables {
+                if let replacement = new.removeValue(forKey: model.identifier) {
+                    // ...apply changes from a corresponding static model in `new`...
+                    try model.apply(replacement)
+                } else {
+                    // ...otherwise, remove it.
+                    mutables.remove(model)
+                }
+            }
 
+            try new.forEach { id, model in
+                try mutables.insert(attachMutable(from: model))
+            }
+        })
+        /*try mutableSet.modify { mutables in
             // For each stored mutable model...
             for model in mutables {
                 if let replacement = new.removeValue(forKey: model.identifier) {
@@ -76,9 +90,8 @@ extension MutableModel {
             try new.forEach { id, model in
                 try mutables.insert(attachMutable(from: model))
             }
-
-            return mutables
-        }
+            return Result.success()
+        }*/
     }
 
     func attachOrApplyChanges<C: Collection, M: MutableModel>
@@ -103,7 +116,7 @@ extension MutableModel {
         }
     }
 
-    var description: String { return String(describing: Self) + "(\(self.identifier))" }
+    var description: String { return String(describing: Self.self) + "(\(self.identifier))" }
     var hashValue: Int { return self.identifier.hashValue }
 
     static func create(from: FromModel, connection: ConnectionType) -> Result<Self, ProperError> {
@@ -130,30 +143,24 @@ infix operator <-
 infix operator <-|
 
 /// Modify `mutable` if `source` is non-nil.
-internal func <- <T: Equatable>(mutable: MutableProperty<T?>, source: T?) -> ModifyPropertyResult<T?> {
+internal func <- <T: Equatable>(mutable: MutableProperty<T?>, source: T?) {
     if let value = source, value != mutable.value {
-        return .modifiedFrom(mutable.swap(value))
+        mutable.swap(value)
     }
-    return .unmodified
 }
 
 /// Modify `mutable` if any elements in `source` are different.
-internal func <-| <C: Collection, T: Equatable>(
-    mutable: MutableProperty<C?>, source: C?) -> ModifyPropertyResult<C?> where C.Iterator.Element == T
+internal func <-| <C: Collection, T: Equatable>(mutable: MutableProperty<C?>, source: C?)
+    where C.Iterator.Element == T
 {
     if let source = source, mutable.value == nil || source.elementsEqual(mutable.value!) {
-        return .modifiedFrom(mutable.swap(source))
+        mutable.swap(source)
     }
-    return .unmodified
 }
 
 /// Modify `mutable` if any elements in `source` are different, by building a Set from `source`.
-internal func <-| <T: Hashable>(mutable: MutableProperty<Set<T>?>, source: [T]?) -> ModifyPropertyResult<Set<T>?> {
-    return source.map { mutable <-| Set($0) } ?? .unmodified
-}
-
-/// Return status from the modify mutable property operator (`<-`).
-enum ModifyPropertyResult<T> {
-    case modifiedFrom(T)
-    case unmodified
+internal func <-| <T: Hashable>(mutable: MutableProperty<Set<T>?>, source: [T]?) {
+    if let source = source {
+        mutable <-| Set(source)
+    }
 }

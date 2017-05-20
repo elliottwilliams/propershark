@@ -9,7 +9,7 @@
 import Foundation
 import Argo
 import Curry
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 
 struct Arrival: Comparable, Hashable {
@@ -54,11 +54,11 @@ struct Arrival: Comparable, Hashable {
     /// optionally cancellable using `disposable`.
     private func emitLifecycle(_ observer: Observer<Lifecycle, NoError>, _ disposable: CompositeDisposable) {
         let (state, refresh) = Lifecycle.determine(eta, etd)
-        observer.sendNext(state)
+        observer.send(value: state)
 
         if let refresh = refresh {
-            disposable += QueueScheduler.mainQueueScheduler
-                .scheduleAfter(refresh, action: { self.emitLifecycle(observer, disposable) })
+            disposable += QueueScheduler.main
+                .schedule(after: refresh) { self.emitLifecycle(observer, disposable) }
         } else {
             observer.sendCompleted()
         }

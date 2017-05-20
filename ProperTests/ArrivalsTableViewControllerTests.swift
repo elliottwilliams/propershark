@@ -7,7 +7,7 @@
 //
 
 import XCTest
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 @testable import Proper
 
@@ -23,7 +23,7 @@ class ArrivalsTableViewControllerTests: XCTestCase {
         disposable = CompositeDisposable()
 
         let expectation = self.expectation(description: "fixtures")
-        Station.fixture("stations.BUS100W").startWithNext { model in
+        Station.fixture("stations.BUS100W").startWithValues { model in
             self.station = try! MutableStation(from: model, connection: self.mock)
             self.controller = ArrivalsTableViewController(observing: self.station, style: .Plain, connection: self.mock)
             expectation.fulfill()

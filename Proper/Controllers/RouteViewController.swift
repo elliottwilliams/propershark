@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 
 class RouteViewController: UIViewController, ProperViewController {
@@ -31,7 +31,7 @@ class RouteViewController: UIViewController, ProperViewController {
 
         // Bind route data.
         badge.routeNumber = route.shortName
-        disposable += route.color.producer.ignoreNil().startWithNext { color in
+        disposable += route.color.producer.skipNil().startWithValues { color in
             let contrasting = color.blackOrWhiteContrastingColor()
             self.badge.color = color
             self.badge.strokeColor = contrasting
@@ -40,7 +40,7 @@ class RouteViewController: UIViewController, ProperViewController {
             self.colorNavigationBar(color)
             self.infoContainer.backgroundColor = color
         }
-        disposable += route.name.producer.ignoreNil().startWithNext { name in
+        disposable += route.name.producer.skipNil().startWithValues { name in
             self.navItem.title = name
         }
     }

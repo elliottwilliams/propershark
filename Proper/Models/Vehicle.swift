@@ -9,6 +9,7 @@
 import Foundation
 import Argo
 import Curry
+import Runes
 
 struct Vehicle: Model {
     typealias Identifier = String
@@ -49,7 +50,7 @@ struct Vehicle: Model {
     // MARK: Support Properties
     static var namespace: String { return "vehicles" }
     var identifier: String { return self.name }
-    var topic: String { return Vehicle.topicFor(self.identifier) }
+    var topic: String { return Vehicle.topic(for: self.identifier) }
     static var fullyQualified: String { return "Shark::Vehicle" }
 
     init(name: String, code: Int? = nil, position: Point? = nil, capacity: Int? = nil, onboard: Int? = nil,

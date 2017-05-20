@@ -8,7 +8,7 @@
 
 import UIKit
 import MDWamp
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 
 class Connection: NSObject, MDWampClientDelegate, ConnectionType {
@@ -20,15 +20,14 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
     
     private static let maxConnectionFailures = 5
     private var observer: Observer<MDWamp, ProperError>?
-    
-    var wamp = MutableProperty<MDWamp?>(nil)
 
     // MARK: Startup
     
     // Lazy evaluator for self.producer
     func connectionProducer() -> SignalProducer<MDWamp, ProperError> {
         NSLog("opening connection to wamp router")
-        let (producer, observer) = SignalProducer<MDWamp, ProperError>.buffer(1)
+        let (signal, observer) = Signal<MDWamp, ProperError>.pipe()
+        let producer = SignalProducer(signal).replayLazily(upTo: 1)
         
         // Set the instance observer and connect
         self.observer = observer
@@ -39,14 +38,14 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
         
         // Return a producer that retries for awhile on in the event of a connection failure...
         return producer
-        .retry(Connection.maxConnectionFailures).flatMapError() { _ in
+        .retry(upTo: Connection.maxConnectionFailures).flatMapError() { _ in
             NSLog("connection failure after \(Connection.maxConnectionFailures) retries")
             return SignalProducer(error: .maxConnectionFailures)
         }
         // ...and logs all events for debugging
         .logEvents(identifier: "Connection.connectionProducer", logger: logSignalEvent)
     }
-    
+
     // MARK: Communication Methods
 
     /// Subscribe to `topic` and forward parsed events. Disposing of signals created from this method will unsubscribe
@@ -55,31 +54,31 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
         return self.producer
             .map { wamp in wamp.subscribeWithSignal(topic) }
             .flatten(.latest)
-            .map { TopicEvent.parseFromTopic(topic, event: $0) }
+            .map { TopicEvent.parse(from: topic, event: $0) }
             .unwrapOrSendFailure(ProperError.eventParseFailure)
             .logEvents(identifier: "Connection.subscribe", logger: logSignalEvent)
     }
 
     /// Call `proc` and forward the result. Disposing the signal created will cancel the RPC call.
-    func call(rpc proc: String, with args: WampArgs = [], kwargs: WampKwargs = [:]) -> EventProducer {
+    func call(_ proc: String, with args: WampArgs = [], kwargs: WampKwargs = [:]) -> EventProducer {
         return self.producer.map({ wamp in
             wamp.callWithSignal(proc, args, kwargs, [:])
-                .timeoutWithError(.timeout, afterInterval: 10.0, onScheduler: QueueScheduler.mainQueueScheduler)
+                .timeout(after: 10.0, raising: .timeout, on: QueueScheduler.main)
             })
             .flatten(.latest)
-            .map { TopicEvent.parseFromRPC(proc, args, kwargs, $0) }
+            .map { TopicEvent.parse(fromRPC: proc, args, kwargs, $0) }
             .unwrapOrSendFailure(ProperError.eventParseFailure)
     }
 
     // MARK: MDWamp Delegate
     func mdwamp(_ wamp: MDWamp!, sessionEstablished info: [AnyHashable: Any]!) {
         NSLog("session established")
-        self.observer?.sendNext(wamp)
+        self.observer?.send(value: wamp)
     }
     
     func mdwamp(_ wamp: MDWamp!, closedSession code: Int, reason: String!, details: WampKwargs!) {
         NSLog("session closed, reason: \(reason)")
-        
+
         // MDWamp uses the `explicit_closed` key to indicate a deliberate failure.
         if reason == "MDWamp.session.explicit_closed" {
             self.observer?.sendCompleted()
@@ -87,7 +86,7 @@ class Connection: NSObject, MDWampClientDelegate, ConnectionType {
         }
         
         // Otherwise, it is assumed that the session closed due to an error.
-        self.observer?.sendFailed(.connectionLost(reason: reason))
+        self.observer?.send(error: .connectionLost(reason: reason))
     }
 }
 
@@ -101,10 +100,10 @@ extension MDWamp {
             NSLog("Calling \(procUri)")
             self.call(procUri, args: args, kwArgs: argsKw, options: options) { result, error in
                 if error != nil {
-                    observer.sendFailed(.mdwampError(topic: procUri, object: error))
+                    observer.send(error: .mdwampError(topic: procUri, object: error))
                     return
                 }
-                observer.sendNext(result)
+                observer.send(value: result!)
                 observer.sendCompleted()
             }
         }.logEvents(identifier: "MDWamp.callWithSignal", logger: logSignalEvent)
@@ -115,16 +114,16 @@ extension MDWamp {
             self.subscribe(
                 topic,
                 options: nil,
-                onEvent: { event in observer.sendNext(event) },
+                onEvent: { event in event.map(observer.send(value:)) },
                 result: { error in
                     NSLog("Subscribed to \(topic)")
-                    if error != nil { observer.sendFailed(.mdwampError(topic: topic, object: error)) }
+                    if error != nil { observer.send(error: .mdwampError(topic: topic, object: error)) }
                 }
             )
-            disposable.addDisposable {
+            disposable.add {
                 self.unsubscribe(topic) { error in
                     NSLog("Unsubscribed from \(topic)")
-                    if error != nil { observer.sendFailed(.mdwampError(topic: topic, object: error)) }
+                    if error != nil { observer.send(error: .mdwampError(topic: topic, object: error)) }
                 }
             }
         }.logEvents(identifier: "MDWamp.subscribeWithSignal", logger: logSignalEvent)

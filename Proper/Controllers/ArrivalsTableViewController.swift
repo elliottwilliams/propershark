@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import ReactiveCocoa
+import ReactiveSwift
 import Dwifft
 import Result
 
@@ -25,7 +25,7 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
     internal var routesCollectionModel: RoutesCollectionViewModel!
 
     // MARK: Signalled properties
-    lazy var vehicles: AnyProperty<Set<MutableVehicle>> = {
+    lazy var vehicles: Property<Set<MutableVehicle>> = {
         // Given a signal emitting the list of MutableRoutes for this station...
         let producer = self.station.routes.producer
         // ...flatMap down to a joint set of vehicles.
@@ -45,11 +45,11 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
                 // `combineLatest` causes the producer to wait until the two signals being combines have emitted. In
                 // this case, it means that no vehicles will be forwarded until all routes have produced a list of
                 // vehicles. After that, changes to vehicles of any route will forward the entire set again.
-                return producer.combineLatestWith(vehicles).map { $0.union($1) }
+                return producer.combineLatest(with: vehicles).map { $0.union($1) }
             }
         }
 
-        return AnyProperty(initialValue: Set(), producer: producer)
+        return Property(initial: Set(), then: producer)
     }()
 
     // MARK: Methods
@@ -66,7 +66,7 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
         diffCalculator.sectionIndex = 1
 
         // Create a controller to manage the routes collection view within the table.
-        routesCollectionModel = RoutesCollectionViewModel(routes: AnyProperty(station.routes))
+        routesCollectionModel = RoutesCollectionViewModel(routes: Property(station.routes))
 
         // Register the arrival nib for use in the table.
         tableView.register(UINib(nibName: "ArrivalTableViewCell", bundle: nil), forCellReuseIdentifier: "arrivalCell")
@@ -76,7 +76,7 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
         // Follow changes to routes on the station. As routes are associated and disassociated, maintain signals on all
         // current routes, so that vehicle information can be obtained. Dispose these signals as routes go away.
         disposable += station.routes.producer.combinePrevious(Set())
-            .startWithNext { old, new in
+            .startWithValues { old, new in
                 new.subtracting(old).forEach { route in
                     self.routeDisposables[route] = route.producer.startWithFailed(self.displayError)
                     self.disposable += self.routeDisposables[route]
@@ -87,7 +87,7 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
         }
 
         // When the list of vehicles for this station changes, update the table.
-        disposable += vehicles.producer.startWithNext { vehicles in
+        disposable += vehicles.producer.startWithValues { vehicles in
             self.tableView.beginUpdates()
             self.diffCalculator.rows = vehicles.sorted()
             self.tableView.endUpdates()

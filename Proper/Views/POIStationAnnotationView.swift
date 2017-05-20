@@ -8,7 +8,7 @@
 
 import UIKit
 import MapKit
-import ReactiveCocoa
+import ReactiveSwift
 
 class POIStationAnnotationView: MKAnnotationView {
     let badge: BadgeView
@@ -45,8 +45,8 @@ class POIStationAnnotationView: MKAnnotationView {
         self.disposable?.dispose()
         let disposable = CompositeDisposable()
         self.annotation = annotation
-        disposable += annotation.badge.name.producer.startWithNext({ self.badge.label.text = $0 })
-        disposable += annotation.badge.color.producer.startWithNext({ self.badge.color = $0 })
+        disposable += annotation.badge.name.producer.startWithValues({ self.badge.label.text = $0 })
+        disposable += annotation.badge.color.producer.startWithValues({ self.badge.color = $0 })
         self.disposable = disposable
     }
 }

@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import ReactiveCocoa
+import ReactiveSwift
 import Result
 
 class ArrivalTableViewCell: UITableViewCell {
@@ -45,11 +45,11 @@ class ArrivalTableViewCell: UITableViewCell {
         let disposable = CompositeDisposable()
 
         badge.routeNumber = arrival.route.shortName
-        disposable += arrival.route.name.producer.startWithNext({ self.routeTitle.text = $0 })
-        disposable += arrival.route.color.producer.ignoreNil().startWithNext({ self.badge.color = $0 })
+        disposable += arrival.route.name.producer.startWithValues({ self.routeTitle.text = $0 })
+        disposable += arrival.route.color.producer.skipNil().startWithValues({ self.badge.color = $0 })
         disposable += arrival.route.producer.start()
 
-        disposable += ArrivalsViewModel.label(for: arrival).startWithNext({ self.routeTimer.text = $0 })
+        disposable += ArrivalsViewModel.label(for: arrival).startWithValues({ self.routeTimer.text = $0 })
         self.disposable = disposable
     }
 }

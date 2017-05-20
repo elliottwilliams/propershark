@@ -23,7 +23,7 @@ protocol Model: Hashable, CustomStringConvertible {
 
     /// Returns the WAMP channel name for the given model. By default, this is implemented using the model's `namespace`
     /// and `identifier`.
-    static func topicFor(identifier: Identifier) -> String
+    static func topic(for: Identifier) -> String
 
     // The fully-qualified name of this object type as it exists on Shark
     static var fullyQualified: String { get }
@@ -40,8 +40,8 @@ func ==<M: Model>(a: M, b: M) -> Bool {
 
 extension Model {
     /// Returns the WAMP topic corresponding to an ID from this model.
-    static func topicFor(identifier: Identifier) -> String {
-        return "\(Self.namespace).\(identifier)"
+    static func topic(for id: Identifier) -> String {
+        return "\(Self.namespace).\(id)"
     }
     /// Returns a model ID string without the fully qualified prefix.
     /// Example: `Shark::Vehicle::BUS123 -> BUS123`
@@ -54,7 +54,7 @@ extension Model {
         return id.replacingOccurrences(of: Self.namespace + ".", with: "")
     }
 
-    var description: String { return String(describing: Self) + "(\(self.identifier))" }
+    var description: String { return String(describing: Self.self) + "(\(self.identifier))" }
     var hashValue: Int { return self.identifier.hashValue }
 }
 

@@ -107,8 +107,8 @@ class ScheduleRail: UIView {
         }
         
         let path = CGMutablePath()
-        CGPathMoveToPoint(path, nil, _width * 0.2, _height/2)
-        CGPathAddLineToPoint(path, nil, _width * 0.8, _height/2)
+        path.move(to: CGPoint(x: _width * 0.2, y: _height / 2))
+        path.addLine(to: CGPoint(x: _width * 0.8, y: _height/2))
         
         _stationLayer.path = path
         _stationLayer.strokeColor = _railColor.cgColor
@@ -122,34 +122,38 @@ class ScheduleRail: UIView {
         if segment == .entrance || segment == .full {
             switch (shape) {
             case .vertical:
-                CGPathMoveToPoint(path, nil, width/2, c.y)
-                CGPathAddLineToPoint(path, nil, width/2, c.y+height/2)
+                path.move(to: CGPoint(x: width/2, y: c.y))
+                path.addLine(to: CGPoint(x: width/2, y: c.y+height/2))
             case .horizontal:
-                CGPathMoveToPoint(path, nil, -1*_leftMargin, c.y+height/2)
-                CGPathAddLineToPoint(path, nil, width/2, c.y+height/2)
+                path.move(to: CGPoint(x: -1*_leftMargin, y: c.y+height/2))
+                path.addLine(to: CGPoint(x: width/2, y: c.y+height/2))
             case .northwest:
-                CGPathMoveToPoint(path, nil, width/2, c.y)
-                CGPathAddArc(path, nil, 0, c.y, width/2, 0, CGFloat(M_PI/4), false)
+                path.move(to: CGPoint(x: width/2, y: c.y))
+                path.addArc(center: CGPoint(x: 0, y: c.y), radius: width/2,
+                            startAngle: 0, endAngle: .pi/4, clockwise: false)
             case .southwest:
-                CGPathMoveToPoint(path, nil, -1*_leftMargin, c.y+height/2)
-                CGPathAddLineToPoint(path, nil, 0, c.y+height/2)
-                CGPathAddArc(path, nil, 0, c.y+height, height/2, 0, CGFloat(M_PI/4), false)
+                path.move(to: CGPoint(x: -1*_leftMargin, y: c.y+height/2))
+                path.addLine(to: CGPoint(x: 0, y: c.y+height/2))
+                path.addArc(center: CGPoint(x: 0, y: c.y+height), radius: height/2,
+                            startAngle: 0, endAngle: .pi/4, clockwise: false)
             }
         }
         if segment == .exit || segment == .full {
             switch(shape) {
             case .vertical:
-                CGPathMoveToPoint(path, nil, width/2, c.y+height/2)
-                CGPathAddLineToPoint(path, nil, width/2, c.y+height)
+                path.move(to: CGPoint(x: width/2, y: c.y+height/2))
+                path.addLine(to: CGPoint(x: width/2, y: c.y+height))
             case .horizontal:
-                CGPathMoveToPoint(path, nil, width/2, c.y+height/2)
-                CGPathAddLineToPoint(path, nil, width, c.y+height/2)
+                path.move(to: CGPoint(x: width/2, y: c.y+height/2))
+                path.addLine(to: CGPoint(x: width, y: c.y+height/2))
             case .northwest:
                 // AddArc moves to the proper starting point automatically, so we don't need to mess with MoveToPoint or do any trigonometry
-                CGPathAddArc(path, nil, 0, c.y, width/2, CGFloat(M_PI/4), CGFloat(M_PI/2), false)
-                CGPathAddLineToPoint(path, nil, -1*_leftMargin, c.y+height/2)
+                path.addArc(center: CGPoint(x: 0, y: c.y), radius: width/2,
+                            startAngle: .pi/4, endAngle: .pi/4, clockwise: false)
+                path.addLine(to: CGPoint(x: -1*_leftMargin, y: c.y+height/2))
             case .southwest:
-                CGPathAddArc(path, nil, 0, c.y+height, height/2, CGFloat(M_PI/4), CGFloat(M_PI/2), false)
+                path.addArc(center: CGPoint(x: 0, y: c.y+height), radius: height/2,
+                            startAngle: .pi/4, endAngle: .pi/4, clockwise: false)
             }
         }
     }

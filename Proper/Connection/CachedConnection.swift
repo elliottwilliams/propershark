@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ReactiveCocoa
+import ReactiveSwift
 import Runes
 
 class CachedConnection<C: ConnectionType>: ConnectionType {
@@ -21,21 +21,20 @@ class CachedConnection<C: ConnectionType>: ConnectionType {
     // Returns a producer which will check the cache before calling the underlying connection.
     func call(proc: String, args: WampArgs, kwargs: WampKwargs) -> EventProducer {
         let hit = EventProducer { observer, _ in
-            self.cache.lookup(rpc: proc, args).apply(observer.sendNext)
+            self.cache.lookup(rpc: proc, args).apply(observer.send)
             observer.sendCompleted()
         }
-        let miss = connection.call(proc, args: args, kwargs: kwargs)
-            .on(next: { [weak self] in self?.cache.store(rpc: proc, args: args, event: $0) })
-        return SignalProducer<EventProducer, ProperError>(values: [hit, miss])
-            .flatten(.concat).take(1)
+        let miss = connection.call(proc, with: args, kwargs: kwargs)
+            .on(value: { [weak self] in self?.cache.store(event: $0, rpc: proc, args: args) })
+        return SignalProducer<EventProducer, ProperError>([hit, miss])
+            .flatten(.concat).take(first: 1)
     }
 
     // Returns a producer of topic events that will update the cache, and will trigger a cache void when the connection
     // terminates.
-    func subscribe(topic: String) -> EventProducer {
-        return connection.subscribe(topic)
-            .on(next: { [weak self] in self?.cache.store(topic, event: $0) },
-                terminated: { [weak self] in self?.cache.void(topic) })
+    func subscribe(to topic: String) -> EventProducer {
+        return connection.subscribe(to: topic)
+            .on(value: { [weak self] in _ = self?.cache.store(event: $0, topic: topic) })
     }
 }
 

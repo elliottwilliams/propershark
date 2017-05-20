@@ -6,8 +6,9 @@
 //  Copyright © 2016 Elliott Williams. All rights reserved.
 //
 
+import UIKit
 import Foundation
-import ReactiveCocoa
+import ReactiveSwift
 import enum Result.NoError
 
 protocol ProperViewController {
@@ -25,7 +26,7 @@ extension ProperViewController where Self: UIViewController {
     /// Show a model alert corresponding to the error message of a `PSError`.
     func displayError(_ error: ProperError) {
         let alert = UIAlertController(title: "An improper error:",
-                                      message: String(error),
+                                      message: String(describing: error),
                                       preferredStyle: .alert)
         let action = UIAlertAction(title: "OK", style: .default, handler: nil)
         
