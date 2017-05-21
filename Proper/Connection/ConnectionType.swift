@@ -20,8 +20,14 @@ protocol ConnectionType {
 }
 
 extension ConnectionType {
-    // Convenience method to call a procedure while omitting args and/or kwargs
-    func call(_ proc: String, with args: WampArgs = [], kwargs: WampKwargs = [:]) -> EventProducer {
-        return self.call(proc, with: args, kwargs: kwargs)
+    func call(_ proc: String) -> EventProducer {
+        return call(proc, with: [], kwargs: [:])
     }
+    func call(_ proc: String, with args: WampArgs) -> EventProducer {
+        return call(proc, with: args, kwargs: [:])
+    }
+    func call(_ proc: String, kwargs: WampKwargs) -> EventProducer {
+        return call(proc, with: [], kwargs: kwargs)
+    }
+
 }

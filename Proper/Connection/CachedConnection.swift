@@ -19,7 +19,7 @@ class CachedConnection<C: ConnectionType>: ConnectionType {
     }
 
     // Returns a producer which will check the cache before calling the underlying connection.
-    func call(proc: String, args: WampArgs, kwargs: WampKwargs) -> EventProducer {
+    func call(_ proc: String, with args: WampArgs, kwargs: WampKwargs) -> EventProducer {
         let hit = EventProducer { observer, _ in
             self.cache.lookup(rpc: proc, args).apply(observer.send)
             observer.sendCompleted()

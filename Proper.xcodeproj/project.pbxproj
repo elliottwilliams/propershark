@@ -12,89 +12,97 @@
 		2612B5271D50490500BF671D /* ModelDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2612B5261D50490500BF671D /* ModelDecodeTests.swift */; };
 		2612B52C1D50513600BF671D /* routes.4B.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B5291D50513600BF671D /* routes.4B.json */; };
 		2612B52D1D50513600BF671D /* stations.BUS100W.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B52A1D50513600BF671D /* stations.BUS100W.json */; };
-		261DD1631C3424E1001336D4 /* BadgeViewLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 261DD1621C3424E1001336D4 /* BadgeViewLabel.swift */; };
-		26289E251DF371B200D4CD9C /* Pipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26289E241DF371B200D4CD9C /* Pipe.swift */; };
 		2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */; };
-		2635DB781C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB771C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift */; };
-		263D36371DB2784700FC7FF5 /* POITableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263D36361DB2784700FC7FF5 /* POITableViewController.swift */; };
 		2644B89B1E7F7385008A0A4D /* PMU.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 2644B8991E7F7385008A0A4D /* PMU.gpx */; };
 		2644B89F1E7F74F8008A0A4D /* Riehle.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 2644B89C1E7F74F8008A0A4D /* Riehle.gpx */; };
 		2644B8A11E7F74F8008A0A4D /* Windsor.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 2644B89D1E7F74F8008A0A4D /* Windsor.gpx */; };
-		264553491E7A5830007F6C2D /* Arrival.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264553481E7A5830007F6C2D /* Arrival.swift */; };
 		264754901D551411000F0831 /* ArrivalsTableViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */; };
 		2647825E1C2F7B34009D9AD0 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */; };
-		264782601C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647825F1C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift */; };
-		264A13C71D26157400B44D47 /* ProperError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264A13C61D26157400B44D47 /* ProperError.swift */; };
-		264A13C91D2625CE00B44D47 /* TopicEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264A13C81D2625CE00B44D47 /* TopicEvent.swift */; };
-		264B2D2B1E1EF5E4007EE6D5 /* Timetable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264B2D2A1E1EF5E4007EE6D5 /* Timetable.swift */; };
-		264B2D2D1E228781007EE6D5 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264B2D2C1E228781007EE6D5 /* Date.swift */; };
 		2650D28E1D176B65003758BF /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2650D28D1D176B65003758BF /* Configuration.swift */; };
-		2650EDA01C41CFCC006CCD42 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2650ED9F1C41CFCC006CCD42 /* Array.swift */; };
 		266111D21D51521500D8F46B /* UIColorDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111D11D51521500D8F46B /* UIColorDecodeTests.swift */; };
 		266111DD1D5378B500D8F46B /* NilConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111DC1D5378B500D8F46B /* NilConnection.swift */; };
 		266111DE1D5380D300D8F46B /* ConnectionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2612F9FE1D2CCAE5005103E3 /* ConnectionMock.swift */; };
-		266BAE651D2B676F001C9EC8 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266BAE641D2B676F001C9EC8 /* UIColor.swift */; };
-		266BAE661D2B7159001C9EC8 /* StartListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264782551C2C6F67009D9AD0 /* StartListViewController.swift */; };
 		266CC4D81D826FC70022D064 /* vehicles.1801.json in Resources */ = {isa = PBXBuildFile; fileRef = 266CC4D71D826FC70022D064 /* vehicles.1801.json */; };
-		267019581C3F5BB50057FD11 /* RailVehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267019571C3F5BB50057FD11 /* RailVehicle.swift */; };
-		2675254F1D66638C00F6C33F /* StationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2675254E1D66638C00F6C33F /* StationTableViewCell.swift */; };
-		267525521D6D3B4F00F6C33F /* Decoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267525511D6D3B4F00F6C33F /* Decoded.swift */; };
-		2675E0B61D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2675E0B51D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift */; };
 		2675E0BC1D98BFCA00C2FB32 /* BadgeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2675E0BB1D98BFCA00C2FB32 /* BadgeView.xib */; };
 		267725C41E1AAC6400274042 /* StationUpcomingTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 267725C31E1AAC6400274042 /* StationUpcomingTableViewCell.xib */; };
-		267725C61E1AACF200274042 /* POIStationHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267725C51E1AACF200274042 /* POIStationHeaderFooterView.swift */; };
-		268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72261BF9938800E981D4 /* TransitLabel.swift */; };
-		268E72291BF9938800E981D4 /* TransitNavigationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72271BF9938800E981D4 /* TransitNavigationItem.swift */; };
 		269011491DE9D61C00A3124A /* LastEventCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 269011481DE9D61C00A3124A /* LastEventCacheTests.swift */; };
-		2696D7F91E7DF78300ABD701 /* ArrivalsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D7F81E7DF78300ABD701 /* ArrivalsViewModel.swift */; };
-		2696D7FD1E7DFAC200ABD701 /* SignalChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D7FC1E7DFAC200ABD701 /* SignalChain.swift */; };
-		2696D7FF1E7DFB7E00ABD701 /* NearbyStationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D7FE1E7DFB7E00ABD701 /* NearbyStationsViewModel.swift */; };
-		2696D8011E7E3B1D00ABD701 /* Badge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D8001E7E3B1D00ABD701 /* Badge.swift */; };
-		2696D8031E7ED45A00ABD701 /* POITableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D8021E7ED45A00ABD701 /* POITableDataSource.swift */; };
-		2696D8061E7ED64D00ABD701 /* MKCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D8051E7ED64D00ABD701 /* MKCircle.swift */; };
-		2698CF011D8B8FC400E6174A /* RoutesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2698CF001D8B8FC400E6174A /* RoutesCollectionViewCell.swift */; };
-		26A0FF011E149AF200FF265A /* POIViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A0FEFF1E149AF200FF265A /* POIViewModel.swift */; };
-		26A0FF021E149AF200FF265A /* RoutesCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A0FF001E149AF200FF265A /* RoutesCollectionViewModel.swift */; };
 		26A0FF091E15AAF500FF265A /* POIStationHeaderFooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26ED26F01E117969007FB0F8 /* POIStationHeaderFooterView.xib */; };
-		26A424B41BD2C1320035754F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424B31BD2C1320035754F /* AppDelegate.swift */; };
 		26A424B91BD2C1320035754F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 26A424B71BD2C1320035754F /* Main.storyboard */; };
 		26A424BB1BD2C1320035754F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26A424BA1BD2C1320035754F /* Assets.xcassets */; };
 		26A424BE1BD2C1320035754F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 26A424BC1BD2C1320035754F /* LaunchScreen.storyboard */; };
 		26A424E21BD2C7EE0035754F /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26A424E11BD2C7EE0035754F /* MapKit.framework */; };
-		26A424E51BD2D3F20035754F /* ArrivalTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424E31BD2D3F20035754F /* ArrivalTableViewCell.swift */; };
 		26A424E61BD2D3F20035754F /* ArrivalTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26A424E41BD2D3F20035754F /* ArrivalTableViewCell.xib */; };
-		26A4B7AF1D32251100264F0D /* MutableStation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A4B7AE1D32251100264F0D /* MutableStation.swift */; };
-		26A4B7B11D32CEC800264F0D /* MutableRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A4B7B01D32CEC800264F0D /* MutableRoute.swift */; };
-		26A4B7B31D33503600264F0D /* MutableVehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A4B7B21D33503600264F0D /* MutableVehicle.swift */; };
-		26A8D6021D484944000434F9 /* ArrivalsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A8D6011D484944000434F9 /* ArrivalsTableViewController.swift */; };
 		26AC8BB21BD345F100AA0001 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26AC8BB11BD345F100AA0001 /* Media.xcassets */; };
 		26AC8BB61BD3503300AA0001 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26AC8BB51BD3503300AA0001 /* QuartzCore.framework */; };
-		26ADB0E71E186A9D008F49FF /* POIStationAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ADB0E61E186A9D008F49FF /* POIStationAnnotation.swift */; };
-		26ADB0EB1E187151008F49FF /* POIStationAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ADB0EA1E187151008F49FF /* POIStationAnnotationView.swift */; };
-		26AE681C1D601D0B0031E534 /* RouteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE681B1D601D0B0031E534 /* RouteViewController.swift */; };
-		26AE681E1D612B810031E534 /* StationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE681D1D612B810031E534 /* StationTableViewController.swift */; };
-		26AE68201D622CCD0031E534 /* CanonicalRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE681F1D622CCD0031E534 /* CanonicalRoute.swift */; };
 		26AE68221D62AD250031E534 /* CanonicalRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE68211D62AD250031E534 /* CanonicalRouteTests.swift */; };
-		26AE68241D62BDF90031E534 /* RouteStop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE68231D62BDF90031E534 /* RouteStop.swift */; };
-		26B3DC561D170BAE001E29AA /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B3DC551D170BAE001E29AA /* Connection.swift */; };
-		26B526D21E1C0AA700092705 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B526D11E1C0AA700092705 /* Location.swift */; };
-		26B9E1D31D35E0C500794EB6 /* SignalType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B9E1D21D35E0C500794EB6 /* SignalType.swift */; };
 		26C3C21B1D542ED3008E2A46 /* ConnectionMockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3C21A1D542ED3008E2A46 /* ConnectionMockTests.swift */; };
 		26C3C21C1D543CFF008E2A46 /* MutableModelTestSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111D71D52EA6100D8F46B /* MutableModelTestSpec.swift */; };
-		26C598BC1C250D1E00BC9FE1 /* BadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C598BB1C250D1E00BC9FE1 /* BadgeView.swift */; };
 		26C7FAB51ECC03B8006B7101 /* Runes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26C7FAB41ECC03B8006B7101 /* Runes.framework */; };
-		26CDF9591D7B344200E53F82 /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26CDF9581D7B344200E53F82 /* Box.swift */; };
+		26C7FB171ED16D6F006B7101 /* CachedConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ED26EC1E11763C007FB0F8 /* CachedConnection.swift */; };
+		26C7FB181ED16D6F006B7101 /* ConnectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ED26ED1E11763C007FB0F8 /* ConnectionType.swift */; };
+		26C7FB191ED16D6F006B7101 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B3DC551D170BAE001E29AA /* Connection.swift */; };
+		26C7FB1A1ED16D6F006B7101 /* LastEventCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26EBAB381D7B12DC00342D0C /* LastEventCache.swift */; };
+		26C7FB1B1ED16D6F006B7101 /* TopicEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264A13C81D2625CE00B44D47 /* TopicEvent.swift */; };
+		26C7FB1C1ED16D6F006B7101 /* POIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E7B5441DAFC0AD00AE50E1 /* POIViewController.swift */; };
+		26C7FB1D1ED16D6F006B7101 /* POITableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263D36361DB2784700FC7FF5 /* POITableViewController.swift */; };
+		26C7FB1E1ED16D6F006B7101 /* StationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424B51BD2C1320035754F /* StationViewController.swift */; };
+		26C7FB1F1ED16D6F006B7101 /* StartListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264782551C2C6F67009D9AD0 /* StartListViewController.swift */; };
+		26C7FB201ED16D6F006B7101 /* ArrivalsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A8D6011D484944000434F9 /* ArrivalsTableViewController.swift */; };
+		26C7FB211ED16D6F006B7101 /* RouteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE681B1D601D0B0031E534 /* RouteViewController.swift */; };
+		26C7FB221ED16D6F006B7101 /* StationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE681D1D612B810031E534 /* StationTableViewController.swift */; };
+		26C7FB231ED16D6F006B7101 /* POITableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D8021E7ED45A00ABD701 /* POITableDataSource.swift */; };
+		26C7FB241ED16D6F006B7101 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424B31BD2C1320035754F /* AppDelegate.swift */; };
+		26C7FB251ED16D6F006B7101 /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26CDF9581D7B344200E53F82 /* Box.swift */; };
+		26C7FB261ED16D6F006B7101 /* EventLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DBCF481D3FF59A00B22562 /* EventLog.swift */; };
+		26C7FB271ED16D6F006B7101 /* Matchers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E21E1D2776AB00F85712 /* Matchers.swift */; };
+		26C7FB281ED16D6F006B7101 /* Pipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26289E241DF371B200D4CD9C /* Pipe.swift */; };
+		26C7FB291ED16D6F006B7101 /* ProperError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264A13C61D26157400B44D47 /* ProperError.swift */; };
+		26C7FB2A1ED16D6F006B7101 /* ProperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E3E2CE1D3C7DF90018EF3F /* ProperViewController.swift */; };
+		26C7FB2B1ED16D6F006B7101 /* PSLocationManagerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647825F1C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift */; };
+		26C7FB2C1ED16D6F006B7101 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2650ED9F1C41CFCC006CCD42 /* Array.swift */; };
+		26C7FB2D1ED16D6F006B7101 /* SignalType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B9E1D21D35E0C500794EB6 /* SignalType.swift */; };
+		26C7FB2E1ED16D6F006B7101 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266BAE641D2B676F001C9EC8 /* UIColor.swift */; };
+		26C7FB2F1ED16D6F006B7101 /* Decoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267525511D6D3B4F00F6C33F /* Decoded.swift */; };
+		26C7FB301ED16D6F006B7101 /* MKCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D8051E7ED64D00ABD701 /* MKCircle.swift */; };
+		26C7FB311ED16D6F006B7101 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E2211D28DFE800F85712 /* Route.swift */; };
+		26C7FB321ED16D6F006B7101 /* Station.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E2281D28E24B00F85712 /* Station.swift */; };
+		26C7FB331ED16D6F006B7101 /* MutableRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A4B7B01D32CEC800264F0D /* MutableRoute.swift */; };
+		26C7FB341ED16D6F006B7101 /* MutableVehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A4B7B21D33503600264F0D /* MutableVehicle.swift */; };
+		26C7FB351ED16D6F006B7101 /* MutableStation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A4B7AE1D32251100264F0D /* MutableStation.swift */; };
+		26C7FB361ED16D6F006B7101 /* Vehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E22A1D28E25200F85712 /* Vehicle.swift */; };
+		26C7FB371ED16D6F006B7101 /* Arrival.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264553481E7A5830007F6C2D /* Arrival.swift */; };
+		26C7FB381ED16D6F006B7101 /* CanonicalRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE681F1D622CCD0031E534 /* CanonicalRoute.swift */; };
+		26C7FB391ED16D6F006B7101 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E2231D28E07100F85712 /* Model.swift */; };
+		26C7FB3A1ED16D6F006B7101 /* MutableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E22E1D29BBA700F85712 /* MutableModel.swift */; };
+		26C7FB3B1ED16D6F006B7101 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E2251D28E0B000F85712 /* Point.swift */; };
+		26C7FB3C1ED16D6F006B7101 /* RouteStop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE68231D62BDF90031E534 /* RouteStop.swift */; };
+		26C7FB3D1ED16D6F006B7101 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264B2D2C1E228781007EE6D5 /* Date.swift */; };
+		26C7FB3E1ED16D6F006B7101 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B526D11E1C0AA700092705 /* Location.swift */; };
+		26C7FB3F1ED16D6F006B7101 /* Timetable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264B2D2A1E1EF5E4007EE6D5 /* Timetable.swift */; };
+		26C7FB401ED16D6F006B7101 /* ArrivalsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D7F81E7DF78300ABD701 /* ArrivalsViewModel.swift */; };
+		26C7FB411ED16D6F006B7101 /* SignalChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D7FC1E7DFAC200ABD701 /* SignalChain.swift */; };
+		26C7FB421ED16D6F006B7101 /* NearbyStationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D7FE1E7DFB7E00ABD701 /* NearbyStationsViewModel.swift */; };
+		26C7FB431ED16D6F006B7101 /* POIViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A0FEFF1E149AF200FF265A /* POIViewModel.swift */; };
+		26C7FB441ED16D6F006B7101 /* RoutesCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A0FF001E149AF200FF265A /* RoutesCollectionViewModel.swift */; };
+		26C7FB451ED16D6F006B7101 /* Badge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D8001E7E3B1D00ABD701 /* Badge.swift */; };
+		26C7FB461ED16D6F006B7101 /* POIStationHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267725C51E1AACF200274042 /* POIStationHeaderFooterView.swift */; };
+		26C7FB471ED16D6F006B7101 /* POIStationAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ADB0EA1E187151008F49FF /* POIStationAnnotationView.swift */; };
+		26C7FB481ED16D6F006B7101 /* POIStationAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ADB0E61E186A9D008F49FF /* POIStationAnnotation.swift */; };
+		26C7FB491ED16D6F006B7101 /* StationUpcomingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ED26F21E117988007FB0F8 /* StationUpcomingTableViewCell.swift */; };
+		26C7FB4A1ED16D6F006B7101 /* ArrivalTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424E31BD2D3F20035754F /* ArrivalTableViewCell.swift */; };
+		26C7FB4B1ED16D6F006B7101 /* ArrivalTableRouteCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2675E0B51D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift */; };
+		26C7FB4C1ED16D6F006B7101 /* RailVehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267019571C3F5BB50057FD11 /* RailVehicle.swift */; };
+		26C7FB4D1ED16D6F006B7101 /* BadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C598BB1C250D1E00BC9FE1 /* BadgeView.swift */; };
+		26C7FB4E1ED16D6F006B7101 /* BadgeViewLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 261DD1621C3424E1001336D4 /* BadgeViewLabel.swift */; };
+		26C7FB4F1ED16D6F006B7101 /* StationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2675254E1D66638C00F6C33F /* StationTableViewCell.swift */; };
+		26C7FB501ED16D6F006B7101 /* StationTableViewHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB771C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift */; };
+		26C7FB511ED16D6F006B7101 /* ScheduleRail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DFB6751C35A7F7006A8AE0 /* ScheduleRail.swift */; };
+		26C7FB521ED16D6F006B7101 /* TransitLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72261BF9938800E981D4 /* TransitLabel.swift */; };
+		26C7FB531ED16D6F006B7101 /* TransitNavigationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E72271BF9938800E981D4 /* TransitNavigationItem.swift */; };
+		26C7FB541ED16D6F006B7101 /* RoutesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2698CF001D8B8FC400E6174A /* RoutesCollectionViewCell.swift */; };
+		26C7FB561ED16DCE006B7101 /* ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26C7FB551ED16DCE006B7101 /* ReactiveSwift.framework */; };
 		26CDF95B1D7E58CD00E53F82 /* TestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26CDF95A1D7E58CD00E53F82 /* TestError.swift */; };
 		26CDF95D1D7E59C700E53F82 /* Model+fixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26CDF95C1D7E59C700E53F82 /* Model+fixture.swift */; };
-		26D3E21F1D2776AB00F85712 /* Matchers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E21E1D2776AB00F85712 /* Matchers.swift */; };
-		26D3E2221D28DFE800F85712 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E2211D28DFE800F85712 /* Route.swift */; };
-		26D3E2241D28E07100F85712 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E2231D28E07100F85712 /* Model.swift */; };
-		26D3E2261D28E0B000F85712 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E2251D28E0B000F85712 /* Point.swift */; };
-		26D3E2291D28E24B00F85712 /* Station.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E2281D28E24B00F85712 /* Station.swift */; };
-		26D3E22B1D28E25200F85712 /* Vehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E22A1D28E25200F85712 /* Vehicle.swift */; };
-		26D3E22F1D29BBA700F85712 /* MutableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D3E22E1D29BBA700F85712 /* MutableModel.swift */; };
-		26DBCF491D3FF59A00B22562 /* EventLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DBCF481D3FF59A00B22562 /* EventLog.swift */; };
-		26DFB6761C35A7F7006A8AE0 /* ScheduleRail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DFB6751C35A7F7006A8AE0 /* ScheduleRail.swift */; };
 		26DFB67C1C35DFA5006A8AE0 /* StationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26DFB67B1C35DFA5006A8AE0 /* StationTableViewCell.xib */; };
 		26E038561D8DE9ED0006B265 /* Curry.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038501D8DE9ED0006B265 /* Curry.framework */; };
 		26E038571D8DE9ED0006B265 /* Dwifft.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038511D8DE9ED0006B265 /* Dwifft.framework */; };
@@ -106,17 +114,10 @@
 		26E038891D8F95E30006B265 /* GHODictionary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038851D8F95E20006B265 /* GHODictionary.framework */; };
 		26E0388A1D8F95E30006B265 /* MPMessagePack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038861D8F95E20006B265 /* MPMessagePack.framework */; };
 		26E0388B1D8F95E30006B265 /* SocketRocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038871D8F95E30006B265 /* SocketRocket.framework */; };
-		26E3E2CF1D3C7DF90018EF3F /* ProperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E3E2CE1D3C7DF90018EF3F /* ProperViewController.swift */; };
-		26E3E2D01D3C810B0018EF3F /* StationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424B51BD2C1320035754F /* StationViewController.swift */; };
-		26E7B5451DAFC0AD00AE50E1 /* POIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E7B5441DAFC0AD00AE50E1 /* POIViewController.swift */; };
 		26E964F41D56382300F83797 /* MutableStationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964F31D56382300F83797 /* MutableStationTests.swift */; };
 		26E964F61D56386000F83797 /* MutableRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964F51D56386000F83797 /* MutableRouteTests.swift */; };
 		26E964F81D56388800F83797 /* MutableVehicleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964F71D56388800F83797 /* MutableVehicleTests.swift */; };
 		26E964FA1D56396F00F83797 /* MutableModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964F91D56396F00F83797 /* MutableModelTests.swift */; };
-		26EBAB391D7B12DC00342D0C /* LastEventCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26EBAB381D7B12DC00342D0C /* LastEventCache.swift */; };
-		26ED26EE1E11763C007FB0F8 /* CachedConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ED26EC1E11763C007FB0F8 /* CachedConnection.swift */; };
-		26ED26EF1E11763C007FB0F8 /* ConnectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ED26ED1E11763C007FB0F8 /* ConnectionType.swift */; };
-		26ED26F31E117988007FB0F8 /* StationUpcomingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ED26F21E117988007FB0F8 /* StationUpcomingTableViewCell.swift */; };
 		26ED26F51E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26ED26F41E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib */; };
 		26F7ED101EC900910017AEDA /* Argo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E0384F1D8DE9ED0006B265 /* Argo.framework */; };
 /* End PBXBuildFile section */
@@ -223,6 +224,7 @@
 		26C3C21A1D542ED3008E2A46 /* ConnectionMockTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionMockTests.swift; sourceTree = "<group>"; };
 		26C598BB1C250D1E00BC9FE1 /* BadgeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = BadgeView.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26C7FAB41ECC03B8006B7101 /* Runes.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Runes.framework; path = Carthage/Build/iOS/Runes.framework; sourceTree = "<group>"; };
+		26C7FB551ED16DCE006B7101 /* ReactiveSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReactiveSwift.framework; path = Carthage/Build/iOS/ReactiveSwift.framework; sourceTree = "<group>"; };
 		26CDF9581D7B344200E53F82 /* Box.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
 		26CDF95A1D7E58CD00E53F82 /* TestError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestError.swift; sourceTree = "<group>"; };
 		26CDF95C1D7E59C700E53F82 /* Model+fixture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Model+fixture.swift"; sourceTree = "<group>"; };
@@ -266,6 +268,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				26C7FB561ED16DCE006B7101 /* ReactiveSwift.framework in Frameworks */,
 				2647825E1C2F7B34009D9AD0 /* CoreLocation.framework in Frameworks */,
 				26AC8BB61BD3503300AA0001 /* QuartzCore.framework in Frameworks */,
 				26A424E21BD2C7EE0035754F /* MapKit.framework in Frameworks */,
@@ -579,6 +582,7 @@
 		E4C42E7C67138C2FBA725195 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				26C7FB551ED16DCE006B7101 /* ReactiveSwift.framework */,
 				26C7FAB41ECC03B8006B7101 /* Runes.framework */,
 				26E038841D8F95E20006B265 /* CocoaAsyncSocket.framework */,
 				26E038851D8F95E20006B265 /* GHODictionary.framework */,
@@ -763,6 +767,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/MPMessagePack.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SocketRocket.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Runes.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/ReactiveSwift.framework",
 			);
 			name = "Carthage: Copy Frameworks";
 			outputPaths = (
@@ -778,70 +783,70 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				26D3E2261D28E0B000F85712 /* Point.swift in Sources */,
-				26ADB0EB1E187151008F49FF /* POIStationAnnotationView.swift in Sources */,
-				26E3E2D01D3C810B0018EF3F /* StationViewController.swift in Sources */,
-				264782601C2F7E77009D9AD0 /* PSLocationManagerDelegate.swift in Sources */,
-				26D3E21F1D2776AB00F85712 /* Matchers.swift in Sources */,
-				2635DB781C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift in Sources */,
-				261DD1631C3424E1001336D4 /* BadgeViewLabel.swift in Sources */,
-				2696D8011E7E3B1D00ABD701 /* Badge.swift in Sources */,
-				26A4B7B31D33503600264F0D /* MutableVehicle.swift in Sources */,
-				266BAE661D2B7159001C9EC8 /* StartListViewController.swift in Sources */,
-				267525521D6D3B4F00F6C33F /* Decoded.swift in Sources */,
-				2698CF011D8B8FC400E6174A /* RoutesCollectionViewCell.swift in Sources */,
-				26A0FF011E149AF200FF265A /* POIViewModel.swift in Sources */,
-				26D3E2221D28DFE800F85712 /* Route.swift in Sources */,
-				267725C61E1AACF200274042 /* POIStationHeaderFooterView.swift in Sources */,
-				26A4B7AF1D32251100264F0D /* MutableStation.swift in Sources */,
-				26AE68201D622CCD0031E534 /* CanonicalRoute.swift in Sources */,
-				264B2D2D1E228781007EE6D5 /* Date.swift in Sources */,
-				26ED26F31E117988007FB0F8 /* StationUpcomingTableViewCell.swift in Sources */,
-				26A4B7B11D32CEC800264F0D /* MutableRoute.swift in Sources */,
-				26AE681E1D612B810031E534 /* StationTableViewController.swift in Sources */,
-				26ADB0E71E186A9D008F49FF /* POIStationAnnotation.swift in Sources */,
-				2696D7FD1E7DFAC200ABD701 /* SignalChain.swift in Sources */,
+				26C7FB2D1ED16D6F006B7101 /* SignalType.swift in Sources */,
+				26C7FB171ED16D6F006B7101 /* CachedConnection.swift in Sources */,
+				26C7FB1C1ED16D6F006B7101 /* POIViewController.swift in Sources */,
+				26C7FB181ED16D6F006B7101 /* ConnectionType.swift in Sources */,
+				26C7FB441ED16D6F006B7101 /* RoutesCollectionViewModel.swift in Sources */,
+				26C7FB311ED16D6F006B7101 /* Route.swift in Sources */,
+				26C7FB281ED16D6F006B7101 /* Pipe.swift in Sources */,
+				26C7FB4A1ED16D6F006B7101 /* ArrivalTableViewCell.swift in Sources */,
+				26C7FB191ED16D6F006B7101 /* Connection.swift in Sources */,
+				26C7FB411ED16D6F006B7101 /* SignalChain.swift in Sources */,
+				26C7FB431ED16D6F006B7101 /* POIViewModel.swift in Sources */,
+				26C7FB471ED16D6F006B7101 /* POIStationAnnotationView.swift in Sources */,
+				26C7FB3C1ED16D6F006B7101 /* RouteStop.swift in Sources */,
+				26C7FB331ED16D6F006B7101 /* MutableRoute.swift in Sources */,
+				26C7FB1A1ED16D6F006B7101 /* LastEventCache.swift in Sources */,
+				26C7FB1D1ED16D6F006B7101 /* POITableViewController.swift in Sources */,
+				26C7FB3F1ED16D6F006B7101 /* Timetable.swift in Sources */,
+				26C7FB3A1ED16D6F006B7101 /* MutableModel.swift in Sources */,
+				26C7FB511ED16D6F006B7101 /* ScheduleRail.swift in Sources */,
+				26C7FB1B1ED16D6F006B7101 /* TopicEvent.swift in Sources */,
+				26C7FB3D1ED16D6F006B7101 /* Date.swift in Sources */,
+				26C7FB391ED16D6F006B7101 /* Model.swift in Sources */,
+				26C7FB351ED16D6F006B7101 /* MutableStation.swift in Sources */,
+				26C7FB461ED16D6F006B7101 /* POIStationHeaderFooterView.swift in Sources */,
+				26C7FB2E1ED16D6F006B7101 /* UIColor.swift in Sources */,
 				26E038821D8F94030006B265 /* Colours.swift in Sources */,
-				263D36371DB2784700FC7FF5 /* POITableViewController.swift in Sources */,
-				264553491E7A5830007F6C2D /* Arrival.swift in Sources */,
-				26A0FF021E149AF200FF265A /* RoutesCollectionViewModel.swift in Sources */,
-				26A424E51BD2D3F20035754F /* ArrivalTableViewCell.swift in Sources */,
-				26D3E22B1D28E25200F85712 /* Vehicle.swift in Sources */,
-				26AE681C1D601D0B0031E534 /* RouteViewController.swift in Sources */,
-				2675254F1D66638C00F6C33F /* StationTableViewCell.swift in Sources */,
-				268E72281BF9938800E981D4 /* TransitLabel.swift in Sources */,
-				26B9E1D31D35E0C500794EB6 /* SignalType.swift in Sources */,
-				2696D7FF1E7DFB7E00ABD701 /* NearbyStationsViewModel.swift in Sources */,
-				26A8D6021D484944000434F9 /* ArrivalsTableViewController.swift in Sources */,
-				26ED26EF1E11763C007FB0F8 /* ConnectionType.swift in Sources */,
-				264A13C91D2625CE00B44D47 /* TopicEvent.swift in Sources */,
-				2696D8061E7ED64D00ABD701 /* MKCircle.swift in Sources */,
-				2696D7F91E7DF78300ABD701 /* ArrivalsViewModel.swift in Sources */,
-				26CDF9591D7B344200E53F82 /* Box.swift in Sources */,
-				264A13C71D26157400B44D47 /* ProperError.swift in Sources */,
-				26D3E2241D28E07100F85712 /* Model.swift in Sources */,
-				266BAE651D2B676F001C9EC8 /* UIColor.swift in Sources */,
-				26E7B5451DAFC0AD00AE50E1 /* POIViewController.swift in Sources */,
-				2675E0B61D94D3AE00C2FB32 /* ArrivalTableRouteCollectionCell.swift in Sources */,
-				26C598BC1C250D1E00BC9FE1 /* BadgeView.swift in Sources */,
-				2696D8031E7ED45A00ABD701 /* POITableDataSource.swift in Sources */,
-				26B3DC561D170BAE001E29AA /* Connection.swift in Sources */,
-				2650EDA01C41CFCC006CCD42 /* Array.swift in Sources */,
-				264B2D2B1E1EF5E4007EE6D5 /* Timetable.swift in Sources */,
-				26D3E22F1D29BBA700F85712 /* MutableModel.swift in Sources */,
-				267019581C3F5BB50057FD11 /* RailVehicle.swift in Sources */,
-				26D3E2291D28E24B00F85712 /* Station.swift in Sources */,
-				268E72291BF9938800E981D4 /* TransitNavigationItem.swift in Sources */,
-				26A424B41BD2C1320035754F /* AppDelegate.swift in Sources */,
-				26AE68241D62BDF90031E534 /* RouteStop.swift in Sources */,
-				26B526D21E1C0AA700092705 /* Location.swift in Sources */,
-				26289E251DF371B200D4CD9C /* Pipe.swift in Sources */,
-				26DBCF491D3FF59A00B22562 /* EventLog.swift in Sources */,
+				26C7FB241ED16D6F006B7101 /* AppDelegate.swift in Sources */,
+				26C7FB3B1ED16D6F006B7101 /* Point.swift in Sources */,
 				2650D28E1D176B65003758BF /* Configuration.swift in Sources */,
-				26EBAB391D7B12DC00342D0C /* LastEventCache.swift in Sources */,
-				26ED26EE1E11763C007FB0F8 /* CachedConnection.swift in Sources */,
-				26E3E2CF1D3C7DF90018EF3F /* ProperViewController.swift in Sources */,
-				26DFB6761C35A7F7006A8AE0 /* ScheduleRail.swift in Sources */,
+				26C7FB231ED16D6F006B7101 /* POITableDataSource.swift in Sources */,
+				26C7FB371ED16D6F006B7101 /* Arrival.swift in Sources */,
+				26C7FB2B1ED16D6F006B7101 /* PSLocationManagerDelegate.swift in Sources */,
+				26C7FB521ED16D6F006B7101 /* TransitLabel.swift in Sources */,
+				26C7FB321ED16D6F006B7101 /* Station.swift in Sources */,
+				26C7FB541ED16D6F006B7101 /* RoutesCollectionViewCell.swift in Sources */,
+				26C7FB201ED16D6F006B7101 /* ArrivalsTableViewController.swift in Sources */,
+				26C7FB4D1ED16D6F006B7101 /* BadgeView.swift in Sources */,
+				26C7FB421ED16D6F006B7101 /* NearbyStationsViewModel.swift in Sources */,
+				26C7FB221ED16D6F006B7101 /* StationTableViewController.swift in Sources */,
+				26C7FB261ED16D6F006B7101 /* EventLog.swift in Sources */,
+				26C7FB4C1ED16D6F006B7101 /* RailVehicle.swift in Sources */,
+				26C7FB4F1ED16D6F006B7101 /* StationTableViewCell.swift in Sources */,
+				26C7FB251ED16D6F006B7101 /* Box.swift in Sources */,
+				26C7FB4E1ED16D6F006B7101 /* BadgeViewLabel.swift in Sources */,
+				26C7FB301ED16D6F006B7101 /* MKCircle.swift in Sources */,
+				26C7FB451ED16D6F006B7101 /* Badge.swift in Sources */,
+				26C7FB4B1ED16D6F006B7101 /* ArrivalTableRouteCollectionCell.swift in Sources */,
+				26C7FB361ED16D6F006B7101 /* Vehicle.swift in Sources */,
+				26C7FB381ED16D6F006B7101 /* CanonicalRoute.swift in Sources */,
+				26C7FB291ED16D6F006B7101 /* ProperError.swift in Sources */,
+				26C7FB1E1ED16D6F006B7101 /* StationViewController.swift in Sources */,
+				26C7FB3E1ED16D6F006B7101 /* Location.swift in Sources */,
+				26C7FB531ED16D6F006B7101 /* TransitNavigationItem.swift in Sources */,
+				26C7FB491ED16D6F006B7101 /* StationUpcomingTableViewCell.swift in Sources */,
+				26C7FB341ED16D6F006B7101 /* MutableVehicle.swift in Sources */,
+				26C7FB1F1ED16D6F006B7101 /* StartListViewController.swift in Sources */,
+				26C7FB2F1ED16D6F006B7101 /* Decoded.swift in Sources */,
+				26C7FB501ED16D6F006B7101 /* StationTableViewHeaderFooterView.swift in Sources */,
+				26C7FB481ED16D6F006B7101 /* POIStationAnnotation.swift in Sources */,
+				26C7FB211ED16D6F006B7101 /* RouteViewController.swift in Sources */,
+				26C7FB2C1ED16D6F006B7101 /* Array.swift in Sources */,
+				26C7FB2A1ED16D6F006B7101 /* ProperViewController.swift in Sources */,
+				26C7FB401ED16D6F006B7101 /* ArrivalsViewModel.swift in Sources */,
+				26C7FB271ED16D6F006B7101 /* Matchers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1022,7 +1027,8 @@
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = us.transio.Proper;
 				PRODUCT_NAME = Proper;
-				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -1042,7 +1048,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = us.transio.Proper;
 				PRODUCT_NAME = Proper;
-				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
