@@ -10,7 +10,8 @@ import Foundation
 
 /// `NSCache`-backed storage for looking up responses to `meta.last_event`.
 class LastEventCache: NSObject {
-    let cache = NSCache<NSString, Box<TopicEvent>>()
+    private let cache = NSCache<NSString, Box<TopicEvent>>()
+    private var voids = [String: DispatchWorkItem]()
 
     /// Create a cache which retains around `numEvents` events (default 100).
     init (numEvents: Int = 100) {
@@ -42,14 +43,27 @@ class LastEventCache: NSObject {
     /// Store `event` in the cache. `event` must have an originator. Returns `true` if stored.
     func store(event: TopicEvent, topic: String) {
         if let originator = event.originator {
-            cache.setObject(Box(event), forKey: key(topic, originator) as NSString)
+            let key = self.key(topic, originator)
+            voids[key]?.cancel()
+            cache.setObject(Box(event), forKey: key as NSString)
         }
     }
 
     /// Request `topic` to be removed from the cache at the end of the main loop.
-    @available(*, deprecated: 1.0, message: "Functionality removed, is now a no-op")
+    @available(*, unavailable, message: "Use expire(lastEventFrom:on)")
     func void(topic: String) {
         return
+    }
+
+    /// Informs the cache that a particular `lastEvent` will no longer be updated and will no longer be guaranteed valid. 
+    func expire(lastEventFrom originator: String, on topic: String) {
+        let key = self.key(topic, originator)
+        let action = DispatchWorkItem { [weak self] in
+            self?.cache.removeObject(forKey: key as NSString)
+            self?.voids[key] = nil
+        }
+        voids[key] = action
+        DispatchQueue.main.async(execute: action)
     }
 
     private static func eventParams(_ proc: String, _ args: WampArgs) -> (metaTopic: String, originator: String)? {

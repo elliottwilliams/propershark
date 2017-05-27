@@ -34,7 +34,8 @@ class CachedConnection<C: ConnectionType>: ConnectionType {
     // terminates.
     func subscribe(to topic: String) -> EventProducer {
         return connection.subscribe(to: topic)
-            .on(value: { [weak self] in _ = self?.cache.store(event: $0, topic: topic) })
+            .on(terminated: { [weak self] in self?.cache.expire(lastEventFrom: topic, on: topic) },
+                value: { [weak self] in _ = self?.cache.store(event: $0, topic: topic) })
     }
 }
 
