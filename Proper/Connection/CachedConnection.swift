@@ -12,7 +12,7 @@ import Runes
 
 class CachedConnection<C: ConnectionType>: ConnectionType {
     let connection: C
-    let cache = LastEventCache()
+    let lastEventCache = LastEventCache()
 
     init(_ connection: C) {
         self.connection = connection
@@ -20,12 +20,8 @@ class CachedConnection<C: ConnectionType>: ConnectionType {
 
     // Returns a producer which will check the cache before calling the underlying connection.
     func call(_ proc: String, with args: WampArgs, kwargs: WampKwargs) -> EventProducer {
-        let hit = EventProducer { observer, _ in
-            self.cache.lookup(rpc: proc, args).apply(observer.send)
-            observer.sendCompleted()
-        }
+        let hit = cacheLookup(proc, args, kwargs)
         let miss = connection.call(proc, with: args, kwargs: kwargs)
-            .on(value: { [weak self] in self?.cache.store(event: $0, rpc: proc, args: args) })
         return SignalProducer<EventProducer, ProperError>([hit, miss])
             .flatten(.concat).take(first: 1)
     }
@@ -34,8 +30,17 @@ class CachedConnection<C: ConnectionType>: ConnectionType {
     // terminates.
     func subscribe(to topic: String) -> EventProducer {
         return connection.subscribe(to: topic)
-            .on(terminated: { [weak self] in self?.cache.expire(lastEventFrom: topic, on: topic) },
-                value: { [weak self] in _ = self?.cache.store(event: $0, topic: topic) })
+            .on(terminated: { [weak self] in self?.lastEventCache.expire(topic: topic) },
+                value: { [weak self] in _ = self?.lastEventCache.store(event: $0, from: topic) })
+    }
+
+    private func cacheLookup(_ proc: String, _ args: WampArgs, _ kwargs: WampKwargs) -> EventProducer {
+        return EventProducer { observer, _ in
+            if proc == "meta.last_event", let topic = args[safe: 0] as? String, let originator = args[safe: 1] as? String {
+                self.lastEventCache.lastEvent(from: originator, sentIn: topic).apply(observer.send)
+            }
+            observer.sendCompleted()
+        }
     }
 }
 
