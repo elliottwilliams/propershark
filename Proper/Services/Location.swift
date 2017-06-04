@@ -15,10 +15,16 @@ import Result
  stream of device locations over time.
  */
 class Location: NSObject, CLLocationManagerDelegate {
-    var observer: Observer<CLLocation, ProperError>
+    let observer: Observer<CLLocation, ProperError>
+    let disposable: CompositeDisposable
+    var status: CLAuthorizationStatus
 
-    init(observer: Observer<CLLocation, ProperError>) {
+    init(observer: Observer<CLLocation, ProperError>, disposable: CompositeDisposable,
+         status: CLAuthorizationStatus = CLLocationManager.authorizationStatus())
+    {
         self.observer = observer
+        self.disposable = disposable
+        self.status = status
         super.init()
     }
 
@@ -30,9 +36,21 @@ class Location: NSObject, CLLocationManagerDelegate {
     }
 
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        if status != .authorizedAlways && status != .authorizedWhenInUse {
+        switch (self.status, status) {
+        case (_, .restricted), (_, .denied):
+            // Shut down this producer if location is disabled.
             observer.send(error: .locationDisabled)
+        case (.notDetermined, .authorizedAlways), (.notDetermined, .authorizedWhenInUse),
+             (.restricted, .authorizedAlways), (.restricted, .authorizedWhenInUse),
+             (.denied, .authorizedAlways), (.denied, .authorizedWhenInUse):
+            // Restart delivery of location events.
+            manager.stopUpdatingLocation()
+            manager.startUpdatingLocation()
+        default:
+            break
         }
+
+        self.status = status
     }
 
     func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
@@ -40,18 +58,19 @@ class Location: NSObject, CLLocationManagerDelegate {
     }
 
     static let producer = SignalProducer<CLLocation, ProperError> { observer, disposable in
-        let status = CLLocationManager.authorizationStatus()
-        guard CLLocationManager.locationServicesEnabled() && status != .restricted && status != .denied else {
+        let manager = CLLocationManager()
+        switch CLLocationManager.authorizationStatus() {
+        case .restricted, .denied:
             observer.send(error: .locationDisabled)
             return
+        case .notDetermined:
+            manager.requestWhenInUseAuthorization()
+        case .authorizedAlways, .authorizedWhenInUse:
+            break
         }
 
-        let manager = CLLocationManager()
-        let delegate = Location(observer: observer)
+        let delegate = Location(observer: observer, disposable: disposable)
         let delegateReference = Unmanaged.passRetained(delegate)
-        if status == .notDetermined {
-            manager.requestWhenInUseAuthorization()
-        }
 
         manager.delegate = delegate
         manager.desiredAccuracy = kCLLocationAccuracyBest
