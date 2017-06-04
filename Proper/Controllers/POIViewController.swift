@@ -21,8 +21,8 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
     /// Map annotation for the point of interest represented by this view. Only used for static locations.
     let annotation = MKPointAnnotation()
 
-    var table: POITableViewController?
-    var mapController: POIMapViewController?
+    var tableController: POITableViewController!
+    var mapController: POIMapViewController!
 
     /// The point tracked by the POI view. May be either the user's location or a static point. While the view is
     /// visible, this point is from `staticLocation` or `deviceLocation`, depending on whether a static location was
@@ -61,6 +61,8 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         return deviceLocation.take(untilReplacement: staticLocation)
     }
 
+    private let searchScheduler = QueueScheduler(qos: .userInitiated, name: "searchScheduler")
+
     // MARK: Conformances
     internal var connection: ConnectionType = Connection.cachedInstance
     internal var disposable = CompositeDisposable()
@@ -81,18 +83,16 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
     
     // MARK: Lifecycle
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
+    private func loadMapController() {
         let onSelect: Action<MutableStation, (), NoError> = Action { station in
-            guard let table = self.table else { return SignalProducer.empty }
-            let section = table.dataSource.index(of: station)
-            let row = (table.dataSource.arrivals[section].isEmpty) ? NSNotFound : 0
-            table.tableView.scrollToRow(at: IndexPath(row: row, section: section),
-                                        at: .top,
-                                        animated: true)
+            let section = self.tableController.dataSource.index(of: station)
+            let row = (self.tableController.dataSource.arrivals[section].isEmpty) ? NSNotFound : 0
+            self.tableController.tableView.scrollToRow(at: IndexPath(row: row, section: section),
+                                                       at: .top,
+                                                       animated: true)
             return SignalProducer.empty
         }
+
         let mapController = POIMapViewController(center: point,
                                                  zoom: zoom,
                                                  routes: Property(routes),
@@ -100,16 +100,30 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
                                                  isUserLocation: Property(isUserLocation))
         addChildViewController(mapController)
         stackView.insertArrangedSubview(mapController.view, at: 0)
-        NSLayoutConstraint.activate([/*mapController.view.topAnchor.constraint(equalTo: view.topAnchor),*/
-                                     mapController.view.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.4)])
+        mapController.view.heightAnchor.constraint(equalTo: stackView.heightAnchor, multiplier: 0.4).isActive = true
         mapController.didMove(toParentViewController: self)
         self.mapController = mapController
+    }
+
+    private func loadTableController() {
+        let tableController = POITableViewController(style: .plain,
+                                                     stations: Property(stations),
+                                                     mapPoint: Property(point))
+        addChildViewController(tableController)
+        stackView.addArrangedSubview(tableController.view)
+        tableController.view.heightAnchor.constraint(equalTo: stackView.heightAnchor, multiplier: 0.6).isActive = true
+        tableController.didMove(toParentViewController: self)
+        self.tableController = tableController
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        loadMapController()
+        loadTableController()
 
         // Clear the title until the signals created in `viewWillAppear` set one.
         navigationItem.title = nil
     }
-
-    let searchScheduler = QueueScheduler(qos: .userInitiated, name: "searchScheduler")
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -177,11 +191,6 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier ?? "" {
-        case "embedPOITable":
-            let dest = segue.destination as! POITableViewController
-            table = dest
-            dest.stations = Property(stations)
-            dest.mapPoint = point.producer
         case "showStation":
             let station = sender as! MutableStation
             let dest = segue.destination as! StationViewController

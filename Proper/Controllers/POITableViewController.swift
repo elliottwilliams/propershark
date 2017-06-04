@@ -15,14 +15,24 @@ import CoreLocation
 class POITableViewController: UITableViewController, ProperViewController {
     typealias Distance = CLLocationDistance
 
-    var stations: Property<[MutableStation]>!
-    var mapPoint: SignalProducer<Point, NoError>!
+    var stations: Property<[MutableStation]>
+    var mapPoint: Property<Point>
     let dataSource = POITableDataSource()
 
     internal var connection: ConnectionType = Connection.cachedInstance
     internal var disposable = CompositeDisposable()
 
     static let headerViewHeight = CGFloat(55)
+
+    init(style: UITableViewStyle, stations: Property<[MutableStation]>, mapPoint: Property<Point>) {
+        self.stations = stations
+        self.mapPoint = mapPoint
+        super.init(style: style)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     /// Returns a producer of Ops with side effects added to manipulate the table and data source with changes
     /// described by the table operations. The point where this view's signal chain becomes Very Imperative.
@@ -63,7 +73,6 @@ class POITableViewController: UITableViewController, ProperViewController {
                 }
             }
 
-            // TODO - In Swift 3, index sets conform to `SetAlgebra`, so we can do this without intermediate index sets.
             let deleted = sectionDeletions.subtracting(sectionInsertions)
             let inserted = sectionInsertions.subtracting(sectionDeletions)
             let reloaded = sectionDeletions.intersection(sectionInsertions)
@@ -117,15 +126,15 @@ class POITableViewController: UITableViewController, ProperViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // TODO - show vehicle details upon selection
         // In the meantime, segue to the station.
-        performSegue(withIdentifier: "showStation", sender: dataSource.stations[indexPath.section])
+        parent?.performSegue(withIdentifier: "showStation", sender: dataSource.stations[indexPath.section])
     }
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "stationHeader")
             as! POIStationHeaderFooterView
         let (station, badge, _) = dataSource.table[section]
-        let distance = POIViewModel.distanceString(SignalProducer.combineLatest(mapPoint,
-                                                                                station.position.producer.skipNil()))
+        let position = station.position.producer.skipNil()
+        let distance = POIViewModel.distanceString(mapPoint.producer.combineLatest(with: position))
 
         header.apply(station: station, badge: badge, distance: distance)
         return header
@@ -133,17 +142,5 @@ class POITableViewController: UITableViewController, ProperViewController {
 
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return POITableViewController.headerViewHeight
-    }
-
-    // MARK: Segue management
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        switch segue.identifier ?? "" {
-        case "showStation":
-            let station = sender as! MutableStation
-            let dest = segue.destination as! StationViewController
-            dest.station = station
-        default:
-            return
-        }
     }
 }
