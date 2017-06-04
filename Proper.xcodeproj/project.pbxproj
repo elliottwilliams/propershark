@@ -103,6 +103,7 @@
 		26C7FB561ED16DCE006B7101 /* ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26C7FB551ED16DCE006B7101 /* ReactiveSwift.framework */; };
 		26CDF95B1D7E58CD00E53F82 /* TestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26CDF95A1D7E58CD00E53F82 /* TestError.swift */; };
 		26CDF95D1D7E59C700E53F82 /* Model+fixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26CDF95C1D7E59C700E53F82 /* Model+fixture.swift */; };
+		26D6B1FD1EDD03C70033DAB9 /* POIMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D6B1FC1EDD03C70033DAB9 /* POIMapViewController.swift */; };
 		26DFB67C1C35DFA5006A8AE0 /* StationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26DFB67B1C35DFA5006A8AE0 /* StationTableViewCell.xib */; };
 		26E038561D8DE9ED0006B265 /* Curry.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038501D8DE9ED0006B265 /* Curry.framework */; };
 		26E038571D8DE9ED0006B265 /* Dwifft.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E038511D8DE9ED0006B265 /* Dwifft.framework */; };
@@ -235,6 +236,7 @@
 		26D3E2281D28E24B00F85712 /* Station.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Station.swift; sourceTree = "<group>"; };
 		26D3E22A1D28E25200F85712 /* Vehicle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vehicle.swift; sourceTree = "<group>"; };
 		26D3E22E1D29BBA700F85712 /* MutableModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = MutableModel.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		26D6B1FC1EDD03C70033DAB9 /* POIMapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = POIMapViewController.swift; sourceTree = "<group>"; };
 		26DBCF481D3FF59A00B22562 /* EventLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventLog.swift; sourceTree = "<group>"; };
 		26DFB6751C35A7F7006A8AE0 /* ScheduleRail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleRail.swift; sourceTree = "<group>"; };
 		26DFB67B1C35DFA5006A8AE0 /* StationTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StationTableViewCell.xib; sourceTree = "<group>"; };
@@ -345,6 +347,7 @@
 		264782621C309F7A009D9AD0 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				26D6B1FC1EDD03C70033DAB9 /* POIMapViewController.swift */,
 				26E7B5441DAFC0AD00AE50E1 /* POIViewController.swift */,
 				263D36361DB2784700FC7FF5 /* POITableViewController.swift */,
 				26A424B51BD2C1320035754F /* StationViewController.swift */,
@@ -803,6 +806,7 @@
 				26C7FB3A1ED16D6F006B7101 /* MutableModel.swift in Sources */,
 				26C7FB511ED16D6F006B7101 /* ScheduleRail.swift in Sources */,
 				26C7FB1B1ED16D6F006B7101 /* TopicEvent.swift in Sources */,
+				26D6B1FD1EDD03C70033DAB9 /* POIMapViewController.swift in Sources */,
 				26C7FB3D1ED16D6F006B7101 /* Date.swift in Sources */,
 				26C7FB391ED16D6F006B7101 /* Model.swift in Sources */,
 				26C7FB351ED16D6F006B7101 /* MutableStation.swift in Sources */,

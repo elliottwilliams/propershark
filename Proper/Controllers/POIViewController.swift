@@ -16,20 +16,36 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
     // MARK: Point properties
     typealias NamedPoint = POIViewModel.NamedPoint
 
+    @IBOutlet weak var stackView: UIStackView!
+    
     /// Map annotation for the point of interest represented by this view. Only used for static locations.
     let annotation = MKPointAnnotation()
 
     var table: POITableViewController?
+    var mapController: POIMapViewController?
 
     /// The point tracked by the POI view. May be either the user's location or a static point. While the view is
     /// visible, this point is from `staticLocation` or `deviceLocation`, depending on whether a static location was
     /// passed.
-    lazy var point = MutableProperty<Point?>(nil)
+    lazy var point = MutableProperty<Point>(Point(coordinate: Config.agency.region.center))
+
+    /// The area represented by the map, which stations are searched for within.
     lazy var zoom = MutableProperty<CLLocationDistance>(250) // Default zoom of 250m
+
+    lazy var isUserLocation = MutableProperty(true)
 
     // Stations found within the map area. This producer is passed to the POITableViewController and is a basis for its
     // view model.
     lazy var stations = MutableProperty<[MutableStation]>([])
+    lazy var routes: Property<Set<MutableRoute>> = {
+        return self.stations.flatMap(.latest, transform: { stations -> Property<Set<MutableRoute>> in
+            let producers = stations.map({ $0.routes.producer })
+            let routes = SignalProducer(producers).flatten(.merge).flatten().reduce(Set(), { set, route in
+                set.union([route] as Set)
+            })
+            return Property(initial: Set(), then: routes)
+        })
+    }()
 
     /// A producer for the device's location, which adds metadata used by the view into the signal. It is started when
     /// the view appears, but is interrupted if a static location is passed by `staticLocation`.
@@ -45,93 +61,19 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         return deviceLocation.take(untilReplacement: staticLocation)
     }
 
-    // MARK: UI properties
-    @IBOutlet weak var map: MKMapView!
-
     // MARK: Conformances
     internal var connection: ConnectionType = Connection.cachedInstance
     internal var disposable = CompositeDisposable()
-
-    // MARK: UI updates
-
-    // TODO - when map is zoomed in/out, update `self.zoom`.
-
-    func updateMap(center point: Point, isUserLocation: Bool) {
-        let coordinate = CLLocationCoordinate2D(point: point)
-        map.setCenter(coordinate, animated: true)
-        let boundingRegion = MKCoordinateRegionMakeWithDistance(coordinate, zoom.value, zoom.value)
-        map.setRegion(map.regionThatFits(boundingRegion), animated: true)
-        
-        if isUserLocation {
-            map.showsUserLocation = true
-        } else {
-            annotation.coordinate = coordinate
-            map.addAnnotation(annotation)
-        }
-    }
-
-    // MARK: Map annotations
-
-    func annotations(for station: MutableStation) -> [POIStationAnnotation] {
-        return self.map.annotations.flatMap({ $0 as? POIStationAnnotation })
-            .filter({ $0.station == station })
-    }
-    func annotations(within range: CountableClosedRange<Int>) -> [POIStationAnnotation] {
-        return map.annotations.flatMap({ ($0 as? POIStationAnnotation) })
-            .filter({ range.contains($0.index) })
-    }
-    func annotations(from idx: Int) -> [POIStationAnnotation] {
-        return map.annotations.flatMap({ ($0 as? POIStationAnnotation) })
-            .filter({ $0.index >= idx })
-    }
-
-    func addAnnotation(for station: MutableStation, at idx: Int) {
-        guard let position = station.position.value else {
-            return
-        }
-        let distanceString = POIViewModel.distanceString(self.point.producer.skipNil().map({ ($0, position) }))
-        let annotation = POIStationAnnotation(station: station,
-                                              locatedAt: position,
-                                              index: idx,
-                                              distance: distanceString)
-        annotations(from: idx).forEach { $0.index += 1 }
-        map.addAnnotation(annotation)
-    }
-
-    func deleteAnnotations(for station: MutableStation) {
-        let annotations = self.annotations(for: station)
-        let idx = annotations.min(by: { $0.index < $1.index }).map({ $0.index })!
-        map.removeAnnotations(annotations)
-        self.annotations(from: idx+1).forEach { $0.index -= 1 }
-    }
-
-    func reorderAnnotations(withIndex fi: Int, to ti: Int) {
-        if fi < ti {
-            self.annotations(within: fi...ti).forEach { annotation in
-                switch annotation.index {
-                case fi: annotation.index = ti
-                case _:  annotation.index -= 1
-                }
-            }
-        } else {
-            self.annotations(within: ti...fi).forEach { annotation in
-                switch annotation.index {
-                case fi: annotation.index = ti
-                case _:  annotation.index += 1
-                }
-            }
-        }
-    }
 
     func apply(operations ops: [POIViewModel.Op]) {
         ops.forEach { op in
             switch op {
             case let .addStation(station, index: idx):
-                self.addAnnotation(for: station, at: idx)
+                self.mapController?.addAnnotation(for: station, at: idx)
             case let .deleteStation(station, at: _):
-                self.deleteAnnotations(for: station)
+                self.mapController?.deleteAnnotations(for: station)
             case let .reorderStation(_, from: fi, to: ti):
-                self.reorderAnnotations(withIndex: fi, to: ti)
+                self.mapController?.reorderAnnotations(withIndex: fi, to: ti)
             default: return
             }
         }
@@ -141,14 +83,33 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        map.delegate = self
 
-        // Initially show the default region for the agency.
-        map.region = map.regionThatFits(Config.agency.region)
+        let onSelect: Action<MutableStation, (), NoError> = Action { station in
+            guard let table = self.table else { return SignalProducer.empty }
+            let section = table.dataSource.index(of: station)
+            let row = (table.dataSource.arrivals[section].isEmpty) ? NSNotFound : 0
+            table.tableView.scrollToRow(at: IndexPath(row: row, section: section),
+                                        at: .top,
+                                        animated: true)
+            return SignalProducer.empty
+        }
+        let mapController = POIMapViewController(center: point,
+                                                 zoom: zoom,
+                                                 routes: Property(routes),
+                                                 onSelect: onSelect,
+                                                 isUserLocation: Property(isUserLocation))
+        addChildViewController(mapController)
+        stackView.insertArrangedSubview(mapController.view, at: 0)
+        NSLayoutConstraint.activate([/*mapController.view.topAnchor.constraint(equalTo: view.topAnchor),*/
+                                     mapController.view.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.4)])
+        mapController.didMove(toParentViewController: self)
+        self.mapController = mapController
 
         // Clear the title until the signals created in `viewWillAppear` set one.
         navigationItem.title = nil
     }
+
+    let searchScheduler = QueueScheduler(qos: .userInitiated, name: "searchScheduler")
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -158,12 +119,13 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
             bar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         }
 
+        let searchProducer = point.producer.combineLatest(with: zoom.producer)
+            .throttle(0.5, on: searchScheduler)
+            .logEvents(identifier: "NearbyStationsViewModel.chain input",
+                       logger: logSignalEvent)
+
         // Search for nearby stations.
-        disposable += NearbyStationsViewModel.chain(connection: connection,
-                                                    producer: SignalProducer.combineLatest(point.producer.skipNil(),
-                                                                                           zoom.producer)
-                                                        .logEvents(identifier: "NearbyStationsViewModel.chain input",
-                                                                   logger: logSignalEvent))
+        disposable += NearbyStationsViewModel.chain(connection: connection, producer: searchProducer)
             .startWithResult() { result in
                 switch result {
                 case let .success(stations):    self.stations.swap(stations)
@@ -174,10 +136,10 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         // Using location, update the map.
         disposable += location.startWithResult { result in
             switch result {
-            case let .success(point, name, userLocation):
+            case let .success(point, name, isUserLocation):
                 self.point.swap(point)
                 self.navigationItem.title = name
-                self.updateMap(center: point, isUserLocation: userLocation)
+                self.isUserLocation.swap(isUserLocation)
             case let .failure(error):
                 self.displayError(error)
             }
@@ -219,53 +181,13 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
             let dest = segue.destination as! POITableViewController
             table = dest
             dest.stations = Property(stations)
-            dest.mapPoint = point.producer.skipNil()
+            dest.mapPoint = point.producer
         case "showStation":
             let station = sender as! MutableStation
             let dest = segue.destination as! StationViewController
             dest.station = station
         default:
             return
-        }
-    }
-}
-
-
-// MARK: - Map view delegate
-extension POIViewController: MKMapViewDelegate {
-    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        if let annotation = annotation as? POIStationAnnotation {
-            let view =
-                mapView.dequeueReusableAnnotationView(withIdentifier: "stationAnnotation") as? POIStationAnnotationView
-                    ?? POIStationAnnotationView(annotation: annotation, reuseIdentifier: "stationAnnotation")
-            view.apply(annotation: annotation)
-            return view
-        }
-
-        // Returning nil causes the map to use a default annotation.
-        return nil
-    }
-
-    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-        let renderer = MKCircleRenderer(overlay: overlay)
-        renderer.fillColor = UIColor.skyBlueColor().withAlphaComponent(0.1)
-        return renderer
-    }
-
-    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-        if let station = ((view as? POIStationAnnotationView)?.annotation as? POIStationAnnotation)?.station {
-            self.performSegue(withIdentifier: "showStation", sender: station)
-        }
-    }
-
-    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        if let annotation = (view as? POIStationAnnotationView)?.annotation as? POIStationAnnotation,
-            let table = table
-        {
-            let section = table.dataSource.index(of: annotation.station)
-            let row = (table.dataSource.arrivals[section].isEmpty) ? NSNotFound : 0
-            table.tableView.scrollToRow(at: IndexPath(row: row, section: section), at: .top,
-                                                   animated: true)
         }
     }
 }

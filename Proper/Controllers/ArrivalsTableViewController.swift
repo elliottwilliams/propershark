@@ -102,7 +102,7 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
     // Bind vehicle attributes to a given cell
     func arrivalCell(for indexPath: IndexPath) -> ArrivalTableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "arrivalCell", for: indexPath) as! ArrivalTableViewCell
-        let vehicle = diffCalculator.rows[indexPath.row]
+        _ = diffCalculator.rows[indexPath.row]
 
 //        cell.apply(vehicle)
         return cell

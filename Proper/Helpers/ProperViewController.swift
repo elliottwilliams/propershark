@@ -12,13 +12,13 @@ import ReactiveSwift
 import enum Result.NoError
 
 protocol ProperViewController {
+    associatedtype DisposableType = CompositeDisposable
 
     // Internal Properties
-    var connection: ConnectionType { get set }
-    var disposable: CompositeDisposable { get }
+    var connection: ConnectionType { get }
 
-    // Should dispose `disposable` and call super.
-    func viewWillDisappear(_ animated: Bool)
+    // TODO: Maybe should be a `ScopedDisposable`
+    var disposable: DisposableType { get }
 }
 
 extension ProperViewController where Self: UIViewController {
