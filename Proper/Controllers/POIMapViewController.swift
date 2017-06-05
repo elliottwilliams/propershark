@@ -46,22 +46,20 @@ class POIMapViewController: UIViewController, ProperViewController {
         self.isUserLocation = isUserLocation
         self.connection = connection
         super.init(nibName: nil, bundle: nil)
+
+        map.delegate = self
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: Lifecycle
-
     override func loadView() {
         view = MKMapView()
         view.translatesAutoresizingMaskIntoConstraints = false
     }
 
-    override func viewDidLoad() {
-        map.delegate = self
-    }
+    // MARK: Lifecycle
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

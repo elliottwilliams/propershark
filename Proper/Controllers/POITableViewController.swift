@@ -28,8 +28,15 @@ class POITableViewController: UITableViewController, ProperViewController {
         self.stations = stations
         self.mapPoint = mapPoint
         super.init(style: style)
+
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.dataSource = dataSource
+        tableView.register(UINib(nibName: "ArrivalTableViewCell", bundle: nil),
+                           forCellReuseIdentifier: "arrivalCell")
+        tableView.register(UINib(nibName: "POIStationHeaderFooterView", bundle: nil),
+                           forHeaderFooterViewReuseIdentifier: "stationHeader")
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -89,15 +96,6 @@ class POITableViewController: UITableViewController, ProperViewController {
 
     // MARK: Lifecycle
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        tableView.dataSource = dataSource
-        tableView.register(UINib(nibName: "ArrivalTableViewCell", bundle: nil),
-                              forCellReuseIdentifier: "arrivalCell")
-        tableView.register(UINib(nibName: "POIStationHeaderFooterView", bundle: nil),
-                              forHeaderFooterViewReuseIdentifier: "stationHeader")
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -112,11 +110,6 @@ class POITableViewController: UITableViewController, ProperViewController {
     override func viewDidDisappear(_ animated: Bool) {
         disposable.dispose()
         super.viewDidDisappear(animated)
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
     // MARK: Table View Delegate
