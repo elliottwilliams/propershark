@@ -50,7 +50,7 @@ class POIViewModel: SignalChain {
                     |> stationOps
                     |> { $0.on(value: { _, ops in observer.send(value: ops) }) }
                     |> { $0.map({ stations, _ in Set(stations) }) }
-                    |> curry(elementLifetimes)(Set())
+                    |> curry(stationPresences)(Set())
                     |> curry(ArrivalsViewModel.chain)(connection)
                     |> arrivalOps
                     |> { $0.on(value: { ops in observer.send(value: ops) }) }
@@ -61,33 +61,51 @@ class POIViewModel: SignalChain {
         })
     }
 
-    /// Produces signal producers which correspond to whether particular values in `producer`'s set remain in subsequent
-    /// values of `producer`.
+    /// Given a producer of a set of stations (e.g. a set of nearby stations which changes over time), track the
+    /// *presence* or lifetime of each station. This provides a way to track how long a station continuously appears in 
+    /// a set.
     /// 
-    /// In `POIViewModel`, this function is used to keep track of the lifetime of particular stations that are
-    /// discovered, binding the discovery arrivals to the lifetime of a particular station's presence in the view.
-    static func elementLifetimes<U: Hashable>(initial: Set<U>, producer: SignalProducer<Set<U>, ProperError>) ->
-        SignalProducer<SignalProducer<U, ProperError>, ProperError>
+    /// The returned producer forwards signal producers of stations. Each inner producer corresponds to exactly one
+    /// station. It will send the station exactly once, the first time it appears in the set. If the station ever
+    /// disappears from the set, that same producer will send an `.interrupted` event.
+    /// 
+    /// These semantics allow for other asynchronous operations (e.g. Timetable calls and `Arrival` formation) to be
+    /// bound to the lifetime of a station. It is used by `ArrivalsViewModel` to get and maintain upcoming arrivals for 
+    /// a station, but to stop updating arrivals (and cancel any in-flight Timetable calls) as soon as the station 
+    /// leaves proximity.
+    /// 
+    /// - note: There's nothing about this function that is station-specific. It could be genericized to work with any
+    /// `Hashable` element type.
+    static func stationPresences(initial: Set<MutableStation>,
+                                 producer: SignalProducer<Set<MutableStation>, ProperError>) ->
+        SignalProducer<SignalProducer<MutableStation, ProperError>, ProperError>
     {
-        typealias S = SignalProducer<U, ProperError>
-        typealias O = Observer<U, ProperError>
+        typealias S = SignalProducer<MutableStation, ProperError>
+        typealias O = Observer<MutableStation, ProperError>
 
-        return SignalProducer<S, ProperError> { producers, disposable in
-            var observers: [U: O] = [:]
+        return SignalProducer<S, ProperError> { producerObserver, disposable in
+            var observers: [MutableStation: O] = [:]
             disposable += producer.combinePrevious(initial).startWithResult { result in
                 guard let (prev, next) = result.value else {
-                    producers.send(error: result.error!)
+                    producerObserver.send(error: result.error!)
                     return
                 }
 
-                // Create producer for new values, and send them.
-                next.subtracting(prev).forEach { value in
-                    let producer = S { valueObserver, valueDisposable in
-                        observers[value] = valueObserver
-                        disposable += valueDisposable
-                        valueObserver.send(value: value)
+                // For each new station...
+                next.subtracting(prev).forEach { station in
+                    // ...create a producer which will send the station once, and stay alive until the station
+                    // no longer appears in one of the sets forwarded by `producer`.
+                    let stationProducer = S { stationObserver, stationDisposable in
+                        observers[station] = stationObserver
+                        // Combine disposables so that disposing the outer producer propagates and disposes *this*
+                        // station's producer.
+                        disposable += stationDisposable
+                        stationObserver.send(value: station)
                     }
-                    producers.send(value: producer)
+                    // Send this station's producer on the outer producer. Downstream observers that call `start` on the
+                    // producer get its station immediately, and can use the producer's lifetime to infer the
+                    // availability of the station.
+                    producerObserver.send(value: stationProducer)
                 }
 
                 // Interrupt any downstream activity once stations change.
@@ -96,7 +114,7 @@ class POIViewModel: SignalChain {
                     observers[value] = nil
                 }
             }
-            }.logEvents(identifier: "POIViewModel.elementLifetime", logger: logSignalEvent)
+        }.logEvents(identifier: "POIViewModel.elementLifetime", logger: logSignalEvent)
     }
 
     static func stationOps(producer: SignalProducer<[MutableStation], ProperError>) ->
