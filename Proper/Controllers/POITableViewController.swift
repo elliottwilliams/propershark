@@ -103,7 +103,8 @@ class POITableViewController: UITableViewController, ProperViewController {
 
         // From the list of stations coming from the view model, produce topic event subscriptions for each station.
         // Reload a station's section when a topic event is received for it.
-        disposable += (POIViewModel.chain(connection: connection, producer: stations.producer) |> modifyTable)
+        let opsProducer = POIViewModel.chain(connection: connection, producer: stations.producer)
+        disposable += modifyTable(producer: opsProducer)
             .logEvents(identifier: "POITableViewController.viewDidAppear", logger: logSignalEvent)
             .startWithFailed(self.displayError)
     }

@@ -140,6 +140,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
         // Search for nearby stations.
         disposable += NearbyStationsViewModel.chain(connection: connection, producer: searchProducer)
+            .observe(on: UIScheduler())
             .startWithResult() { result in
                 switch result {
                 case let .success(stations):    self.stations.swap(stations)
