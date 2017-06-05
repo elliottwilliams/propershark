@@ -14,47 +14,47 @@ import Argo
 
 class MutableVehicleTests: XCTestCase, MutableModelTestSpec {
 
-    var model: Vehicle!
-    var mutable: MutableVehicle!
+  var model: Vehicle!
+  var mutable: MutableVehicle!
 
-    let modifiedVehicle = Vehicle(name: "1801", capacity: 9001)
-    let mock = ConnectionMock()
+  let modifiedVehicle = Vehicle(name: "1801", capacity: 9001)
+  let mock = ConnectionMock()
 
-    override func setUp() {
-        super.setUp()
+  override func setUp() {
+    super.setUp()
 
-        let expectation = self.expectation(description: "fixtures")
-        Vehicle.fixture(id: "vehicles.1801").startWithValues { model in
-            self.model = model
-            self.mutable = try! MutableVehicle(from: model, connection: self.mock)
-            expectation.fulfill()
-        }
-        self.continueAfterFailure = false
-        waitForExpectations(timeout: 5.0, handler: nil)
-        self.continueAfterFailure = true
+    let expectation = self.expectation(description: "fixtures")
+    Vehicle.fixture(id: "vehicles.1801").startWithValues { model in
+      self.model = model
+      self.mutable = try! MutableVehicle(from: model, connection: self.mock)
+      expectation.fulfill()
     }
+    self.continueAfterFailure = false
+    waitForExpectations(timeout: 5.0, handler: nil)
+    self.continueAfterFailure = true
+  }
 
-    func testApplyUpdatesProperty() {
-        XCTAssertEqual(mutable.capacity.value, 60)
-        XCTAssertNotNil(try? mutable.apply(modifiedVehicle))
-        XCTAssertEqual(mutable.capacity.value, 9001)
+  func testApplyUpdatesProperty() {
+    XCTAssertEqual(mutable.capacity.value, 60)
+    XCTAssertNotNil(try? mutable.apply(modifiedVehicle))
+    XCTAssertEqual(mutable.capacity.value, 9001)
+  }
+
+
+  func testPropertyAccessDoesntStartProducer() {
+    mutable.producer = SignalProducer.init { observer, disposable in
+      XCTFail("Signal producer started due to property access")
     }
+    XCTAssertEqual(mutable.capacity.value, 60)
+  }
 
+  func testProducerApplies() {
+    // When producer is subscribed...
+    mutable.producer.start()
 
-    func testPropertyAccessDoesntStartProducer() {
-        mutable.producer = SignalProducer.init { observer, disposable in
-            XCTFail("Signal producer started due to property access")
-        }
-        XCTAssertEqual(mutable.capacity.value, 60)
-    }
-
-    func testProducerApplies() {
-        // When producer is subscribed...
-        mutable.producer.start()
-
-        // Then the capacity value should change when an update is published.
-        XCTAssertEqual(mutable.capacity.value, 60)
-        mock.publish(to: model.topic, event: .vehicle(.update(object: .success(modifiedVehicle), originator: model.topic)))
-        XCTAssertEqual(mutable.capacity.value, 9001)
-    }
+    // Then the capacity value should change when an update is published.
+    XCTAssertEqual(mutable.capacity.value, 60)
+    mock.publish(to: model.topic, event: .vehicle(.update(object: .success(modifiedVehicle), originator: model.topic)))
+    XCTAssertEqual(mutable.capacity.value, 9001)
+  }
 }

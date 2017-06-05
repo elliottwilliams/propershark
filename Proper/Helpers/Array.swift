@@ -7,18 +7,18 @@
 //
 
 extension Array {
-    subscript (safe index: Int) -> Element? {
-        return indices ~= index ? self[index] : nil
-    }
+  subscript (safe index: Int) -> Element? {
+    return indices ~= index ? self[index] : nil
+  }
 }
 
 extension Array where Element: Hashable {
-    func indexMap() -> [Element: Index] {
-        return self.enumerated().reduce([:], { acc, pair in
-            var dict = acc
-            let (i, v) = pair
-            dict[v] = i
-            return dict
-        })
-    }
+  func indexMap() -> [Element: Index] {
+    return self.enumerated().reduce([:], { acc, pair in
+      var dict = acc
+      let (i, v) = pair
+      dict[v] = i
+      return dict
+    })
+  }
 }

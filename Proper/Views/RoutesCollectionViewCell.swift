@@ -10,23 +10,23 @@ import UIKit
 import ReactiveSwift
 
 class RoutesCollectionViewCell: UICollectionViewCell {
-    @IBOutlet var badge: BadgeView!
-    var disposable = CompositeDisposable()
+  @IBOutlet var badge: BadgeView!
+  var disposable = CompositeDisposable()
 
-    override func awakeFromNib() {
-        badge.frame = self.bounds
-        setNeedsLayout()
-    }
+  override func awakeFromNib() {
+    badge.frame = self.bounds
+    setNeedsLayout()
+  }
 
-    override func prepareForReuse() {
-        disposable.dispose()
-        super.prepareForReuse()
-    }
+  override func prepareForReuse() {
+    disposable.dispose()
+    super.prepareForReuse()
+  }
 
-    func apply(route: MutableRoute) {
-        disposable += route.color.producer.startWithValues { color in
-            _ = color.flatMap { self.badge.color = $0 }
-        }
-        badge.routeNumber = route.shortName
+  func apply(route: MutableRoute) {
+    disposable += route.color.producer.startWithValues { color in
+      _ = color.flatMap { self.badge.color = $0 }
     }
+    badge.routeNumber = route.shortName
+  }
 }

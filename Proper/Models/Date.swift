@@ -12,11 +12,11 @@ import Curry
 import Runes
 
 extension Date: Decodable {
-    public static func decode(_ json: JSON) -> Decoded<Date> {
-        // Decode `json` as a string and pass that string to Timetable's date formatter. Wrap the optional Date it
-        // returns in a Decoded type.
-        return Timetable.formatter.date(from:)
-            <^> String.decode(json)
-            >>- Decoded<Date>.fromOptional
-    }
+  public static func decode(_ json: JSON) -> Decoded<Date> {
+    // Decode `json` as a string and pass that string to Timetable's date formatter. Wrap the optional Date it
+    // returns in a Decoded type.
+    return Timetable.formatter.date(from:)
+      <^> String.decode(json)
+      >>- Decoded<Date>.fromOptional
+  }
 }

@@ -23,5 +23,5 @@ import UIKit
 //}
 
 func ~=<T>(pattern: T, value: (T) -> Bool) -> Bool {
-    return value(pattern)
+  return value(pattern)
 }

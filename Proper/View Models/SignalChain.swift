@@ -11,17 +11,17 @@ import ReactiveSwift
 import Result
 
 protocol SignalChain {
-    associatedtype Input
-    associatedtype Output
+  associatedtype Input
+  associatedtype Output
 
-    static func chain(connection: ConnectionType, producer: SignalProducer<Input, ProperError>) ->
-        SignalProducer<Output, ProperError>
+  static func chain(connection: ConnectionType, producer: SignalProducer<Input, ProperError>) ->
+    SignalProducer<Output, ProperError>
 }
 
 extension SignalChain {
-    static func chain(connection: ConnectionType, producer: SignalProducer<Input, NoError>) ->
-        SignalProducer<Output, ProperError>
-    {
-        return chain(connection: connection, producer: producer.promoteErrors(ProperError.self))
-    }
+  static func chain(connection: ConnectionType, producer: SignalProducer<Input, NoError>) ->
+    SignalProducer<Output, ProperError>
+  {
+    return chain(connection: connection, producer: producer.promoteErrors(ProperError.self))
+  }
 }

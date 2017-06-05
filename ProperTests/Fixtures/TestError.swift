@@ -9,5 +9,5 @@
 import Foundation
 
 enum TestError: Error {
-    case modelLoadError
+  case modelLoadError
 }

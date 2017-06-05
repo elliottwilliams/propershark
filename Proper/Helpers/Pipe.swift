@@ -9,17 +9,17 @@
 import Foundation
 
 precedencegroup PipePrecedence {
-    associativity: left
-    higherThan: AssignmentPrecedence
+  associativity: left
+  higherThan: AssignmentPrecedence
 }
 
 infix operator |> : PipePrecedence
 infix operator <| : PipePrecedence
 
 func |> <A, B> (v: A, fn: (A) -> B) -> B {
-    return fn(v)
+  return fn(v)
 }
 
 func <| <A, B> (fn: (A) -> B, v: A) -> B {
-    return fn(v)
+  return fn(v)
 }

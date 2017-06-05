@@ -9,14 +9,14 @@
 import Foundation
 
 class Box<T>: CustomStringConvertible {
-    let value: T
-    init(_ value: T) {
-        self.value = value
-    }
+  let value: T
+  init(_ value: T) {
+    self.value = value
+  }
 
-    func map<U>(transform f: (T) -> U) -> Box<U> {
-        return Box<U>(f(value))
-    }
+  func map<U>(transform f: (T) -> U) -> Box<U> {
+    return Box<U>(f(value))
+  }
 
-    var description: String { return String(describing: value) }
+  var description: String { return String(describing: value) }
 }

@@ -15,19 +15,19 @@ typealias EventProducer = SignalProducer<TopicEvent, ProperError>
 
 // All connections conform to this protocol, which allows ConnectionMock to be injected.
 protocol ConnectionType {
-    func call(_ proc: String, with args: WampArgs, kwargs: WampKwargs) -> EventProducer
-    func subscribe(to topic: String) -> EventProducer
+  func call(_ proc: String, with args: WampArgs, kwargs: WampKwargs) -> EventProducer
+  func subscribe(to topic: String) -> EventProducer
 }
 
 extension ConnectionType {
-    func call(_ proc: String) -> EventProducer {
-        return call(proc, with: [], kwargs: [:])
-    }
-    func call(_ proc: String, with args: WampArgs) -> EventProducer {
-        return call(proc, with: args, kwargs: [:])
-    }
-    func call(_ proc: String, kwargs: WampKwargs) -> EventProducer {
-        return call(proc, with: [], kwargs: kwargs)
-    }
+  func call(_ proc: String) -> EventProducer {
+    return call(proc, with: [], kwargs: [:])
+  }
+  func call(_ proc: String, with args: WampArgs) -> EventProducer {
+    return call(proc, with: args, kwargs: [:])
+  }
+  func call(_ proc: String, kwargs: WampKwargs) -> EventProducer {
+    return call(proc, with: [], kwargs: kwargs)
+  }
 
 }

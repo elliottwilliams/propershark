@@ -13,76 +13,76 @@ import ReactiveSwift
 
 class MutableModelTests: XCTestCase {
 
-    var route: MutableRoute!
-    var mock: ConnectionMock!
+  var route: MutableRoute!
+  var mock: ConnectionMock!
 
-    var stations: [String]!
+  var stations: [String]!
 
-    override func setUp() {
-        super.setUp()
-        mock = ConnectionMock()
-        stations = ["BUS403", "BUS922", "BUS162", "BUS161", "BUS897", "BUS375W"]
+  override func setUp() {
+    super.setUp()
+    mock = ConnectionMock()
+    stations = ["BUS403", "BUS922", "BUS162", "BUS161", "BUS897", "BUS375W"]
 
-        let expectation = self.expectation(description: "fixtures")
-        Route.fixture(id: "routes.4B").startWithValues { model in
-            self.route = try! MutableRoute(from: model, connection: self.mock)
-            expectation.fulfill()
-        }
-        self.continueAfterFailure = false
-        waitForExpectations(timeout: 5.0, handler: nil)
-        self.continueAfterFailure = true
+    let expectation = self.expectation(description: "fixtures")
+    Route.fixture(id: "routes.4B").startWithValues { model in
+      self.route = try! MutableRoute(from: model, connection: self.mock)
+      expectation.fulfill()
     }
-    
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
+    self.continueAfterFailure = false
+    waitForExpectations(timeout: 5.0, handler: nil)
+    self.continueAfterFailure = true
+  }
 
-    func testApplyChangesApplies() {
-        // Given
-        let modifiedStations = stations.map { Station(stopCode: $0, name: "~modified") }
-        let expectation = self.expectation(description: "names applied")
-        let nameSignals = route.stations.value.map { $0.name.signal }
+  override func tearDown() {
+    // Put teardown code here. This method is called after the invocation of each test method in the class.
+    super.tearDown()
+  }
 
-        // After emitting `modifiedStations.count` route names, invoke this observer.
-        SignalProducer(nameSignals).flatMap(.merge, transform: { signal in signal })
-        .collect(count: modifiedStations.count)
-        .startWithValues { names in
-            expectation.fulfill()
-            let should = [String](repeating: "~modified", count: modifiedStations.count)
-            XCTAssertEqual(names.flatMap { $0 }, should)
-        }
+  func testApplyChangesApplies() {
+    // Given
+    let modifiedStations = stations.map { Station(stopCode: $0, name: "~modified") }
+    let expectation = self.expectation(description: "names applied")
+    let nameSignals = route.stations.value.map { $0.name.signal }
 
-        // When
-        XCTAssertNotNil(try? route.attachOrApplyChanges(to: route.stations, from: modifiedStations))
-
-        // Then
-        waitForExpectations(timeout: 3, handler: nil)
+    // After emitting `modifiedStations.count` route names, invoke this observer.
+    SignalProducer(nameSignals).flatMap(.merge, transform: { signal in signal })
+      .collect(count: modifiedStations.count)
+      .startWithValues { names in
+        expectation.fulfill()
+        let should = [String](repeating: "~modified", count: modifiedStations.count)
+        XCTAssertEqual(names.flatMap { $0 }, should)
     }
 
-    func testApplyChangesRemoves() {
-        // Given
-        var modifiedStations = stations.map { Station(stopCode: $0, name: "~modified", description: nil,
-            position: nil, routes: nil, vehicles: nil) }
-        modifiedStations.removeFirst()
+    // When
+    XCTAssertNotNil(try? route.attachOrApplyChanges(to: route.stations, from: modifiedStations))
 
-        // When
-        XCTAssertNotNil(try? route.attachOrApplyChanges(to: route.stations, from: modifiedStations))
+    // Then
+    waitForExpectations(timeout: 3, handler: nil)
+  }
 
-        // Then
-        XCTAssertFalse(route.stations.value.map { $0.identifier }.contains("BUS249") == true)
-    }
+  func testApplyChangesRemoves() {
+    // Given
+    var modifiedStations = stations.map { Station(stopCode: $0, name: "~modified", description: nil,
+                                                  position: nil, routes: nil, vehicles: nil) }
+    modifiedStations.removeFirst()
 
-    func testApplyChangesInserts() {
-        // Given
-        var modifiedStations = stations.map { Station(stopCode: $0, name: "~modified", description: nil,
-            position: nil, routes: nil, vehicles: nil) }
-        modifiedStations.append(Station(id: "test123"))
+    // When
+    XCTAssertNotNil(try? route.attachOrApplyChanges(to: route.stations, from: modifiedStations))
 
-        // When
-        XCTAssertNotNil(try? route.attachOrApplyChanges(to: route.stations, from: modifiedStations))
+    // Then
+    XCTAssertFalse(route.stations.value.map { $0.identifier }.contains("BUS249") == true)
+  }
 
-        // Then
-        XCTAssertTrue(route.stations.value.map { $0.identifier }.contains("test123") == true)
-    }
+  func testApplyChangesInserts() {
+    // Given
+    var modifiedStations = stations.map { Station(stopCode: $0, name: "~modified", description: nil,
+                                                  position: nil, routes: nil, vehicles: nil) }
+    modifiedStations.append(Station(id: "test123"))
+
+    // When
+    XCTAssertNotNil(try? route.attachOrApplyChanges(to: route.stations, from: modifiedStations))
+
+    // Then
+    XCTAssertTrue(route.stations.value.map { $0.identifier }.contains("test123") == true)
+  }
 }

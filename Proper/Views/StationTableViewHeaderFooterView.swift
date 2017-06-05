@@ -10,6 +10,6 @@ import UIKit
 
 class StationTableViewHeaderFooterView: UITableViewHeaderFooterView {
 
-    var rail: ScheduleRail?
-    
+  var rail: ScheduleRail?
+
 }

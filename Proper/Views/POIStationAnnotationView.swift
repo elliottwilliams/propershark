@@ -11,42 +11,42 @@ import MapKit
 import ReactiveSwift
 
 class POIStationAnnotationView: MKAnnotationView {
-    let badge: BadgeView
-    private var disposable: CompositeDisposable?
+  let badge: BadgeView
+  private var disposable: CompositeDisposable?
 
-    override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
-        badge = BadgeView()
-        super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
+  override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
+    badge = BadgeView()
+    super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
 
-        // Configure the badge.
-        frame.size = CGSize(width: 25, height: 25)
-        badge.frame = bounds
-        badge.outerStrokeWidth = 2.0
-        addSubview(badge)
+    // Configure the badge.
+    frame.size = CGSize(width: 25, height: 25)
+    badge.frame = bounds
+    badge.outerStrokeWidth = 2.0
+    addSubview(badge)
 
-        // Configure the callout.
-        canShowCallout = true
-        rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    // Configure the callout.
+    canShowCallout = true
+    rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+  }
 
-    deinit {
-        disposable?.dispose()
-    }
+  required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
 
-    override func prepareForReuse() {
-        self.disposable?.dispose()
-    }
+  deinit {
+    disposable?.dispose()
+  }
 
-    func apply(annotation: POIStationAnnotation) {
-        self.disposable?.dispose()
-        let disposable = CompositeDisposable()
-        self.annotation = annotation
-        disposable += annotation.badge.name.producer.startWithValues({ self.badge.label.text = $0 })
-        disposable += annotation.badge.color.producer.startWithValues({ self.badge.color = $0 })
-        self.disposable = disposable
-    }
+  override func prepareForReuse() {
+    self.disposable?.dispose()
+  }
+
+  func apply(annotation: POIStationAnnotation) {
+    self.disposable?.dispose()
+    let disposable = CompositeDisposable()
+    self.annotation = annotation
+    disposable += annotation.badge.name.producer.startWithValues({ self.badge.label.text = $0 })
+    disposable += annotation.badge.color.producer.startWithValues({ self.badge.color = $0 })
+    self.disposable = disposable
+  }
 }

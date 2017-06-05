@@ -10,51 +10,51 @@ import UIKit
 import ReactiveSwift
 
 class StationUpcomingTableViewCell: UITableViewCell {
-    @IBOutlet weak var title: TransitLabel!
-    @IBOutlet weak var subtitle: TransitLabel!
-    @IBOutlet weak var collectionView: UICollectionView!
+  @IBOutlet weak var title: TransitLabel!
+  @IBOutlet weak var subtitle: TransitLabel!
+  @IBOutlet weak var collectionView: UICollectionView!
 
-    var disposable: CompositeDisposable?
-    var viewModel: RoutesCollectionViewModel?
-    let routes = MutableProperty<Set<MutableRoute>>(Set())
+  var disposable: CompositeDisposable?
+  var viewModel: RoutesCollectionViewModel?
+  let routes = MutableProperty<Set<MutableRoute>>(Set())
 
-    deinit {
-        disposable?.dispose()
-    }
+  deinit {
+    disposable?.dispose()
+  }
 
-    override func prepareForReuse() {
-        disposable?.dispose()
-    }
+  override func prepareForReuse() {
+    disposable?.dispose()
+  }
 
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Declares `badgeCell` as the reusable cell for the collection view. `RoutesCollectionViewModel` dequeues cells
-        // with identifier `badgeCell`.
-        collectionView.register(UINib(nibName: "RoutesCollectionBadgeCell", bundle: Bundle.main), forCellWithReuseIdentifier: "badgeCell")
+  override func awakeFromNib() {
+    super.awakeFromNib()
+    // Declares `badgeCell` as the reusable cell for the collection view. `RoutesCollectionViewModel` dequeues cells
+    // with identifier `badgeCell`.
+    collectionView.register(UINib(nibName: "RoutesCollectionBadgeCell", bundle: Bundle.main), forCellWithReuseIdentifier: "badgeCell")
 
-        // Initialize the view model powering the routes collection.
-        viewModel = RoutesCollectionViewModel(routes: Property(routes))
-        collectionView.dataSource = viewModel
-        collectionView.delegate = viewModel
-    }
+    // Initialize the view model powering the routes collection.
+    viewModel = RoutesCollectionViewModel(routes: Property(routes))
+    collectionView.dataSource = viewModel
+    collectionView.delegate = viewModel
+  }
 
-    func apply(station: MutableStation) {
-        let disposable = CompositeDisposable()
+  func apply(station: MutableStation) {
+    let disposable = CompositeDisposable()
 
-        // Bind station attributes to the UI labels.
-        disposable += station.name.producer.startWithValues({ self.title.text = $0 })
-        self.subtitle.text = station.stopCode
+    // Bind station attributes to the UI labels.
+    disposable += station.name.producer.startWithValues({ self.title.text = $0 })
+    self.subtitle.text = station.stopCode
 
-        // As routes are discovered, update the collection view.
-        disposable += station.routes.producer.startWithValues({ routes in
-            self.routes.swap(routes)
-            self.collectionView.reloadData()
-        })
+    // As routes are discovered, update the collection view.
+    disposable += station.routes.producer.startWithValues({ routes in
+      self.routes.swap(routes)
+      self.collectionView.reloadData()
+    })
 
-        // Subscribe to station events.
-        disposable += station.producer.start()
-        self.disposable = disposable
-    }
+    // Subscribe to station events.
+    disposable += station.producer.start()
+    self.disposable = disposable
+  }
 
 
 }

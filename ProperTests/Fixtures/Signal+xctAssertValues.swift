@@ -12,18 +12,18 @@ import Result
 import XCTest
 
 extension Signal {
-    /// Test only: Calls XCTFail if an error appears in the signal.
-    func xctAssertValues() -> Signal<Value, NoError> {
-        return flatMapError({ error in
-            XCTFail("\(error.localizedDescription)")
-            return SignalProducer.empty
-        })
-    }
+  /// Test only: Calls XCTFail if an error appears in the signal.
+  func xctAssertValues() -> Signal<Value, NoError> {
+    return flatMapError({ error in
+      XCTFail("\(error.localizedDescription)")
+      return SignalProducer.empty
+    })
+  }
 }
 
 extension SignalProducer {
-    /// Test only: Calls XCTFail if an error appears in the produced signal.
-    func xctAssertValues() -> SignalProducer<Value, NoError> {
-        return lift({ $0.xctAssertValues() })
-    }
+  /// Test only: Calls XCTFail if an error appears in the produced signal.
+  func xctAssertValues() -> SignalProducer<Value, NoError> {
+    return lift({ $0.xctAssertValues() })
+  }
 }

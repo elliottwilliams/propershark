@@ -11,8 +11,8 @@ import XCTest
 
 // MutableModel tests conform to this, which provides shared utilities between MutableModel tests.
 protocol MutableModelTestSpec {
-    func testApplyUpdatesProperty()
-    func testProducerApplies()
-    func testPropertyAccessDoesntStartProducer()
+  func testApplyUpdatesProperty()
+  func testProducerApplies()
+  func testPropertyAccessDoesntStartProducer()
 }
 
