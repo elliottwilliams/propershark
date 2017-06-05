@@ -25,17 +25,19 @@ class UIColorDecodeTests: XCTestCase {
     }
 
     func testDecodeHex() {
-        let json = JSON.String("facade")
+        let json = JSON.string("facade")
         XCTAssertEqual(UIColor.decode(json).value, self.color)
     }
 
     func testDecodeArray255() {
-        let json = JSON.Array([.Number(250.0), .Number(202.0), .Number(222.0)])
+        let json = JSON.array([.number(250.0), .number(202.0), .number(222.0)])
         XCTAssertEqual(UIColor.decode(json).value, self.color)
     }
 
     func testDecodeArray1() {
-        let json = JSON.Array([.Number(250.0/255), .Number(202.0/255), .Number(222.0/255)])
+        let json = JSON.array([.number(NSNumber(value: 250.0/255)),
+                               .number(NSNumber(value: 202.0/255)),
+                               .number(NSNumber(value: 222.0/255.0))])
         XCTAssertEqual(UIColor.decode(json).value, self.color)
     }
 

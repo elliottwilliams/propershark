@@ -24,7 +24,7 @@ class MutableRouteTests: XCTestCase, MutableModelTestSpec {
         super.setUp()
 
         let expectation = self.expectation(description: "fixtures")
-        Route.fixture("routes.4B").startWithValues { model in
+        Route.fixture(id: "routes.4B").startWithValues { model in
             self.model = model
             self.mutable = try! MutableRoute(from: model, connection: self.mock)
             expectation.fulfill()
@@ -54,7 +54,7 @@ class MutableRouteTests: XCTestCase, MutableModelTestSpec {
 
         // Then the name should change when an update is published
         XCTAssertEqual(mutable.name.value, "Purdue West")
-        mock.publish(to: model.topic, event: .Route(.update(object: .Success(modifiedRoute), originator: model.topic)))
+        mock.publish(to: model.topic, event: .route(.update(object: .success(modifiedRoute), originator: model.topic)))
         XCTAssertEqual(mutable.name.value, "~modified")
     }
 
@@ -69,7 +69,7 @@ class MutableRouteTests: XCTestCase, MutableModelTestSpec {
         mutable.stations.value = associatedStations
 
         // Then its mappedItinerary function should return the itinerary in the same sequence...
-        let mapped = try! mutable.mappedItinerary(itinerary)
+        let mapped = try! mutable.mappedItinerary(source: itinerary)
         XCTAssertEqual(mapped.map { $0.identifier }, itinerary.map { $0.identifier })
         // ...and each mapped station should be in `associatedStations`.
         mapped.forEach { station in

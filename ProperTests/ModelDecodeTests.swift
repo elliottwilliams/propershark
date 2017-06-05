@@ -13,17 +13,17 @@ import ReactiveSwift
 
 class ModelDecodeTests: XCTestCase {
 
-    var station: AnyObject!
-    var route: AnyObject!
-    var vehicle: AnyObject!
+    var station: Any!
+    var route: Any!
+    var vehicle: Any!
 
     override func setUp() {
         super.setUp()
         let expectation = self.expectation(description: "fixtures")
-        combineLatest(
-            Station.rawFixture("stations.BUS100W"),
-            Route.rawFixture("routes.4B"),
-            Vehicle.rawFixture("vehicles.1801")
+        SignalProducer.combineLatest(
+            Station.rawFixture(id: "stations.BUS100W"),
+            Route.rawFixture(id: "routes.4B"),
+            Vehicle.rawFixture(id: "vehicles.1801")
         ).startWithValues { station, route, vehicle in
             self.station = station
             self.route = route
@@ -43,7 +43,7 @@ class ModelDecodeTests: XCTestCase {
     func testDecodeStation() {
         let json = JSON(station)
         let decoded = Station.decode(json)
-        XCTAssertNotNil(decoded.value, "Decode error: \(decoded.error)")
+        XCTAssertNotNil(decoded.value, "Decode error: \(decoded.error!)")
 
         guard let station = decoded.value else { return }
 
@@ -63,7 +63,7 @@ class ModelDecodeTests: XCTestCase {
     func testDecodeRoute() {
         let json = JSON(route)
         let decoded = Route.decode(json)
-        XCTAssertNotNil(decoded.value, "Decode error: \(decoded.error)")
+        XCTAssertNotNil(decoded.value, "Decode error: \(decoded.error!)")
 
         guard let route = decoded.value else { return }
 

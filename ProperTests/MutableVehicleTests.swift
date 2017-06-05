@@ -24,7 +24,7 @@ class MutableVehicleTests: XCTestCase, MutableModelTestSpec {
         super.setUp()
 
         let expectation = self.expectation(description: "fixtures")
-        Vehicle.fixture("vehicles.1801").startWithValues { model in
+        Vehicle.fixture(id: "vehicles.1801").startWithValues { model in
             self.model = model
             self.mutable = try! MutableVehicle(from: model, connection: self.mock)
             expectation.fulfill()
@@ -54,7 +54,7 @@ class MutableVehicleTests: XCTestCase, MutableModelTestSpec {
 
         // Then the capacity value should change when an update is published.
         XCTAssertEqual(mutable.capacity.value, 60)
-        mock.publish(to: model.topic, event: .Vehicle(.update(object: .Success(modifiedVehicle), originator: model.topic)))
+        mock.publish(to: model.topic, event: .vehicle(.update(object: .success(modifiedVehicle), originator: model.topic)))
         XCTAssertEqual(mutable.capacity.value, 9001)
     }
 }

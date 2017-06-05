@@ -14,7 +14,7 @@ import Result
 
 class ConnectionMock: ConnectionType {
     var callMap: [String: TopicEvent] = [:]
-    var onSubscribe: (String -> ())?
+    var onSubscribe: ((String) -> ())?
 
     let server = Server()
     class Server {
@@ -57,7 +57,7 @@ class ConnectionMock: ConnectionType {
         }
     }
 
-    init(onSubscribe: (String -> ())? = nil) {
+    init(onSubscribe: ((String) -> ())? = nil) {
         self.onSubscribe = onSubscribe
     }
     
@@ -67,34 +67,38 @@ class ConnectionMock: ConnectionType {
     
     func publish(to id: String, event: TopicEvent) {
         if let topic = server.find(id) {
-            topic.observer.sendNext(event)
+            topic.observer.send(value: event)
         }
     }
     
-    func call(proc: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, ProperError> {
+    func call(_ proc: String, with args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, ProperError> {
         return SignalProducer<TopicEvent, ProperError> { observer, _ in
-            if let event = self.callMap[procedure] {
-                observer.sendNext(event)
+            if let event = self.callMap[proc] {
+                observer.send(value: event)
             }
-        }.logEvents(identifier: "ConnectionMock.call(\(procedure))", logger: logSignalEvent)
+        }.logEvents(identifier: "ConnectionMock.call(\(proc))", logger: logSignalEvent)
     }
     
-    func subscribe(id: String) -> SignalProducer<TopicEvent, ProperError> {
+    func subscribe(to id: String) -> SignalProducer<TopicEvent, ProperError> {
         let topic = server.findOrCreate(id)
         topic.subscribers += 1
         self.onSubscribe?(id)
         return SignalProducer<TopicEvent, ProperError> { observer, disposable in
             // Upon disposal, reduce the subscriber count on this channel, potentially deleting it.
-            disposable.addDisposable() { self.server.leave(id) }
+            disposable += { self.server.leave(id) }
             
             // Map channel errors to PSErrors...
-            topic.signal.promoteErrors(ProperError)
+            disposable += topic.signal.promoteErrors(ProperError.self)
             // ...and forward to this subscriber's observer
             .observe(observer)
         }.logEvents(identifier: "ConnectionMock.subscribe(\(id))", logger: logSignalEvent)
     }
 
     func subscribed(to topic: String) -> Bool {
-        return (server.find(topic)?.subscribers > 0) ?? false
+        if let subscribers = server.find(topic)?.subscribers {
+            return subscribers > 0
+        } else {
+            return false
+        }
     }
 }

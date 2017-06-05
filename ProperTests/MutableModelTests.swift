@@ -24,7 +24,7 @@ class MutableModelTests: XCTestCase {
         stations = ["BUS403", "BUS922", "BUS162", "BUS161", "BUS897", "BUS375W"]
 
         let expectation = self.expectation(description: "fixtures")
-        Route.fixture("routes.4B").startWithValues { model in
+        Route.fixture(id: "routes.4B").startWithValues { model in
             self.route = try! MutableRoute(from: model, connection: self.mock)
             expectation.fulfill()
         }
@@ -45,11 +45,11 @@ class MutableModelTests: XCTestCase {
         let nameSignals = route.stations.value.map { $0.name.signal }
 
         // After emitting `modifiedStations.count` route names, invoke this observer.
-        SignalProducer(values: nameSignals).flatMap(.Merge, transform: { signal in signal })
+        SignalProducer(nameSignals).flatMap(.merge, transform: { signal in signal })
         .collect(count: modifiedStations.count)
         .startWithValues { names in
             expectation.fulfill()
-            let should = [String](count: modifiedStations.count, repeatedValue: "~modified")
+            let should = [String](repeating: "~modified", count: modifiedStations.count)
             XCTAssertEqual(names.flatMap { $0 }, should)
         }
 

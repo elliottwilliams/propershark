@@ -23,9 +23,9 @@ class ArrivalsTableViewControllerTests: XCTestCase {
         disposable = CompositeDisposable()
 
         let expectation = self.expectation(description: "fixtures")
-        Station.fixture("stations.BUS100W").startWithValues { model in
+        Station.fixture(id: "stations.BUS100W").startWithValues { model in
             self.station = try! MutableStation(from: model, connection: self.mock)
-            self.controller = ArrivalsTableViewController(observing: self.station, style: .Plain, connection: self.mock)
+            self.controller = ArrivalsTableViewController(observing: self.station, style: .plain, connection: self.mock)
             expectation.fulfill()
         }
         self.continueAfterFailure = false
@@ -49,27 +49,27 @@ class ArrivalsTableViewControllerTests: XCTestCase {
         requestView()
 
         // ...then the topic for its station should be subscribed to.
-        XCTAssertTrue(mock.subscribed("stations.BUS100W"))
+        XCTAssertTrue(mock.subscribed(to: "stations.BUS100W"))
     }
 
 
     func testRoutesSignalSubscribesToRoutes() {
         // When view loads, route should be subscribed to.
         requestView()
-        XCTAssertTrue(mock.subscribed("routes.10"))
+        XCTAssertTrue(mock.subscribed(to: "routes.10"))
     }
 
 
     func testRouteUnsubscribedWhenLeft() {
         // Given a route subscribed to from when the view was created
         requestView()
-        XCTAssertTrue(mock.subscribed("routes.10"))
+        XCTAssertTrue(mock.subscribed(to: "routes.10"))
 
         // When a route is removed from the station's associatons...
         controller.station.routes.swap(Set())
 
         // ...it should be unsubscribed from.
-        XCTAssertFalse(mock.subscribed("routes.10"))
+        XCTAssertFalse(mock.subscribed(to: "routes.10"))
     }
 
     func testVehiclesSignalForNewVehicles() {
@@ -89,7 +89,7 @@ class ArrivalsTableViewControllerTests: XCTestCase {
         }
 
         // ...then the list of vehicles should be updated
-        XCTAssertEqual(controller.vehicles.value.map { $0.name }.sort(), vehicles.map { $0.name }.sort())
+        XCTAssertEqual(controller.vehicles.value.map { $0.name }.sorted(), vehicles.map { $0.name }.sorted())
     }
 
     func testVehiclesSignalOnInitialVehicles() {
@@ -115,7 +115,7 @@ class ArrivalsTableViewControllerTests: XCTestCase {
         XCTAssertNotNil(try? controller.station.apply(modifiedStation))
 
         // Then the list of vehicles should contain vehicles from both routes.
-        XCTAssertEqual(controller.vehicles.value.map { $0.identifier }.sort(), ["v1", "v2", "v3", "v4", "v5"])
+        XCTAssertEqual(controller.vehicles.value.map { $0.identifier }.sorted(), ["v1", "v2", "v3", "v4", "v5"])
     }
 
     func testVehiclesSignalForVehiclelessRoute() {
@@ -132,6 +132,6 @@ class ArrivalsTableViewControllerTests: XCTestCase {
         XCTAssertNotNil(try? controller.station.apply(modifiedStation))
 
         // Then the list of vehicles should have values from routeA.
-        XCTAssertEqual(controller.vehicles.value.map { $0.identifier }.sort(), ["v1", "v2", "v3"])
+        XCTAssertEqual(controller.vehicles.value.map { $0.identifier }.sorted(), ["v1", "v2", "v3"])
     }
 }

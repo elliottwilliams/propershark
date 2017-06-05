@@ -15,29 +15,28 @@ import Result
 extension Decodable where Self.DecodedType == Self {
     /// Look up a decoded model fixture for `identifier`.
     static func fixture(id: String) -> SignalProducer<Self, NoError> {
-        return rawFixture(id).map { Argo.decode($0) as Self! }
+        return rawFixture(id: id).map { Argo.decode($0) as Self! }
     }
 
     /// Look up a raw model fixture for `id`.
     /// Returns a SignalProducer that gets the raw (json) form of a module. For now, this searches for
     /// a `<id>.json` file in the test resource bundle, but in the future it could call the server, use a
     /// cassette system, etc.
-    static func rawFixture(id: String) -> SignalProducer<AnyObject, NoError> {
-        let queue = DispatchQueue.global(DispatchQueue.GlobalQueuePriority.default, 0)
-        let scheduler = QueueScheduler(queue: queue, name: "ProperTests.fixtureQueue")
+    static func rawFixture(id: String) -> SignalProducer<Any, NoError> {
+        let scheduler = QueueScheduler(qos: .default, name: "ProperTests.fixtureLoeader")
         return SignalProducer { observer, _ in
-            dispatch_async(queue) {
+            scheduler.schedule {
                 guard
-                    let bundle = NSBundle(id: "ms.elliottwillia.ProperTests"),
-                    let resource = bundle.pathForResource(id, ofType: "json"),
+                    let bundle = Bundle(identifier: "ms.elliottwillia.ProperTests"),
+                    let resource =  bundle.path(forResource: id, ofType: "json"),
                     let data = NSData(contentsOfFile: resource),
-                    let json = try? NSJSONSerialization.JSONObjectWithData(data, options: [])
+                    let json = try? JSONSerialization.jsonObject(with: data as Data)
                     else {
                         fatalError("Model load error")
                 }
-                observer.sendNext(json)
+                observer.send(value: json)
                 observer.sendCompleted()
             }
-        }.observeOn(scheduler).logEvents(identifier: "Model.baseFixture", logger: logSignalEvent)
+        }.observe(on: scheduler).logEvents(identifier: "Model.baseFixture", logger: logSignalEvent)
     }
 }

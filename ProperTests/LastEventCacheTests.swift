@@ -24,12 +24,12 @@ class LastEventCacheTests: XCTestCase {
         super.setUp()
 
         let expectation = self.expectation(description: "fixtures")
-        Vehicle.fixture(ID).startWithResult({ result in
+        Vehicle.fixture(id: ID).startWithResult({ result in
             switch result {
-            case .Success(let vehicle):
+            case .success(let vehicle):
                 self.vehicle = vehicle
-                self.updateEvent = TopicEvent.Vehicle(.update(object: Decoded.Success(vehicle), originator: self.ID))
-            case .Failure(let error):
+                self.updateEvent = TopicEvent.vehicle(.update(object: Decoded.success(vehicle), originator: self.ID))
+            case .failure(let error):
                 XCTFail("\(error)")
             }
             expectation.fulfill()
@@ -48,36 +48,25 @@ class LastEventCacheTests: XCTestCase {
 
     func testCacheStoresUpdateEvent() {
         // When update event is stored
-        cache.store(ID, event: updateEvent)
+        cache.store(event: updateEvent, from: ID)
 
         // It should be retrievable by topic ID
-        assertEvent(cache.lookup(ID, originator: ID), vehicle: vehicle)
-    }
-
-    func testCacheStoresMetaEvent() {
-        // When meta.last_event rpc is stored...
-        //              ( event type               topic id          originator id )
-        cache.store(rpc: "meta.last_event", args: [ID, ID], event: updateEvent)
-
-        // It should be retrievable by topic id...
-        assertEvent(cache.lookup(ID, originator: ID), vehicle: vehicle)
-        // ...and by meta topic id.
-        assertEvent(cache.lookup(rpc: "meta.last_event", [ID, ID]), vehicle: vehicle)
+        assertEvent(cache.lastEvent(from: ID, sentIn: ID), vehicle: vehicle)
     }
 
     func testDelayedVoid() {
         // Given a stored event...
-        cache.store(ID, event: updateEvent)
+        cache.store(event: updateEvent, from: ID)
 
         // When it is voided...
-        cache.void(ID)
+        cache.expire(topic: ID)
 
         // It should not be removed until the next run loop iteration.
-        assertEvent(cache.lookup(ID, originator: ID), vehicle: vehicle)
+        assertEvent(cache.lastEvent(from: ID, sentIn: ID), vehicle: vehicle)
 
         let expectation = self.expectation(description: "delayed operation")
-        OperationQueue.main.addOperation {
-            XCTAssertNil(self.cache.lookup(self.ID, originator: self.ID))
+        DispatchQueue.main.async {
+            XCTAssertNil(self.cache.lastEvent(from: self.ID, sentIn: self.ID))
             expectation.fulfill()
         }
         waitForExpectations(timeout: 3, handler: nil)
@@ -85,23 +74,23 @@ class LastEventCacheTests: XCTestCase {
 
     func testDelayedVoidCancelledByStore() {
         // Given a stored event that is voided...
-        cache.store(ID, event: updateEvent)
-        cache.void(ID)
+        cache.store(event: updateEvent, from: ID)
+        cache.expire(topic: ID)
 
         // When a new event is stored on that topic id...
-        cache.store(ID, event: updateEvent)
+        cache.store(event: updateEvent, from: ID)
 
         // Then the event should not be removed on deferral...
         let expectation = self.expectation(description: "deferred operation")
-        OperationQueue.main.addOperation {
-            self.assertEvent(self.cache.lookup(self.ID, originator: self.ID), vehicle: self.vehicle)
+        DispatchQueue.main.async {
+            self.assertEvent(self.cache.lastEvent(from: self.ID, sentIn: self.ID), vehicle: self.vehicle)
             expectation.fulfill()
         }
         waitForExpectations(timeout: 3, handler: nil)
     }
 
     fileprivate func assertEvent(_ event: TopicEvent?, vehicle: Vehicle) {
-        if let event = event, case TopicEvent.Vehicle(.update(let decoded, _)) = event {
+        if let event = event, case TopicEvent.vehicle(.update(let decoded, _)) = event {
             XCTAssertEqual(decoded.value, vehicle)
         } else {
             XCTFail("decode failed")

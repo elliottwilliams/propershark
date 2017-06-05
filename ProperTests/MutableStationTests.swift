@@ -24,7 +24,7 @@ class MutableStationTests: XCTestCase, MutableModelTestSpec {
         super.setUp()
 
         let expectation = self.expectation(description: "fixtures")
-        Station.fixture("stations.BUS100W").startWithValues { model in
+        Station.fixture(id: "stations.BUS100W").startWithValues { model in
             self.model = model
             self.mutable = try! MutableStation(from: model, connection: self.mock)
             expectation.fulfill()
@@ -47,7 +47,7 @@ class MutableStationTests: XCTestCase, MutableModelTestSpec {
 
         // Then a the name should change when an update is published.
         XCTAssertEqual(mutable.name.value, "Beau Jardin Apts on Yeager (@ Shelter) - BUS100W ")
-        mock.publish(to: model.topic, event: .Station(.update(object: .Success(modifiedStation), originator: model.topic)))
+        mock.publish(to: model.topic, event: .station(.update(object: .success(modifiedStation), originator: model.topic)))
         XCTAssertEqual(mutable.name.value, "~modified")
     }
 
@@ -66,7 +66,7 @@ class MutableStationTests: XCTestCase, MutableModelTestSpec {
         XCTAssertEqual(mutable.routes.value.count, 0)
 
         // When routes are applied...
-        XCTAssert(model.routes?.count > 0)
+        XCTAssertGreaterThan(model.routes?.count ?? -1, 0)
         XCTAssertNotNil(try? mutable.apply(model))
 
         // Then the station's routes should be changed

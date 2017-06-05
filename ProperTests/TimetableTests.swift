@@ -41,7 +41,7 @@ class TimetableTests: XCTestCase {
             response.map({ Array($0[0..<2]) }),
             response.map({ Array($0[2..<3]) })
             ]
-        connection.on("timetable.visits_between", send: TopicEvent.Timetable(.arrivals(responses[0])))
+        connection.on("timetable.visits_between", send: TopicEvent.timetable(.arrivals(responses[0])))
         let completed = expectation(description: "got an arrival by calling the continuation")
 
         // Given a call to `visits`...
@@ -66,9 +66,10 @@ class TimetableTests: XCTestCase {
                 break
             case 1:
                 // Call the `more` continuation after the second arrival is received.
-                self.connection.on("timetable.visits_between", send: TopicEvent.Timetable(.arrivals(responses[1])))
-                let time_10ms = dispatch_time(DISPATCH_TIME_NOW, Int64(NSEC_PER_SEC) / 10)
-                dispatch_after(time_10ms, dispatch_get_main_queue()) {
+                self.connection.on("timetable.visits_between", send: TopicEvent.timetable(.arrivals(responses[1])))
+
+                let time_10ms = DispatchTime.now() + 0.01
+                DispatchQueue.main.asyncAfter(deadline: time_10ms) {
                     calledMore = true
                     result.more()
                 }

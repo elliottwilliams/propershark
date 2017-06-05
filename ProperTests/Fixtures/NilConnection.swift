@@ -11,11 +11,11 @@ import ReactiveSwift
 @testable import Proper
 
 class NilConnection: ConnectionType {
-    func call(proc: String, args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, ProperError> {
+    func call(_ proc: String, with args: WampArgs, kwargs: WampKwargs) -> SignalProducer<TopicEvent, ProperError> {
         // A signal producer that does nothing
         return SignalProducer { _, _ in () }
     }
-    func subscribe(topic: String) -> SignalProducer<TopicEvent, ProperError> {
+    func subscribe(to topic: String) -> SignalProducer<TopicEvent, ProperError> {
         return SignalProducer { _, _ in () }
     }
 }
