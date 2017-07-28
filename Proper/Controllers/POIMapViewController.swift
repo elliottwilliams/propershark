@@ -20,20 +20,20 @@ class POIMapViewController: UIViewController, ProperViewController {
 
   // Mutable properties that can be set by the map to impact the POI search region.
   let center: MutableProperty<Point>
-  let zoom: MutableProperty<CLLocationDistance>
-
+  let zoom: MutableProperty<MKCoordinateSpan>
 
   let isUserLocation: Property<Bool>
   var staticCenter: MKPointAnnotation? = nil
 
   fileprivate var polylines = [MutableRoute: MKPolyline]()
   fileprivate var routeForPolyline = [MKPolyline: MutableRoute]()
+  fileprivate let updateRegionLock = NSLock()
 
   var connection: ConnectionType
   var disposable = ScopedDisposable(CompositeDisposable())
 
   init(center: MutableProperty<Point>,
-       zoom: MutableProperty<CLLocationDistance>,
+       zoom: MutableProperty<MKCoordinateSpan>,
        routes: Property<Set<MutableRoute>>,
        onSelect: Action<MutableStation, (), NoError>,
        isUserLocation: Property<Bool>,
@@ -65,12 +65,17 @@ class POIMapViewController: UIViewController, ProperViewController {
     super.viewWillAppear(animated)
 
     disposable += center.producer.combineLatest(with: zoom.producer).startWithValues { point, zoom in
+      guard self.updateRegionLock.try() else {
+        return
+      }
+
       // Update the map as the center and zoom level changes. Center is expected to change following device location.
       let coordinate = CLLocationCoordinate2D(point: point)
       self.map.setCenter(coordinate, animated: true)
-      let boundingRegion = MKCoordinateRegionMakeWithDistance(coordinate, zoom, zoom)
+      let boundingRegion = MKCoordinateRegion(center: coordinate, span: zoom)
       self.map.setRegion(self.map.regionThatFits(boundingRegion), animated: true)
       self.staticCenter?.coordinate = coordinate
+      self.updateRegionLock.unlock()
     }
 
     disposable += isUserLocation.producer.startWithValues { value in
@@ -106,6 +111,20 @@ class POIMapViewController: UIViewController, ProperViewController {
   }
 
   // MARK: Map annotations
+
+  func modifyMap(with ops: [POIViewModel.Op]) {
+    for op in ops {
+      switch op {
+      case let .addStation(station, index: idx):
+        addAnnotation(for: station, at: idx)
+      case let .deleteStation(station, at: _):
+        deleteAnnotations(for: station)
+      case let .reorderStation(_, from: fi, to: ti):
+        reorderAnnotations(withIndex: fi, to: ti)
+      default: continue
+      }
+    }
+  }
 
   func polyline(for route: MutableRoute) -> SignalProducer<Void, NoError> {
     let producer = route.canonical.producer.skipNil().map({ route -> MKPolyline in
@@ -224,10 +243,14 @@ extension POIMapViewController: MKMapViewDelegate {
     }
   }
 
-  func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
-    // Update the search region by modifying `center` and `zoom`.
-    // Called repeatedly as the map is being scrolled. We'll need to throttle the search itself or the property updates
-    // to prevent from overwhelming the system with search requests.
-    //        map.visibleMapRect
+  func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+    guard updateRegionLock.try() else {
+      return
+    }
+    // TODO: I shouldn't update the center point, because that's based on the nearby view's representative location.
+    // But I should make sure whatever region shown by the map is being searched.
+//    center.swap(Point(coordinate: mapView.region.center))
+    zoom.swap(mapView.region.span)
+    updateRegionLock.unlock()
   }
 }

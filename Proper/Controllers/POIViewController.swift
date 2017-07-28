@@ -30,7 +30,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
   lazy var point = MutableProperty<Point>(Point(coordinate: Config.agency.region.center))
 
   /// The area represented by the map, which stations are searched for within.
-  lazy var zoom = MutableProperty<CLLocationDistance>(250) // Default zoom of 250m
+  lazy var zoom = MutableProperty<MKCoordinateSpan>(MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.15)) // Default zoom
 
   lazy var isUserLocation = MutableProperty(true)
 
@@ -45,6 +45,10 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
       })
       return Property(initial: Set(), then: routes)
     })
+  }()
+
+  lazy var arrivalOps: SignalProducer<[POIViewModel.Op], ProperError> = {
+    return POIViewModel.chain(connection: self.connection, producer: self.stations.producer)
   }()
 
   /// A producer for the device's location, which adds metadata used by the view into the signal. It is started when
@@ -68,23 +72,14 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
   internal var disposable = CompositeDisposable()
 
   func apply(operations ops: [POIViewModel.Op]) {
-    ops.forEach { op in
-      switch op {
-      case let .addStation(station, index: idx):
-        self.mapController?.addAnnotation(for: station, at: idx)
-      case let .deleteStation(station, at: _):
-        self.mapController?.deleteAnnotations(for: station)
-      case let .reorderStation(_, from: fi, to: ti):
-        self.mapController?.reorderAnnotations(withIndex: fi, to: ti)
-      default: return
-      }
-    }
+    tableController.modifyTable(with: ops)
+    mapController.modifyMap(with: ops)
   }
 
   // MARK: Lifecycle
 
   private func loadMapController() {
-    let onSelect: Action<MutableStation, (), NoError> = Action { station in
+    let onSelect: Action<MutableStation, (), NoError> = Action { [unowned self] station in
       let section = self.tableController.dataSource.index(of: station)
       let row = (self.tableController.dataSource.arrivals[section].isEmpty) ? NSNotFound : 0
       self.tableController.tableView.scrollToRow(at: IndexPath(row: row, section: section),
@@ -106,9 +101,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
   }
 
   private func loadTableController() {
-    let tableController = POITableViewController(style: .plain,
-                                                 stations: Property(stations),
-                                                 mapPoint: Property(point))
+    let tableController = POITableViewController(style: .plain, mapPoint: Property(point))
     addChildViewController(tableController)
     stackView.addArrangedSubview(tableController.view)
     tableController.view.heightAnchor.constraint(equalTo: stackView.heightAnchor, multiplier: 0.6).isActive = true
@@ -133,7 +126,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
       bar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
     }
 
-    let searchProducer = point.producer.combineLatest(with: zoom.producer)
+    let searchProducer = point.producer.combineLatest(with: zoom.producer.map({ $0 * 2 })) // widen search radius
       .throttle(0.5, on: searchScheduler)
       .logEvents(identifier: "NearbyStationsViewModel.chain input",
                  logger: logSignalEvent)
@@ -160,15 +153,15 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
       }
     }
 
-    // Show nearby stations on the map.
-    disposable += POIViewModel.chain(connection: connection, producer: stations.producer).startWithResult({ result in
+    // Update the table and map with nearby arrival operations.
+    disposable += arrivalOps.startWithResult { result in
       switch result {
       case let .failure(error):
         self.displayError(error)
       case let .success(ops):
         self.apply(operations: ops)
       }
-    })
+    }
   }
 
   override func viewWillDisappear(_ animated: Bool) {

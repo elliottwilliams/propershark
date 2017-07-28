@@ -13,9 +13,12 @@
 		2612B52C1D50513600BF671D /* routes.4B.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B5291D50513600BF671D /* routes.4B.json */; };
 		2612B52D1D50513600BF671D /* stations.BUS100W.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B52A1D50513600BF671D /* stations.BUS100W.json */; };
 		2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */; };
+		264350A11F2BAE4A00CD1F98 /* CLLocationCoordinate2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264350A01F2BAE4A00CD1F98 /* CLLocationCoordinate2D.swift */; };
+		264350A31F2BAE6600CD1F98 /* MKCoordinateSpan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264350A21F2BAE6600CD1F98 /* MKCoordinateSpan.swift */; };
+		264350A51F2BAE7900CD1F98 /* MKCoordinateRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264350A41F2BAE7900CD1F98 /* MKCoordinateRegion.swift */; };
 		2644B89B1E7F7385008A0A4D /* PMU.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 2644B8991E7F7385008A0A4D /* PMU.gpx */; };
 		2644B89F1E7F74F8008A0A4D /* Riehle.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 2644B89C1E7F74F8008A0A4D /* Riehle.gpx */; };
-		2644B8A11E7F74F8008A0A4D /* Windsor.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 2644B89D1E7F74F8008A0A4D /* Windsor.gpx */; };
+		2644B8A11E7F74F8008A0A4D /* Montgomery Station.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 2644B89D1E7F74F8008A0A4D /* Montgomery Station.gpx */; };
 		264754901D551411000F0831 /* ArrivalsTableViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */; };
 		2647825E1C2F7B34009D9AD0 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */; };
 		2650D28E1D176B65003758BF /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2650D28D1D176B65003758BF /* Configuration.swift */; };
@@ -120,6 +123,7 @@
 		26E964F81D56388800F83797 /* MutableVehicleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964F71D56388800F83797 /* MutableVehicleTests.swift */; };
 		26E964FA1D56396F00F83797 /* MutableModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964F91D56396F00F83797 /* MutableModelTests.swift */; };
 		26ED26F51E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26ED26F41E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib */; };
+		26F034931EE5308D00DD145F /* Signal+xctAssertValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26F034921EE5308D00DD145F /* Signal+xctAssertValues.swift */; };
 		26F7ED101EC900910017AEDA /* Argo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E0384F1D8DE9ED0006B265 /* Argo.framework */; };
 /* End PBXBuildFile section */
 
@@ -152,9 +156,12 @@
 		2635DB6D1C3CB15200EB58F5 /* TransitLabelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitLabelTests.swift; sourceTree = "<group>"; };
 		2635DB771C3DDE0D00EB58F5 /* StationTableViewHeaderFooterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StationTableViewHeaderFooterView.swift; sourceTree = "<group>"; };
 		263D36361DB2784700FC7FF5 /* POITableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = POITableViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		264350A01F2BAE4A00CD1F98 /* CLLocationCoordinate2D.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLLocationCoordinate2D.swift; sourceTree = "<group>"; };
+		264350A21F2BAE6600CD1F98 /* MKCoordinateSpan.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MKCoordinateSpan.swift; sourceTree = "<group>"; };
+		264350A41F2BAE7900CD1F98 /* MKCoordinateRegion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MKCoordinateRegion.swift; sourceTree = "<group>"; };
 		2644B8991E7F7385008A0A4D /* PMU.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PMU.gpx; sourceTree = "<group>"; };
 		2644B89C1E7F74F8008A0A4D /* Riehle.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Riehle.gpx; sourceTree = "<group>"; };
-		2644B89D1E7F74F8008A0A4D /* Windsor.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Windsor.gpx; sourceTree = "<group>"; };
+		2644B89D1E7F74F8008A0A4D /* Montgomery Station.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Montgomery Station.gpx"; sourceTree = "<group>"; };
 		264553481E7A5830007F6C2D /* Arrival.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Arrival.swift; sourceTree = "<group>"; };
 		264713B61E86EBB90078A2B9 /* Memorial Mall Walk.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Memorial Mall Walk.gpx"; sourceTree = "<group>"; };
 		264713B71E86EBEB0078A2B9 /* Memorial Mall Run.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Memorial Mall Run.gpx"; sourceTree = "<group>"; };
@@ -263,6 +270,7 @@
 		26ED26F01E117969007FB0F8 /* POIStationHeaderFooterView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = POIStationHeaderFooterView.xib; sourceTree = "<group>"; };
 		26ED26F21E117988007FB0F8 /* StationUpcomingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StationUpcomingTableViewCell.swift; sourceTree = "<group>"; };
 		26ED26F41E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RoutesCollectionBadgeCell.xib; sourceTree = "<group>"; };
+		26F034921EE5308D00DD145F /* Signal+xctAssertValues.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Signal+xctAssertValues.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -312,7 +320,7 @@
 				264713B61E86EBB90078A2B9 /* Memorial Mall Walk.gpx */,
 				264713B71E86EBEB0078A2B9 /* Memorial Mall Run.gpx */,
 				2644B89C1E7F74F8008A0A4D /* Riehle.gpx */,
-				2644B89D1E7F74F8008A0A4D /* Windsor.gpx */,
+				2644B89D1E7F74F8008A0A4D /* Montgomery Station.gpx */,
 				2612B5291D50513600BF671D /* routes.4B.json */,
 				2612B52A1D50513600BF671D /* stations.BUS100W.json */,
 				266CC4D71D826FC70022D064 /* vehicles.1801.json */,
@@ -406,6 +414,9 @@
 				266BAE641D2B676F001C9EC8 /* UIColor.swift */,
 				267525511D6D3B4F00F6C33F /* Decoded.swift */,
 				2696D8051E7ED64D00ABD701 /* MKCircle.swift */,
+				264350A01F2BAE4A00CD1F98 /* CLLocationCoordinate2D.swift */,
+				264350A21F2BAE6600CD1F98 /* MKCoordinateSpan.swift */,
+				264350A41F2BAE7900CD1F98 /* MKCoordinateRegion.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -413,6 +424,7 @@
 		266111D91D52EB2300D8F46B /* Fixtures */ = {
 			isa = PBXGroup;
 			children = (
+				26F034921EE5308D00DD145F /* Signal+xctAssertValues.swift */,
 				266111DC1D5378B500D8F46B /* NilConnection.swift */,
 				2612F9FE1D2CCAE5005103E3 /* ConnectionMock.swift */,
 				26CDF95A1D7E58CD00E53F82 /* TestError.swift */,
@@ -444,10 +456,7 @@
 		26A424A71BD2C1320035754F = {
 			isa = PBXGroup;
 			children = (
-				2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */,
-				26AC8BB51BD3503300AA0001 /* QuartzCore.framework */,
 				26AC8BB11BD345F100AA0001 /* Media.xcassets */,
-				26A424E11BD2C7EE0035754F /* MapKit.framework */,
 				26A424B21BD2C1320035754F /* Proper */,
 				26A424C71BD2C1320035754F /* ProperTests */,
 				26A424D21BD2C1320035754F /* ProperUITests */,
@@ -585,18 +594,21 @@
 		E4C42E7C67138C2FBA725195 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				26C7FB551ED16DCE006B7101 /* ReactiveSwift.framework */,
-				26C7FAB41ECC03B8006B7101 /* Runes.framework */,
-				26E038841D8F95E20006B265 /* CocoaAsyncSocket.framework */,
-				26E038851D8F95E20006B265 /* GHODictionary.framework */,
-				26E038861D8F95E20006B265 /* MPMessagePack.framework */,
-				26E038871D8F95E30006B265 /* SocketRocket.framework */,
 				26E0384F1D8DE9ED0006B265 /* Argo.framework */,
+				26E038841D8F95E20006B265 /* CocoaAsyncSocket.framework */,
+				2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */,
 				26E038501D8DE9ED0006B265 /* Curry.framework */,
 				26E038511D8DE9ED0006B265 /* Dwifft.framework */,
+				26E038851D8F95E20006B265 /* GHODictionary.framework */,
+				26A424E11BD2C7EE0035754F /* MapKit.framework */,
 				26E038521D8DE9ED0006B265 /* MDWamp.framework */,
+				26E038861D8F95E20006B265 /* MPMessagePack.framework */,
+				26AC8BB51BD3503300AA0001 /* QuartzCore.framework */,
 				26E038531D8DE9ED0006B265 /* ReactiveCocoa.framework */,
+				26C7FB551ED16DCE006B7101 /* ReactiveSwift.framework */,
 				26E038541D8DE9ED0006B265 /* Result.framework */,
+				26C7FAB41ECC03B8006B7101 /* Runes.framework */,
+				26E038871D8F95E30006B265 /* SocketRocket.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -736,7 +748,7 @@
 				2644B89B1E7F7385008A0A4D /* PMU.gpx in Resources */,
 				261035F81E8DD3F300364D20 /* timetable.visits_between.BUS215.json in Resources */,
 				2612B52D1D50513600BF671D /* stations.BUS100W.json in Resources */,
-				2644B8A11E7F74F8008A0A4D /* Windsor.gpx in Resources */,
+				2644B8A11E7F74F8008A0A4D /* Montgomery Station.gpx in Resources */,
 				266CC4D81D826FC70022D064 /* vehicles.1801.json in Resources */,
 				2644B89F1E7F74F8008A0A4D /* Riehle.gpx in Resources */,
 				2612B52C1D50513600BF671D /* routes.4B.json in Resources */,
@@ -789,9 +801,11 @@
 				26C7FB2D1ED16D6F006B7101 /* SignalType.swift in Sources */,
 				26C7FB171ED16D6F006B7101 /* CachedConnection.swift in Sources */,
 				26C7FB1C1ED16D6F006B7101 /* POIViewController.swift in Sources */,
+				264350A31F2BAE6600CD1F98 /* MKCoordinateSpan.swift in Sources */,
 				26C7FB181ED16D6F006B7101 /* ConnectionType.swift in Sources */,
 				26C7FB441ED16D6F006B7101 /* RoutesCollectionViewModel.swift in Sources */,
 				26C7FB311ED16D6F006B7101 /* Route.swift in Sources */,
+				264350A51F2BAE7900CD1F98 /* MKCoordinateRegion.swift in Sources */,
 				26C7FB281ED16D6F006B7101 /* Pipe.swift in Sources */,
 				26C7FB4A1ED16D6F006B7101 /* ArrivalTableViewCell.swift in Sources */,
 				26C7FB191ED16D6F006B7101 /* Connection.swift in Sources */,
@@ -833,6 +847,7 @@
 				26C7FB4E1ED16D6F006B7101 /* BadgeViewLabel.swift in Sources */,
 				26C7FB301ED16D6F006B7101 /* MKCircle.swift in Sources */,
 				26C7FB451ED16D6F006B7101 /* Badge.swift in Sources */,
+				264350A11F2BAE4A00CD1F98 /* CLLocationCoordinate2D.swift in Sources */,
 				26C7FB4B1ED16D6F006B7101 /* ArrivalTableRouteCollectionCell.swift in Sources */,
 				26C7FB361ED16D6F006B7101 /* Vehicle.swift in Sources */,
 				26C7FB381ED16D6F006B7101 /* CanonicalRoute.swift in Sources */,
@@ -863,6 +878,7 @@
 				266111DD1D5378B500D8F46B /* NilConnection.swift in Sources */,
 				264754901D551411000F0831 /* ArrivalsTableViewControllerTests.swift in Sources */,
 				26E964FA1D56396F00F83797 /* MutableModelTests.swift in Sources */,
+				26F034931EE5308D00DD145F /* Signal+xctAssertValues.swift in Sources */,
 				26CDF95B1D7E58CD00E53F82 /* TestError.swift in Sources */,
 				266111DE1D5380D300D8F46B /* ConnectionMock.swift in Sources */,
 				2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */,

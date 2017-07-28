@@ -9,14 +9,25 @@
 import Foundation
 import UIKit
 import MapKit
+import ReactiveSwift
 
 struct Config {
   struct agency {
-    static let key = "citybus"
-    static let name = "CityBus"
+    static let key = "bart"
+    static let name = "BART"
     static let region = MKCoordinateRegionMakeWithDistance(
-      CLLocationCoordinate2D(latitude: 40.4206761, longitude: -86.8966437), 4730, 7840)
+      CLLocationCoordinate2D(latitude: 37.784128, longitude: -122.4570273), 33_000, 20_000)
     static let timeResolution = TimeInterval(30)
+
+    static let badgeForRoute: (MutableRoute) -> Property<String?> = { _ in .init(value: nil) }
+    static let titleForRoute: (MutableRoute) -> Property<String?> = { .init($0.name) }
+    static let titleForArrival: (Arrival) -> Property<String?> = { arrival in
+      if let heading = arrival.heading {
+        return Property(value: heading)
+      } else {
+        return Property(arrival.route.name)
+      }
+    }
   }
 
   struct app {
@@ -25,7 +36,7 @@ struct Config {
   }
 
   struct connection {
-    static let server = URL(string: "ws://shark-nyc1.transio.us:8080/ws")!
+    static let server = URL(string: "ws://Irene.local:8080/ws")!
     static let realm = "realm1"
   }
 

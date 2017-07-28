@@ -19,7 +19,7 @@ struct NearbyStationsViewModel: SignalChain {
 
   // TODO - Swift 3 brings generic type aliases, which means we can do something nice like:
   // typealias SP<U> = SignalProducer<U, ProperError>
-  typealias SearchRadius = CLLocationDistance
+  typealias SearchRadius = MKCoordinateSpan
   typealias CenterPoint = CLLocationCoordinate2D
   typealias Distance = CLLocationDistance
 
@@ -27,8 +27,20 @@ struct NearbyStationsViewModel: SignalChain {
     SignalProducer<MKMapRect, ProperError>
   {
     return producer.map({ point, radius -> MKMapRect in
-      let circle = MKCircle(center: CLLocationCoordinate2D(point: point), radius: radius)
-      return circle.boundingMapRect
+      let region = MKCoordinateRegion(center: CLLocationCoordinate2D(point: point), span: radius)
+      // Build a MKMapRect by determining the "corners" of the coordinate region.
+      let topRight =
+        MKMapPointForCoordinate(CLLocationCoordinate2D(latitude: region.center.latitude + region.span.latitudeDelta / 2,
+                                                       longitude: region.center.longitude - region.span.longitudeDelta / 2))
+      let bottomLeft =
+        MKMapPointForCoordinate(CLLocationCoordinate2D(latitude: region.center.latitude - region.span.latitudeDelta / 2,
+                                                       longitude: region.center.longitude + region.span.longitudeDelta / 2))
+      let size = MKMapSize(width: abs(topRight.x - bottomLeft.x),
+                           height: abs(topRight.y - bottomLeft.y))
+      let origin = MKMapPoint(x: min(topRight.x, bottomLeft.x),
+                              y: min(topRight.y, bottomLeft.y))
+      return MKMapRect(origin: origin, size: size)
+
     })
   }
 
