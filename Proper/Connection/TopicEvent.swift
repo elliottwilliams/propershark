@@ -213,7 +213,7 @@ enum TopicEvent: CustomStringConvertible {
   static func parse(fromRPC proc: String, request: (args: WampArgs, kwargs: WampKwargs),
                     response: (args: WampArgs, kwargs: WampKwargs)) -> TopicEvent?
   {
-    if Config.logging.logJSON {
+    if Config.current.logging.logJSON {
       NSLog("[TopicEvent.parseFromRPC] \(proc) -> \(response)")
     }
 

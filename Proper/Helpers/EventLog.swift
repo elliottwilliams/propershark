@@ -9,7 +9,7 @@
 import Foundation
 
 func logSignalEvent(identifier: String, event: String, fileName: String, functionName: String, lineNumber: Int) -> () {
-  if Config.logging.ignoreSignalProducers.contains(identifier) {
+  if Config.current.logging.ignoreSignalProducers.contains(identifier) {
     return
   }
 

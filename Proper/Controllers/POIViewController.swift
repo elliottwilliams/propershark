@@ -24,10 +24,14 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
   var tableController: POITableViewController!
   var mapController: POIMapViewController!
 
-  /// The point tracked by the POI view. May be either the user's location or a static point. While the view is
-  /// visible, this point is from `staticLocation` or `deviceLocation`, depending on whether a static location was
-  /// passed.
-  lazy var point = MutableProperty<Point>(Point(coordinate: Config.agency.region.center))
+  /// The point tracked by the POI view. Its position triggers new searches and updated the map view. Its value is modified
+  /// by the `location` producer, user interactions with the map, and agency config changes.
+  lazy var point: MutableProperty<Point> = {
+    let center = Config.shared.map({ Point(coordinate: $0.agency.region.center) })
+    let property = MutableProperty(center.value)
+    property <~ center
+    return property
+  }()
 
   /// The area represented by the map, which stations are searched for within.
   lazy var zoom = MutableProperty<MKCoordinateSpan>(MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.15)) // Default zoom

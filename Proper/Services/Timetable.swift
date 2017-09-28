@@ -149,10 +149,11 @@ struct Timetable {
 
   private static func rpc(from value: Timing, route: Bool) -> String {
     let suffix = (route) ? "_on_route" : ""
+    let service = Config.current.connection.scheduleService
     switch value {
-    case .before(_):    return "timetable.visits_before\(suffix)"
-    case .after(_):     return "timetable.visits_after\(suffix)"
-    case .between(_):   return "timetable.visits_between\(suffix)"
+    case .before(_):    return "\(service).visits_before\(suffix)"
+    case .after(_):     return "\(service).visits_after\(suffix)"
+    case .between(_):   return "\(service).visits_between\(suffix)"
     }
   }
 

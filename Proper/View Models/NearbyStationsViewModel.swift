@@ -45,7 +45,7 @@ struct NearbyStationsViewModel: SignalChain {
   }
 
   static func getStations(connection: ConnectionType) -> SignalProducer<[Station], ProperError> {
-    return connection.call("agency.stations").attemptMap({ event -> Result<[AnyObject], ProperError> in
+    let call = connection.call("agency.stations").attemptMap({ event -> Result<[AnyObject], ProperError> in
       // Received events should be Agency.stations events, which contain a list of all stations on the agency.
       if case .agency(.stations(let stations)) = event {
         return .success(stations)
@@ -53,6 +53,7 @@ struct NearbyStationsViewModel: SignalChain {
         return .failure(ProperError.eventParseFailure)
       }
     }).decodeAnyAs(Station.self)
+    return Config.shared.producer.flatMap(.latest, transform: { _ in call })
   }
 
   static func filterNearby(connection: ConnectionType, producer: SignalProducer<([Station], MKMapRect), ProperError>) ->

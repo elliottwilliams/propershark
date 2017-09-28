@@ -34,10 +34,9 @@ struct Arrival: Comparable, Hashable {
     case arrived
     case departed
 
-    static let res = Config.agency.timeResolution
-
     /// Returns the state of this arrival, and a date to re-determine if its life is not terminated.
     static func determine(_ eta: Date, _ etd: Date, now: Date = Date()) -> (Lifecycle, refreshAt: Date?) {
+      let res = Config.current.agency.timeResolution
       // TODO - once Arrivals can track vehicles, we should determine whether a vehicle has actually arrived at
       // its station, and can emit the `arrived` event accordingly.
       if eta.timeIntervalSinceNow > res {

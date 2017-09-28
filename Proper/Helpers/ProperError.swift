@@ -17,7 +17,7 @@ enum ProperError: Error {
   case connectionLost(reason: String)
   case maxConnectionFailures
   case eventParseFailure
-  case timeout
+  case timeout(rpc: String)
 
   // Model
   case decodeFailure(DecodeError)
