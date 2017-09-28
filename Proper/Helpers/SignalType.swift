@@ -14,7 +14,7 @@ import Result
 // MARK: Value is AnyObject
 extension SignalProtocol where Value: AnyObject, Error == ProperError {
   /// Attempt to decode an `AnyObject` to the model given.
-  internal func decode<M: Decodable>(as: M.Type) -> Signal<M.DecodedType, ProperError> {
+  internal func decode<M: Argo.Decodable>(as: M.Type) -> Signal<M.DecodedType, ProperError> {
     return attemptMap { object in
       let decoded = M.decode(JSON(object))
       switch decoded {
@@ -29,7 +29,7 @@ extension SignalProtocol where Value: AnyObject, Error == ProperError {
 
 extension SignalProducerProtocol where Value: AnyObject, Error == ProperError {
   /// Attempt to decode an `AnyObject` to the model given.
-  internal func decodeAs<M: Decodable>(_: M.Type) -> SignalProducer<M.DecodedType, ProperError> {
+  internal func decodeAs<M: Argo.Decodable>(_: M.Type) -> SignalProducer<M.DecodedType, ProperError> {
     return lift { $0.decode(as: M.self) }
   }
 }
@@ -39,7 +39,7 @@ extension SignalProducerProtocol where Value: AnyObject, Error == ProperError {
 extension SignalProtocol where Value: Collection, Value.Iterator.Element: AnyObject, Error == ProperError {
   /// Attempt to decode each member of a list to the `to` type. If *any* decode successfully, an array of successfully
   /// decoded models will be forwarded.
-  internal func decodeAnyAs<M: Decodable>(_: M.Type) -> Signal<[M.DecodedType], ProperError> {
+  internal func decodeAnyAs<M: Argo.Decodable>(_: M.Type) -> Signal<[M.DecodedType], ProperError> {
     return attemptMap { list in
       let decoded = list.map(JSON.init).flatMap(M.decode)
       let errors = decoded.flatMap { $0.error }
@@ -59,7 +59,7 @@ extension SignalProtocol where Value: Collection, Value.Iterator.Element: AnyObj
 extension SignalProducerProtocol where Value: Collection, Value.Iterator.Element: AnyObject, Error == ProperError {
   /// Attempt to decode each member of a list to the `to` type. If *any* decode successfully, an array of successfully
   /// decoded models will be forwarded.
-  internal func decodeAnyAs<M: Decodable>(_: M.Type) -> SignalProducer<[M.DecodedType], ProperError> {
+  internal func decodeAnyAs<M: Argo.Decodable>(_: M.Type) -> SignalProducer<[M.DecodedType], ProperError> {
     return lift { $0.decodeAnyAs(M.self) }
   }
 }

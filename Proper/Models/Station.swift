@@ -45,14 +45,14 @@ struct Station: Model {
   }
 }
 
-extension Station: Decodable {
+extension Station: Argo.Decodable {
   static func decode(_ json: JSON) -> Decoded<Station> {
     switch json {
     case .string(let id):
       let stopCode = Station.unqualify(namespaced: id)
       return pure(Station(id: stopCode))
     default:
-      let curried = curry(Station.init)
+      let curried = curry(Station.init(stopCode:name:description:position:routes:vehicles:))
       return curried
         <^> (json <| "stop_code").or(Station.decodeNamespacedIdentifier(json))
         <*> json <|? "name"

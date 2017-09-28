@@ -264,7 +264,7 @@ enum TopicEvent: CustomStringConvertible {
     }
   }
 
-  static private func parseTimetableTuple(_ args: [[AnyObject]]) -> (eta: Decoded<Date>, etd: Decoded<Date>)? {
+  static private func parseTimetableTuple(_ args: [[AnyObject]]) -> (eta: Argo.Decoded<Date>, etd: Argo.Decoded<Date>)? {
     guard let eta = args[safe: 0],
       let etd = args[safe: 1]
       else { return nil }

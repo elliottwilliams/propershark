@@ -53,7 +53,7 @@ struct Route: Model {
   }
 }
 
-extension Route: Decodable {
+extension Route: Argo.Decodable {
   static func decode(_ json: JSON) -> Decoded<Route> {
     switch json {
     case .string(let id):

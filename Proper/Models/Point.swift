@@ -41,7 +41,7 @@ func ==(a: Point, b: Point) -> Bool {
   return a.lat == b.lat && a.long == b.long
 }
 
-extension Point: Decodable {
+extension Point: Argo.Decodable {
   static func decode(_ json: JSON) -> Decoded<Point> {
     switch json {
     case .array(_):

@@ -76,7 +76,7 @@ struct Vehicle: Model {
   }
 }
 
-extension Vehicle: Decodable {
+extension Vehicle: Argo.Decodable {
   static func decode(_ json: JSON) -> Decoded<Vehicle> {
     switch json {
     case .string(let id):

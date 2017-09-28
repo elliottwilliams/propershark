@@ -11,7 +11,7 @@ import Argo
 import Curry
 import Runes
 
-extension Date: Decodable {
+extension Date: Argo.Decodable {
   public static func decode(_ json: JSON) -> Decoded<Date> {
     // Decode `json` as a string and pass that string to Timetable's date formatter. Wrap the optional Date it
     // returns in a Decoded type.

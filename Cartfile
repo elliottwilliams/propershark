@@ -2,7 +2,7 @@ github "ReactiveCocoa/ReactiveCocoa" ~> 5.0.3
 github "thoughtbot/Argo" ~> 4.1.2
 github "thoughtbot/Curry" ~> 3.0.0
 github "thoughtbot/Runes" ~> 4.0.1
-github "jflinter/Dwifft" ~> 0.5
+github "jflinter/Dwifft" "9d4ef3d1af236c9be0a1a8bdc5bebc97003465fe"
 
 # Until downstream bugs in MPMessagePack are fixed
 github "elliottwilliams/MDWamp" "emw"

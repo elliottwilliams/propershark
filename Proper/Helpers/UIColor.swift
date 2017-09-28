@@ -10,7 +10,7 @@ import UIKit
 import Foundation
 import Argo
 
-extension UIColor: Decodable {
+extension UIColor: Argo.Decodable {
   public static func decode(_ json: JSON) -> Decoded<UIColor> {
     switch json {
     case .string(let hexString):

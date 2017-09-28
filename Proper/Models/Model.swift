@@ -58,7 +58,7 @@ extension Model {
   var hashValue: Int { return self.identifier.hashValue }
 }
 
-extension Model where Identifier: Decodable, Identifier.DecodedType == Identifier {
+extension Model where Identifier: Argo.Decodable, Identifier.DecodedType == Identifier {
   /// Decode an "identifier" key from the given JSON.
   static func decodeIdentifier(_ json: JSON) -> Decoded<Identifier> {
     return (json <| "identifier")
