@@ -247,12 +247,14 @@ enum TopicEvent: CustomStringConvertible {
         return .meta(.unknownLastEvent(metaArgs, metaKwargs))
       }
 
-    case "timetable.next_visit", "timetable.last_visit":
+    case "timetable.next_visit", "timetable.last_visit",
+         "providence.next_visit", "providence.last_visit":
       guard let tuple = response.args[safe: 0]
         else { return nil }
       return .timetable(.arrival(decode(tuple)))
 
-    case "timetable.visits_before", "timetable.visits_after", "timetable.visits_between":
+    case "timetable.visits_before", "timetable.visits_after", "timetable.visits_between",
+         "providence.visits_before", "providence.visits_after", "providence.visits_between":
       guard let tuples = response.args[safe: 0]
         else { return nil }
       return .timetable(.arrivals(decodeArray(JSON(tuples))))

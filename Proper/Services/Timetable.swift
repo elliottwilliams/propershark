@@ -227,16 +227,25 @@ extension Timetable {
     }
   }
 
-  struct Response: Decodable {
+  struct Response: Argo.Decodable {
     typealias DecodedType = Response
     let eta: Date
     let etd: Date
     let route: Route
     let heading: String?
+    let meta: Meta
+
+    struct Meta: Argo.Decodable {
+      let realtime: Bool
+      static func decode(_ json: JSON) -> Decoded<Timetable.Response.Meta> {
+        return self.init <^> json <| "realtime"
+      }
+    }
+
     static func decode(_ json: JSON) -> Decoded<Response> {
       // Decode a 4-tuple: [route, heading, eta, etd]
       return [JSON].decode(json).flatMap({ args in
-        guard args.count == 4 else {
+        guard args.count >= 4 else {
           return .failure(.custom("Expected an array of size 4"))
         }
         return curry(self.init)
@@ -244,6 +253,7 @@ extension Timetable {
           <*> Date.decode(args[1])
           <*> Route.decode(args[2])
           <*> Optional<String>.decode(args[3])
+          <*> Meta.decode(args[4])
       })
     }
     func makeArrival(using connection: ConnectionType) throws -> Arrival {
