@@ -23,10 +23,10 @@ struct CitybusAgencyConfig: AgencyConfig {
   let key = "citybus"
   let name = "CityBus"
   let region = MKCoordinateRegionMakeWithDistance(
-    CLLocationCoordinate2D(latitude: 40.4088972, longitude: -86.927739), 9200, 1264)
+    CLLocationCoordinate2D(latitude: 40.424758, longitude: -86.913649), 500, 500)
   let timeResolution = TimeInterval(30)
 
-  let badgeForRoute: (MutableRoute) -> Property<String?> = { _ in .init(value: nil) }
+  let badgeForRoute: (MutableRoute) -> Property<String?> = { .init(value: $0.shortName) }
   let titleForRoute: (MutableRoute) -> Property<String?> = { .init($0.name) }
   let titleForArrival: (Arrival) -> Property<String?> = { arrival in
     if let heading = arrival.heading {
@@ -38,7 +38,7 @@ struct CitybusAgencyConfig: AgencyConfig {
 }
 
 struct CitybusConnectionConfig: ConnectionConfig {
-  let server = URL(string: "ws://irene.local:32771/ws")!
+  let server = URL(string: "ws://transit.emw.ms/api/citybus")!
   let realm = "realm1"
   let scheduleService = "timetable" 
 }
