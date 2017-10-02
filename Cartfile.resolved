@@ -5,7 +5,7 @@ github "elliottwilliams/GHODictionary" "1ccf96b94b4742314e1365f18e79d3cbc03c3a0f
 github "elliottwilliams/MDWamp" "9952dd3ca5285c6bef426541527ce00fd9a6ab2b"
 github "elliottwilliams/MPMessagePack" "aa26db573b4be7a1d353644ebd7a3513f1b91c8a"
 github "facebook/SocketRocket" "28035e1a98a427853e4038ff1b70479fa8374cfa"
-github "jflinter/Dwifft" "9d4ef3d1af236c9be0a1a8bdc5bebc97003465fe"
+github "jflinter/Dwifft" "0.7"
 github "robbiehanson/CocoaAsyncSocket" "b6f98791995ab7c7ef6faee4726102a711431f58"
 github "thoughtbot/Argo" "v4.1.2"
 github "thoughtbot/Curry" "v3.0.0"

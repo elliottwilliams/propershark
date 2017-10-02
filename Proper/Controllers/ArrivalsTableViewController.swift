@@ -17,7 +17,7 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
   // MARK: Internal properties
   internal var connection: ConnectionType = Connection.cachedInstance
-  internal var diffCalculator: TableViewDiffCalculator<MutableVehicle>!
+  internal var diffCalculator: SingleSectionTableViewDiffCalculator<MutableVehicle>!
   internal var disposable = CompositeDisposable()
   internal var routeDisposables = [MutableRoute: Disposable]()
 
@@ -62,8 +62,7 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
 
   override func viewDidLoad() {
     // Initialize the diff calculator for the table, which starts using any routes already on `station`.
-    diffCalculator = TableViewDiffCalculator(tableView: self.tableView, initialRows: vehicles.value.sorted())
-    diffCalculator.sectionIndex = 1
+    diffCalculator = SingleSectionTableViewDiffCalculator(tableView: self.tableView, initialRows: vehicles.value.sorted())
 
     // Create a controller to manage the routes collection view within the table.
     routesCollectionModel = RoutesCollectionViewModel(routes: Property(station.routes))

@@ -123,24 +123,26 @@ class POIViewModel: SignalChain {
     return producer.combinePrevious([]).map({ prev, next in
       let pi = prev.indexMap()
       let ni = next.indexMap()
-      let diff = prev.diff(next)
+      let diff = Dwifft.diff(prev, next)
 
-      let ops = diff.results.flatMap({ step -> Op? in
+      let ops = diff.flatMap({ step -> Op? in
         switch step {
         case let .insert(idx, station):
-          if let p = pi[station] {
-            // If `station` had an index in `prev`, it's been moved, not inserted. Produce a reorder op...
-            return .reorderStation(station, from: p, to: idx)
-          } else {
-            return .addStation(station, index: idx)
-          }
-        case let .delete(_, station):
-          if ni[station] == nil {
-            return .deleteStation(station, at: pi[station]!)
-          } else {
-            // ...and ignore when we get to the corresponding delete step.
-            return nil
-          }
+          return .addStation(station, index: idx)
+//          if let p = pi[station] {
+//            // If `station` had an index in `prev`, it's been moved, not inserted. Produce a reorder op...
+//            return .reorderStation(station, from: p, to: idx)
+//          } else {
+//            return .addStation(station, index: idx)
+//          }
+        case let .delete(idx, station):
+          return .deleteStation(station, at: idx)
+//          if ni[station] == nil {
+//            return .deleteStation(station, at: pi[station]!)
+//          } else {
+//            // ...and ignore when we get to the corresponding delete step.
+//            return nil
+//          }
         }
       })
 

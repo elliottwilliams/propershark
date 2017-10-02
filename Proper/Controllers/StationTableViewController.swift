@@ -15,7 +15,7 @@ class StationTableViewController: UITableViewController, ProperViewController {
 
   // MARK: Internal properties
   internal var connection: ConnectionType = Connection.cachedInstance
-  internal var diffCalculator: TableViewDiffCalculator<RouteStop<MutableRoute.StationType>>!
+  internal var diffCalculator: SingleSectionTableViewDiffCalculator<RouteStop<MutableRoute.StationType>>!
   internal let disposable = CompositeDisposable()
 
   // MARK: Signalled properties
@@ -26,7 +26,7 @@ class StationTableViewController: UITableViewController, ProperViewController {
 
   // MARK: Methods
   override func viewDidLoad() {
-    diffCalculator = TableViewDiffCalculator(tableView: tableView, initialRows: stops.value)
+    diffCalculator = SingleSectionTableViewDiffCalculator(tableView: tableView, initialRows: stops.value)
     tableView.register(UINib(nibName: "StationTableViewCell", bundle: nil), forCellReuseIdentifier: "stationCell")
   }
 
