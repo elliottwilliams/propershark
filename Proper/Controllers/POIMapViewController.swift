@@ -10,6 +10,7 @@ import UIKit
 import ReactiveSwift
 import MapKit
 import Result
+import Dwifft
 
 class POIMapViewController: UIViewController, ProperViewController {
   typealias DisposableType = ScopedDisposable<CompositeDisposable>
@@ -17,6 +18,7 @@ class POIMapViewController: UIViewController, ProperViewController {
   var map: MKMapView { return self.view as! MKMapView }
   let onSelect: Action<MutableStation, (), NoError>
   let routes: Property<Set<MutableRoute>>
+  let stations: Property<[MutableStation]>
 
   // Mutable properties that can be set by the map to impact the POI search region.
   let center: MutableProperty<Point>
@@ -28,6 +30,7 @@ class POIMapViewController: UIViewController, ProperViewController {
   fileprivate var polylines = [MutableRoute: MKPolyline]()
   fileprivate var routeForPolyline = [MKPolyline: MutableRoute]()
   fileprivate let updateRegionLock = NSLock()
+  fileprivate var viewDidLayout = false
 
   var connection: ConnectionType
   var disposable = ScopedDisposable(CompositeDisposable())
@@ -35,6 +38,7 @@ class POIMapViewController: UIViewController, ProperViewController {
   init(center: MutableProperty<Point>,
        zoom: MutableProperty<MKCoordinateSpan>,
        routes: Property<Set<MutableRoute>>,
+       stations: Property<[MutableStation]>,
        onSelect: Action<MutableStation, (), NoError>,
        isUserLocation: Property<Bool>,
        connection: ConnectionType = Connection.cachedInstance)
@@ -42,11 +46,15 @@ class POIMapViewController: UIViewController, ProperViewController {
     self.center = center
     self.zoom = zoom
     self.routes = routes
+    self.stations = stations
     self.onSelect = onSelect
     self.isUserLocation = isUserLocation
     self.connection = connection
     super.init(nibName: nil, bundle: nil)
 
+    map.translatesAutoresizingMaskIntoConstraints = false
+    map.region = MKCoordinateRegion(center: CLLocationCoordinate2D(point: center.value),
+                                    span: zoom.value)
     map.delegate = self
   }
 
@@ -56,7 +64,6 @@ class POIMapViewController: UIViewController, ProperViewController {
 
   override func loadView() {
     view = MKMapView()
-    view.translatesAutoresizingMaskIntoConstraints = false
   }
 
   // MARK: Lifecycle
@@ -71,9 +78,8 @@ class POIMapViewController: UIViewController, ProperViewController {
 
       // Update the map as the center and zoom level changes. Center is expected to change following device location.
       let coordinate = CLLocationCoordinate2D(point: point)
-      self.map.setCenter(coordinate, animated: true)
       let boundingRegion = MKCoordinateRegion(center: coordinate, span: zoom)
-      self.map.setRegion(self.map.regionThatFits(boundingRegion), animated: true)
+      self.map.setRegion(boundingRegion, animated: true)
       self.staticCenter?.coordinate = coordinate
       self.updateRegionLock.unlock()
     }
@@ -96,6 +102,18 @@ class POIMapViewController: UIViewController, ProperViewController {
       }
     }
 
+    disposable += stations.producer.combinePrevious([]).startWithValues { prev, next in
+      let diff = Dwifft.diff(prev, next)
+      for step in diff {
+        switch step {
+        case let .insert(idx, station):
+          self.addAnnotation(for: station, at: idx)
+        case let .delete(_, station):
+          self.deleteAnnotations(for: station)
+        }
+      }
+    }
+
     disposable += routes.producer.flatMap(.latest, transform: { routes -> SignalProducer<Void, NoError> in
       // Show route polyline annotations, updating as the routes change. The parent POIViewController will only
       // provide routes inside the current search region.
@@ -110,21 +128,11 @@ class POIMapViewController: UIViewController, ProperViewController {
     super.viewDidDisappear(animated)
   }
 
-  // MARK: Map annotations
-
-  func modifyMap(with ops: [POIViewModel.Op]) {
-    for op in ops {
-      switch op {
-      case let .addStation(station, index: idx):
-        addAnnotation(for: station, at: idx)
-      case let .deleteStation(station, at: _):
-        deleteAnnotations(for: station)
-      case let .reorderStation(_, from: fi, to: ti):
-        reorderAnnotations(withIndex: fi, to: ti)
-      default: continue
-      }
-    }
+  override func viewDidLayoutSubviews() {
+    viewDidLayout = true
   }
+
+  // MARK: Map annotations
 
   func polyline(for route: MutableRoute) -> SignalProducer<Void, NoError> {
     let producer = route.canonical.producer.skipNil().map({ route -> MKPolyline in
@@ -236,20 +244,16 @@ extension POIMapViewController: MKMapViewDelegate {
 
     if let annotation = (view as? POIStationAnnotationView)?.annotation as? POIStationAnnotation {
       disposable += onSelect.apply(annotation.station).start()
-      //            let section = table.dataSource.index(of: annotation.station)
-      //            let row = (table.dataSource.arrivals[section].isEmpty) ? NSNotFound : 0
-      //            table.tableView.scrollToRow(at: IndexPath(row: row, section: section), at: .top,
-      //                                        animated: true)
     }
   }
 
   func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-    guard updateRegionLock.try() else {
+    guard viewDidLayout, updateRegionLock.try() else {
       return
     }
     // TODO: I shouldn't update the center point, because that's based on the nearby view's representative location.
     // But I should make sure whatever region shown by the map is being searched.
-//    center.swap(Point(coordinate: mapView.region.center))
+    center.swap(Point(coordinate: mapView.region.center))
     zoom.swap(mapView.region.span)
     updateRegionLock.unlock()
   }

@@ -1,118 +1,111 @@
 //
-//  POITableDataSource.swift
+//  POITableDataSource2.swift
 //  Proper
 //
-//  Created by Elliott Williams on 3/19/17.
+//  Created by Elliott Williams on 10/1/17.
 //  Copyright © 2017 Elliott Williams. All rights reserved.
 //
 
+import Foundation
 import UIKit
-import MapKit
+import ReactiveSwift
+import Dwifft
 
-class POITableDataSource: NSObject, UITableViewDataSource {
-  typealias Distance = CLLocationDistance
-  typealias Tuple = (station: MutableStation, badge: Badge, arrivals: [Arrival])
+class POITableDataSource: NSObject {
+  let stations: Property<[MutableStation]>
+  let diffCalculator: TableViewDiffCalculator<MutableStation, Arrival>
+  let connection: ConnectionType
 
-  var table: [(station: MutableStation, badge: Badge, arrivals: [Arrival])] = []
-  var indices: [MutableStation: Int] = [:]
+  private let disposable = ScopedDisposable(CompositeDisposable())
+  private let fetchScheduler = QueueScheduler(qos: .userInitiated, name: "POITableDataSource.fetchScheduler")
 
-  // MARK: Accessors
+  init(tableView: UITableView, stations: Property<[MutableStation]>, connection: ConnectionType) {
+    self.stations = stations
+    self.diffCalculator = .init(tableView: tableView)
+    self.connection = connection
+    super.init()
 
-  var stations: [MutableStation] {
-    return table.lazy.map({ st, _, _ in st })
-  }
-  var arrivals: [[Arrival]] {
-    return table.lazy.map({ _, _, ar in ar })
-  }
-  var badges: [Badge] {
-    return table.lazy.map({ _, bd, _ in bd })
-  }
-
-  func index(of station: MutableStation) -> Int {
-    return indices[station]!
-  }
-
-  // MARK: Mutators
-
-  /// Update the `indices` map and badge for each station beginning at the `from` position.
-  func updateIndices(from start: Int) {
-    let offset = table.suffix(from: start).enumerated().map({ i, tt in (i+start, tt) })
-    offset.forEach(updateIndices)
-  }
-
-  /// Update the `indices` map and badge to match the table entry at the given `idx`.
-  func updateIndices(at idx: Int) {
-    updateIndices(at: idx, entry: table[idx])
-  }
-
-  private func updateIndices(at idx: Int, entry: Tuple) {
-    let (station, badge, _) = entry
-    indices[station] = idx
-    badge.set(numericalIndex: idx)
-  }
-
-  func insert(entry: Tuple, at idx: Int) {
-    let (station, badge, arrivals) = entry
-    table.insert((station, badge, arrivals), at: idx)
-    indices[station] = idx
-    updateIndices(from: idx+1)
-  }
-
-  func indexPath(inserting arrival: Arrival, onto station: MutableStation) -> IndexPath {
-    let si = index(of: station)
-    let ri = arrivals[si].index(where: { arrival < $0 }) ?? arrivals[si].endIndex
-    table[si].arrivals.insert(arrival, at: ri)
-    return IndexPath(row: ri, section: si)
-  }
-
-  func indexPath(deleting arrival: Arrival, from station: MutableStation) -> IndexPath {
-    let si = index(of: station)
-    let ri = arrivals[si].index(of: arrival)!
-    table[si].arrivals.remove(at: ri)
-    return IndexPath(row: ri, section: si)
-  }
-
-  func remove(station: MutableStation) {
-    let idx = index(of: station)
-    indices[stations[idx]] = nil
-    table.remove(at: idx)
-    updateIndices(from: idx)
-  }
-
-  func moveStation(from fi: Int, to ti: Int) {
-    guard fi != ti else {
-      return
+    disposable += stations.producer.startWithValues { [weak self] stations in
+      // Populate the table with nearby stations.
+      self?.update(withStations: stations)
     }
-
-    let temp = table[fi]
-    let dir = (ti-fi) / abs(ti-fi)
-    stride(from: fi, to: ti, by: dir).forEach { i in
-      table[i] = table[i+dir]
-      updateIndices(at: i)
-    }
-    table[ti] = temp
-    updateIndices(at: ti)
   }
 
-  // MARK: Table View Data Source
+  func fetchArrivals(for station: MutableStation) -> SignalProducer<[Arrival], ProperError> {
+    // Query Timetable and update the table with its response
+    let call = Timetable.visits(for: station,
+                                occurring: .between(Date(), Date(timeIntervalSinceNow: 3600)),
+                                using: connection)
+      .on(value: { [weak self] arrivals in
+        self?.update(section: station, with: arrivals)
+      })
+    let delayedCall = SignalProducer<[Arrival], ProperError>.empty.delay(0.1, on: fetchScheduler).then(call)
+    // A producer that completes when the _first_ arrival departs (and we need to reload data):
+    let callUntilDeparture = delayedCall
+      .flatMap(.latest, transform: { arrivals in arrivals.first?.lifecycle.map({ (arrivals, $0) }) ?? .never })
+      .map({ arrivals, _ in arrivals })
+    // A producer that lazily calls `fetchArrivals`:
+    let fetch = SignalProducer<[Arrival], ProperError> { [weak self] observer, disposable in
+      // Once self is released, this producer completes.
+      disposable += self?.fetchArrivals(for: station).start(observer) ?? SignalProducer.empty.start(observer)
+    }
+    return callUntilDeparture.then(fetch)
+  }
 
+  private func update(section: MutableStation, with newArrivals: [Arrival]) {
+    let replacement = diffCalculator.sectionedValues.sectionsAndValues.map({ station, arrivals -> (MutableStation, [Arrival]) in
+      if station == section {
+        return (station, newArrivals)
+      } else {
+        return (station, arrivals)
+      }
+    })
+    
+    diffCalculator.sectionedValues = SectionedValues(replacement)
+  }
+
+  private func update(withStations stations: [MutableStation]) {
+    let knownArrivals: [MutableStation: [Arrival]] = diffCalculator.sectionedValues.sectionsAndValues.reduce(into: [:]) { (dict, tuple) in
+      let (station, arrivals) = tuple
+      dict[station] = arrivals
+    }
+    let replacement = stations.map({ station in (station, knownArrivals[station] ?? []) })
+    diffCalculator.sectionedValues = SectionedValues(replacement)
+  }
+}
+
+// MARK: Data access
+extension POITableDataSource {
+  func station(at sectionIndex: Int) -> MutableStation {
+    return diffCalculator.value(forSection: sectionIndex)
+  }
+
+  func index(of section: MutableStation) -> Int? {
+    return diffCalculator.sectionedValues.sectionsAndValues.index(where: { station, _ in station == section })
+  }
+
+  func arrival(at indexPath: IndexPath) -> Arrival {
+    return diffCalculator.value(atIndexPath: indexPath)
+  }
+
+  func arrivals(atSection index: Int) -> [Arrival] {
+    let (_, arrivals) =  diffCalculator.sectionedValues.sectionsAndValues[index]
+    return arrivals
+  }
+}
+
+extension POITableDataSource: UITableViewDataSource {
   func numberOfSections(in tableView: UITableView) -> Int {
-    return stations.count
+    return stations.value.count
   }
 
-  // Return the number of arrivals for each route on the each station of the section given.
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return arrivals[section].count
+    return diffCalculator.numberOfObjects(inSection: section)
   }
 
-  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath)
-    -> UITableViewCell
-  {
+  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "arrivalCell") as! ArrivalTableViewCell
-
-    //let station = stations.value[indexPath.section]
-    let arrival = arrivals[indexPath.section][indexPath.row]
-    // TODO - Apply route and arrival information to the view
+    let arrival = diffCalculator.value(atIndexPath: indexPath)
     cell.apply(arrival: arrival)
     return cell
   }

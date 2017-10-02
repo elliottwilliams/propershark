@@ -51,10 +51,6 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
     })
   }()
 
-  lazy var arrivalOps: SignalProducer<[POIViewModel.Op], ProperError> = {
-    return POIViewModel.chain(connection: self.connection, producer: self.stations.producer)
-  }()
-
   /// A producer for the device's location, which adds metadata used by the view into the signal. It is started when
   /// the view appears, but is interrupted if a static location is passed by `staticLocation`.
   let deviceLocation = Location.producer |> POIViewModel.distinctLocations
@@ -75,26 +71,18 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
   internal var connection: ConnectionType = Connection.cachedInstance
   internal var disposable = CompositeDisposable()
 
-  func apply(operations ops: [POIViewModel.Op]) {
-    tableController.modifyTable(with: ops)
-    mapController.modifyMap(with: ops)
-  }
-
   // MARK: Lifecycle
 
   private func loadMapController() {
     let onSelect: Action<MutableStation, (), NoError> = Action { [unowned self] station in
-      let section = self.tableController.dataSource.index(of: station)
-      let row = (self.tableController.dataSource.arrivals[section].isEmpty) ? NSNotFound : 0
-      self.tableController.tableView.scrollToRow(at: IndexPath(row: row, section: section),
-                                                 at: .top,
-                                                 animated: true)
+      self.tableController.scroll(to: station)
       return SignalProducer.empty
     }
 
     let mapController = POIMapViewController(center: point,
                                              zoom: zoom,
                                              routes: Property(routes),
+                                             stations: Property(stations),
                                              onSelect: onSelect,
                                              isUserLocation: Property(isUserLocation))
     addChildViewController(mapController)
@@ -105,7 +93,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
   }
 
   private func loadTableController() {
-    let tableController = POITableViewController(style: .plain, mapPoint: Property(point))
+    let tableController = POITableViewController(style: .plain, stations: Property(stations), mapPoint: Property(point))
     addChildViewController(tableController)
     stackView.addArrangedSubview(tableController.view)
     tableController.view.heightAnchor.constraint(equalTo: stackView.heightAnchor, multiplier: 0.6).isActive = true
@@ -156,16 +144,6 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
         self.isUserLocation.swap(isUserLocation)
       case let .failure(error):
         self.displayError(error)
-      }
-    }
-
-    // Update the table and map with nearby arrival operations.
-    disposable += arrivalOps.startWithResult { result in
-      switch result {
-      case let .failure(error):
-        self.displayError(error)
-      case let .success(ops):
-        self.apply(operations: ops)
       }
     }
   }

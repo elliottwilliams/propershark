@@ -28,6 +28,8 @@
 		26517F541F803FE7001710FD /* OverlayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26517F531F803FE7001710FD /* OverlayButton.swift */; };
 		26517F551F804643001710FD /* Argo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E0384F1D8DE9ED0006B265 /* Argo.framework */; };
 		26517F581F804659001710FD /* Runes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26C7FAB41ECC03B8006B7101 /* Runes.framework */; };
+		26517F5D1F81DACF001710FD /* POITableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26517F5C1F81DACF001710FD /* POITableDataSource.swift */; };
+		26517F5E1F8284FC001710FD /* ArrivalsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D7F81E7DF78300ABD701 /* ArrivalsViewModel.swift */; };
 		266111D21D51521500D8F46B /* UIColorDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111D11D51521500D8F46B /* UIColorDecodeTests.swift */; };
 		266111DD1D5378B500D8F46B /* NilConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111DC1D5378B500D8F46B /* NilConnection.swift */; };
 		266111DE1D5380D300D8F46B /* ConnectionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2612F9FE1D2CCAE5005103E3 /* ConnectionMock.swift */; };
@@ -58,7 +60,6 @@
 		26C7FB201ED16D6F006B7101 /* ArrivalsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A8D6011D484944000434F9 /* ArrivalsTableViewController.swift */; };
 		26C7FB211ED16D6F006B7101 /* RouteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE681B1D601D0B0031E534 /* RouteViewController.swift */; };
 		26C7FB221ED16D6F006B7101 /* StationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE681D1D612B810031E534 /* StationTableViewController.swift */; };
-		26C7FB231ED16D6F006B7101 /* POITableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D8021E7ED45A00ABD701 /* POITableDataSource.swift */; };
 		26C7FB241ED16D6F006B7101 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424B31BD2C1320035754F /* AppDelegate.swift */; };
 		26C7FB251ED16D6F006B7101 /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26CDF9581D7B344200E53F82 /* Box.swift */; };
 		26C7FB261ED16D6F006B7101 /* EventLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DBCF481D3FF59A00B22562 /* EventLog.swift */; };
@@ -86,7 +87,6 @@
 		26C7FB3D1ED16D6F006B7101 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264B2D2C1E228781007EE6D5 /* Date.swift */; };
 		26C7FB3E1ED16D6F006B7101 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B526D11E1C0AA700092705 /* Location.swift */; };
 		26C7FB3F1ED16D6F006B7101 /* Timetable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264B2D2A1E1EF5E4007EE6D5 /* Timetable.swift */; };
-		26C7FB401ED16D6F006B7101 /* ArrivalsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D7F81E7DF78300ABD701 /* ArrivalsViewModel.swift */; };
 		26C7FB411ED16D6F006B7101 /* SignalChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D7FC1E7DFAC200ABD701 /* SignalChain.swift */; };
 		26C7FB421ED16D6F006B7101 /* NearbyStationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D7FE1E7DFB7E00ABD701 /* NearbyStationsViewModel.swift */; };
 		26C7FB431ED16D6F006B7101 /* POIViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A0FEFF1E149AF200FF265A /* POIViewModel.swift */; };
@@ -184,6 +184,7 @@
 		2650ED9F1C41CFCC006CCD42 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		26517F531F803FE7001710FD /* OverlayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayButton.swift; sourceTree = "<group>"; };
 		26517F561F804645001710FD /* Argo.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Argo.framework.dSYM; path = Carthage/Build/iOS/Argo.framework.dSYM; sourceTree = "<group>"; };
+		26517F5C1F81DACF001710FD /* POITableDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = POITableDataSource.swift; sourceTree = "<group>"; };
 		266111D11D51521500D8F46B /* UIColorDecodeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColorDecodeTests.swift; sourceTree = "<group>"; };
 		266111D71D52EA6100D8F46B /* MutableModelTestSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableModelTestSpec.swift; sourceTree = "<group>"; };
 		266111DC1D5378B500D8F46B /* NilConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NilConnection.swift; sourceTree = "<group>"; };
@@ -202,7 +203,6 @@
 		2696D7FC1E7DFAC200ABD701 /* SignalChain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalChain.swift; sourceTree = "<group>"; };
 		2696D7FE1E7DFB7E00ABD701 /* NearbyStationsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NearbyStationsViewModel.swift; sourceTree = "<group>"; };
 		2696D8001E7E3B1D00ABD701 /* Badge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Badge.swift; sourceTree = "<group>"; };
-		2696D8021E7ED45A00ABD701 /* POITableDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = POITableDataSource.swift; sourceTree = "<group>"; };
 		2696D8051E7ED64D00ABD701 /* MKCircle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MKCircle.swift; sourceTree = "<group>"; };
 		2698CF001D8B8FC400E6174A /* RoutesCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RoutesCollectionViewCell.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		26A0FEFF1E149AF200FF265A /* POIViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = POIViewModel.swift; sourceTree = "<group>"; };
@@ -449,7 +449,7 @@
 		2696D8041E7ED45F00ABD701 /* Data Sources */ = {
 			isa = PBXGroup;
 			children = (
-				2696D8021E7ED45A00ABD701 /* POITableDataSource.swift */,
+				26517F5C1F81DACF001710FD /* POITableDataSource.swift */,
 			);
 			path = "Data Sources";
 			sourceTree = "<group>";
@@ -828,6 +828,7 @@
 				26C7FB431ED16D6F006B7101 /* POIViewModel.swift in Sources */,
 				26C7FB471ED16D6F006B7101 /* POIStationAnnotationView.swift in Sources */,
 				26C7FB3C1ED16D6F006B7101 /* RouteStop.swift in Sources */,
+				26517F5E1F8284FC001710FD /* ArrivalsViewModel.swift in Sources */,
 				26C7FB331ED16D6F006B7101 /* MutableRoute.swift in Sources */,
 				26C7FB1A1ED16D6F006B7101 /* LastEventCache.swift in Sources */,
 				26C7FB1D1ED16D6F006B7101 /* POITableViewController.swift in Sources */,
@@ -845,7 +846,6 @@
 				26E038821D8F94030006B265 /* Colours.swift in Sources */,
 				26C7FB241ED16D6F006B7101 /* AppDelegate.swift in Sources */,
 				26C7FB3B1ED16D6F006B7101 /* Point.swift in Sources */,
-				26C7FB231ED16D6F006B7101 /* POITableDataSource.swift in Sources */,
 				260586801F43F77400796399 /* ConfigProtocols.swift in Sources */,
 				26C7FB371ED16D6F006B7101 /* Arrival.swift in Sources */,
 				26517F541F803FE7001710FD /* OverlayButton.swift in Sources */,
@@ -862,6 +862,7 @@
 				26C7FB4C1ED16D6F006B7101 /* RailVehicle.swift in Sources */,
 				26C7FB4F1ED16D6F006B7101 /* StationTableViewCell.swift in Sources */,
 				260586841F43F97B00796399 /* SharedConfig.swift in Sources */,
+				26517F5D1F81DACF001710FD /* POITableDataSource.swift in Sources */,
 				26C7FB251ED16D6F006B7101 /* Box.swift in Sources */,
 				26C7FB4E1ED16D6F006B7101 /* BadgeViewLabel.swift in Sources */,
 				26C7FB301ED16D6F006B7101 /* MKCircle.swift in Sources */,
@@ -882,7 +883,6 @@
 				26C7FB211ED16D6F006B7101 /* RouteViewController.swift in Sources */,
 				26C7FB2C1ED16D6F006B7101 /* Array.swift in Sources */,
 				26C7FB2A1ED16D6F006B7101 /* ProperViewController.swift in Sources */,
-				26C7FB401ED16D6F006B7101 /* ArrivalsViewModel.swift in Sources */,
 				26C7FB271ED16D6F006B7101 /* Matchers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

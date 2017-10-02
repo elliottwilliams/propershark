@@ -11,20 +11,27 @@ import ReactiveSwift
 import Result
 import Curry
 import CoreLocation
+import Dwifft
 
 class POITableViewController: UITableViewController, ProperViewController {
   typealias Distance = CLLocationDistance
-
-  var mapPoint: Property<Point>
-  let dataSource = POITableDataSource()
-
-  internal var connection: ConnectionType = Connection.cachedInstance
-  internal var disposable = CompositeDisposable()
-
   static let headerViewHeight = CGFloat(55)
 
-  init(style: UITableViewStyle, mapPoint: Property<Point>) {
+  var mapPoint: Property<Point>
+  var connection: ConnectionType = Connection.cachedInstance
+  var disposable = CompositeDisposable()
+
+  fileprivate var headerDisposables: [UIView: Disposable] = [:]
+  fileprivate var headerBadges: [UIView: Badge] = [:]
+  fileprivate let stations: Property<[MutableStation]>
+
+  lazy var dataSource: POITableDataSource = {
+    return POITableDataSource(tableView: self.tableView, stations: Property(self.stations), connection: self.connection)
+  }()
+
+  init(style: UITableViewStyle, stations: Property<[MutableStation]>, mapPoint: Property<Point>) {
     self.mapPoint = mapPoint
+    self.stations = stations
     super.init(style: style)
 
     tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -39,61 +46,26 @@ class POITableViewController: UITableViewController, ProperViewController {
     fatalError("init(coder:) has not been implemented")
   }
 
-  /// Manipulates the table and data source with changes described by the table operations.
-  func modifyTable(with ops: [POIViewModel.Op]) {
-    // Iterate through `ops` and record changes made.
-    var sectionInsertions = IndexSet()
-    var sectionDeletions = IndexSet()
-    var rowInsertions = [IndexPath]()
-    var rowDeletions = [IndexPath]()
-
-    tableView.beginUpdates()
-    // Manipulate the data source for each operation.
-    for op in ops {
-      switch op {
-      case let .addStation(station, index: idx):
-        let badge = Badge(alphabetIndex: idx, seedForColor: station)
-        dataSource.insert(entry: (station, badge, []), at: idx)
-        sectionInsertions.insert(idx)
-
-      case let .addArrival(arrival, to: station):
-        let path = dataSource.indexPath(inserting: arrival, onto: station)
-        rowInsertions.append(path)
-
-      case let .deleteArrival(arrival, from: station):
-        guard let si = dataSource.stations.index(of: station),
-          dataSource.arrivals[si].index(of: arrival) != nil else {
-            NSLog("WARN: .deleteArrival received for an arrival that doesn't exist 😕")
-            continue
-        }
-        let path = dataSource.indexPath(deleting: arrival, from: station)
-        rowDeletions.append(path)
-
-      case let .deleteStation(station, at: idx):
-        dataSource.remove(station: station)
-        sectionDeletions.insert(idx)
-
-      case let .reorderStation(_, from: fi, to: ti):
-        dataSource.moveStation(from: fi, to: ti)
-        tableView.moveSection(fi, toSection: ti)
-      }
+  func scroll(to station: MutableStation) {
+    guard let index = dataSource.index(of: station) else {
+      return
     }
-
-    let deleted = sectionDeletions.subtracting(sectionInsertions)
-    let inserted = sectionInsertions.subtracting(sectionDeletions)
-    let reloaded = sectionDeletions.intersection(sectionInsertions)
-
-    // Apply changes to the table.
-    tableView.deleteRows(at: rowDeletions, with: .top)
-    tableView.deleteSections(deleted, with: .automatic)
-    tableView.insertSections(inserted, with: .automatic)
-    tableView.reloadSections(reloaded, with: .automatic)
-    tableView.insertRows(at: rowInsertions, with: .bottom)
-    tableView.endUpdates()
+    let row = dataSource.arrivals(atSection: index).isEmpty ? NSNotFound : 0
+    tableView.scrollToRow(at: IndexPath(row: row, section: index), at: .top, animated: true)
   }
 
-  // MARK: Lifecycle
+  fileprivate func resetBadgeIndices(startingFrom start: Int) {
+    for idx in stride(from: start, to: tableView.numberOfSections, by: 1) {
+      guard let view = tableView.headerView(forSection: idx) else {
+        continue
+      }
+      headerBadges[view]?.set(numericalIndex: idx)
+    }
+  }
+}
 
+// MARK: Lifecycle
+extension POITableViewController {
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
   }
@@ -103,8 +75,10 @@ class POITableViewController: UITableViewController, ProperViewController {
     disposable = .init()
     super.viewDidDisappear(animated)
   }
+}
 
-  // MARK: Table View Delegate
+// MARK: Table View Delegate
+extension POITableViewController {
   override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
     return POIViewModel.arrivalRowHeight
   }
@@ -118,15 +92,31 @@ class POITableViewController: UITableViewController, ProperViewController {
   override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
     let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "stationHeader")
       as! POIStationHeaderFooterView
-    let (station, badge, _) = dataSource.table[section]
+    let station = dataSource.station(at: section)
+    let badge = Badge(alphabetIndex: section, seedForColor: station)
     let position = station.position.producer.skipNil()
     let distance = POIViewModel.distanceString(mapPoint.producer.combineLatest(with: position))
 
     header.apply(station: station, badge: badge, distance: distance)
+
+    headerBadges[header] = badge
     return header
   }
 
   override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
     return POITableViewController.headerViewHeight
+  }
+
+  override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+    resetBadgeIndices(startingFrom: section+1)
+    let station = dataSource.station(at: section)
+    let disposable = dataSource.fetchArrivals(for: station).startWithFailed(displayError(_:))
+    headerDisposables[view] = disposable
+  }
+
+  override func tableView(_ tableView: UITableView, didEndDisplayingHeaderView view: UIView, forSection section: Int) {
+    headerBadges[view] = nil
+    resetBadgeIndices(startingFrom: section+1)
+    headerDisposables.removeValue(forKey: view)?.dispose()
   }
 }

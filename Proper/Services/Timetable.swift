@@ -16,7 +16,6 @@ import Runes
 struct Timetable {
   typealias ArrivalSP = SignalProducer<Arrival, ProperError>
   typealias ArrivalListSP = SignalProducer<[Arrival], ProperError>
-  typealias MoreCont = () -> ()
 
   static let defaultLimit = 5
   static var formatter: DateFormatter = {
@@ -37,21 +36,16 @@ struct Timetable {
   ///               (`.between(_,_)`).
   ///     - connection: WAMP connection that will be used to query Timetable.
   ///     - limit: Restrictions on the number of arrivals and how far ahead or behind in time they should be sent.
-  ///              Initially, up to `limit.count` arrivals will be "bursted". Afterwards, one arrival will be sent
-  ///              at a time.
-  /// - returns: A producer of arrivals and a continuation function to get more arrivals.
-  ///
-  /// At first, `initialLimit.count` many arrivals are sent at once, followed by a new arrival every time
-  /// an earlier arrival departs.
+  /// - returns: A producer which sends up to one value of `[Arrival]` and completes.
   static func visits(for route: MutableRoute, at station: MutableStation, occurring timing: Timing,
                      using connection: ConnectionType, initialLimit limit: Int = defaultLimit) ->
-    SignalProducer<(arrival: Arrival, more: MoreCont), ProperError>
+    SignalProducer<[Arrival], ProperError>
   {
     return _visits(route: route,
                    station: station,
                    timing: timing,
                    connection: connection,
-                   initialLimit: limit)
+                   limit: limit)
   }
 
   /// Receive arrival events for vehicles scheduled to arrive at `station`.
@@ -61,73 +55,35 @@ struct Timetable {
   ///               (`.between(_,_)`).
   ///     - connection: WAMP connection that will be used to query Timetable.
   ///     - limit: Restrictions on the number of arrivals and how far ahead or behind in time they should be sent.
-  ///              Initially, up to `limit.count` arrivals will be "bursted". Afterwards, one arrival will be sent
-  ///              at a time.
-  /// - returns: A producer of arrivals and a continuation function to get more arrivals.
-  ///
-  /// At first, `initialLimit.count` many arrivals are sent at once, followed by a new arrival every time
-  /// an earlier arrival departs.
+  /// - returns: A producer which sends up to one value of `[Arrival]` and completes.
   static func visits(for station: MutableStation, occurring timing: Timing, using connection: ConnectionType,
                      initialLimit limit: Int = defaultLimit) ->
-    SignalProducer<(arrival: Arrival, more: MoreCont), ProperError>
+    SignalProducer<[Arrival], ProperError>
   {
     return _visits(route: nil,
                    station: station,
                    timing: timing,
                    connection: connection,
-                   initialLimit: limit)
+                   limit: limit)
   }
 
 
   // MARK: - Private helpers
-  private typealias ArrivalMoreSP = SignalProducer<(arrival: Arrival, more: MoreCont), ProperError>
-  private typealias ArrivalListMoreSP = SignalProducer<(arrivals: [Arrival], more: MoreCont), ProperError>
 
-  /// RPC-agnostic producer of visits that searches beginning at `timing` and produces arrivals until
-  /// interruption or when an outer bound of `timing` is hit.
   private static func _visits(route: MutableRoute?,
                               station: MutableStation,
                               timing: Timing,
                               connection: ConnectionType,
-                              initialLimit: Int = defaultLimit) -> ArrivalMoreSP
+                              limit: Int = defaultLimit) -> ArrivalListSP
   {
-    let visits = ArrivalListMoreSP { observer, disposable in
-      var advanced = timing
-      // TODO: Remove the `timing` parameter and just mutate `advanced`.
-      func send(timing: Timing, count: Int) {
-        // Call Timetable and retrieve arrivals.
-        let proc = rpc(from: timing, route: route != nil)
-        let args: WampArgs = [route?.identifier, station.identifier].flatMap({ $0 })
-          + timestamps(for: timing) as [Any]
-          + [count] as [Any]
-        NSLog("[Timetable] call args: \(args)")
-        let results = connection.call(proc, with: args)
-          |> decodeArrivalTimes(connection: connection)
-          |> { $0.on(value: { advanced = timing.advancedBy(arrivals: $0) }) }
-          |> { $0.map({ arrivals -> (arrivals: [Arrival], more: MoreCont) in
-            // Set up a continuation function that will forward the next arrival when called.
-            let next = { send(timing: advanced, count: 1) }
-            return (arrivals, next)
-          })}
-          |> log
-        disposable += results.start { event in
-          // Keep the signal open by not sending `completed` messages. Future arrivals resulting from a `more`
-          // call will be able to flow through the signal.
-          switch event {
-          case .value(let arrival):   observer.send(value: arrival)
-          case .completed:            break
-          case .failed(let error):    observer.send(error: error)
-          case .interrupted:          observer.sendInterrupted()
-          }
-        }
-      }
-
-      // Get and forward the first set of arrivals for this visit query.
-      send(timing: timing, count: initialLimit)
-    }
-    return visits.flatMap(.merge, transform: { arrivals, more -> ArrivalMoreSP in
-      return SignalProducer(arrivals).map({ ($0, more) })
-    })
+    let proc = rpc(from: timing, route: route != nil)
+    let args: WampArgs = [route?.identifier, station.identifier].flatMap({ $0 })
+      + timestamps(for: timing) as [Any]
+      + [limit] as [Any]
+    NSLog("[Timetable] call args: \(args)")
+    return connection.call(proc, with: args)
+      |> decodeArrivalTimes(connection: connection)
+      |> log
   }
 
   private static func decodeArrivalTimes(connection: ConnectionType) ->
