@@ -84,6 +84,12 @@ struct NearbyStationsViewModel: SignalChain {
     })
   }
 
+  static func limit(producer: SignalProducer<[MutableStation], ProperError>) ->
+    SignalProducer<[MutableStation], ProperError>
+  {
+    return producer.map({ Array($0.prefix(15)) })
+  }
+
   static func orderedList(producer: SignalProducer<[MutableStation: Distance], ProperError>) ->
     SignalProducer<[(MutableStation, Distance)], ProperError>
   {
@@ -98,9 +104,11 @@ struct NearbyStationsViewModel: SignalChain {
   static func chain(connection: ConnectionType, producer: SignalProducer<(Point, SearchRadius), ProperError>) ->
     SignalProducer<[MutableStation], ProperError>
   {
+    let worker = QueueScheduler(qos: .userInitiated, name: "NearbyStationsViewModel worker")
     let producer = SignalProducer.combineLatest(getStations(connection: connection),
-                                                producer |> searchArea)
+                                                producer |> searchArea).observe(on: worker)
       |> curry(filterNearby)(connection)
+      |> limit
     return producer.logEvents(identifier: "NearbyStationsViewModel.chain", logger: logSignalEvent)
   }
 }

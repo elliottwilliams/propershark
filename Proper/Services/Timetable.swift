@@ -100,6 +100,7 @@ struct Timetable {
         let args: WampArgs = [route?.identifier, station.identifier].flatMap({ $0 })
           + timestamps(for: timing) as [Any]
           + [count] as [Any]
+        NSLog("[Timetable] call args: \(args)")
         let results = connection.call(proc, with: args)
           |> decodeArrivalTimes(connection: connection)
           |> { $0.on(value: { advanced = timing.advancedBy(arrivals: $0) }) }
@@ -238,7 +239,7 @@ extension Timetable {
     struct Meta: Argo.Decodable {
       let realtime: Bool
       static func decode(_ json: JSON) -> Decoded<Timetable.Response.Meta> {
-        return self.init <^> json <| "realtime"
+        return self.init <^> (json <| "realtime").or(.success(false))
       }
     }
 
@@ -253,7 +254,7 @@ extension Timetable {
           <*> Date.decode(args[1])
           <*> Route.decode(args[2])
           <*> Optional<String>.decode(args[3])
-          <*> Meta.decode(args[4])
+          <*> Meta.decode(args[safe: 4] ?? JSON.null)
       })
     }
     func makeArrival(using connection: ConnectionType) throws -> Arrival {

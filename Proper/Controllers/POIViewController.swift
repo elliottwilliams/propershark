@@ -130,7 +130,8 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
       bar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
     }
 
-    let searchProducer = point.producer.combineLatest(with: zoom.producer.map({ $0 * 2 })) // widen search radius
+    let searchProducer = point.producer.combineLatest(with: zoom.producer.map({ $0 * 1.3 })) // widen search radius
+      .observe(on: searchScheduler)
       .throttle(0.5, on: searchScheduler)
       .logEvents(identifier: "NearbyStationsViewModel.chain input",
                  logger: logSignalEvent)
@@ -139,6 +140,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
     disposable += NearbyStationsViewModel.chain(connection: connection, producer: searchProducer)
       .observe(on: UIScheduler())
       .startWithResult() { result in
+        assert(Thread.isMainThread)
         switch result {
         case let .success(stations):    self.stations.swap(stations)
         case let .failure(error):       self.displayError(error)
