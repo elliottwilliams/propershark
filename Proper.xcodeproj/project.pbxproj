@@ -25,6 +25,9 @@
 		2644B8A11E7F74F8008A0A4D /* Montgomery Station.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 2644B89D1E7F74F8008A0A4D /* Montgomery Station.gpx */; };
 		264754901D551411000F0831 /* ArrivalsTableViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2647548F1D551411000F0831 /* ArrivalsTableViewControllerTests.swift */; };
 		2647825E1C2F7B34009D9AD0 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */; };
+		26517F541F803FE7001710FD /* OverlayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26517F531F803FE7001710FD /* OverlayButton.swift */; };
+		26517F551F804643001710FD /* Argo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E0384F1D8DE9ED0006B265 /* Argo.framework */; };
+		26517F581F804659001710FD /* Runes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26C7FAB41ECC03B8006B7101 /* Runes.framework */; };
 		266111D21D51521500D8F46B /* UIColorDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111D11D51521500D8F46B /* UIColorDecodeTests.swift */; };
 		266111DD1D5378B500D8F46B /* NilConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111DC1D5378B500D8F46B /* NilConnection.swift */; };
 		266111DE1D5380D300D8F46B /* ConnectionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2612F9FE1D2CCAE5005103E3 /* ConnectionMock.swift */; };
@@ -43,7 +46,6 @@
 		26AE68221D62AD250031E534 /* CanonicalRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AE68211D62AD250031E534 /* CanonicalRouteTests.swift */; };
 		26C3C21B1D542ED3008E2A46 /* ConnectionMockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3C21A1D542ED3008E2A46 /* ConnectionMockTests.swift */; };
 		26C3C21C1D543CFF008E2A46 /* MutableModelTestSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111D71D52EA6100D8F46B /* MutableModelTestSpec.swift */; };
-		26C7FAB51ECC03B8006B7101 /* Runes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26C7FAB41ECC03B8006B7101 /* Runes.framework */; };
 		26C7FB171ED16D6F006B7101 /* CachedConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ED26EC1E11763C007FB0F8 /* CachedConnection.swift */; };
 		26C7FB181ED16D6F006B7101 /* ConnectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ED26ED1E11763C007FB0F8 /* ConnectionType.swift */; };
 		26C7FB191ED16D6F006B7101 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B3DC551D170BAE001E29AA /* Connection.swift */; };
@@ -127,7 +129,6 @@
 		26E964FA1D56396F00F83797 /* MutableModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E964F91D56396F00F83797 /* MutableModelTests.swift */; };
 		26ED26F51E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26ED26F41E11805E007FB0F8 /* RoutesCollectionBadgeCell.xib */; };
 		26F034931EE5308D00DD145F /* Signal+xctAssertValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26F034921EE5308D00DD145F /* Signal+xctAssertValues.swift */; };
-		26F7ED101EC900910017AEDA /* Argo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E0384F1D8DE9ED0006B265 /* Argo.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -181,6 +182,8 @@
 		264B2D2A1E1EF5E4007EE6D5 /* Timetable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Timetable.swift; sourceTree = "<group>"; };
 		264B2D2C1E228781007EE6D5 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		2650ED9F1C41CFCC006CCD42 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
+		26517F531F803FE7001710FD /* OverlayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayButton.swift; sourceTree = "<group>"; };
+		26517F561F804645001710FD /* Argo.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Argo.framework.dSYM; path = Carthage/Build/iOS/Argo.framework.dSYM; sourceTree = "<group>"; };
 		266111D11D51521500D8F46B /* UIColorDecodeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColorDecodeTests.swift; sourceTree = "<group>"; };
 		266111D71D52EA6100D8F46B /* MutableModelTestSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableModelTestSpec.swift; sourceTree = "<group>"; };
 		266111DC1D5378B500D8F46B /* NilConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NilConnection.swift; sourceTree = "<group>"; };
@@ -284,11 +287,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				26517F581F804659001710FD /* Runes.framework in Frameworks */,
+				26517F551F804643001710FD /* Argo.framework in Frameworks */,
 				26C7FB561ED16DCE006B7101 /* ReactiveSwift.framework in Frameworks */,
 				2647825E1C2F7B34009D9AD0 /* CoreLocation.framework in Frameworks */,
 				26AC8BB61BD3503300AA0001 /* QuartzCore.framework in Frameworks */,
 				26A424E21BD2C7EE0035754F /* MapKit.framework in Frameworks */,
-				26F7ED101EC900910017AEDA /* Argo.framework in Frameworks */,
 				26E038561D8DE9ED0006B265 /* Curry.framework in Frameworks */,
 				26E038571D8DE9ED0006B265 /* Dwifft.framework in Frameworks */,
 				26E038581D8DE9ED0006B265 /* MDWamp.framework in Frameworks */,
@@ -298,7 +302,6 @@
 				26E038891D8F95E30006B265 /* GHODictionary.framework in Frameworks */,
 				26E0388A1D8F95E30006B265 /* MPMessagePack.framework in Frameworks */,
 				26E0388B1D8F95E30006B265 /* SocketRocket.framework in Frameworks */,
-				26C7FAB51ECC03B8006B7101 /* Runes.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -338,6 +341,7 @@
 		264782611C309F4C009D9AD0 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				26517F531F803FE7001710FD /* OverlayButton.swift */,
 				2696D8001E7E3B1D00ABD701 /* Badge.swift */,
 				267725C51E1AACF200274042 /* POIStationHeaderFooterView.swift */,
 				26ADB0EA1E187151008F49FF /* POIStationAnnotationView.swift */,
@@ -603,6 +607,7 @@
 		E4C42E7C67138C2FBA725195 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				26517F561F804645001710FD /* Argo.framework.dSYM */,
 				26E0384F1D8DE9ED0006B265 /* Argo.framework */,
 				26E038841D8F95E20006B265 /* CocoaAsyncSocket.framework */,
 				2647825D1C2F7B34009D9AD0 /* CoreLocation.framework */,
@@ -843,6 +848,7 @@
 				26C7FB231ED16D6F006B7101 /* POITableDataSource.swift in Sources */,
 				260586801F43F77400796399 /* ConfigProtocols.swift in Sources */,
 				26C7FB371ED16D6F006B7101 /* Arrival.swift in Sources */,
+				26517F541F803FE7001710FD /* OverlayButton.swift in Sources */,
 				26C7FB2B1ED16D6F006B7101 /* PSLocationManagerDelegate.swift in Sources */,
 				26C7FB521ED16D6F006B7101 /* TransitLabel.swift in Sources */,
 				26C7FB321ED16D6F006B7101 /* Station.swift in Sources */,
