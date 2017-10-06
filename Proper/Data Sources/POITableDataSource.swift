@@ -16,10 +16,12 @@ class POITableDataSource: NSObject {
   let diffCalculator: TableViewDiffCalculator<MutableStation, Arrival>
   let connection: ConnectionType
 
+  fileprivate let tableView: UITableView
   private let disposable = ScopedDisposable(CompositeDisposable())
   private let fetchScheduler = QueueScheduler(qos: .userInitiated, name: "POITableDataSource.fetchScheduler")
 
   init(tableView: UITableView, stations: Property<[MutableStation]>, connection: ConnectionType) {
+    self.tableView = tableView
     self.stations = stations
     self.diffCalculator = .init(tableView: tableView)
     self.connection = connection
@@ -71,6 +73,22 @@ class POITableDataSource: NSObject {
     }
     let replacement = stations.map({ station in (station, knownArrivals[station] ?? []) })
     diffCalculator.sectionedValues = SectionedValues(replacement)
+    for idx in stations.indices {
+      colorHeader(at: idx, with: ColorBrewer.purpleRed)
+    }
+  }
+
+  private func colorHeader(at idx: Int, with scheme: ColorBrewer) {
+    guard let header = tableView.headerView(forSection: idx) as? POIStationHeaderFooterView else {
+      return
+    }
+    header.color = colorForHeader(at: idx, with: scheme)
+  }
+
+  func colorForHeader(at idx: Int, with scheme: ColorBrewer) -> UIColor {
+    let idx = CGFloat(idx)
+    let n = CGFloat(numberOfSections(in: tableView))
+    return scheme.interpolatedColor(at: CGFloat(1).nextDown - (idx / n))
   }
 }
 
@@ -94,6 +112,7 @@ extension POITableDataSource {
   }
 }
 
+// MARK: UITableViewDataSource
 extension POITableDataSource: UITableViewDataSource {
   func numberOfSections(in tableView: UITableView) -> Int {
     return stations.value.count

@@ -12,7 +12,7 @@ import ReactiveSwift
 import Result
 @testable import Proper
 
-extension Decodable where Self.DecodedType == Self {
+extension Argo.Decodable where Self.DecodedType == Self {
   /// Look up a decoded model fixture for `identifier`.
   static func fixture(id: String) -> SignalProducer<Self, NoError> {
     return rawFixture(id: id).map { Argo.decode($0) as Self! }

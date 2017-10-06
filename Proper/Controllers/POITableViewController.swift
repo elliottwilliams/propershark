@@ -53,15 +53,6 @@ class POITableViewController: UITableViewController, ProperViewController {
     let row = dataSource.arrivals(atSection: index).isEmpty ? NSNotFound : 0
     tableView.scrollToRow(at: IndexPath(row: row, section: index), at: .top, animated: true)
   }
-
-  fileprivate func resetBadgeIndices(startingFrom start: Int) {
-    for idx in stride(from: start, to: tableView.numberOfSections, by: 1) {
-      guard let view = tableView.headerView(forSection: idx) else {
-        continue
-      }
-      headerBadges[view]?.set(numericalIndex: idx)
-    }
-  }
 }
 
 // MARK: Lifecycle
@@ -93,13 +84,11 @@ extension POITableViewController {
     let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "stationHeader")
       as! POIStationHeaderFooterView
     let station = dataSource.station(at: section)
-    let badge = Badge(alphabetIndex: section, seedForColor: station)
     let position = station.position.producer.skipNil()
     let distance = POIViewModel.distanceString(mapPoint.producer.combineLatest(with: position))
 
-    header.apply(station: station, badge: badge, distance: distance)
-
-    headerBadges[header] = badge
+    header.apply(station: station, distance: distance)
+    header.color = dataSource.colorForHeader(at: section, with: ColorBrewer.purpleRed)
     return header
   }
 
@@ -108,15 +97,12 @@ extension POITableViewController {
   }
 
   override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-    resetBadgeIndices(startingFrom: section+1)
     let station = dataSource.station(at: section)
     let disposable = dataSource.fetchArrivals(for: station).startWithFailed(displayError(_:))
     headerDisposables[view] = disposable
   }
 
   override func tableView(_ tableView: UITableView, didEndDisplayingHeaderView view: UIView, forSection section: Int) {
-    headerBadges[view] = nil
-    resetBadgeIndices(startingFrom: section+1)
     headerDisposables.removeValue(forKey: view)?.dispose()
   }
 }

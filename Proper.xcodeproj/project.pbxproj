@@ -11,7 +11,6 @@
 		260586821F43F92400796399 /* BartConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260586811F43F92400796399 /* BartConfig.swift */; };
 		260586841F43F97B00796399 /* SharedConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260586831F43F97B00796399 /* SharedConfig.swift */; };
 		260586861F43FDF900796399 /* ConfigSwitcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260586851F43FDF900796399 /* ConfigSwitcher.swift */; };
-		261035F61E8DCDA500364D20 /* TimetableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 261035F51E8DCDA500364D20 /* TimetableTests.swift */; };
 		261035F81E8DD3F300364D20 /* timetable.visits_between.BUS215.json in Resources */ = {isa = PBXBuildFile; fileRef = 261035F71E8DD3F300364D20 /* timetable.visits_between.BUS215.json */; };
 		2612B5271D50490500BF671D /* ModelDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2612B5261D50490500BF671D /* ModelDecodeTests.swift */; };
 		2612B52C1D50513600BF671D /* routes.4B.json in Resources */ = {isa = PBXBuildFile; fileRef = 2612B5291D50513600BF671D /* routes.4B.json */; };
@@ -30,6 +29,11 @@
 		26517F581F804659001710FD /* Runes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26C7FAB41ECC03B8006B7101 /* Runes.framework */; };
 		26517F5D1F81DACF001710FD /* POITableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26517F5C1F81DACF001710FD /* POITableDataSource.swift */; };
 		26517F5E1F8284FC001710FD /* ArrivalsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D7F81E7DF78300ABD701 /* ArrivalsViewModel.swift */; };
+		26517F601F82F7F8001710FD /* ColorBrewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26517F5F1F82F7F8001710FD /* ColorBrewer.swift */; };
+		26518DA21F848D0A0085D7DB /* Interpolation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26518DA11F848D0A0085D7DB /* Interpolation.swift */; };
+		26518DA41F85536D0085D7DB /* InterpolationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26518DA31F85536D0085D7DB /* InterpolationTests.swift */; };
+		26518DA51F8554260085D7DB /* Argo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26E0384F1D8DE9ED0006B265 /* Argo.framework */; };
+		2655E48E1F86AA17008A1E16 /* AgencyTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2655E48D1F86AA17008A1E16 /* AgencyTableViewController.swift */; };
 		266111D21D51521500D8F46B /* UIColorDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111D11D51521500D8F46B /* UIColorDecodeTests.swift */; };
 		266111DD1D5378B500D8F46B /* NilConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266111DC1D5378B500D8F46B /* NilConnection.swift */; };
 		266111DE1D5380D300D8F46B /* ConnectionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2612F9FE1D2CCAE5005103E3 /* ConnectionMock.swift */; };
@@ -185,6 +189,10 @@
 		26517F531F803FE7001710FD /* OverlayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayButton.swift; sourceTree = "<group>"; };
 		26517F561F804645001710FD /* Argo.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Argo.framework.dSYM; path = Carthage/Build/iOS/Argo.framework.dSYM; sourceTree = "<group>"; };
 		26517F5C1F81DACF001710FD /* POITableDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = POITableDataSource.swift; sourceTree = "<group>"; };
+		26517F5F1F82F7F8001710FD /* ColorBrewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorBrewer.swift; sourceTree = "<group>"; };
+		26518DA11F848D0A0085D7DB /* Interpolation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interpolation.swift; sourceTree = "<group>"; };
+		26518DA31F85536D0085D7DB /* InterpolationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterpolationTests.swift; sourceTree = "<group>"; };
+		2655E48D1F86AA17008A1E16 /* AgencyTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgencyTableViewController.swift; sourceTree = "<group>"; };
 		266111D11D51521500D8F46B /* UIColorDecodeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColorDecodeTests.swift; sourceTree = "<group>"; };
 		266111D71D52EA6100D8F46B /* MutableModelTestSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableModelTestSpec.swift; sourceTree = "<group>"; };
 		266111DC1D5378B500D8F46B /* NilConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NilConnection.swift; sourceTree = "<group>"; };
@@ -309,6 +317,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				26518DA51F8554260085D7DB /* Argo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -365,6 +374,7 @@
 		264782621C309F7A009D9AD0 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				2655E48D1F86AA17008A1E16 /* AgencyTableViewController.swift */,
 				26D6B1FC1EDD03C70033DAB9 /* POIMapViewController.swift */,
 				26E7B5441DAFC0AD00AE50E1 /* POIViewController.swift */,
 				263D36361DB2784700FC7FF5 /* POITableViewController.swift */,
@@ -395,6 +405,8 @@
 		264782651C309FB9009D9AD0 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				26517F5F1F82F7F8001710FD /* ColorBrewer.swift */,
+				26518DA11F848D0A0085D7DB /* Interpolation.swift */,
 				26A424B31BD2C1320035754F /* AppDelegate.swift */,
 				26CDF9581D7B344200E53F82 /* Box.swift */,
 				26DBCF481D3FF59A00B22562 /* EventLog.swift */,
@@ -527,6 +539,7 @@
 				266111D91D52EB2300D8F46B /* Fixtures */,
 				26E964FB1D58DFBC00F83797 /* Specs */,
 				261035F51E8DCDA500364D20 /* TimetableTests.swift */,
+				26518DA31F85536D0085D7DB /* InterpolationTests.swift */,
 			);
 			path = ProperTests;
 			sourceTree = "<group>";
@@ -820,6 +833,7 @@
 				26C7FB441ED16D6F006B7101 /* RoutesCollectionViewModel.swift in Sources */,
 				26C7FB311ED16D6F006B7101 /* Route.swift in Sources */,
 				264350A51F2BAE7900CD1F98 /* MKCoordinateRegion.swift in Sources */,
+				26518DA21F848D0A0085D7DB /* Interpolation.swift in Sources */,
 				26C7FB281ED16D6F006B7101 /* Pipe.swift in Sources */,
 				26C7FB4A1ED16D6F006B7101 /* ArrivalTableViewCell.swift in Sources */,
 				260586821F43F92400796399 /* BartConfig.swift in Sources */,
@@ -830,6 +844,7 @@
 				26C7FB3C1ED16D6F006B7101 /* RouteStop.swift in Sources */,
 				26517F5E1F8284FC001710FD /* ArrivalsViewModel.swift in Sources */,
 				26C7FB331ED16D6F006B7101 /* MutableRoute.swift in Sources */,
+				2655E48E1F86AA17008A1E16 /* AgencyTableViewController.swift in Sources */,
 				26C7FB1A1ED16D6F006B7101 /* LastEventCache.swift in Sources */,
 				26C7FB1D1ED16D6F006B7101 /* POITableViewController.swift in Sources */,
 				26C7FB3F1ED16D6F006B7101 /* Timetable.swift in Sources */,
@@ -843,6 +858,7 @@
 				26C7FB351ED16D6F006B7101 /* MutableStation.swift in Sources */,
 				26C7FB461ED16D6F006B7101 /* POIStationHeaderFooterView.swift in Sources */,
 				26C7FB2E1ED16D6F006B7101 /* UIColor.swift in Sources */,
+				26517F601F82F7F8001710FD /* ColorBrewer.swift in Sources */,
 				26E038821D8F94030006B265 /* Colours.swift in Sources */,
 				26C7FB241ED16D6F006B7101 /* AppDelegate.swift in Sources */,
 				26C7FB3B1ED16D6F006B7101 /* Point.swift in Sources */,
@@ -897,6 +913,7 @@
 				264754901D551411000F0831 /* ArrivalsTableViewControllerTests.swift in Sources */,
 				26E964FA1D56396F00F83797 /* MutableModelTests.swift in Sources */,
 				26F034931EE5308D00DD145F /* Signal+xctAssertValues.swift in Sources */,
+				26518DA41F85536D0085D7DB /* InterpolationTests.swift in Sources */,
 				26CDF95B1D7E58CD00E53F82 /* TestError.swift in Sources */,
 				266111DE1D5380D300D8F46B /* ConnectionMock.swift in Sources */,
 				2635DB6E1C3CB15200EB58F5 /* TransitLabelTests.swift in Sources */,
@@ -908,7 +925,6 @@
 				26E964F41D56382300F83797 /* MutableStationTests.swift in Sources */,
 				26E964F61D56386000F83797 /* MutableRouteTests.swift in Sources */,
 				2612B5271D50490500BF671D /* ModelDecodeTests.swift in Sources */,
-				261035F61E8DCDA500364D20 /* TimetableTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1096,6 +1112,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = ProperTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -1110,6 +1130,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = ProperTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
