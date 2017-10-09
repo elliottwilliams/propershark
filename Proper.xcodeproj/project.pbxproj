@@ -96,7 +96,6 @@
 		26C7FB441ED16D6F006B7101 /* RoutesCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A0FF001E149AF200FF265A /* RoutesCollectionViewModel.swift */; };
 		26C7FB451ED16D6F006B7101 /* Badge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2696D8001E7E3B1D00ABD701 /* Badge.swift */; };
 		26C7FB461ED16D6F006B7101 /* POIStationHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267725C51E1AACF200274042 /* POIStationHeaderFooterView.swift */; };
-		26C7FB471ED16D6F006B7101 /* POIStationAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ADB0EA1E187151008F49FF /* POIStationAnnotationView.swift */; };
 		26C7FB481ED16D6F006B7101 /* POIStationAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ADB0E61E186A9D008F49FF /* POIStationAnnotation.swift */; };
 		26C7FB491ED16D6F006B7101 /* StationUpcomingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ED26F21E117988007FB0F8 /* StationUpcomingTableViewCell.swift */; };
 		26C7FB4A1ED16D6F006B7101 /* ArrivalTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A424E31BD2D3F20035754F /* ArrivalTableViewCell.swift */; };
@@ -839,7 +838,6 @@
 				26C7FB191ED16D6F006B7101 /* Connection.swift in Sources */,
 				26C7FB411ED16D6F006B7101 /* SignalChain.swift in Sources */,
 				26C7FB431ED16D6F006B7101 /* POIViewModel.swift in Sources */,
-				26C7FB471ED16D6F006B7101 /* POIStationAnnotationView.swift in Sources */,
 				26C7FB3C1ED16D6F006B7101 /* RouteStop.swift in Sources */,
 				26517F5E1F8284FC001710FD /* ArrivalsViewModel.swift in Sources */,
 				26C7FB331ED16D6F006B7101 /* MutableRoute.swift in Sources */,
@@ -1011,7 +1009,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = Proper;
@@ -1053,7 +1051,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = Proper;
 				SDKROOT = iphoneos;
@@ -1074,7 +1072,7 @@
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				INFOPLIST_FILE = "$(SRCROOT)/Proper/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = us.transio.Proper;
@@ -1096,7 +1094,7 @@
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Proper/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = us.transio.Proper;
 				PRODUCT_NAME = Proper;

@@ -27,6 +27,8 @@ class POIMapViewController: UIViewController, ProperViewController {
   let isUserLocation: Property<Bool>
   var staticCenter: MKPointAnnotation? = nil
 
+  fileprivate var annotationForView = NSMapTable<MKAnnotationView, POIStationAnnotation>()
+  fileprivate var annotationForStation = [MutableStation: POIStationAnnotation]()
   fileprivate var polylines = [MutableRoute: MKPolyline]()
   fileprivate var routeForPolyline = [MKPolyline: MutableRoute]()
   fileprivate let updateRegionLock = NSLock()
@@ -103,8 +105,8 @@ class POIMapViewController: UIViewController, ProperViewController {
       let diff = Dwifft.diff(prev, next)
       for step in diff {
         switch step {
-        case let .insert(idx, station):
-          self.addAnnotation(for: station, at: idx)
+        case let .insert(_, station):
+          self.addAnnotation(for: station)
         case let .delete(_, station):
           self.deleteAnnotations(for: station)
         }
@@ -151,54 +153,21 @@ class POIMapViewController: UIViewController, ProperViewController {
     }).map({ _, _ in () })
   }
 
-  func annotations(for station: MutableStation) -> [POIStationAnnotation] {
-    return self.map.annotations.flatMap({ $0 as? POIStationAnnotation })
-      .filter({ $0.station == station })
-  }
-  func stations(within range: CountableClosedRange<Int>) -> [POIStationAnnotation] {
-    return map.annotations.flatMap({ ($0 as? POIStationAnnotation) })
-      .filter({ range.contains($0.index) })
-  }
-  func stations(from idx: Int) -> [POIStationAnnotation] {
-    return map.annotations.flatMap({ ($0 as? POIStationAnnotation) })
-      .filter({ $0.index >= idx })
-  }
-
-  func addAnnotation(for station: MutableStation, at idx: Int) {
+  func addAnnotation(for station: MutableStation) {
     guard let position = station.position.value else {
       return
     }
     let distanceString = POIViewModel.distanceString(self.center.producer.map({ ($0, position) }))
     let annotation = POIStationAnnotation(station: station,
                                           locatedAt: position,
-                                          index: idx,
                                           distance: distanceString)
-    stations(from: idx).forEach { $0.index += 1 }
     map.addAnnotation(annotation)
+    annotationForStation[station] = annotation
   }
 
   func deleteAnnotations(for station: MutableStation) {
-    let annotations = self.annotations(for: station)
-    let idx = annotations.min(by: { $0.index < $1.index }).map({ $0.index })!
-    map.removeAnnotations(annotations)
-    self.stations(from: idx+1).forEach { $0.index -= 1 }
-  }
-
-  func reorderAnnotations(withIndex fi: Int, to ti: Int) {
-    if fi < ti {
-      self.stations(within: fi...ti).forEach { annotation in
-        switch annotation.index {
-        case fi: annotation.index = ti
-        case _:  annotation.index -= 1
-        }
-      }
-    } else {
-      self.stations(within: ti...fi).forEach { annotation in
-        switch annotation.index {
-        case fi: annotation.index = ti
-        case _:  annotation.index += 1
-        }
-      }
+    if let annotation = annotationForStation.removeValue(forKey: station) {
+      map.removeAnnotation(annotation)
     }
   }
 }
@@ -207,10 +176,9 @@ class POIMapViewController: UIViewController, ProperViewController {
 extension POIMapViewController: MKMapViewDelegate {
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
     if let annotation = annotation as? POIStationAnnotation {
-      let view =
-        mapView.dequeueReusableAnnotationView(withIdentifier: "stationAnnotation") as? POIStationAnnotationView
-          ?? POIStationAnnotationView(annotation: annotation, reuseIdentifier: "stationAnnotation")
-      view.apply(annotation: annotation)
+      let view = mapView.dequeueReusableAnnotationView(withIdentifier: "station") as? MKMarkerAnnotationView ??
+        MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "station")
+      annotationForView.setObject(annotation, forKey: view)
       return view
     }
 
@@ -231,15 +199,8 @@ extension POIMapViewController: MKMapViewDelegate {
     return MKOverlayRenderer()
   }
 
-  func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-    if let station = ((view as? POIStationAnnotationView)?.annotation as? POIStationAnnotation)?.station {
-      self.parent?.performSegue(withIdentifier: "showStation", sender: station)
-    }
-  }
-
   func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-
-    if let annotation = (view as? POIStationAnnotationView)?.annotation as? POIStationAnnotation {
+    if let annotation = annotationForView.object(forKey: view) {
       disposable += onSelect.apply(annotation.station).start()
     }
   }
