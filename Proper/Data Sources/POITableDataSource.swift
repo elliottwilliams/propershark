@@ -14,17 +14,17 @@ import Dwifft
 class POITableDataSource: NSObject {
   let stations: Property<[MutableStation]>
   let diffCalculator: TableViewDiffCalculator<MutableStation, Arrival>
-  let connection: ConnectionType
+  let config: ConfigSP
 
   fileprivate let tableView: UITableView
   private let disposable = ScopedDisposable(CompositeDisposable())
   private let fetchScheduler = QueueScheduler(qos: .userInitiated, name: "POITableDataSource.fetchScheduler")
 
-  init(tableView: UITableView, stations: Property<[MutableStation]>, connection: ConnectionType) {
+  init(tableView: UITableView, stations: Property<[MutableStation]>, config: ConfigSP) {
     self.tableView = tableView
     self.stations = stations
     self.diffCalculator = .init(tableView: tableView)
-    self.connection = connection
+    self.config = config
     super.init()
 
     disposable += stations.producer.startWithValues { [weak self] stations in
@@ -35,23 +35,20 @@ class POITableDataSource: NSObject {
 
   func fetchArrivals(for station: MutableStation) -> SignalProducer<[Arrival], ProperError> {
     // Query Timetable and update the table with its response
-    let call = Timetable.visits(for: station,
-                                occurring: .between(Date(), Date(timeIntervalSinceNow: 3600)),
-                                using: connection)
-      .on(value: { [weak self] arrivals in
-        self?.update(section: station, with: arrivals)
-      })
-    let delayedCall = SignalProducer<[Arrival], ProperError>.empty.delay(0.1, on: fetchScheduler).then(call)
-    // A producer that completes when the _first_ arrival departs (and we need to reload data):
-    let callUntilDeparture = delayedCall
-      .flatMap(.latest, transform: { arrivals in arrivals.first?.lifecycle.map({ (arrivals, $0) }) ?? .never })
-      .map({ arrivals, _ in arrivals })
-    // A producer that lazily calls `fetchArrivals`:
-    let fetch = SignalProducer<[Arrival], ProperError> { [weak self] observer, disposable in
-      // Once self is released, this producer completes.
-      disposable += self?.fetchArrivals(for: station).start(observer) ?? SignalProducer.empty.start(observer)
+    func call() -> SignalProducer<[Arrival], ProperError> {
+      return Timetable.visits(for: station,
+                              occurring: .between(Date(), Date(timeIntervalSinceNow: 3600)),
+                              using: config)
+        .on(value: { [weak self] arrivals in
+          self?.update(section: station, with: arrivals)
+        })
     }
-    return callUntilDeparture.then(fetch)
+    return SignalProducer { observer, disposable in
+      // Starting now and every 30 seconds, call timetable.
+      disposable += self.fetchScheduler.schedule(after: Date(), interval: .seconds(30)) {
+        disposable += call().start(observer)
+      }
+    }
   }
 
   private func update(section: MutableStation, with newArrivals: [Arrival]) {

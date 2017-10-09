@@ -19,7 +19,8 @@ struct SharedLoggingConfig: LoggingConfig {
     "MDWamp.callWithSignal",
     "Connection.connectionProducer",
     "Connection.subscribe",
-    "MutableRoute.producer"
+    "MutableRoute.producer",
+    "Timetable",
     ])
   let logJSON = false
 }

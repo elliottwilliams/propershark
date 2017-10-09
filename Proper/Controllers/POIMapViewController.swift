@@ -32,7 +32,6 @@ class POIMapViewController: UIViewController, ProperViewController {
   fileprivate let updateRegionLock = NSLock()
   fileprivate var viewDidLayout = false
 
-  var connection: ConnectionType
   var disposable = ScopedDisposable(CompositeDisposable())
 
   init(center: MutableProperty<Point>,
@@ -40,8 +39,7 @@ class POIMapViewController: UIViewController, ProperViewController {
        routes: Property<Set<MutableRoute>>,
        stations: Property<[MutableStation]>,
        onSelect: Action<MutableStation, (), NoError>,
-       isUserLocation: Property<Bool>,
-       connection: ConnectionType = Connection.cachedInstance)
+       isUserLocation: Property<Bool>)
   {
     self.center = center
     self.zoom = zoom
@@ -49,7 +47,6 @@ class POIMapViewController: UIViewController, ProperViewController {
     self.stations = stations
     self.onSelect = onSelect
     self.isUserLocation = isUserLocation
-    self.connection = connection
     super.init(nibName: nil, bundle: nil)
 
     map.translatesAutoresizingMaskIntoConstraints = false

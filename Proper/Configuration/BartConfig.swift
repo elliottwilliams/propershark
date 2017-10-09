@@ -38,7 +38,7 @@ struct BartAgencyConfig: AgencyConfig {
 }
 
 struct BartConnectionConfig: ConnectionConfig {
-  let server = URL(string: "ws://irene.local:32772/ws")!
+  let server = URL(string: "ws://transit.emw.ms/api/bart")!
   let realm = "realm1"
   let scheduleService = "providence"
 }

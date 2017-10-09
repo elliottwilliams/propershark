@@ -15,7 +15,6 @@ protocol ProperViewController {
   associatedtype DisposableType = CompositeDisposable
 
   // Internal Properties
-  var connection: ConnectionType { get }
 
   // TODO: Maybe should be a `ScopedDisposable`
   var disposable: DisposableType { get }

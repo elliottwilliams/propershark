@@ -20,7 +20,6 @@ class RouteViewController: UIViewController, ProperViewController {
   @IBOutlet weak var navItem: TransitNavigationItem!
 
   // MARK: Internal properties
-  internal var connection: ConnectionType = Connection.cachedInstance
   internal let disposable = CompositeDisposable()
 
   // MARK: Methods

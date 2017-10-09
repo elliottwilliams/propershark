@@ -14,7 +14,6 @@ class StationTableViewController: UITableViewController, ProperViewController {
   var route: MutableRoute!
 
   // MARK: Internal properties
-  internal var connection: ConnectionType = Connection.cachedInstance
   internal var diffCalculator: SingleSectionTableViewDiffCalculator<RouteStop<MutableRoute.StationType>>!
   internal let disposable = CompositeDisposable()
 

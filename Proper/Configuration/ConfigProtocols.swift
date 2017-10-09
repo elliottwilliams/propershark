@@ -16,6 +16,7 @@ protocol ConfigProtocol {
   var connection: ConnectionConfig { get }
   var logging: LoggingConfig { get }
   var ui: UIConfig { get }
+  var id: String { get }
 
   static var id: String { get }
   static func make() -> Self
@@ -41,6 +42,8 @@ protocol ConnectionConfig {
   var server: URL { get }
   var realm: String { get }
   var scheduleService: String { get }
+  var hashed: AnyHashable { get }
+  func makeConnection() -> ConnectionSP
 }
 
 protocol LoggingConfig {
@@ -53,5 +56,13 @@ protocol UIConfig {
 }
 
 extension ConfigProtocol {
+  var id: String { return Self.id }
   static func make() -> Self { return Self() }
+}
+
+extension ConnectionConfig {
+  var hashed: AnyHashable { return server.hashValue ^ realm.hashValue ^ scheduleService.hashValue }
+  func makeConnection() -> ConnectionSP {
+    return Connection.makeFromConfig(connectionConfig: self)
+  }
 }

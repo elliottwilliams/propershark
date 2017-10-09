@@ -18,20 +18,21 @@ class POITableViewController: UITableViewController, ProperViewController {
   static let headerViewHeight = CGFloat(55)
 
   var mapPoint: Property<Point>
-  var connection: ConnectionType = Connection.cachedInstance
   var disposable = CompositeDisposable()
 
+  fileprivate let config: ConfigSP
   fileprivate var headerDisposables: [UIView: Disposable] = [:]
   fileprivate var headerBadges: [UIView: Badge] = [:]
   fileprivate let stations: Property<[MutableStation]>
 
   lazy var dataSource: POITableDataSource = {
-    return POITableDataSource(tableView: self.tableView, stations: Property(self.stations), connection: self.connection)
+    return POITableDataSource(tableView: self.tableView, stations: Property(self.stations), config: self.config)
   }()
 
-  init(style: UITableViewStyle, stations: Property<[MutableStation]>, mapPoint: Property<Point>) {
+  init(style: UITableViewStyle, stations: Property<[MutableStation]>, mapPoint: Property<Point>, config: ConfigSP) {
     self.mapPoint = mapPoint
     self.stations = stations
+    self.config = config
     super.init(style: style)
 
     tableView.translatesAutoresizingMaskIntoConstraints = false

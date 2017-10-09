@@ -38,13 +38,13 @@ struct Timetable {
   ///     - limit: Restrictions on the number of arrivals and how far ahead or behind in time they should be sent.
   /// - returns: A producer which sends up to one value of `[Arrival]` and completes.
   static func visits(for route: MutableRoute, at station: MutableStation, occurring timing: Timing,
-                     using connection: ConnectionType, initialLimit limit: Int = defaultLimit) ->
+                     using configs: ConfigSP, initialLimit limit: Int = defaultLimit) ->
     SignalProducer<[Arrival], ProperError>
   {
     return _visits(route: route,
                    station: station,
                    timing: timing,
-                   connection: connection,
+                   configs: configs,
                    limit: limit)
   }
 
@@ -56,14 +56,14 @@ struct Timetable {
   ///     - connection: WAMP connection that will be used to query Timetable.
   ///     - limit: Restrictions on the number of arrivals and how far ahead or behind in time they should be sent.
   /// - returns: A producer which sends up to one value of `[Arrival]` and completes.
-  static func visits(for station: MutableStation, occurring timing: Timing, using connection: ConnectionType,
+  static func visits(for station: MutableStation, occurring timing: Timing, using configs: ConfigSP,
                      initialLimit limit: Int = defaultLimit) ->
     SignalProducer<[Arrival], ProperError>
   {
     return _visits(route: nil,
                    station: station,
                    timing: timing,
-                   connection: connection,
+                   configs: configs,
                    limit: limit)
   }
 
@@ -73,17 +73,26 @@ struct Timetable {
   private static func _visits(route: MutableRoute?,
                               station: MutableStation,
                               timing: Timing,
-                              connection: ConnectionType,
+                              configs: ConfigSP,
                               limit: Int = defaultLimit) -> ArrivalListSP
   {
-    let proc = rpc(from: timing, route: route != nil)
     let args: WampArgs = [route?.identifier, station.identifier].flatMap({ $0 })
       + timestamps(for: timing) as [Any]
       + [limit] as [Any]
-    NSLog("[Timetable] call args: \(args)")
-    return connection.call(proc, with: args)
-      |> decodeArrivalTimes(connection: connection)
-      |> log
+    return configs
+      // the latest connection
+//      .flatMap(.latest, transform: { config in
+      .flatMap(.latest, transform: { config -> SignalProducer<(Connection, String), ProperError> in
+        let proc = rpc(from: timing, route: route != nil, serviceName: config.connection.scheduleService)
+        return SignalProducer.combineLatest(Connection.makeFromConfig(connectionConfig: config.connection),
+                                            SignalProducer(value: proc))
+      })
+      // the result of the call on the latest connection
+      .flatMap(.latest, transform: { connection, proc in
+        connection.call(proc, with: args)
+          |> decodeArrivalTimes(connection: connection)
+          |> log
+      })
   }
 
   private static func decodeArrivalTimes(connection: ConnectionType) ->
@@ -104,13 +113,12 @@ struct Timetable {
     }
   }
 
-  private static func rpc(from value: Timing, route: Bool) -> String {
+  private static func rpc(from value: Timing, route: Bool, serviceName: String) -> String {
     let suffix = (route) ? "_on_route" : ""
-    let service = Config.current.connection.scheduleService
     switch value {
-    case .before(_):    return "\(service).visits_before\(suffix)"
-    case .after(_):     return "\(service).visits_after\(suffix)"
-    case .between(_):   return "\(service).visits_between\(suffix)"
+    case .before(_):    return "\(serviceName).visits_before\(suffix)"
+    case .after(_):     return "\(serviceName).visits_after\(suffix)"
+    case .between(_):   return "\(serviceName).visits_between\(suffix)"
     }
   }
 
@@ -125,7 +133,8 @@ struct Timetable {
   }
 
   private static func log<V, E>(_ producer: SignalProducer<V, E>) -> SignalProducer<V, E> {
-    return producer.logEvents(identifier: "Timetable", logger: logSignalEvent)
+    return producer.logEvents(identifier: "Timetable", events: Set([.starting, .value, .failed]),
+                              logger: logSignalEvent)
   }
 }
 

@@ -16,7 +16,6 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
   var station: MutableStation!
 
   // MARK: Internal properties
-  internal var connection: ConnectionType = Connection.cachedInstance
   internal var diffCalculator: SingleSectionTableViewDiffCalculator<MutableVehicle>!
   internal var disposable = CompositeDisposable()
   internal var routeDisposables = [MutableRoute: Disposable]()
@@ -53,11 +52,10 @@ class ArrivalsTableViewController: UITableViewController, ProperViewController {
   }()
 
   // MARK: Methods
-  convenience init(observing station: MutableStation, style: UITableViewStyle, connection: ConnectionType)
+  convenience init(observing station: MutableStation, style: UITableViewStyle)
   {
     self.init(style: style)
     self.station = station
-    self.connection = connection
   }
 
   override func viewDidLoad() {

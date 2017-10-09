@@ -11,13 +11,14 @@ import ReactiveSwift
 import Result
 
 typealias ConfigProperty = MutableProperty<ConfigProtocol>
+typealias ConfigSP = SignalProducer<ConfigProtocol, NoError>
 
 struct Config {
   typealias DefaultConfig = CitybusConfig
 
-  static let knownConfigurations: [ConfigProtocol.Type] = [
-    CitybusConfig.self,
-    BartConfig.self
+  static let knownConfigurations: [ConfigProtocol] = [
+    CitybusConfig(),
+    BartConfig()
   ]
 
   static let shared: ConfigProperty = {
@@ -41,10 +42,13 @@ private extension Config {
     guard let id = UserDefaults.standard.string(forKey: "selectedConfig") else {
       return nil
     }
-    return knownConfigurations.first(where: { $0.id == id })?.make()
+    let config = knownConfigurations.first(where: { $0.id == id })
+    NSLog("[Config.stored] using \(config ?? DefaultConfig())")
+    return config
   }
 
   static func store(config: ConfigProtocol) {
     UserDefaults.standard.set(type(of: config).id, forKey: "selectedConfig")
+    NSLog("[Config.store] set to \(config)")
   }
 }

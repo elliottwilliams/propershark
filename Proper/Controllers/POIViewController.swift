@@ -65,10 +65,10 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
     return deviceLocation.take(untilReplacement: staticLocation)
   }
 
+  private let config: ConfigSP = Config.producer
   private let searchScheduler = QueueScheduler(qos: .userInitiated, name: "searchScheduler")
 
   // MARK: Conformances
-  internal var connection: ConnectionType = Connection.cachedInstance
   internal var disposable = CompositeDisposable()
 
   // MARK: Lifecycle
@@ -93,7 +93,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
   }
 
   private func loadTableController() {
-    let tableController = POITableViewController(style: .plain, stations: Property(stations), mapPoint: Property(point))
+    let tableController = POITableViewController(style: .plain, stations: Property(stations), mapPoint: Property(point), config: config)
     addChildViewController(tableController)
     stackView.addArrangedSubview(tableController.view)
     tableController.view.heightAnchor.constraint(equalTo: stackView.heightAnchor, multiplier: 0.6).isActive = true
@@ -108,6 +108,15 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
 
     // Clear the title until the signals created in `viewWillAppear` set one.
     navigationItem.title = nil
+
+    navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Agencies", style: .plain, target: self,
+                                                       action: #selector(openAgencySelector))
+  }
+
+  func openAgencySelector() {
+    let agencyTable = AgencyTableViewController(configurations: Config.knownConfigurations, configProperty: Config.shared)
+    let navigationController = UINavigationController(rootViewController: agencyTable)
+    present(navigationController, animated: true, completion: nil)
   }
 
   override func viewWillAppear(_ animated: Bool) {
@@ -121,11 +130,11 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
     let searchProducer = point.producer.combineLatest(with: zoom.producer.map({ $0 * 1.3 })) // widen search radius
       .observe(on: searchScheduler)
       .throttle(0.5, on: searchScheduler)
-      .logEvents(identifier: "NearbyStationsViewModel.chain input",
+      .logEvents(identifier: "NearbyStationsViewModel searchProducer",
                  logger: logSignalEvent)
 
     // Search for nearby stations.
-    disposable += NearbyStationsViewModel.chain(connection: connection, producer: searchProducer)
+    disposable += NearbyStationsViewModel.search(config: Config.producer, searchParameters: searchProducer)
       .observe(on: UIScheduler())
       .startWithResult() { result in
         assert(Thread.isMainThread)
@@ -160,6 +169,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
     disposable.dispose()
+    disposable = CompositeDisposable()
   }
 
   override func didReceiveMemoryWarning() {

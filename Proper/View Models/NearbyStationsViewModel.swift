@@ -13,18 +13,15 @@ import Curry
 import CoreLocation
 import MapKit
 
-struct NearbyStationsViewModel: SignalChain {
-  typealias Input = (Point, SearchRadius)
-  typealias Output = [MutableStation]
-
+struct NearbyStationsViewModel {
   // TODO - Swift 3 brings generic type aliases, which means we can do something nice like:
   // typealias SP<U> = SignalProducer<U, ProperError>
   typealias SearchRadius = MKCoordinateSpan
   typealias CenterPoint = CLLocationCoordinate2D
   typealias Distance = CLLocationDistance
 
-  static func searchArea(producer: SignalProducer<(Point, SearchRadius), ProperError>) ->
-    SignalProducer<MKMapRect, ProperError>
+  static func searchArea(givenBy producer: SignalProducer<(Point, SearchRadius), NoError>) ->
+    SignalProducer<MKMapRect, NoError>
   {
     return producer.map({ point, radius -> MKMapRect in
       let region = MKCoordinateRegion(center: CLLocationCoordinate2D(point: point), span: radius)
@@ -45,7 +42,7 @@ struct NearbyStationsViewModel: SignalChain {
   }
 
   static func getStations(connection: ConnectionType) -> SignalProducer<[Station], ProperError> {
-    let call = connection.call("agency.stations").attemptMap({ event -> Result<[AnyObject], ProperError> in
+    return connection.call("agency.stations").attemptMap({ event -> Result<[AnyObject], ProperError> in
       // Received events should be Agency.stations events, which contain a list of all stations on the agency.
       if case .agency(.stations(let stations)) = event {
         return .success(stations)
@@ -53,7 +50,6 @@ struct NearbyStationsViewModel: SignalChain {
         return .failure(ProperError.eventParseFailure)
       }
     }).decodeAnyAs(Station.self)
-    return Config.shared.producer.flatMap(.latest, transform: { _ in call })
   }
 
   static func filterNearby(connection: ConnectionType, producer: SignalProducer<([Station], MKMapRect), ProperError>) ->
@@ -101,15 +97,23 @@ struct NearbyStationsViewModel: SignalChain {
     })
   }
 
-  static func chain(connection: ConnectionType, producer: SignalProducer<(Point, SearchRadius), ProperError>) ->
+  static func log(producer: SignalProducer<[MutableStation], ProperError>) -> SignalProducer<[MutableStation], ProperError> {
+    return producer.logEvents(identifier: "NearbyStationsViewModel.search", logger: logSignalEvent)
+  }
+
+  static func search(config: ConfigSP, searchParameters params: SignalProducer<(Point, SearchRadius), NoError>) ->
     SignalProducer<[MutableStation], ProperError>
   {
     let worker = QueueScheduler(qos: .userInitiated, name: "NearbyStationsViewModel worker")
-    let producer = SignalProducer.combineLatest(getStations(connection: connection),
-                                                producer |> searchArea).observe(on: worker)
-      |> curry(filterNearby)(connection)
-      |> limit
-    return producer.logEvents(identifier: "NearbyStationsViewModel.chain", logger: logSignalEvent)
+    return config
+      .flatMap(.latest, transform: { Connection.makeFromConfig(connectionConfig: $0.connection) })
+      .flatMap(.latest, transform: { connection in
+        return SignalProducer.combineLatest(getStations(connection: connection),
+                                            searchArea(givenBy: params).promoteErrors(ProperError.self)).observe(on: worker)
+          |> curry(filterNearby)(connection)
+          |> limit
+          |> log
+      })
   }
 }
 

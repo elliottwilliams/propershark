@@ -11,84 +11,110 @@ import MDWamp
 import ReactiveSwift
 import Result
 
-class Connection: NSObject {
-  typealias ConnectionProducer = SignalProducer<MDWamp, ProperError>
+typealias ConnectionSP = SignalProducer<Connection, ProperError>
 
-  static var sharedInstance = Connection.init()
+class Connection: NSObject, CachedConnectionProtocol {
+  fileprivate let wamp: MDWamp
+  fileprivate let (signal, observer) = Signal<Connection, ProperError>.pipe()
+  let lastEventCache = LastEventCache()
+  fileprivate static var connections: [AnyHashable: Connection] = [:]
 
-  // MARK: Private
-  fileprivate var config = Config.shared
-  fileprivate lazy var connection = MutableProperty<MDWamp?>(nil)
-  fileprivate let disposable = ScopedDisposable(CompositeDisposable())
+  var isConnected: Bool { return wamp.isConnected() }
+  fileprivate var isConnecting: Bool = false
+  fileprivate var connectionTimeoutAction: ScopedDisposable<AnyDisposable>? = nil
 
-  override init() {
+  fileprivate init(connectionConfig config: ConnectionConfig) {
+    let transport = MDWampTransportWebSocket(server: config.server,
+                                             protocolVersions: [kMDWampProtocolWamp2msgpack, kMDWampProtocolWamp2json])
+    NSLog("[Connection.init] Created transport for \(config.server)")
+    wamp = MDWamp(transport: transport, realm: config.realm, delegate: nil)
     super.init()
+    wamp.delegate = self
+  }
 
-    // Connect the wamp instance based on the latest configuration, and disconnect from old instances.
-    disposable.inner += config.producer
-      .map(makeConnection)
-      .map(Optional.init)
-      .combinePrevious(nil)
-      .startWithValues { prev, next in
-        prev?.disconnect()
-        next?.connect()
+  func connect() -> Disposable {
+    if !isConnecting {
+      isConnecting = true
+      wamp.connect()
+      NSLog("[Connection.connect]")
     }
+    if let timeout = QueueScheduler.main.schedule(after: Date(timeIntervalSinceNow: 10), action: { [weak self] in
+      self?.observer.send(error: .timeout(rpc: "unable to connect"))
+    }) {
+      connectionTimeoutAction = ScopedDisposable(timeout)
+    }
+//    return ActionDisposable { [weak self] in self?.disconnect() }
+    return ActionDisposable { }
+  }
+
+  func disconnect() {
+    NSLog("[Connection.disconnect]")
+    connectionTimeoutAction?.dispose()
+    wamp.disconnect()
   }
 }
 
-// MARK: - Connection forming
-extension Connection {
-
-  // MARK: Private
-
-  /// Returns an `MDWamp` object created using `config`. Disconnects the previous connection, if it exists, and connects
-  /// the returned connection.
-  fileprivate func makeConnection(config: ConfigProtocol) -> MDWamp {
-    let ws = MDWampTransportWebSocket(server: config.connection.server,
-                                      protocolVersions: [kMDWampProtocolWamp2msgpack, kMDWampProtocolWamp2json])
-    return MDWamp(transport: ws, realm: config.connection.realm, delegate: self)!
-  }
-}
-
-// MARK: - Communication methods
 extension Connection: ConnectionType {
   /// Subscribe to `topic` and forward parsed events. Disposing of signals created from this method will unsubscribe
   /// `topic`.
   func subscribe(to topic: String) -> EventProducer {
-    return connection.producer.skipNil()
-      .map { wamp in wamp.subscribeWithSignal(topic) }
-      .flatten(.latest)
+    let subscription = wamp
+      .subscribeWithSignal(topic)
       .map { TopicEvent.parse(from: topic, event: $0) }
       .unwrapOrSendFailure(ProperError.eventParseFailure)
       .logEvents(identifier: "Connection.subscribe", logger: logSignalEvent)
+    return updatingCache(withEventsFrom: subscription, for: topic)
   }
 
   /// Call `proc` and forward the result. Disposing the signal created will cancel the RPC call.
   func call(_ proc: String, with args: WampArgs = [], kwargs: WampKwargs = [:]) -> EventProducer {
-    return connection.producer.skipNil()
-      .map({ $0.callWithSignal(proc, args, kwargs, [:])
-        .timeout(after: 10.0, raising: .timeout(rpc: proc), on: QueueScheduler.main) })
-      .flatten(.latest)
+    let cache = cacheLookup(proc, args, kwargs)
+    let server = wamp.callWithSignal(proc, args, kwargs, [:])
+      .timeout(after: 10.0, raising: .timeout(rpc: proc), on: QueueScheduler.main)
       .map { TopicEvent.parse(fromRPC: proc, args, kwargs, $0) }
       .unwrapOrSendFailure(ProperError.eventParseFailure)
+      .logEvents(identifier: "Connection.call(proc: \(proc))", events: Set([.starting, .value, .failed]),
+                 logger: logSignalEvent)
+    return SignalProducer<EventProducer, ProperError>([cache, server])
+      .flatten(.concat).take(first: 1)
   }
 }
 
 // MARK: - MDWampClientDelegate
 extension Connection: MDWampClientDelegate {
-  func mdwamp(_ wamp: MDWamp!, sessionEstablished info: [AnyHashable: Any]!) {
-    NSLog("[Connection] Session established")
-    connection.swap(wamp)
+  func mdwamp(_ wamp: MDWamp!, sessionEstablished info: [AnyHashable : Any]!) {
+    isConnecting = false
+    connectionTimeoutAction?.dispose()
+    observer.send(value: self)
   }
 
-  func mdwamp(_ wamp: MDWamp!, closedSession code: Int, reason: String!, details: WampKwargs!) {
-    NSLog("[Connection] Session closed, code=\(code) reason=\(reason)")
-
-    if code == MDWampConnectionCloseCode.closed.rawValue {
-      // We're switching connections.
+  func mdwamp(_ wamp: MDWamp!, closedSession code: Int, reason: String!, details: [AnyHashable : Any]!) {
+    connectionTimeoutAction?.dispose()
+    if MDWampConnectionCloseCode(rawValue: code) == .closed {
+      observer.sendCompleted()
     } else {
-      // TODO show connection error
-      fatalError(reason)
+      observer.send(error: .connectionLost(reason: reason))
+    }
+  }
+}
+
+// MARK: - Factory
+extension Connection {
+  static func makeFromConfig(connectionConfig config: ConnectionConfig) -> SignalProducer<Connection, ProperError> {
+    return SignalProducer { observer, disposable in
+      let saved = connections[config.hashed]
+      switch saved {
+      case .some(let saved) where saved.isConnected:
+        observer.send(value: saved)
+      case .some(let saved): // otherwise
+        disposable += saved.signal.observe(observer)
+        disposable += saved.connect()
+      case .none:
+        let connection = Connection(connectionConfig: config)
+        disposable += connection.signal.observe(observer)
+        disposable += connection.connect()
+        connections[config.hashed] = connection
+      }
     }
   }
 }
@@ -100,7 +126,6 @@ extension MDWamp {
     -> SignalProducer<MDWampResult, ProperError>
   {
     return SignalProducer<MDWampResult, ProperError> { observer, _ in
-      NSLog("[Connection] Calling \(procUri)")
       self.call(procUri, args: args, kwArgs: argsKw, options: options) { result, error in
         if error != nil {
           observer.send(error: .mdwampError(topic: procUri, object: error))

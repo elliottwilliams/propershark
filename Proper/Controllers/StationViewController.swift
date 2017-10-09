@@ -21,7 +21,6 @@ class StationViewController: UIViewController, ProperViewController {
   @IBOutlet weak var nav: UINavigationItem!
 
   // MARK: Internal properties
-  internal lazy var connection: ConnectionType = Connection.cachedInstance
   internal let disposable = CompositeDisposable()
 
   override func viewDidLoad() {
