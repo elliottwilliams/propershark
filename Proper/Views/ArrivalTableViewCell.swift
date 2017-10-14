@@ -40,7 +40,7 @@ class ArrivalTableViewCell: UITableViewCell {
     disposable?.dispose()
   }
 
-  func apply(arrival: Arrival) {
+  func apply(arrival: Arrival, route: SignalProducer<MutableRoute, NoError>) {
     self.disposable?.dispose()
     let disposable = CompositeDisposable()
 
@@ -51,9 +51,9 @@ class ArrivalTableViewCell: UITableViewCell {
     let title = Config.shared.map({ $0.agency.titleForArrival(arrival) }).flatten(.latest)
     disposable += title.producer
       .startWithValues({ self.routeTitle.text = $0 })
-    
-    disposable += arrival.route.color.producer.skipNil().startWithValues({ self.badge.color = $0 })
-    disposable += arrival.route.producer.start()
+
+    disposable += route.flatMap(.latest, transform: { $0.color.producer }).skipNil()
+      .startWithValues({ self.badge.color = $0 })
 
     disposable += ArrivalsViewModel.label(for: arrival).startWithValues({ self.routeTimer.text = $0 })
     self.disposable = disposable

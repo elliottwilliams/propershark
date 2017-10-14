@@ -27,6 +27,7 @@ protocol AgencyConfig {
   var key: String { get }
   var name: String { get }
   var region: MKCoordinateRegion { get }
+  var maxLatitudeSpanForStations: CLLocationDegrees { get }
   var timeResolution: TimeInterval { get }
   var badgeForRoute: (MutableRoute) -> Property<String?> { get }
   var titleForRoute: (MutableRoute) -> Property<String?> { get }

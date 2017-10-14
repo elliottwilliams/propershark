@@ -24,6 +24,7 @@ struct CitybusAgencyConfig: AgencyConfig {
   let name = "CityBus"
   let region = MKCoordinateRegionMakeWithDistance(
     CLLocationCoordinate2D(latitude: 40.424758, longitude: -86.913649), 500, 500)
+  let maxLatitudeSpanForStations: CLLocationDegrees = 3.5/111
   let timeResolution = TimeInterval(30)
 
   let badgeForRoute: (MutableRoute) -> Property<String?> = { .init(value: $0.shortName) }

@@ -109,7 +109,7 @@ extension MutableModel {
 
   func attachOrApply<M: MutableModel>(to property: MutableProperty<M?>, from update: M.FromModel?) throws {
     guard let update = update else { return }
-    if let mutable = property.value {
+    if let mutable = property.value, mutable.identifier == update.identifier {
       try mutable.apply(update)
     } else {
       property.value = try attachMutable(from: update) as M
