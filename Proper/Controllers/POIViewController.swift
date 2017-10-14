@@ -43,10 +43,9 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
   lazy var stations = MutableProperty<[MutableStation]>([])
   lazy var routes: Property<Set<MutableRoute>> = {
     return self.stations.flatMap(.latest, transform: { stations -> Property<Set<MutableRoute>> in
-      let producers = stations.map({ $0.routes.producer })
-      let routes = SignalProducer(producers).flatten(.merge).flatten().reduce(Set(), { set, route in
-        set.union([route] as Set)
-      })
+      let stationRoutes = stations.flatMap(({ $0.routes.producer }))
+      let currentRoutes = SignalProducer.combineLatest(stationRoutes)
+      let routes = currentRoutes.map({ $0.reduce(Set(), { $0.union($1) }) })
       return Property(initial: Set(), then: routes)
     })
   }()
@@ -126,6 +125,9 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
     if let bar = navigationController?.navigationBar {
       bar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
     }
+
+    // Clear stations when the config changes.
+    disposable += config.producer.startWithValues { _ in self.stations.swap([]) }
 
     let searchProducer = point.producer
       .observe(on: searchScheduler)

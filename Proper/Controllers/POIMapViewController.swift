@@ -29,11 +29,11 @@ class POIMapViewController: UIViewController, ProperViewController {
 
   var shouldShowStationAnnotations: Bool {
     // Hide station annotations above 2km
-    return map.region.span.latitudeDelta < 2.0/111
+    return map.region.span.latitudeDelta < Config.current.agency.maxLatitudeSpanForStations
   }
 
   fileprivate var stationForAnnotationView = NSMapTable<MKAnnotationView, MutableStation>()
-  fileprivate var polylines = [MutableRoute: MKPolyline]()
+  fileprivate var routeOverlays = [MutableRoute: ScopedDisposable<AnyDisposable>]()
   fileprivate var routeForPolyline = [MKPolyline: MutableRoute]()
   fileprivate let updateRegionLock = NSLock()
   fileprivate var viewDidLayout = false
@@ -112,12 +112,18 @@ class POIMapViewController: UIViewController, ProperViewController {
         self.map.addAnnotations(next.filter(prev.contains))
     }
 
-    disposable += routes.producer.flatMap(.latest, transform: { routes -> SignalProducer<Void, NoError> in
-      // Show route polyline annotations, updating as the routes change. The parent POIViewController will only
-      // provide routes inside the current search region.
-      let annotationProducers = routes.map(self.polyline(for:))
-      return SignalProducer(annotationProducers).flatten(.merge)
-    }).start()
+    disposable += routes.producer.combinePrevious(Set()).startWithValues({ prev, next in
+      let added = next.subtracting(prev)
+      let removed = prev.subtracting(next)
+
+      for route in added {
+        self.routeOverlays[route] = ScopedDisposable(self.startShowingOverlay(for: route))
+      }
+
+      for route in removed {
+        self.routeOverlays[route] = nil
+      }
+    })
   }
 
   override func viewDidDisappear(_ animated: Bool) {
@@ -132,24 +138,54 @@ class POIMapViewController: UIViewController, ProperViewController {
 
   // MARK: Map annotations
 
-  func polyline(for route: MutableRoute) -> SignalProducer<Void, NoError> {
-    let producer = route.canonical.producer.skipNil().map({ route -> MKPolyline in
-      let points = route.stations.map({ stop in stop.station.position.value })
-        .flatMap({ $0 })
-        .map({ MKMapPoint(point: $0) })
-      return MKPolyline(points: UnsafePointer(points), count: points.count)
-    }).map(Optional.some)
+  func startShowingOverlay(for route: MutableRoute) -> Disposable {
+    let stations = route.canonical.producer.skipNil()
+      // ...get at the underlying MutableStation for each stop...
+      .map({ $0.stations.map({ $0.station }) })
 
-    return producer.skipRepeats(==).combinePrevious(nil).on(value: { prev, next in
-      if let prev = prev {
-        self.map.removeAnnotation(prev)
-        self.routeForPolyline[prev] = nil
+    let points = stations
+      // ...map to the `position` property of each station...
+      .map({ $0.map({ $0.position.producer.skipNil() }) })
+      // ...combine to get a producer that emits the entire [Point] array when a position changes...
+      .flatMap(.latest, transform: SignalProducer.combineLatest)
+
+    let overlays = points
+      // ...convert to MapKit's coordinate system...
+      .map({ $0.map({ MKMapPoint(point: $0) }) })
+      // ...and finally make an overlay object out of these points.
+      .map({ MKPolyline(points: UnsafePointer($0), count: $0.count) })
+
+    let disposable = CompositeDisposable()
+    var latestOverlay: MKPolyline? = nil
+
+    // Add/remove overlays for this route to the map.
+    disposable += overlays.map(Optional.some).combinePrevious(nil).startWithValues { [weak self] prev, next in
+      self?.updateOverlay(deleting: prev, inserting: next, route: route)
+      latestOverlay = next
+    }
+
+    // Upon disposal, remove the latest overlay from the map.
+    disposable += { [weak self] in
+      if let latestOverlay = latestOverlay {
+        self?.map.remove(latestOverlay)
       }
-      if let next = next {
-        self.map.addAnnotation(next)
-        self.routeForPolyline[next] = route
-      }
-    }).map({ _, _ in () })
+    }
+
+    let failed: (ProperError) -> Void = { [weak self] in self?.displayError($0) }
+    disposable += route.producer.startWithFailed(failed)
+
+    return disposable
+  }
+
+  private func updateOverlay(deleting prev: MKPolyline?, inserting next: MKPolyline?, route: MutableRoute) {
+    if let prev = prev {
+      map.remove(prev)
+      routeForPolyline[prev] = nil
+    }
+    if let next = next {
+      routeForPolyline[next] = route
+      map.add(next)
+    }
   }
 
   func contains(point: Point) -> Bool {
@@ -160,10 +196,11 @@ class POIMapViewController: UIViewController, ProperViewController {
 // MARK: - Map view delegate
 extension POIMapViewController: MKMapViewDelegate {
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-    if let annotation = annotation as? MutableStation {
+    if let station = annotation as? MutableStation {
       let view = mapView.dequeueReusableAnnotationView(withIdentifier: "station") as? MKMarkerAnnotationView ??
         MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "station")
-      stationForAnnotationView.setObject(annotation, forKey: view)
+      view.markerTintColor = station.routes.value.first?.color.value
+      stationForAnnotationView.setObject(station, forKey: view)
       return view
     }
 
@@ -172,16 +209,15 @@ extension POIMapViewController: MKMapViewDelegate {
   }
 
   func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-    // Render a route on the map.
-    if let line = overlay as? MKPolyline, let route = routeForPolyline[line] {
-      let renderer = MKPolylineRenderer()
-      disposable += route.color.producer.startWithValues { renderer.strokeColor = $0 }
-      renderer.lineWidth = 5.0
-      return renderer
+    guard let line = overlay as? MKPolyline, let route = routeForPolyline[line], let disposable = routeOverlays[route] else {
+      return MKOverlayRenderer()
     }
 
-    // The default:
-    return MKOverlayRenderer()
+    let renderer = MKPolylineRenderer.init(polyline: line)
+    let colorBinding = route.color.producer.startWithValues { renderer.strokeColor = $0 }
+    routeOverlays[route] = ScopedDisposable(CompositeDisposable([disposable, colorBinding]))
+    renderer.lineWidth = 2
+    return renderer
   }
 
   func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
