@@ -33,8 +33,8 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
     return property
   }()
 
-  /// The area represented by the map, which stations are searched for within.
-  lazy var zoom = MutableProperty<MKCoordinateSpan>(MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.15)) // Default zoom
+  /// The area represented by the map.
+  lazy var zoom = MutableProperty<MKCoordinateSpan>(MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.15)) // Default zoom, city-wide
 
   lazy var isUserLocation = MutableProperty(true)
 
@@ -127,7 +127,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
       bar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
     }
 
-    let searchProducer = point.producer.combineLatest(with: zoom.producer.map({ $0 * 1.3 })) // widen search radius
+    let searchProducer = point.producer
       .observe(on: searchScheduler)
       .throttle(0.5, on: searchScheduler)
       .logEvents(identifier: "NearbyStationsViewModel searchProducer",
@@ -148,8 +148,10 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
     disposable += location.startWithResult { result in
       switch result {
       case let .success(point, name, isUserLocation):
-        self.point.swap(point)
-        self.navigationItem.title = name
+        if self.mapController.contains(point: point) {
+          self.point.swap(point)
+          self.navigationItem.title = name
+        }
         self.isUserLocation.swap(isUserLocation)
       case let .failure(error):
         self.displayError(error)

@@ -21,8 +21,7 @@ class POITableViewController: UITableViewController, ProperViewController {
   var disposable = CompositeDisposable()
 
   fileprivate let config: ConfigSP
-  fileprivate var headerDisposables: [UIView: Disposable] = [:]
-  fileprivate var headerBadges: [UIView: Badge] = [:]
+  fileprivate var fetchActions: [Int: ScopedDisposable<AnyDisposable>] = [:]
   fileprivate let stations: Property<[MutableStation]>
 
   lazy var dataSource: POITableDataSource = {
@@ -37,10 +36,13 @@ class POITableViewController: UITableViewController, ProperViewController {
 
     tableView.translatesAutoresizingMaskIntoConstraints = false
     tableView.dataSource = dataSource
+    tableView.allowsSelection = false
     tableView.register(UINib(nibName: "ArrivalTableViewCell", bundle: nil),
                        forCellReuseIdentifier: "arrivalCell")
     tableView.register(UINib(nibName: "POIStationHeaderFooterView", bundle: nil),
                        forHeaderFooterViewReuseIdentifier: "stationHeader")
+    tableView.register(UITableViewCell.self, forCellReuseIdentifier: "loading")
+    tableView.register(UITableViewCell.self, forCellReuseIdentifier: "none")
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -66,6 +68,32 @@ extension POITableViewController {
     disposable.dispose()
     disposable = .init()
     super.viewDidDisappear(animated)
+  }
+}
+
+// MARK: Private
+private extension POITableViewController {
+  func stopFetching(ifSectionObscured section: Int) {
+    guard let visibleSections = tableView.indexPathsForVisibleRows?.map({ $0.section }) else {
+      // Release all fetch actions if no sections are being shown.
+      fetchActions = [:]
+      return
+    }
+
+    if !Set(visibleSections).contains(section) {
+      // Release the ScopedDisposable, disposing the fetch action.
+      fetchActions[section] = nil
+    }
+  }
+
+  func startFetching(ifSectionIsVisible section: Int) {
+    guard fetchActions[section] == nil else {
+      return
+    }
+    let station = dataSource.station(at: section)
+    let fetchAction = dataSource.fetchArrivals(for: station).startWithFailed(displayError(_:))
+    let stationTopic = station.producer.startWithFailed(displayError(_:))
+    fetchActions[section] = ScopedDisposable(CompositeDisposable([fetchAction, stationTopic]))
   }
 }
 
@@ -97,13 +125,19 @@ extension POITableViewController {
     return POITableViewController.headerViewHeight
   }
 
+  override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    startFetching(ifSectionIsVisible: indexPath.section)
+  }
+
   override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-    let station = dataSource.station(at: section)
-    let disposable = dataSource.fetchArrivals(for: station).startWithFailed(displayError(_:))
-    headerDisposables[view] = disposable
+    startFetching(ifSectionIsVisible: section)
   }
 
   override func tableView(_ tableView: UITableView, didEndDisplayingHeaderView view: UIView, forSection section: Int) {
-    headerDisposables.removeValue(forKey: view)?.dispose()
+    stopFetching(ifSectionObscured: section)
+  }
+
+  override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    stopFetching(ifSectionObscured: indexPath.section)
   }
 }

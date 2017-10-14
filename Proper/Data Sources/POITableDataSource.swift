@@ -13,12 +13,13 @@ import Dwifft
 
 class POITableDataSource: NSObject {
   let stations: Property<[MutableStation]>
-  let diffCalculator: TableViewDiffCalculator<MutableStation, Arrival>
+  fileprivate var diffCalculator: TableViewDiffCalculator<MutableStation, ArrivalState>
   let config: ConfigSP
 
   fileprivate let tableView: UITableView
   private let disposable = ScopedDisposable(CompositeDisposable())
   private let fetchScheduler = QueueScheduler(qos: .userInitiated, name: "POITableDataSource.fetchScheduler")
+  private let defaultArrivals = Array(repeating: ArrivalState.loading, count: 1)
 
   init(tableView: UITableView, stations: Property<[MutableStation]>, config: ConfigSP) {
     self.tableView = tableView
@@ -28,8 +29,9 @@ class POITableDataSource: NSObject {
     super.init()
 
     disposable += stations.producer.startWithValues { [weak self] stations in
+      let shouldAnimate = tableView.numberOfSections != 0 || stations.isEmpty
       // Populate the table with nearby stations.
-      self?.update(withStations: stations)
+      self?.update(withStations: stations, animated: shouldAnimate)
     }
   }
 
@@ -52,34 +54,28 @@ class POITableDataSource: NSObject {
   }
 
   private func update(section: MutableStation, with newArrivals: [Arrival]) {
-    let replacement = diffCalculator.sectionedValues.sectionsAndValues.map({ station, arrivals -> (MutableStation, [Arrival]) in
-      if station == section {
-        return (station, newArrivals)
-      } else {
-        return (station, arrivals)
-      }
+    let wrappedArrivals = newArrivals.isEmpty ? [ArrivalState.none] : newArrivals.map({ ArrivalState.loaded($0) })
+    let replacement = diffCalculator.sectionedValues.sectionsAndValues.map({ station, currentArrivals in
+      (station, station == section ? wrappedArrivals : currentArrivals)
     })
     
     diffCalculator.sectionedValues = SectionedValues(replacement)
   }
 
-  private func update(withStations stations: [MutableStation]) {
-    let knownArrivals: [MutableStation: [Arrival]] = diffCalculator.sectionedValues.sectionsAndValues.reduce(into: [:]) { (dict, tuple) in
+  private func update(withStations stations: [MutableStation], animated: Bool) {
+    let knownArrivals: [MutableStation: [ArrivalState]] = diffCalculator.sectionedValues.sectionsAndValues.reduce(into: [:]) { (dict, tuple) in
       let (station, arrivals) = tuple
       dict[station] = arrivals
     }
-    let replacement = stations.map({ station in (station, knownArrivals[station] ?? []) })
-    diffCalculator.sectionedValues = SectionedValues(replacement)
-    for idx in stations.indices {
-      colorHeader(at: idx, with: ColorBrewer.purpleRed)
+    let replacement = stations.map({ station in (station, knownArrivals[station] ?? defaultArrivals) })
+    if animated {
+      diffCalculator.sectionedValues = SectionedValues(replacement)
+    } else {
+      let tableView = diffCalculator.tableView
+      diffCalculator = TableViewDiffCalculator(tableView: tableView,
+                                               initialSectionedValues: SectionedValues(replacement))
+      tableView?.reloadData()
     }
-  }
-
-  private func colorHeader(at idx: Int, with scheme: ColorBrewer) {
-    guard let header = tableView.headerView(forSection: idx) as? POIStationHeaderFooterView else {
-      return
-    }
-    header.color = colorForHeader(at: idx, with: scheme)
   }
 
   func colorForHeader(at idx: Int, with scheme: ColorBrewer) -> UIColor {
@@ -99,13 +95,13 @@ extension POITableDataSource {
     return diffCalculator.sectionedValues.sectionsAndValues.index(where: { station, _ in station == section })
   }
 
-  func arrival(at indexPath: IndexPath) -> Arrival {
-    return diffCalculator.value(atIndexPath: indexPath)
+  func arrival(at indexPath: IndexPath) -> Arrival? {
+    return diffCalculator.value(atIndexPath: indexPath).arrival
   }
 
   func arrivals(atSection index: Int) -> [Arrival] {
-    let (_, arrivals) =  diffCalculator.sectionedValues.sectionsAndValues[index]
-    return arrivals
+    let (_, arrivals) = diffCalculator.sectionedValues.sectionsAndValues[index]
+    return arrivals.flatMap({ $0.arrival })
   }
 }
 
@@ -120,9 +116,46 @@ extension POITableDataSource: UITableViewDataSource {
   }
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "arrivalCell") as! ArrivalTableViewCell
-    let arrival = diffCalculator.value(atIndexPath: indexPath)
-    cell.apply(arrival: arrival)
-    return cell
+    switch diffCalculator.value(atIndexPath: indexPath) {
+    case .loaded(let arrival):
+      let cell = tableView.dequeueReusableCell(withIdentifier: "arrivalCell") as! ArrivalTableViewCell
+      let route = station(at: indexPath.section).routes.producer.map({ routes in
+        routes.first(where: { $0 == arrival.route })
+      }).skipNil()
+      cell.apply(arrival: arrival, route: route)
+      return cell
+    case .loading:
+      let cell = tableView.dequeueReusableCell(withIdentifier: "loading")!
+      let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+      activityIndicator.startAnimating()
+      cell.accessoryView = activityIndicator
+      return cell
+    case .none:
+      let cell = tableView.dequeueReusableCell(withIdentifier: "none")!
+      cell.textLabel?.text = "No upcoming departures."
+      return cell
+    }
+  }
+}
+
+private enum ArrivalState: Equatable {
+  case loaded(Arrival)
+  case loading
+  case none
+
+  var arrival: Arrival? {
+    switch self {
+    case .loaded(let arrival): return arrival
+    default:                   return nil
+    }
+  }
+
+  static func == (a: ArrivalState, b: ArrivalState) -> Bool {
+    switch (a, b) {
+    case (.loaded(let a), .loaded(let b)): return a == b
+    case (.loading, .loading): return true
+    case (.none, .none):       return true
+    default: return false
+    }
   }
 }

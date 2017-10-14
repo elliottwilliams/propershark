@@ -27,8 +27,12 @@ class POIMapViewController: UIViewController, ProperViewController {
   let isUserLocation: Property<Bool>
   var staticCenter: MKPointAnnotation? = nil
 
-  fileprivate var annotationForView = NSMapTable<MKAnnotationView, POIStationAnnotation>()
-  fileprivate var annotationForStation = [MutableStation: POIStationAnnotation]()
+  var shouldShowStationAnnotations: Bool {
+    // Hide station annotations above 2km
+    return map.region.span.latitudeDelta < 2.0/111
+  }
+
+  fileprivate var stationForAnnotationView = NSMapTable<MKAnnotationView, MutableStation>()
   fileprivate var polylines = [MutableRoute: MKPolyline]()
   fileprivate var routeForPolyline = [MKPolyline: MutableRoute]()
   fileprivate let updateRegionLock = NSLock()
@@ -101,16 +105,11 @@ class POIMapViewController: UIViewController, ProperViewController {
       }
     }
 
-    disposable += stations.producer.combinePrevious([]).startWithValues { prev, next in
-      let diff = Dwifft.diff(prev, next)
-      for step in diff {
-        switch step {
-        case let .insert(_, station):
-          self.addAnnotation(for: station)
-        case let .delete(_, station):
-          self.deleteAnnotations(for: station)
-        }
-      }
+    disposable += stations.producer
+      .filter({ _ in self.shouldShowStationAnnotations })
+      .map(Set.init).combinePrevious(Set()).startWithValues { prev, next in
+        self.map.removeAnnotations(prev.filter(next.contains))
+        self.map.addAnnotations(next.filter(prev.contains))
     }
 
     disposable += routes.producer.flatMap(.latest, transform: { routes -> SignalProducer<Void, NoError> in
@@ -153,32 +152,18 @@ class POIMapViewController: UIViewController, ProperViewController {
     }).map({ _, _ in () })
   }
 
-  func addAnnotation(for station: MutableStation) {
-    guard let position = station.position.value else {
-      return
-    }
-    let distanceString = POIViewModel.distanceString(self.center.producer.map({ ($0, position) }))
-    let annotation = POIStationAnnotation(station: station,
-                                          locatedAt: position,
-                                          distance: distanceString)
-    map.addAnnotation(annotation)
-    annotationForStation[station] = annotation
-  }
-
-  func deleteAnnotations(for station: MutableStation) {
-    if let annotation = annotationForStation.removeValue(forKey: station) {
-      map.removeAnnotation(annotation)
-    }
+  func contains(point: Point) -> Bool {
+    return MKMapRectContainsPoint(map.visibleMapRect, MKMapPoint(point: point))
   }
 }
 
 // MARK: - Map view delegate
 extension POIMapViewController: MKMapViewDelegate {
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-    if let annotation = annotation as? POIStationAnnotation {
+    if let annotation = annotation as? MutableStation {
       let view = mapView.dequeueReusableAnnotationView(withIdentifier: "station") as? MKMarkerAnnotationView ??
         MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "station")
-      annotationForView.setObject(annotation, forKey: view)
+      stationForAnnotationView.setObject(annotation, forKey: view)
       return view
     }
 
@@ -200,8 +185,8 @@ extension POIMapViewController: MKMapViewDelegate {
   }
 
   func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-    if let annotation = annotationForView.object(forKey: view) {
-      disposable += onSelect.apply(annotation.station).start()
+    if let station = stationForAnnotationView.object(forKey: view) {
+      disposable += onSelect.apply(station).start()
     }
   }
 
@@ -211,8 +196,14 @@ extension POIMapViewController: MKMapViewDelegate {
     }
     // TODO: I shouldn't update the center point, because that's based on the nearby view's representative location.
     // But I should make sure whatever region shown by the map is being searched.
-    center.swap(Point(coordinate: mapView.region.center))
-    zoom.swap(mapView.region.span)
+//    center.swap(Point(coordinate: mapView.region.center))
+//    zoom.swap(mapView.region.span)
     updateRegionLock.unlock()
+
+    if shouldShowStationAnnotations {
+      map.addAnnotations(self.stations.value)
+    } else {
+      map.removeAnnotations(self.stations.value)
+    }
   }
 }

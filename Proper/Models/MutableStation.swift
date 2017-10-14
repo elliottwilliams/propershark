@@ -12,7 +12,7 @@ import Result
 import Argo
 import MapKit
 
-class MutableStation: MutableModel, Comparable {
+class MutableStation: NSObject, MutableModel, Comparable {
   typealias FromModel = Station
   typealias RouteType = MutableRoute
   typealias VehicleType = MutableVehicle
@@ -28,7 +28,7 @@ class MutableStation: MutableModel, Comparable {
   // MARK: Station Attributes
   let stopCode: FromModel.Identifier
   var name: MutableProperty<String?> = .init(nil)
-  var description: MutableProperty<String?> = .init(nil)
+  var stationDescription: MutableProperty<String?> = .init(nil)
   var position: MutableProperty<Point?> = .init(nil)
   var routes: MutableProperty<Set<RouteType>> = .init(Set())
   var vehicles: MutableProperty<Set<VehicleType>> = .init(Set())
@@ -50,6 +50,7 @@ class MutableStation: MutableModel, Comparable {
   required init(from station: Station, connection: ConnectionType) throws {
     self.stopCode = station.stopCode
     self.connection = connection
+    super.init()
     try apply(station)
   }
 
@@ -73,7 +74,7 @@ class MutableStation: MutableModel, Comparable {
     }
 
     self.name <- station.name
-    self.description <- station.description
+    self.stationDescription <- station.description
     self.position <- station.position
 
     try attachOrApplyChanges(to: self.routes, from: station.routes)
@@ -81,7 +82,7 @@ class MutableStation: MutableModel, Comparable {
   }
 
   func snapshot() -> FromModel {
-    return Station(stopCode: stopCode, name: name.value, description: description.value, position: position.value,
+    return Station(stopCode: stopCode, name: name.value, description: stationDescription.value, position: position.value,
                    routes: routes.value.map({ $0.snapshot() }),
                    vehicles: vehicles.value.map({ $0.snapshot() }))
   }
@@ -109,7 +110,7 @@ class MutableStation: MutableModel, Comparable {
         }
       }
       disposable.inner += station.name.producer.startWithValues { self.title = $0 }
-      disposable.inner += station.description.producer.startWithValues { self.subtitle = $0 }
+      disposable.inner += station.stationDescription.producer.startWithValues { self.subtitle = $0 }
     }
   }
 }
@@ -134,3 +135,14 @@ extension Collection where Iterator.Element: MutableStation {
   }
 }
 
+extension MutableStation: MKAnnotation {
+  var coordinate: CLLocationCoordinate2D {
+    guard let position = self.position.value else {
+      return kCLLocationCoordinate2DInvalid
+    }
+    return CLLocationCoordinate2D(point: position)
+  }
+
+  var title: String? { return name.value }
+  var subtitle: String? { return stationDescription.value }
+}

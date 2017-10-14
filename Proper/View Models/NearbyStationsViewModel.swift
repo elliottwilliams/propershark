@@ -41,8 +41,8 @@ struct NearbyStationsViewModel {
     })
   }
 
-  static func getStations(connection: ConnectionType) -> SignalProducer<[Station], ProperError> {
-    return connection.call("agency.stations").attemptMap({ event -> Result<[AnyObject], ProperError> in
+  static func getStations(connection: ConnectionType, scheduler: Scheduler) -> SignalProducer<[Station], ProperError> {
+    return connection.call("agency.stations").observe(on: scheduler).attemptMap({ event -> Result<[AnyObject], ProperError> in
       // Received events should be Agency.stations events, which contain a list of all stations on the agency.
       if case .agency(.stations(let stations)) = event {
         return .success(stations)
@@ -80,10 +80,26 @@ struct NearbyStationsViewModel {
     })
   }
 
-  static func limit(producer: SignalProducer<[MutableStation], ProperError>) ->
+  static func makeMutables(connection: ConnectionType) -> (SignalProducer<[Station], ProperError>) ->
     SignalProducer<[MutableStation], ProperError>
   {
-    return producer.map({ Array($0.prefix(15)) })
+    return { producer in
+      producer.attemptMap({ stations in
+        ProperError.capture({
+          try stations.map({ station in try MutableStation(from: station, connection: connection) })
+        })
+      })
+    }
+  }
+
+  static func sorted(fromDistanceTo point: Point) -> (SignalProducer<[MutableStation], ProperError>) ->
+    SignalProducer<[MutableStation], ProperError>
+  {
+    return { producer in
+      return producer.map({ stations in
+        stations.sortDistanceTo(point: point)
+      })
+    }
   }
 
   static func orderedList(producer: SignalProducer<[MutableStation: Distance], ProperError>) ->
@@ -101,17 +117,18 @@ struct NearbyStationsViewModel {
     return producer.logEvents(identifier: "NearbyStationsViewModel.search", logger: logSignalEvent)
   }
 
-  static func search(config: ConfigSP, searchParameters params: SignalProducer<(Point, SearchRadius), NoError>) ->
+  static func search(config: ConfigSP, searchParameters params: SignalProducer<Point, NoError>) ->
     SignalProducer<[MutableStation], ProperError>
   {
     let worker = QueueScheduler(qos: .userInitiated, name: "NearbyStationsViewModel worker")
     return config
+      .start(on: worker)
       .flatMap(.latest, transform: { Connection.makeFromConfig(connectionConfig: $0.connection) })
-      .flatMap(.latest, transform: { connection in
-        return SignalProducer.combineLatest(getStations(connection: connection),
-                                            searchArea(givenBy: params).promoteErrors(ProperError.self)).observe(on: worker)
-          |> curry(filterNearby)(connection)
-          |> limit
+      .combineLatest(with: params.promoteErrors(ProperError.self))
+      .flatMap(.latest, transform: { connection, point in
+        return getStations(connection: connection, scheduler: worker)
+          |> makeMutables(connection: connection)
+          |> sorted(fromDistanceTo: point)
           |> log
       })
   }
