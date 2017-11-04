@@ -18,6 +18,7 @@ enum ProperError: Error {
   case maxConnectionFailures
   case eventParseFailure
   case timeout(rpc: String)
+  case unreachable
 
   // Model
   case decodeFailure(DecodeError)

@@ -24,7 +24,7 @@ struct BartAgencyConfig: AgencyConfig {
   let name = "BART"
   let region = MKCoordinateRegionMakeWithDistance(
     CLLocationCoordinate2D(latitude: 37.784128, longitude: -122.4570273), 33_000, 20_000)
-  let maxLatitudeSpanForStations: CLLocationDegrees = 10.0/111
+  let maxLatitudeSpanForStations: CLLocationDegrees = 20.0/111
   let timeResolution = TimeInterval(30)
 
   let badgeForRoute: (MutableRoute) -> Property<String?> = { _ in .init(value: nil) }

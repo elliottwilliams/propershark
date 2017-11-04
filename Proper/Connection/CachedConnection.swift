@@ -33,7 +33,7 @@ extension CachedConnectionProtocol {
   }
 }
 
-@available(deprecated, message: "Connection implementations should conform to CachedConnectionProtocol")
+@available(*, deprecated, message: "Connection implementations should conform to CachedConnectionProtocol")
 class CachedConnection<C: ConnectionType>: ConnectionType, CachedConnectionProtocol {
   let inner: C
   let lastEventCache = LastEventCache()

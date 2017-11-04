@@ -26,8 +26,6 @@
 	<string>Your location is used to detect nearby routes and stations. It is never sent to $(PRODUCT_NAME)'s servers.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
-	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

@@ -74,24 +74,6 @@ extension MutableModel {
         try mutables.insert(attachMutable(from: model))
       }
     })
-    /*try mutableSet.modify { mutables in
-     // For each stored mutable model...
-     for model in mutables {
-     if let replacement = new.removeValue(forKey: model.identifier) {
-     // ...apply changes from a corresponding static model in `new`...
-     try model.apply(replacement)
-     } else {
-     // ...otherwise, remove it.
-     mutables.remove(model)
-     }
-     }
-
-     // Remaining models in `new` are new to the set. Attch MutableModels for them.
-     try new.forEach { id, model in
-     try mutables.insert(attachMutable(from: model))
-     }
-     return Result.success()
-     }*/
   }
 
   func attachOrApplyChanges<C: Collection, M: MutableModel>

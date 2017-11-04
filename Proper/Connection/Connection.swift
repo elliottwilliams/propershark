@@ -10,6 +10,7 @@ import UIKit
 import MDWamp
 import ReactiveSwift
 import Result
+import SystemConfiguration
 
 typealias ConnectionSP = SignalProducer<Connection, ProperError>
 
@@ -22,35 +23,58 @@ class Connection: NSObject, CachedConnectionProtocol {
   var isConnected: Bool { return wamp.isConnected() }
   fileprivate var isConnecting: Bool = false
   fileprivate var connectionTimeoutAction: ScopedDisposable<AnyDisposable>? = nil
+  fileprivate var errors: NotificationObserver = ToastNotificationViewController.sharedObserver
+  fileprivate var uri: URL
 
   fileprivate init(connectionConfig config: ConnectionConfig) {
     let transport = MDWampTransportWebSocket(server: config.server,
                                              protocolVersions: [kMDWampProtocolWamp2msgpack, kMDWampProtocolWamp2json])
     NSLog("[Connection.init] Created transport for \(config.server)")
     wamp = MDWamp(transport: transport, realm: config.realm, delegate: nil)
+    uri = config.server
     super.init()
     wamp.delegate = self
   }
 
-  func connect() -> Disposable {
-    if !isConnecting {
-      isConnecting = true
-      wamp.connect()
-      NSLog("[Connection.connect]")
+  func connect() {
+    guard !isConnecting, let reachable = Connection.isReachable(uri: uri) else {
+      return
     }
+
+    guard reachable else {
+      observer.send(error: .unreachable)
+      return
+    }
+
+    isConnecting = true
+    wamp.connect()
+    NSLog("[Connection.connect]")
+
     if let timeout = QueueScheduler.main.schedule(after: Date(timeIntervalSinceNow: 10), action: { [weak self] in
       self?.observer.send(error: .timeout(rpc: "unable to connect"))
     }) {
       connectionTimeoutAction = ScopedDisposable(timeout)
     }
-//    return ActionDisposable { [weak self] in self?.disconnect() }
-    return ActionDisposable { }
   }
 
   func disconnect() {
     NSLog("[Connection.disconnect]")
     connectionTimeoutAction?.dispose()
     wamp.disconnect()
+  }
+
+  private static func isReachable(uri: URL) -> Bool? {
+    guard let hostname = uri.host,
+      let ref = SCNetworkReachabilityCreateWithName(nil, hostname) else {
+        return nil
+    }
+
+    var flags = SCNetworkReachabilityFlags()
+    guard SCNetworkReachabilityGetFlags(ref, &flags) else {
+      return nil
+    }
+
+    return flags.contains(.reachable)
   }
 }
 
@@ -63,14 +87,19 @@ extension Connection: ConnectionType {
       .map { TopicEvent.parse(from: topic, event: $0) }
       .unwrapOrSendFailure(ProperError.eventParseFailure)
       .logEvents(identifier: "Connection.subscribe", logger: logSignalEvent)
-    return updatingCache(withEventsFrom: subscription, for: topic)
+    let cachingSubscription = updatingCache(withEventsFrom: subscription, for: topic)
+    return cachingSubscription
   }
 
   /// Call `proc` and forward the result. Disposing the signal created will cancel the RPC call.
   func call(_ proc: String, with args: WampArgs = [], kwargs: WampKwargs = [:]) -> EventProducer {
     let cache = cacheLookup(proc, args, kwargs)
-    let server = wamp.callWithSignal(proc, args, kwargs, [:])
+    let rawServer = wamp.callWithSignal(proc, args, kwargs, [:])
       .timeout(after: 10.0, raising: .timeout(rpc: proc), on: QueueScheduler.main)
+      .on(failed: { [weak self] _ in self?.errors.send(value: "Request timed out. Retrying…") },
+          value:  { [weak self] _ in self?.errors.send(value: nil) })
+      .restarting(every: 0.5, on: .main)
+    let server = rawServer
       .map { TopicEvent.parse(fromRPC: proc, args, kwargs, $0) }
       .unwrapOrSendFailure(ProperError.eventParseFailure)
       .logEvents(identifier: "Connection.call(proc: \(proc))", events: Set([.starting, .value, .failed]),
@@ -101,21 +130,29 @@ extension Connection: MDWampClientDelegate {
 // MARK: - Factory
 extension Connection {
   static func makeFromConfig(connectionConfig config: ConnectionConfig) -> SignalProducer<Connection, ProperError> {
-    return SignalProducer { observer, disposable in
+    let producer = SignalProducer<Connection, ProperError> { observer, disposable in
       let saved = connections[config.hashed]
       switch saved {
       case .some(let saved) where saved.isConnected:
         observer.send(value: saved)
       case .some(let saved): // otherwise
         disposable += saved.signal.observe(observer)
-        disposable += saved.connect()
+        saved.connect()
       case .none:
         let connection = Connection(connectionConfig: config)
         disposable += connection.signal.observe(observer)
-        disposable += connection.connect()
+        connection.connect()
         connections[config.hashed] = connection
       }
     }
+    let notifications = ToastNotificationViewController.sharedObserver
+    return producer
+      .on(failed: { _ in
+        connections[config.hashed]?.wamp.delegate = nil // because MDWamp is dumb and uses `unowned_unretained` not `weak`
+        connections[config.hashed] = nil
+        notifications.send(value: "Connection interrupted. Reconnecting…")
+      }, value: { _ in notifications.send(value: nil) })
+      .restarting(every: 0.5, on: .main)
   }
 }
 

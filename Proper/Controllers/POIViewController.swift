@@ -16,8 +16,6 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
   // MARK: Point properties
   typealias NamedPoint = POIViewModel.NamedPoint
 
-  @IBOutlet weak var stackView: UIStackView!
-
   /// Map annotation for the point of interest represented by this view. Only used for static locations.
   let annotation = MKPointAnnotation()
 
@@ -42,12 +40,10 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
   // view model.
   lazy var stations = MutableProperty<[MutableStation]>([])
   lazy var routes: Property<Set<MutableRoute>> = {
-    return self.stations.flatMap(.latest, transform: { stations -> Property<Set<MutableRoute>> in
-      let stationRoutes = stations.flatMap(({ $0.routes.producer }))
-      let currentRoutes = SignalProducer.combineLatest(stationRoutes)
-      let routes = currentRoutes.map({ $0.reduce(Set(), { $0.union($1) }) })
-      return Property(initial: Set(), then: routes)
+    let routes = self.stations.producer.map({ stations in
+      Set(stations.flatMap(({ $0.routes.value })))
     })
+    return Property(initial: Set(), then: routes)
   }()
 
   /// A producer for the device's location, which adds metadata used by the view into the signal. It is started when
@@ -85,8 +81,7 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
                                              onSelect: onSelect,
                                              isUserLocation: Property(isUserLocation))
     addChildViewController(mapController)
-    stackView.insertArrangedSubview(mapController.view, at: 0)
-    mapController.view.heightAnchor.constraint(equalTo: stackView.heightAnchor, multiplier: 0.4).isActive = true
+    view.addSubview(mapController.view)
     mapController.didMove(toParentViewController: self)
     self.mapController = mapController
   }
@@ -94,22 +89,34 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
   private func loadTableController() {
     let tableController = POITableViewController(style: .plain, stations: Property(stations), mapPoint: Property(point), config: config)
     addChildViewController(tableController)
-    stackView.addArrangedSubview(tableController.view)
-    tableController.view.heightAnchor.constraint(equalTo: stackView.heightAnchor, multiplier: 0.6).isActive = true
+    view.addSubview(tableController.view)
     tableController.didMove(toParentViewController: self)
     self.tableController = tableController
   }
 
+  private func installConstraints() {
+    let map = mapController.view!
+    let table = tableController.view!
+    let guide = view.safeAreaLayoutGuide
+    NSLayoutConstraint.activate([
+      map.topAnchor.constraint(equalTo: view.topAnchor),
+      map.leadingAnchor.constraint(equalTo: guide.leadingAnchor),
+      map.trailingAnchor.constraint(equalTo: guide.trailingAnchor),
+      map.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.4),
+
+      table.topAnchor.constraint(equalTo: map.bottomAnchor),
+      table.leadingAnchor.constraint(equalTo: guide.leadingAnchor),
+      table.trailingAnchor.constraint(equalTo: guide.trailingAnchor),
+      table.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.6),
+    ])
+  }
+
   override func viewDidLoad() {
     super.viewDidLoad()
+
     loadMapController()
     loadTableController()
-
-    // Clear the title until the signals created in `viewWillAppear` set one.
-    navigationItem.title = nil
-
-    navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Agencies", style: .plain, target: self,
-                                                       action: #selector(openAgencySelector))
+    installConstraints()
   }
 
   func openAgencySelector() {
@@ -121,10 +128,10 @@ class POIViewController: UIViewController, ProperViewController, UISearchControl
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
 
-    // Make the navigation bar fully transparent.
-    if let bar = navigationController?.navigationBar {
-      bar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-    }
+
+    // Clear the title until the signals created in `viewWillAppear` set one.
+    navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Agencies", style: .plain, target: self,
+                                                       action: #selector(openAgencySelector))
 
     // Clear stations when the config changes.
     disposable += config.producer.startWithValues { _ in self.stations.swap([]) }

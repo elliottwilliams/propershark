@@ -25,6 +25,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // self.locationManager?.delegate = PFLocationManagerDelegate() // TODO: determine if this is needed
     // self.locationManager?.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
 
+    window = UIWindow(frame: UIScreen.main.bounds)
+    window?.makeKeyAndVisible()
+    window?.rootViewController = UINavigationController(rootViewController:
+      ToastNotificationViewController(contentViewController: POIViewController(nibName: nil, bundle: nil)))
+
     return true
   }
 

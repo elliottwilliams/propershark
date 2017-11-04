@@ -84,7 +84,7 @@ struct Timetable {
 //      .flatMap(.latest, transform: { config in
       .flatMap(.latest, transform: { config -> SignalProducer<(Connection, String), ProperError> in
         let proc = rpc(from: timing, route: route != nil, serviceName: config.connection.scheduleService)
-        return SignalProducer.combineLatest(Connection.makeFromConfig(connectionConfig: config.connection),
+        return SignalProducer.combineLatest(config.connection.makeConnection(),
                                             SignalProducer(value: proc))
       })
       // the result of the call on the latest connection

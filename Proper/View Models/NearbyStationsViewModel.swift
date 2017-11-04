@@ -123,7 +123,7 @@ struct NearbyStationsViewModel {
     let worker = QueueScheduler(qos: .userInitiated, name: "NearbyStationsViewModel worker")
     return config
       .start(on: worker)
-      .flatMap(.latest, transform: { Connection.makeFromConfig(connectionConfig: $0.connection) })
+      .flatMap(.latest, transform: { $0.connection.makeConnection() })
       .combineLatest(with: params.promoteErrors(ProperError.self))
       .flatMap(.latest, transform: { connection, point in
         return getStations(connection: connection, scheduler: worker)
