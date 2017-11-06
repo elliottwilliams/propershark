@@ -21,14 +21,21 @@ class POITableDataSource: NSObject {
   private let fetchScheduler = QueueScheduler(qos: .userInitiated, name: "POITableDataSource.fetchScheduler")
   private let defaultArrivals = Array(repeating: ArrivalState.loading, count: 1)
 
+  fileprivate var slice: Property<ArraySlice<MutableStation>>
+  fileprivate let limit = MutableProperty(30)
+
   init(tableView: UITableView, stations: Property<[MutableStation]>, config: ConfigSP) {
     self.tableView = tableView
     self.stations = stations
-    self.diffCalculator = .init(tableView: tableView)
     self.config = config
+
+    slice = stations.combineLatest(with: limit).map({ stations, limit in stations.prefix(limit) })
+    diffCalculator = .init(tableView: tableView)
+    diffCalculator.insertionAnimation = .fade
+    diffCalculator.deletionAnimation = .fade
     super.init()
 
-    disposable += stations.producer.startWithValues { [weak self] stations in
+    disposable += slice.producer.startWithValues { [weak self] stations in
       let shouldAnimate = tableView.numberOfSections != 0 || stations.isEmpty
       // Populate the table with nearby stations.
       self?.update(withStations: stations, animated: shouldAnimate)
@@ -53,6 +60,19 @@ class POITableDataSource: NSObject {
     }
   }
 
+  func populateArrivals(for station: MutableStation) {
+    fetchArrivals(for: station).startWithResult { result in
+      switch result {
+      case .failure(_): break
+      case .success(let arrivals): self.update(section: station, with: arrivals)
+      }
+    }
+  }
+
+  func loadMore() {
+    limit.modify({ limit in limit += 30 })
+  }
+
   private func update(section: MutableStation, with newArrivals: [Arrival]) {
     let wrappedArrivals = newArrivals.isEmpty ? [ArrivalState.none] : newArrivals.map({ ArrivalState.loaded($0) })
     let replacement = diffCalculator.sectionedValues.sectionsAndValues.map({ station, currentArrivals in
@@ -62,19 +82,21 @@ class POITableDataSource: NSObject {
     diffCalculator.sectionedValues = SectionedValues(replacement)
   }
 
-  private func update(withStations stations: [MutableStation], animated: Bool) {
-    let knownArrivals: [MutableStation: [ArrivalState]] = diffCalculator.sectionedValues.sectionsAndValues.reduce(into: [:]) { (dict, tuple) in
+  private func update<S: Sequence>(withStations stations: S, animated: Bool) where S.Element == MutableStation {
+    let knownArrivals = diffCalculator.sectionedValues.sectionsAndValues.reduce(into: [String: [ArrivalState]]()) { (dict, tuple) in
       let (station, arrivals) = tuple
-      dict[station] = arrivals
+      dict[station.identifier] = arrivals
     }
-    let replacement = stations.map({ station in (station, knownArrivals[station] ?? defaultArrivals) })
+    let replacement = stations.map({ station in
+      (station, knownArrivals[station.identifier] ?? defaultArrivals)
+    })
+
     if animated {
       diffCalculator.sectionedValues = SectionedValues(replacement)
     } else {
-      let tableView = diffCalculator.tableView
-      diffCalculator = TableViewDiffCalculator(tableView: tableView,
-                                               initialSectionedValues: SectionedValues(replacement))
-      tableView?.reloadData()
+      UITableView.performWithoutAnimation {
+        diffCalculator.sectionedValues = SectionedValues(replacement)
+      }
     }
   }
 
@@ -108,7 +130,7 @@ extension POITableDataSource {
 // MARK: UITableViewDataSource
 extension POITableDataSource: UITableViewDataSource {
   func numberOfSections(in tableView: UITableView) -> Int {
-    return stations.value.count
+    return diffCalculator.numberOfSections()
   }
 
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -125,6 +147,7 @@ extension POITableDataSource: UITableViewDataSource {
       cell.apply(arrival: arrival, route: route)
       return cell
     case .loading:
+      populateArrivals(for: station(at: indexPath.section))
       let cell = tableView.dequeueReusableCell(withIdentifier: "loading")!
       let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
       activityIndicator.startAnimating()
